@@ -1,3 +1,0 @@
-import QCEngine from './myQCEngine'
-
-
