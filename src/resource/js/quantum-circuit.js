@@ -15625,6 +15625,7 @@ QuantumCircuit.prototype.run = function(initialValues, options) {
 	this.stats.duration += this.stats.end - this.stats.start;
 };
 
+// continue感觉更像是上一次的输出再输入一次
 QuantumCircuit.prototype.continue = function() {
 	this.run(null, {
 		continue: true

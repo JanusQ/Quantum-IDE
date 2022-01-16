@@ -12,6 +12,7 @@
 
 
 // let QuantumCircuit = require('../resource/js/quantum-circuit.min.js')
+import { write0, write1 } from './MyGate';
 import QuantumCircuit from './QuantumCircuit'
 
 // 单个qubit的第几个转换为qcEngine里面的二进制
@@ -82,10 +83,16 @@ export default class QCEngine {
     // // Request 8 qubits for simulation in our QPU
     // qc.reset(8);
 
+    
     reset(qubit_number) {
         this.qubit_number = qubit_number
         this.circuit = new QuantumCircuit(qubit_number);
         // 比特全部设为0
+
+
+        // 添加自定义的
+        circuit.registerGate("write0", write0);
+        circuit.registerGate("write1", write1);
     }
 
     // Considered together these 8 qubits can represent any 8-bit number (or, of course, superpositions of such numbers). Before we begin operating on these qubits we can initialize them to be a binary encoding of some integer value using the qc.write() method:
@@ -97,7 +104,7 @@ export default class QCEngine {
     // SIWEI:现在规定一个qubit只能write一次, 这和原来的不一样，需要改代码
     // binary_qubits指的是二进制表示的qubit位
     write(value, binary_qubits = undefined) {
-        const {inital_value, qubit_number, qubit_has_write} = this
+        const {inital_value, qubit_number, qubit_has_write, now_column} = this
         // 补齐到应该有的长度
         for(let i = inital_value.length; i < qubit_number; i++) {
             inital_value.push(0)
@@ -110,9 +117,23 @@ export default class QCEngine {
                 console.error(qubit, "has been written")
                 debugger
             }
-            inital_value[qubit] = qubit_value[index]
+            let value = qubit_value[index]
+            inital_value[qubit] = value
             qubit_has_write[qubit] = true
+            // self.circuit.addGate()
+            self._addGate({
+                'qubits': qubits,
+                'operation': 'write',
+                'columns': [now_column, now_column+1],
+            })
+            if(value == 0){
+                self.circuit.addGate('write0', now_column, [qubit]) 
+            }else{
+                self.circuit.addGate('write0', now_column, [qubit]) 
+            }
+            
         })
+        this.now_column++
     }
 
     parseBinaryQubits(binary_qubits) {
@@ -127,6 +148,7 @@ export default class QCEngine {
         const index = operations.length
         const {columns, operation} = gate
 
+        // columns是左开又闭的, 存的是quantum circuit库中的对应关系
         if(columns == undefined){
             console.error(gate, 'not has columns')
             debugger
@@ -185,7 +207,7 @@ export default class QCEngine {
             'operation': 'read',
             'column': now_column
         })
-        return  circuit.getCregValue(now_column); //返回一个int值, 只考虑new的
+        return circuit.getCregValue(now_column); //返回一个int值, 只考虑new的
     }
 
     // phase门
