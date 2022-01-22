@@ -19,10 +19,10 @@ function pow2(qubit){
 // int转换为二进制
 function binary(num, qubit_num = 0) {
     //定义变量存放字符串
-    var result = [];
+    let result = [];
     while (true) {
         //取余
-        var remiander = num % 2;
+        let remiander = num % 2;
         //将余数倒序放入结果中
         result = [remiander,  ...result];//+是字符串的拼接
         //求每次除2的商
@@ -31,7 +31,8 @@ function binary(num, qubit_num = 0) {
         if (num === 0)
             break;
     }
-    return [...range(0, qubit_num-result.length) ,...result];
+    // console.log(num, result)
+    return [...range(0, qubit_num-result.length).map(_=>0) ,...result];
 }
 
 function binary2int(binary) {

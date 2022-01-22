@@ -161,16 +161,19 @@ function permute(qobj, p) {
         debugger
     }
     let new_qobj = new Qobject(qobj.rows, qobj.cols);
-
+    // debugger
     let state2new_state = {}
     for(let state = 0; state < state_num; state++) {
         let binary_state = binary(state, qubit_num)
-        binary_state.reverse()  //低位在后
+        // console.log(state, binary_state.join(''))
+
+        // binary_state.reverse()  //低位在后
         let new_binary_state = p.map(value=>binary_state[value])
         let new_state = binary2int(new_binary_state)
         
+        // binary_state.reverse()
         state2new_state[state] = new_state
-        // console.log(state, new_state, binary_state, new_binary_state, p)
+        console.log(state, new_state, binary_state, new_binary_state, p)
 
     }
 
@@ -227,9 +230,10 @@ function gateExpand2toN(U, N, control, target) {
 
     let p = [];
     for (i = 0; i < N; i++) {
-        p[i] = i;
+        p[i] = i; // N - i - 1;
     }
 
+    // debugger
     if (target == 0 && control == 1) {
         exchange(p, target, control);
     }
@@ -248,7 +252,7 @@ function gateExpand2toN(U, N, control, target) {
 
     // console.log(result);
 
-    //result = permute(result,p);
+    result = permute(result, p);
 
     //console.log(result);
     return result;
@@ -268,7 +272,7 @@ function controlledGate(U, N = 2, control = 0, target = 1, control_value = 1) {
     }
 
     let U2 = controlledGate(U, undefined, undefined, undefined, control_value);
-    console.log(U2)
+    // console.log(U2)
 
     return gateExpand2toN(U2, N, control, target);
 }
