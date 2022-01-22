@@ -8,9 +8,9 @@ import './App.css';
 // import './test/myRun'
 // import './test/write01'
 // import './test/ccnot'
-import './test/permutes'
+// import './test/permutes'
 // import QuantumCircuit from './simulator/QuantumCircuit'
-
+import './test/matrixOpertation'
 
 function App() {
   return (

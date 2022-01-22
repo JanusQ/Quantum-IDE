@@ -1,6 +1,7 @@
 import QuantumCircuit from '../simulator/QuantumCircuit'
 
 // 测试一下生成各种门的矩阵
+// 这玩意不行，还是得自己写
 
 /**
  * Permutes a vector; x = P'b. In MATLAB notation, x(p)=b.
@@ -38,3 +39,4 @@ var cx_matrix = circuit.getGateMatrix('cx', {});  // 测试一下生成各种门
 var permute_matrix = permute(cx_matrix, [1, 0])  //错的不是这个意思
 debugger
 
+// [U1, U2, U3]

@@ -7492,7 +7492,7 @@ QuantumCircuit.prototype.applyGate = function(gateName, column, wires, options) 
 	}
 
 	var rawGate = this.getRawGate(gate, options);
-
+	
 	this.collapsed = [];
 	this.prob = [];
 
