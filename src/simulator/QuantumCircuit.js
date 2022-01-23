@@ -17,7 +17,7 @@ QuantumCircuit.prototype.my_session = {}
 
 QuantumCircuit.prototype.myStartRun = function (initialValues, options) {
     console.log("Starting")
-
+	// debugger
     options = options || {};
 
     this.measureResetsQubit = !!options.strictMode;
@@ -416,7 +416,7 @@ QuantumCircuit.prototype.applyTransform = function(U, qubits) {
 
 	var ZERO = math.complex(0, 0);
 
-    debugger
+    // debugger
 	for(var elrow = 0; elrow < U.length; elrow++) {
 
 		var rowmask = getElMask(elrow);

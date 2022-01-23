@@ -17,4 +17,4 @@ let not = new Qobject(2,2);
 not.data = [[0,1],[1,0]]
 // console.log(gateExpand1toN(not,N,target));
 
-console.log(controlledGate(not,3,2,1,1).data)
+console.log(controlledGate(not,3,2,0,1).data)

@@ -1,4 +1,3 @@
-import { showInDebuggerArea } from '../simulator/CommonFunction';
 import QCEngine from '../simulator/MyQCEngine'
 
 var qc = new QCEngine()
@@ -91,6 +90,3 @@ qc.nop();
 if (send_had == recv_had)
     if (send_value != recv_val)
         qc.print('Caught a spy!\n');
-
-
-showInDebuggerArea(qc.circuit)

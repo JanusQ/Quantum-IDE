@@ -173,7 +173,7 @@ function permute(qobj, p) {
         
         // binary_state.reverse()
         state2new_state[state] = new_state
-        console.log(state, new_state, binary_state, new_binary_state, p)
+        // console.log(state, new_state, binary_state, new_binary_state, p)
 
     }
 
@@ -232,6 +232,7 @@ function gateExpand2toN(U, N, control, target) {
     for (i = 0; i < N; i++) {
         p[i] = i; // N - i - 1;
     }
+    // [2,1,0]
 
     // debugger
     if (target == 0 && control == 1) {

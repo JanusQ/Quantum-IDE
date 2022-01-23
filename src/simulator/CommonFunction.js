@@ -52,20 +52,32 @@ function binary2qubit1(state_value){
     let qubits = []
     for(let qubit = 0; qubit < qubit2value.length; qubit++){
         if(qubit2value[qubit] == 1){
-            qubits.push(qubit2value.length - qubit)
+            qubits.push(qubit2value.length - qubit - 1)
         }
     }
+
+    // 小的在后
+    qubits.sort()
+    qubits.reverse()
+
     return qubits  // 确定下是不是从小到大
 }
 
-function range(start, end){
+function range(start, end, reverse=false) {
     let array = []
 
     for(let i = start; i < end; i++){
         array.push(i)
     }
 
+    if(reverse){
+        array.reverse()
+    }
     return array
+}
+
+function toPI(rotation) {
+    return rotation / 180 * Math.PI
 }
 
 export {
@@ -74,5 +86,6 @@ export {
     binary2qubit1,
     range,
     showInDebuggerArea,
-    binary2int
+    binary2int,
+    toPI,
 }
