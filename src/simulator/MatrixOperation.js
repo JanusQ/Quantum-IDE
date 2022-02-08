@@ -2,7 +2,7 @@ import { pow2, binary, binary2qubit1, range, binary2int,} from '../simulator/Com
 import * as deepcopy from 'deepcopy';
 
 // 这里放了一些计算门需要的函数
-class Qobject {
+class QObject {
     // 行，列
     constructor(r, c) {
         this.rows = r;
@@ -20,7 +20,7 @@ class Qobject {
     }
 
     copy(){
-        let new_obj = new Qobject(this.rows, this.cols);
+        let new_obj = new QObject(this.rows, this.cols);
         new_obj.data = deepcopy(this.data) 
         return new_obj;
     }
@@ -51,7 +51,7 @@ function mt_dot(m1,m2)
         throw "rows is not equal to cols";
     }
     let mu = m1.cols;
-    let res = new Qobject(m1.rows,m2.cols);
+    let res = new QObject(m1.rows,m2.cols);
 
     let i,j,k;
     for(i=0;i<r;i++)
@@ -93,7 +93,7 @@ function tensor() {
 function innerTensor(t1, t2) {
     let row = t1.rows * t2.rows;
     let col = t1.cols * t2.cols;
-    let result = new Qobject(row, col);
+    let result = new QObject(row, col);
     let i, j;
 
     for (i = 0; i < row; i++) {
@@ -108,7 +108,7 @@ function innerTensor(t1, t2) {
 
 //-------------------------------------------------------------//
 function identity(N) {
-    let id = new Qobject(N, N);
+    let id = new QObject(N, N);
     let i;
     for (i = 0; i < N; i++) {
         id.data[i][i] = 1;
@@ -118,7 +118,7 @@ function identity(N) {
 
 
 function fockDm(dim, N) {
-    let res = new Qobject(dim, dim);
+    let res = new QObject(dim, dim);
     res.data[N][N] = 1;
     return res;
 }
@@ -160,7 +160,7 @@ function permute(qobj, p) {
         console.error(qobj, 'can not be permuted by ', p, 'becase they don\'t have same number of qubit')
         debugger
     }
-    let new_qobj = new Qobject(qobj.rows, qobj.cols);
+    let new_qobj = new QObject(qobj.rows, qobj.cols);
     // debugger
     let state2new_state = {}
     for(let state = 0; state < state_num; state++) {
@@ -178,7 +178,7 @@ function permute(qobj, p) {
     }
 
     // console.log(state2new_state)
-    // let state_mask = new Qobject(qobj.rows, qobj.cols).data
+    // let state_mask = new QObject(qobj.rows, qobj.cols).data
 
     // debugger
     // 先换行
@@ -282,7 +282,7 @@ function controlledGate(U, N = 2, control = 0, target = 1, control_value = 1) {
 // -------test------------
 // target = 1;
 // N = 3;
-// U = new Qobject(2,2);
+// U = new QObject(2,2);
 
 // U.data = [[0,1],
 //          [1,0]];
@@ -290,7 +290,7 @@ function controlledGate(U, N = 2, control = 0, target = 1, control_value = 1) {
 // console.log(gateExpand1toN(U,N,target));
 
 export {
-    Qobject,
+    QObject,
     tensor,
     innerTensor,
     identity,

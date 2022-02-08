@@ -14,8 +14,10 @@
 // let QuantumCircuit = require('../resource/js/quantum-circuit.min.js')
 import { write0, write1 } from './MyGate';
 import QuantumCircuit from './QuantumCircuit'
-import { pow2, binary, binary2qubit1, range, toPI,} from './CommonFunction'
-
+import { pow2, binary, binary2qubit1, range, toPI, qubit12binary} from './CommonFunction'
+import {
+    cos, sin, round, pi, complex,
+} from 'mathjs'
 
 // 统一规定高位在后
 
@@ -37,11 +39,13 @@ export default class QCEngine {
 
         this.labels = [
             // {
-            //     operations: [],  #存的是左开右闭的对应的label,对应的是operation的index
+            //     operations: [],  #存的是左闭右开的对应的label,对应的是operation的index
             //     text: ""
             // }
         ]
-        this._last_label_operation = 0
+        this._now_label = 0
+
+        this.now_state = undefined 
     }
 
 
@@ -59,16 +63,19 @@ export default class QCEngine {
         }
 
         this.qubit_number = qubit_number
-        this.circuit = new QuantumCircuit(qubit_number);
+        const circuit = new QuantumCircuit(qubit_number);
+        this.circuit = circuit
         // 比特全部设为0
         // 添加自定义的
-        this.circuit.registerGate("write0", write0);
-        this.circuit.registerGate("write1", write1);
+        circuit.registerGate("write0", write0);
+        circuit.registerGate("write1", write1);
 
         for (let i = 0; i < qubit_number; i++) {
             inital_value.push(0)
         }
-        this.circuit.myStartRun()
+        circuit.myStartRun()
+
+        this.now_state = circuit.stateAsArray()
     }
 
     // Considered together these 8 qubits can represent any 8-bit number (or, of course, superpositions of such numbers). Before we begin operating on these qubits we can initialize them to be a binary encoding of some integer value using the qc.write() method:
@@ -109,6 +116,7 @@ export default class QCEngine {
         this._addGate({
             'qubits': qubits,
             'operation': 'write',
+            'value': qubit_value,
             'columns': column_range,
         })
     }
@@ -121,16 +129,17 @@ export default class QCEngine {
         }
     }
 
+    // 添加并且执行
     _addGate(gate) {
-        const { circuit, operations } = this
+        const { circuit, operations, _now_label } = this
         const index = operations.length
         const { columns, operation } = gate
 
         const {state} = this._circuitStep()
 
 
-        // columns是左开又闭的, 存的是quantum circuit库中的对应关系
-        if (columns == undefined) {
+        // columns是左闭右开的, 存的是quantum circuit库中的对应关系
+        if (columns == undefined && gate.operation !== 'noop') {
             console.error(gate, 'not has columns')
             debugger
         }
@@ -139,12 +148,19 @@ export default class QCEngine {
             console.error(gate, 'not has operation')
             debugger
         }
-
+        
         operations.push({
-            gate,
+            ...gate,
             'index': index,  //操作的index
             'state_after_opertaion': state,
+            'state_str': circuit.stateAsString(),
+            'label': _now_label,
         })
+        
+        this.now_state = state
+        return { 
+            state
+        }
     }
 
     // 跑一步返回并返回当前的状态
@@ -160,17 +176,18 @@ export default class QCEngine {
     // 啥是discard
     // 应该就是空一格
     discard() {
-        this.nop()
+        // this.nop()
     }
 
     // 给某一段打个标签, 是用于前端的
+    // 给之后所有的打上标签
     label(label) {
-        const {_last_label_operation, labels, operations} = this
+        const {_now_label, labels, operations} = this
         labels.push({
-            operations: [_last_label_operation, operations.length],
+            start_operation: operations.length,  //左闭
             text: label,
         })
-        this._last_label_operation = operations.length
+        this._now_label = label
     }
 
     // Hadamard Operation
@@ -190,6 +207,7 @@ export default class QCEngine {
         })
     }
 
+
     // measure
     read(binary_qubits = undefined) {
         const { operations, circuit, now_column } = this
@@ -199,14 +217,21 @@ export default class QCEngine {
         qubits.forEach((qubit, index) => {
             circuit.addGate("measure", now_column, qubit, { 'creg': { 'name': reg_name, 'bit': index } })
         })
+        
+        // 这里目前唯一除了_addGate外的执行
+        this._circuitStep()
+        let result = circuit.getCregValue(reg_name); //返回一个int值, 只考虑new的
 
         this._addGate({
-            'qubits': qubits,
+            qubits,
             'operation': 'read',
-            'columns': this.nextColumn()
+            'columns': this.nextColumn(),
+            reg_name,
+            result,
         })
 
-        return circuit.getCregValue(reg_name); //返回一个int值, 只考虑new的
+        // read完的state值是不对的
+        return result
     }
 
     nextColumn(column_num = 1){
@@ -223,7 +248,7 @@ export default class QCEngine {
         qubits.forEach(qubit=>{
             circuit.addGate("rz",  now_column, qubit, {
                 params: {
-                    phi: "pi/" + toPI(rotation)
+                    phi: "pi/" + (180/rotation)
                 }
             });
         })
@@ -277,6 +302,7 @@ export default class QCEngine {
         })
     }
 
+    // TODO: ncphase 之后直接整理到cphase里面
     cphase(rotation, binary_control, binary_target) {
         const { operations, circuit, now_column } = this
         let control = this.parseBinaryQubits(binary_control)
@@ -284,33 +310,76 @@ export default class QCEngine {
 
         if(control.length != 1){
             console.error(control, 'control qubit number is not one')
+            debugger
         }
         if(target.length != 1){
             console.error(target, 'target qubit number is not one')
+            debugger
         }
 
-        circuit.addGate("crz",  now_column, [...control, ...target],  {
+        circuit.addGate("cu1",  now_column, [...control, ...target],  {
             params: {
-                phi: "pi/" + toPI(rotation)
+                lambda: "pi/" + (180/rotation)
             }
         });
 
-        // TODO: 允许多个吗
+        // TODO: 允许多个控制或者多个被控吗
         this._addGate({
-            'control': control,
+            'qubits': [...control, ...target],
+            'operation': 'ccphase',
+            'columns': this.nextColumn()
+        })
+    }
+
+    // TODO: 还没有实现，包括ncnot
+    ccnot(binary_control, binary_target){
+        const { operations, circuit, now_column } = this
+        let controls = this.parseBinaryQubits(binary_control)
+        let target = this.parseBinaryQubits(binary_target)
+
+        this._addGate({
+            'controls': controls,
             'target': target,
-            'operation': 'cnot',
+            'operation': 'ccnot',
+            'columns': this.nextColumn()
+        })
+    }
+
+    exchange(binary_qubits1, binary_qubits2){
+        const { operations, circuit, now_column } = this
+
+        const qubits1 = this.parseBinaryQubits(binary_qubits1)
+        const qubits2 = this.parseBinaryQubits(binary_qubits2)
+
+        if(qubits1.length != qubits2.length){
+            console.error(qubits1, qubits2, 'do not have same length, which can not be swapped')
+            debugger
+        }
+
+        qubits1.forEach((qubit1, index) => {
+            const qubit2 = qubits2[index]
+            circuit.addGate("swap",  now_column, [qubit1, qubit2]);
+        })
+
+        this._addGate({
+            qubits1, qubits2,
+            'operation': 'swap',
             'columns': this.nextColumn()
         })
     }
 
 
+    swap(binary_qubits1, binary_qubits2){
+        this.exchange(binary_qubits1, binary_qubits2)
+    }
+
     // 啥事都不干，就空一格
     nop() {
         const { operations, circuit } = this
+        this._now_label = undefined
         this._addGate({
             'operation': 'noop',
-            'columns': this.nextColumn()
+            'columns': undefined, //this.nextColumn()
         })
     }
 
@@ -336,7 +405,7 @@ class QCIntGenerator {
     }
 
     new(qubit_number, qint_name = undefined) {
-        const { qc, binary_index } = this
+        const { qc } = this
         let index = qc.new(qubit_number, qint_name)   //index 是数组
         let qint = new QInt(qc, index, qint_name)
         return qint
@@ -347,66 +416,158 @@ class QInt {
     constructor(qc, index, name) {
         this.qc = qc  //上一级的必须是一个qcengine
         this.name = name
-        this.index = index
-        this.binary_index = range(...index).reduce((sum, val) => sum | pow2(val), 0)  //TODO:check一下对不对
+        this.index = index  //起始到结束的qubit的序号，左闭右开
+        this.binary_qubits = qubit12binary(range(...index))
+        // range(...index).reduce((sum, val) => sum | pow2(val), 0)  //TODO:check一下对不对
         // debugger
         // 0 0x1
         // 1 0x2
     }
 
-    write(value) {
-        const { qc, binary_index } = this
-        qc.write(value, binary_index)
+    
+    parseBinaryQubits(binary_qubits) {
+        if (binary_qubits !== undefined){
+            const qubits = binary2qubit1(binary_qubits).map(qubit=> qubit+this.index[0])
+            return qubits        
+        }else{
+            return range(...this.index, true)  // 从0开始的0-qubit number - 1
+        }
     }
 
-    had() {
-        const { qc, binary_index } = this
-        qc.had(binary_index)
+    // 这返回的还是二进制的
+    bits(binary_qubits){
+        if (binary_qubits !== undefined){
+            const qubits = binary2qubit1(binary_qubits).map(qubit=> qubit+this.index[0])
+            return qubit12binary(qubits)            
+        }else{
+            return binary_qubits  // 从0开始的0-qubit number - 1
+        }
     }
 
-    add(other_qint) {
-        const { qc, binary_index } = this
+
+    hadamard(binary_qubits){
+        binary_qubits = this.bits(binary_qubits)
+        this.had(binary_qubits)
+    }
+
+
+    write(value, binary_qubits) {
+        const {qc} = this
+        binary_qubits = this.bits(binary_qubits)
+        qc.write(value, binary_qubits)
+    }
+
+    had(binary_qubits) {
+        const {qc} = this
+        binary_qubits = this.bits(binary_qubits)
+        qc.had(binary_qubits)
+    }
+
+    // TODO: console要换成throw
+    // TODO: 还没有检查过
+    // condition类似qint.bits(0x4)
+    add(value, condition = undefined) {
+        const {qc, binary_qubits } = this
+        
+        if(typeof(value) === 'number') {
+            if(Math.round(value) !== value) {
+                console.error(value, 'should be integer')
+                debugger
+                return
+            }
+            
+            let qubits = this.parseBinaryQubits(binary_qubits)  // 需要作为起始画add的
+            qubits.reverse()
+
+            qubits.forEach(qubit1=>{
+                qc.ccnot(qubit12binary(range(qubit1, this.index[1])))
+            })
+
+        }else if(value instanceof QInt) {
+            console.error('add two QInt is not implemented now')
+            debugger
+        }
+
+    }
+
+
+    subtract(value, condition = undefined){
+    }
+
+    // value: qint
+    addSquared(value, condition = undefined){
+
     }
 
     // read的应该不是数组
-    read() {
-        const { qc, binary_index } = this
-        return qc.read(binary_index)
+    read(binary_qubits ) {
+        const {qc} = this
+        binary_qubits = this.bits(binary_qubits)
+        return qc.read(binary_qubits)
     }
 
-    write(value) {
-        let { qc, binary_index } = this
-        qc.write(value, binary_index)
+    write(value, binary_qubits) {
+        let {qc} = this
+        binary_qubits = this.bits(binary_qubits)
+        qc.write(value, binary_qubits)
     }
 
     exchange(another_qint) {
-        let { qc, binary_index } = this
+        let {qc, binary_qubits } = this
+        qc.exchange(binary_qubits, another_qint.binary_qubits)
     }
 
     cphase(rotation, another_qint) {
-        let { qc, binary_index } = this
-        qc.cphase(rotation, binary_index, another_qint.binary_index)
+        console.warn('this function is not well implemented')
+        let {qc, binary_qubits } = this
+        qc.cphase(rotation, binary_qubits, another_qint.binary_qubits)
     }
 
-    phase(rotation) {
-        let { qc, binary_index } = this
-        qc.phase(rotation, binary_index)
+    phase(rotation, binary_qubits) {
+        let {qc} = this
+
+        binary_qubits = this.bits(binary_qubits)
+        qc.phase(rotation, binary_qubits)
     }
 
-    not(){
-        let { qc, binary_index } = this
-        qc.not(binary_index)
+    not(binary_qubits){
+        let {qc} = this
+        binary_qubits = this.bits(binary_qubits)
+        qc.not(binary_qubits)
     }
 
     // https://oreilly-qc.github.io/?p=7-8#
     invQFT() {
+        let {qc} = this
+        let qubits = range(...this.index)
+        
+        qc.swap(pow2(qubits[0]), pow2(qubits[qubits.length-1]))
+        qubits.forEach((qubits1, index1)=>{
+            qc.had(pow2(qubits1))
+            qubits.slice(index1+1).forEach((qubits2, index2)=>{
+                let phi = 90 / pow2(index2)
+                qc.cphase(phi, pow2(qubits1), pow2(qubits2))
+            })
+        })
 
     }
 
+    // TODO: 不应该用二进制的，应该改掉
     QFT() {
+        let {qc} = this
+        let qubits = range(...this.index)
+        qubits.reverse()
 
+        qubits.forEach((qubits1, index1)=>{
+            qc.had(pow2(qubits1))
+            qubits.slice(index1+1).forEach((qubits2, index2)=>{
+                let phi = - 90 / pow2(index2)
+                qc.cphase(phi, pow2(qubits1), pow2(qubits2))
+            })
+        })
+
+        qc.swap(pow2(qubits[0]), pow2(qubits[qubits.length-1]))
     }
-
 
 }
 // TODO: ccnot, cccnot 也要加

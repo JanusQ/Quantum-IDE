@@ -1,7 +1,11 @@
+import {
+    cos, sin, round, pi, complex,
+} from 'mathjs'
 
+// import { create, all } from 'mathjs'
+// const math = create(all)
 
-
-function showInDebuggerArea(circuit){
+function showInDebuggerArea(circuit) {
     // SVG is returned as string
     let svg = circuit.exportSVG(true);
     let container = document.getElementById("debug_drawing");  //index.html里面预留的部分
@@ -12,8 +16,8 @@ function showInDebuggerArea(circuit){
 
 
 // 单个qubit的位数转换为qcEngine里面的二进制
-function pow2(qubit){
-    return 2**qubit
+function pow2(qubit) {
+    return 2 ** qubit
 }
 
 // int转换为二进制
@@ -24,7 +28,7 @@ function binary(num, qubit_num = 0) {
         //取余
         let remiander = num % 2;
         //将余数倒序放入结果中
-        result = [remiander,  ...result];//+是字符串的拼接
+        result = [remiander, ...result];//+是字符串的拼接
         //求每次除2的商
         num = ~~(num / 2);
         // num= num>>1;
@@ -32,14 +36,14 @@ function binary(num, qubit_num = 0) {
             break;
     }
     // console.log(num, result)
-    return [...range(0, qubit_num-result.length).map(_=>0) ,...result];
+    return [...range(0, qubit_num - result.length).map(_ => 0), ...result];
 }
 
 function binary2int(binary) {
     let value = 0;
     binary.forEach((elm, index) => {
-        if(elm == 1){
-            value += 2**(binary.length-index-1)
+        if (elm == 1) {
+            value += 2 ** (binary.length - index - 1)
         }
     })
     return value;
@@ -47,11 +51,11 @@ function binary2int(binary) {
 
 
 // 二进制计算qubit为1的状态的位数
-function binary2qubit1(state_value){
+function binary2qubit1(state_value) {
     let qubit2value = binary(state_value)
     let qubits = []
-    for(let qubit = 0; qubit < qubit2value.length; qubit++){
-        if(qubit2value[qubit] == 1){
+    for (let qubit = 0; qubit < qubit2value.length; qubit++) {
+        if (qubit2value[qubit] == 1) {
             qubits.push(qubit2value.length - qubit - 1)
         }
     }
@@ -63,14 +67,19 @@ function binary2qubit1(state_value){
     return qubits  // 确定下是不是从小到大
 }
 
-function range(start, end, reverse=false) {
+// 转成qcengine的格式
+function qubit12binary(qubits) {
+    return qubits.reduce((sum, val) => sum | pow2(val), 0)
+}
+
+function range(start, end, reverse = false) {
     let array = []
 
-    for(let i = start; i < end; i++){
+    for (let i = start; i < end; i++) {
         array.push(i)
     }
 
-    if(reverse){
+    if (reverse) {
         array.reverse()
     }
     return array
@@ -78,6 +87,16 @@ function range(start, end, reverse=false) {
 
 function toPI(rotation) {
     return rotation / 180 * Math.PI
+}
+
+// rotation给的是pi的
+function getComplex(exp) { //{r, phi}
+    // debugger
+    return complex(exp)
+}
+
+function getExp(complex_value) {
+    return complex_value.toPolar() //{r, phi}
 }
 
 export {
@@ -88,4 +107,7 @@ export {
     showInDebuggerArea,
     binary2int,
     toPI,
+    getComplex,
+    getExp,
+    qubit12binary,
 }

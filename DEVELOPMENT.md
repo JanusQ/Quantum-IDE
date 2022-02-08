@@ -1,0 +1,1 @@
+2022/1/24  补了一个自定义门的机制，加了ncphase（n比特cphase门），如test/ncphase.hs, 但是这样是没办法翻译的

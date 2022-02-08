@@ -1,6 +1,6 @@
 
 import { create, all } from 'mathjs'
-
+import {getRawGateNcphase} from './MyGate'
 
 let QuantumCircuit = require('../resource/js/quantum-circuit.min.js')
 
@@ -20,7 +20,8 @@ QuantumCircuit.prototype.myStartRun = function (initialValues, options) {
 	// debugger
     options = options || {};
 
-    this.measureResetsQubit = !!options.strictMode;
+	// siwei: 被我强制设置了, 测量后会坍缩到对应值
+    this.measureResetsQubit = true // !!options.strictMode;
 
     if (!options.continue) {
         this.initState();
@@ -88,6 +89,8 @@ QuantumCircuit.prototype.myStartRun = function (initialValues, options) {
         decomposed,
         partitioning
     }
+
+	return this.stateAsArray()
 }
 
 QuantumCircuit.prototype.myStepRun = function () {
@@ -112,7 +115,7 @@ QuantumCircuit.prototype.myStepRun = function () {
                 my_session['gateCounter']++;
                 
                 // debugger
-                var executeGate = true;
+                var executeGate = true;  // 用来快反的
                 if (gate.options && gate.options.condition && gate.options.condition.creg) {
                     var cregValue = this.getCregValue(gate.options.condition.creg);
                     executeGate = cregValue === gate.options.condition.value;
@@ -358,6 +361,10 @@ QuantumCircuit.prototype.myAllRun = function(initialValues, options) {
 	this.stats.duration += this.stats.end - this.stats.start;
 };
 
+QuantumCircuit.prototype.siwei_define_gate = {
+	'ncphase': getRawGateNcphase,
+}
+
 
 // 拿到门矩阵和对应的比特，作用于State
 QuantumCircuit.prototype.applyTransform = function(U, qubits) {
@@ -504,16 +511,30 @@ QuantumCircuit.prototype.applyGate = function(gateName, column, wires, options) 
 		return;
 	}
 
-	var gate = this.basicGates[gateName];
-	if(!gate) {
-		console.log("Unknown gate \"" + gateName + "\".");
-		return;
+	var gate = this.siwei_define_gate[gateName]
+	var rawGate = undefined
+	if(gate) {
+		// 自定义的
+		// debugger
+		rawGate = gate(options.params)
+	}else{
+		// 原先的
+		gate = this.basicGates[gateName];
+		if(!gate) {
+			console.log("Unknown gate \"" + gateName + "\".");
+			return;
+		}
+		
+		rawGate = this.getRawGate(gate, options);  //拿到了对应的矩阵的向量，应该没有考虑作用的比特
 	}
 
-	var rawGate = this.getRawGate(gate, options);  //拿到了对应的矩阵的向量，应该没有考虑作用的比特
+	// 已经是具体值
+	// debugger
+
 	this.collapsed = [];
 	this.prob = [];
 
+	// console.log(rawGate, wires)
 	this.applyTransform(rawGate, wires);
 };
 

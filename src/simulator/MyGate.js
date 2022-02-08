@@ -1,7 +1,8 @@
 
 // let QuantumCircuit = require('../resource/js/quantum-circuit.min.js')
 import QuantumCircuit from './QuantumCircuit'
-
+import {QObject} from './MatrixOperation'
+import { pow2, getComplex, range, toPI } from './CommonFunction';
 
 // write0
 var write0 = new QuantumCircuit(1)
@@ -27,8 +28,42 @@ write1 = write1.save()
 //     }
 // }
 
+// 之后还是要用可以拆解的
+function ncphase(qubit_number) {
+    var ncphase_circuit = new QuantumCircuit(qubit_number)
+    //  new QuantumCircuit(1)
+    return ncphase_circuit
+}
+
+function getRawGateNcphase(options) {
+    // debugger
+    const {qubit_number, phi} = options
+
+    if(phi instanceof String){
+        console.error(phi, 'should be numerical')
+        debugger
+    }
+
+    const state_num = pow2(qubit_number)
+    let matrix = new QObject(state_num, state_num)
+
+    range(0, state_num).forEach(i=>{
+        matrix.data[i][i] = 1 //getComplex({r:1, phi: -phi/2})
+    })
+    
+    matrix.data[state_num-1][state_num-1] = getComplex({r:1, phi})
+    
+    // let value = getComplex({r:1, phi})
+    // console.log(value.toPolar())
+    return matrix.data
+}
+
+
 export { 
     write0, 
     write1,
+    // ncphase,
+
+    getRawGateNcphase,
     // write,
 }
