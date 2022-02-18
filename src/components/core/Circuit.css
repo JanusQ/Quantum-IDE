@@ -1,0 +1,10 @@
+#d3_drawing {
+	height: 40%;
+	width: 100%;
+	background: #fff;
+	overflow: hidden;
+}
+#d3_svg{
+	height: 100%;
+	width: 100%;
+}

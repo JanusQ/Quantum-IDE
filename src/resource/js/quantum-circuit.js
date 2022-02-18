@@ -10210,11 +10210,9 @@ QuantumCircuit.prototype.exportSVG = function(embedded, options) {
 
 	return this.exportToSVG(newOptions);
 };
-
 QuantumCircuit.prototype.exportToSVG = function(options) {
 	var self = this;
 	var options = options || {};
-
 	options.embedded = options.embedded || false;
 	options.cellWidth = options.cellWidth || 40;
 	options.cellHeight = options.cellHeight || 40;
@@ -10269,7 +10267,6 @@ QuantumCircuit.prototype.exportToSVG = function(options) {
 	var numRows = this.numQubits;
 	var numCols = this.numCols();
 	var numCregs = this.cregCount();
-
 	var totalCols = numCols;
 	// reserve col for bloch spheres
 	if(options.drawBlochSpheres) {
@@ -10986,7 +10983,7 @@ QuantumCircuit.prototype.exportToSVG = function(options) {
 
 	return svg;
 };
-
+// svg end
 QuantumCircuit.prototype.exportToQiskit = function(options, exportAsGateName, circuitReplacement, insideSubmodule) {
 	options = options || {};
 
