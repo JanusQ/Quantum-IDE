@@ -22,6 +22,7 @@ import {
 // 统一规定高位在后
 
 // 描述和计算可以分开
+// TODO: 第一个如果不是write，或者有比特没有write，就都要加个write
 export default class QCEngine {
     constructor() {
         this.circuit = undefined

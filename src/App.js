@@ -13,8 +13,8 @@ import './App.css';
 // import './test/matrixOpertation'
 // import './test/ncphase'
 // import './test/ex7-1'
-// import './test/ex7-7'
-import './test/all_operation'
+import './test/ex7-7'
+// import './test/all_operation'
 
 function App() {
   return (
