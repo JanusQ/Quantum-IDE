@@ -1,18 +1,28 @@
 import { cos, sin, round, pi, complex } from 'mathjs'
-import { d3Draw } from './D3Draw'
+import d3Draw from './D3Draw'
 // import { create, all } from 'mathjs'
 // const math = create(all)
-
+const options = {
+	write1Background: 'yellow',
+	write1FontColor: 'blue',
+	write0FontColor: 'blue'
+}
+const d3 = new d3Draw(options)
 function showInDebuggerArea(circuit) {
 	// SVG is returned as string
 	let svg = circuit.exportSVG(true)
 	// console.log(svg)
-	// circuit.exportToD3SVG()
-	d3Draw()
-	// let container = document.getElementById('d3_drawing') //index.html里面预留的部分
+	let container = document.getElementById('d3_drawing') //index.html里面预留的部分
 
 	// add SVG into container
-	// container.innerHTML = svg
+	container.innerHTML = svg
+}
+function exportSVG(qc) {
+	const options = {
+		data: qc,
+	}
+
+	d3.exportD3SVG(qc)
 }
 function createFile(circuit, type) {
 	let file
@@ -119,4 +129,5 @@ export {
 	getExp,
 	qubit12binary,
 	createFile,
+	exportSVG,
 }

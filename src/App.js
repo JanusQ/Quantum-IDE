@@ -5,7 +5,7 @@ import Circuit from './components/core/Circuit'
 import { Row, Col } from 'antd'
 import axios from 'axios'
 import React, { useState, useRef } from 'react'
-import { showInDebuggerArea } from './simulator/CommonFunction'
+import { exportSVG } from './simulator/CommonFunction'
 import QCEngine from './simulator/MyQCEngine'
 // import QCEngine from './simulator/MyQCEngine'
 // import './test/meausre'
@@ -42,13 +42,13 @@ function App() {
 			})
 	}
 	// 运行
-
 	const runProgram = () => {
 		try {
 			let qc = new QCEngine()
 			const { qint } = qc
 			eval(editorValue)
-			showInDebuggerArea(qc.circuit)
+			exportSVG(qc)
+			// showInDebuggerArea(qc.circuit)
 			qc = null
 		} catch (error) {
 			// setEditorValue(error.message)
