@@ -279,6 +279,11 @@ export default class QCEngine {
         console.log('qc_console', arguments)
     }
 
+    // TODO: 判断所有控制门的比特会不会重叠，重叠报错
+    checkOverlap(controls, targets){
+
+    }
+
     cnot(binary_control, binary_target) {
         const { operations, circuit, now_column } = this
         let control = this.parseBinaryQubits(binary_control)
@@ -475,12 +480,21 @@ class QInt {
                 debugger
                 return
             }
-            
-            let qubits = this.parseBinaryQubits(binary_qubits)  // 需要作为起始画add的
-            qubits.reverse()
 
-            qubits.forEach(qubit1=>{
-                qc.ccnot(qubit12binary(range(qubit1, this.index[1])))
+            let qubits_start = qc.parseBinaryQubits(value)
+            qubits_start.forEach((qubit_start, index) => {
+                let qubits = this.parseBinaryQubits(binary_qubits)  // 从大到小
+
+                // debugger
+                qubits.forEach((qubit, index) => {
+                    if(index === qubits.length-1) {
+                        return
+                    }
+                    let controls = qubit12binary(range(this.index[qubit_start], qubit))
+                    let target = qubit12binary([qubit])
+                    // debugger
+                    qc.ccnot(controls, target)
+                })
             })
 
         }else if(value instanceof QInt) {
@@ -491,11 +505,13 @@ class QInt {
     }
 
 
+    // TODO:
     subtract(value, condition = undefined){
     }
 
     // value: qint
-    addSquared(value, condition = undefined){
+    // TODO:
+    addSquared(qint, condition = undefined){
 
     }
 

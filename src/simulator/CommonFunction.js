@@ -117,6 +117,11 @@ function getExp(complex_value) {
 	return complex_value.toPolar() //{r, phi}
 }
 
+// TODO: 判断这几个比特组成的状态是不是纯态
+function isPure(qubits, state) {
+
+}
+
 export {
 	pow2,
 	binary,
