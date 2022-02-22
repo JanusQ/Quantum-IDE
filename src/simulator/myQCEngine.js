@@ -93,7 +93,6 @@ export default class QCEngine {
         //     inital_value.push(0)
         // }
 
-
         let qubits = this.parseBinaryQubits(binary_qubits)
         let qubit_value = binary(value, qubits.length)
 
@@ -447,13 +446,13 @@ class QInt {
         }
     }
 
-    // 这返回的还是二进制的
+    // 这返回的还是二进制的,将自己内部的换算成全局的二进制
     bits(binary_qubits){
         if (binary_qubits !== undefined){
             const qubits = binary2qubit1(binary_qubits).map(qubit=> qubit+this.index[0])
             return qubit12binary(qubits)            
         }else{
-            return binary_qubits  // 从0开始的0-qubit number - 1
+            return this.binary_qubits  // 从0开始的0-qubit number - 1
         }
     }
 
@@ -466,7 +465,10 @@ class QInt {
 
     write(value, binary_qubits) {
         const {qc} = this
+        // console.log(binary2qubit1(binary_qubits))
         binary_qubits = this.bits(binary_qubits)
+        // console.log(binary2qubit1(binary_qubits))
+        // debugger
         qc.write(value, binary_qubits)
     }
 
@@ -518,7 +520,7 @@ class QInt {
                         return true;
                     }
                 })
-                debugger
+                // debugger
                 self_qubits_involved.forEach((self_qubit, self_index) => {
                     let target = qubit12binary([self_qubit])
                     let controls = [...self_qubits_involved.filter(elm => elm !== self_qubit ), value_qubit]
@@ -547,12 +549,6 @@ class QInt {
         const {qc} = this
         binary_qubits = this.bits(binary_qubits)
         return qc.read(binary_qubits)
-    }
-
-    write(value, binary_qubits) {
-        let {qc} = this
-        binary_qubits = this.bits(binary_qubits)
-        qc.write(value, binary_qubits)
     }
 
     exchange(another_qint) {
