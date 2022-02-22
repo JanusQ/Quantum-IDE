@@ -121,6 +121,7 @@ export default class QCEngine {
         })
     }
 
+    // TODO: 之后写成数字数组都可以
     parseBinaryQubits(binary_qubits) {
         if (binary_qubits != undefined)
             return binary2qubit1(binary_qubits)
@@ -489,9 +490,9 @@ class QInt {
             }
 
             let qubits_start = qc.parseBinaryQubits(value)
+            let qubits = this.parseBinaryQubits(binary_qubits)  // 从大到小
             qubits_start.forEach((qubit_start, index) => {
-                let qubits = this.parseBinaryQubits(binary_qubits)  // 从大到小
-
+                
                 // debugger
                 qubits.forEach((qubit, index) => {
                     if(index === qubits.length-1) {
@@ -505,8 +506,27 @@ class QInt {
             })
 
         }else if(value instanceof QInt) {
-            console.error('add two QInt is not implemented now')
-            debugger
+            let self_qubits = qc.parseBinaryQubits(binary_qubits)
+            let value_qubits = qc.parseBinaryQubits(value.binary_qubits)
+            value_qubits.reverse()  //从小到大
+
+            value_qubits.forEach((value_qubit, value_index) => {
+                let self_qubits_involved = self_qubits.filter((self_qubit, self_index)=>{
+                    if(self_index >= self_qubits.length-value_index) {
+                        return false;
+                    }else{
+                        return true;
+                    }
+                })
+                debugger
+                self_qubits_involved.forEach((self_qubit, self_index) => {
+                    let target = qubit12binary([self_qubit])
+                    let controls = [...self_qubits_involved.filter(elm => elm !== self_qubit ), value_qubit]
+                    controls = qubit12binary(controls)
+                    qc.ccnot(controls, target)
+                })
+            })
+            
         }
 
     }

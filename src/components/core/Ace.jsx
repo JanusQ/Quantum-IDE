@@ -25,7 +25,7 @@ const Ace = (props) => {
 
 	// 多个选择框
 	const { Option } = Select
-	const optionList = ['ex7-7', 'ex7-1', 'eeeee']
+	const optionList = ['Adding two integers', 'ex7-7', 'ex7-1', 'eeeee', ]  // case的列表，public\js中需要存对应的文件
 	const optionChildren = []
 	for (let i = 0; i < optionList.length; i++) {
 		optionChildren.push(
