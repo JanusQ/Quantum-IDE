@@ -122,6 +122,16 @@ function isPure(qubits, state) {
 
 }
 
+function isUnitary(operator){
+
+}
+
+function isNormalized(vector){
+	
+}
+
+
+
 export {
 	pow2,
 	binary,

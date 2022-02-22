@@ -183,6 +183,12 @@ export default class QCEngine {
     // 给之后所有的打上标签
     label(label) {
         const {_now_label, labels, operations} = this
+        let former_label = labels[labels.length - 1]
+        
+        if(former_label){
+            former_label.end_operation = operations.length  // 右开
+        }
+
         labels.push({
             start_operation: operations.length,  //左闭
             text: label,
@@ -277,6 +283,7 @@ export default class QCEngine {
 
     print(){
         console.log('qc_console', arguments)
+
     }
 
     // TODO: 判断所有控制门的比特会不会重叠，重叠报错
