@@ -12,7 +12,7 @@ export default class d3Draw {
 		// write0字体颜色
 		this.write0FontColor = options.write0FontColor || '#000'
 		// had字体颜色
-		this.hadFontColor = options.hadFontColor || 'red'
+		this.hadFontColor = options.hadFontColor || '#000'
 	}
 	exportD3SVG(data) {
 		const d3DrawingDiv = d3.select('#d3_drawing')
@@ -27,25 +27,18 @@ export default class d3Draw {
 		const row = operations.length
 		// 行数
 		const col = qubit_number
-		// 设置SVG宽高
+		// 设置SVG宽高 高度整体下移了一行
 		svg.attr('width', row * 60 + 100)
-		svg.attr('height', col * 30 + 40)
+		svg.attr('height', (col + 1) * 30 + 40)
 		/**
 		 * 预留了前边是100 每两个中间是60 所以距离都要加40
 		 */
 		for (let i = 0; i < col; i++) {
 			// 初始线
-			this.drawLine(svg, 100, 30 * (i + 1), row * 60 + 40, 30 * (i + 1))
+			this.drawLine(svg, 100, 30 * (i + 2), row * 60 + 40, 30 * (i + 2))
 		}
 		// 处理操作
 		this.handleOperations(svg, operations)
-
-		// this.drawWrite0(svg, 30, 10)
-		// this.drawH(svg, 60, 10)
-		// this.drawRead(svg, 90, 10)
-		// this.drawCcnot(svg, 120, 10)
-		// this.drawSwap(svg, 150, 10)
-		// this.drawPhase(svg, 180, 10)
 	}
 
 	drawWrite1(svg, x, y) {
@@ -146,19 +139,28 @@ export default class d3Draw {
 	}
 	// 需要计算直线和target位置再加个实心圆
 	drawCcnot(svg, x, y) {
-		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`)
-		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', 'none')
+		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
+		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', '#fff')
 		const childG = parentG.append('g')
 		childG
 			.append('circle')
 			.attr('cx', 10)
 			.attr('cy', 10)
-			.attr('r', 8)
-			.attr('fill', 'none')
+			.attr('r', 10)
+			.attr('fill', '#fff')
 			.attr('stroke', '#000')
 			.attr('stroke-width', 1)
-		childG.append('rect').attr('x', 10).attr('y', 2).attr('width', 1).attr('height', 16)
-		childG.append('rect').attr('x', 2).attr('y', 10).attr('width', 16).attr('height', 1)
+		const context = d3.path()
+		context.moveTo(10, 1)
+		context.lineTo(10, 19)
+		context.moveTo(1, 10)
+		context.lineTo(19, 10)
+		childG
+			.append('path')
+			.attr('d', context.toString())
+			.attr('stroke', '#000')
+			.attr('stroke-width', 1)
+			.attr('fill', 'none')
 	}
 	// 叉号 x
 	drawSwap(svg, x, y) {
@@ -166,10 +168,10 @@ export default class d3Draw {
 		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', 'none')
 		const childG = parentG.append('g')
 		const context = d3.path()
-		context.moveTo(4, 4)
-		context.lineTo(16, 16)
-		context.moveTo(16, 4)
-		context.lineTo(4, 17)
+		context.moveTo(2, 2)
+		context.lineTo(18, 18)
+		context.moveTo(18, 2)
+		context.lineTo(2, 18)
 		childG
 			.append('path')
 			.attr('d', context.toString())
@@ -177,29 +179,29 @@ export default class d3Draw {
 			.attr('stroke-width', 1)
 			.attr('fill', 'none')
 	}
-	drawPhase(svg, x, y) {
-		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`)
-		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', 'none')
+	drawCCPhase(svg, x, y) {
+		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
+		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', '#fff')
 		const childG = parentG.append('g')
 		childG
 			.append('circle')
 			.attr('cx', 10)
 			.attr('cy', 10)
-			.attr('r', 8)
-			.attr('fill', 'none')
+			.attr('r', 10)
+			.attr('fill', '#fff')
 			.attr('stroke', '#000')
 			.attr('stroke-width', 1)
 		childG
 			.append('circle')
 			.attr('cx', 10)
 			.attr('cy', 10)
-			.attr('r', 3)
+			.attr('r', 4)
 			.attr('fill', 'none')
 			.attr('stroke', '#000')
 			.attr('stroke-width', 1)
 		const context = d3.path()
-		context.moveTo(11, 4)
-		context.lineTo(9, 16)
+		context.moveTo(12, 2)
+		context.lineTo(9, 18)
 		childG
 			.append('path')
 			.attr('d', context.toString())
@@ -207,7 +209,7 @@ export default class d3Draw {
 			.attr('stroke-width', 1)
 			.attr('fill', 'none')
 	}
-	// 直接在svg上画 不用g 绘制需要的实心圆，实线
+	//  绘制需要的实心圆，实线
 	drawCircle(svg, x, y) {
 		svg.append('circle')
 			.attr('cx', x)
@@ -228,6 +230,13 @@ export default class d3Draw {
 			.attr('stroke-width', 1)
 			.attr('fill', 'none')
 	}
+	// 绘制label
+	drawLabel(svg, x, y) {
+		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
+		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', '#fff')
+		const childG = parentG.append('g')
+		childG.append('rect')
+	}
 	// 处理操作
 
 	handleOperations(svg, operations) {
@@ -239,16 +248,16 @@ export default class d3Draw {
 						if (operations[i].value[j]) {
 							if (i === 0) {
 								// 第一个从100开始
-								this.drawWrite1(svg, 100, 30 * (j + 1))
+								this.drawWrite1(svg, 100, 30 * (j + 2))
 							} else {
-								this.drawWrite1(svg, 60 * (i + 1), 30 * (j + 1))
+								this.drawWrite1(svg, 60 * (i + 1), 30 * (j + 2))
 							}
 						} else {
 							if (i === 0) {
 								// 第一个从100开始
-								this.drawWrite0(svg, 100, 30 * (j + 1))
+								this.drawWrite0(svg, 100, 30 * (j + 2))
 							} else {
-								this.drawWrite0(svg, 60 * (i + 1), 30 * (j + 1))
+								this.drawWrite0(svg, 60 * (i + 1), 30 * (j + 2))
 							}
 						}
 					}
@@ -256,28 +265,95 @@ export default class d3Draw {
 				// had操作
 				case 'h':
 					for (let j = 0; j < operations[i].qubits.length; j++) {
-						this.drawH(svg, 60 * (i + 1) + 40, 30 * (operations[i].qubits[j] + 1))
+						this.drawH(svg, 60 * (i + 1) + 40, 30 * (operations[i].qubits[j] + 2))
 					}
 					break
 				case 'swap':
 					for (let j = 0; j < operations[i].qubits1.length; j++) {
-						this.drawSwap(svg, 60 * (i + 1) + 40, 30 * (operations[i].qubits1[j] + 1))
+						this.drawSwap(svg, 60 * (i + 1) + 40, 30 * (operations[i].qubits1[j] + 2))
 						for (let k = 0; k < operations[i].qubits2.length; k++) {
-							this.drawSwap(svg, 60 * (i + 1) + 40, 30 * (operations[i].qubits2[k] + 1))
+							this.drawSwap(svg, 60 * (i + 1) + 40, 30 * (operations[i].qubits2[k] + 2))
 							this.drawLine(
 								svg,
 								60 * (i + 1) + 40,
-								30 * (operations[i].qubits1[j] + 1),
+								30 * (operations[i].qubits1[j] + 2),
 								60 * (i + 1) + 40,
-								30 * (operations[i].qubits2[k] + 1)
+								30 * (operations[i].qubits2[k] + 2)
 							)
 						}
 					}
 					break
-				// todo
 				case 'ccnot':
+					// 判断最大值最小值 向两个极端画线
+					const controlsMin = Math.min(...operations[i].controls)
+					const controlsMax = Math.max(...operations[i].controls)
+					if (controlsMax < operations[i].target[0]) {
+						this.drawLine(
+							svg,
+							60 * (i + 1) + 40,
+							30 * (operations[i].target[0] + 2),
+							60 * (i + 1) + 40,
+							30 * (controlsMin + 2)
+						)
+					}
+					if (controlsMin > operations[i].target[0]) {
+						this.drawLine(
+							svg,
+							60 * (i + 1) + 40,
+							30 * (operations[i].target[0] + 2),
+							60 * (i + 1) + 40,
+							30 * (controlsMax + 2)
+						)
+					}
+					if (controlsMin < operations[i].target[0] &&  operations[i].target[0] < controlsMax) {
+						this.drawLine(
+							svg,
+							60 * (i + 1) + 40,
+							30 * (operations[i].target[0] + 2),
+							60 * (i + 1) + 40,
+							30 * (controlsMax + 2)
+						)
+						this.drawLine(
+							svg,
+							60 * (i + 1) + 40,
+							30 * (operations[i].target[0] + 2),
+							60 * (i + 1) + 40,
+							30 * (controlsMin + 2)
+						)
+					}
 					for (let j = 0; j < operations[i].controls.length; j++) {
-						this.drawCircle(svg, 60 * (i + 1) + 40, 30 * (operations[i].controls[j] + 1))
+						this.drawCircle(svg, 60 * (i + 1) + 40, 30 * (operations[i].controls[j] + 2))
+					}
+
+					this.drawCcnot(svg, 60 * (i + 1) + 40, 30 * (operations[i].target[0] + 2))
+
+					break
+				case 'ccphase':
+					this.drawLine(
+						svg,
+						60 * (i + 1) + 40,
+						30 * (operations[i].qubits[0] + 2),
+						60 * (i + 1) + 40,
+						30 * (operations[i].qubits[operations[i].qubits.length - 1] + 2)
+					)
+					for (let j = 0; j < operations[i].qubits.length; j++) {
+						this.drawCCPhase(svg, 60 * (i + 1) + 40, 30 * (operations[i].qubits[j] + 2))
+					}
+
+					break
+				case 'phase':
+					try {
+						for (let j = 0; j < operations[i].qubits.length; j++) {
+							this.drawCCPhase(svg, 60 * (i + 1) + 40, 30 * (operations[i].qubits[j] + 2))
+							svg.append('text')
+								.attr('x', 60 * (i + 1) + 50)
+								.attr('y', 30 * (operations[i].qubits[j] + 1) - 10)
+								.attr('style', 'font-size:12px;')
+								.append('tspan')
+								.text(operations[i].rotation + '°')
+						}
+					} catch (error) {
+						console.log(error)
 					}
 
 					break
@@ -287,5 +363,3 @@ export default class d3Draw {
 		}
 	}
 }
-
-export { d3Draw }

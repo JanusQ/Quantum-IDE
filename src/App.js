@@ -56,23 +56,18 @@ function App() {
 	}
 	return (
 		<div className='App'>
-			<Row gutter={16} className='app-row'>
-				<Col span={8}>
-					<div className='left-div'>
-						<Ace
-							runProgram={runProgram}
-							selectChange={selectChange}
-							onChange={onChange}
-							editorValue={editorValue}
-						></Ace>
-					</div>
-				</Col>
-				<Col span={16}>
-					<div className='right-div'>
-						<Circuit></Circuit>
-					</div>
-				</Col>
-			</Row>
+			<div className='left-div'>
+				<Ace
+					runProgram={runProgram}
+					selectChange={selectChange}
+					onChange={onChange}
+					editorValue={editorValue}
+				></Ace>
+			</div>
+
+			<div className='right-div'>
+				<Circuit></Circuit>
+			</div>
 		</div>
 	)
 }
