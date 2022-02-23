@@ -194,7 +194,7 @@ function get_varstate(state_vector,var_index)
     //     state_vector[i]=state_vector[i]*state_vector[i];
     // }
     
-    for(key in var_index)
+    for(let key in var_index)
     {       
         res[key] = {};
         res[key]['prob'] = [];
@@ -218,9 +218,9 @@ function alt_tensor(l1,l2)
 	let res = [];
     let k = 0;
     
-    for(i=0;i<l1.length;i++)
+    for(let i=0;i<l1.length;i++)
     {
-    	for(j=0;j<l2.length;j++)
+    	for(let j=0;j<l2.length;j++)
         {
             let med = l1[i].concat([l2[j]]);
             res[k] = med;
@@ -235,7 +235,7 @@ function state_filtered(state_vector, var_index, filter)
     let i = 0;
     let neo_sv = [];
     let com = [];
-    for(key in filter)
+    for(let key in filter)
     {
         if(com.length==0)
         {
@@ -255,7 +255,7 @@ function state_filtered(state_vector, var_index, filter)
         
         let j = 0;
         
-        for (key in var_index)
+        for (let key in var_index)
         {
             index += tmp[j] * (Math.pow(2,total-var_index[key][1]));
             j++;
