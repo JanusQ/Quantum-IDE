@@ -1,5 +1,6 @@
 import { cos, sin, round, pi, complex } from 'mathjs'
 import d3Draw from './D3Draw'
+import {Matrix} from 'ml-matrix';
 // import { create, all } from 'mathjs'
 // const math = create(all)
 const options = {
@@ -134,7 +135,173 @@ function isNormalized(vector){
 	
 }
 
+function get_binary(dec,len)
+{
+    let bin = [];
+    let k = 0;
+    for(k=0;k<len;k++)
+    {
+        bin[k] = 0;
+    }
+    k = len-1;
+    while(dec > 0)
+    {
+        bin[k] = dec%2;
+        dec = Math.floor(dec/2);
+        k--;
+    }    
+    return bin;    
+}
 
+function not_equal(bin1,bin2,range)
+{
+    let i = 0;
+    let j = 0;
+    for(i=range[0];i<range[1];i++)
+    {
+        if(bin1[j] != bin2[i])
+            return true;
+        j++;
+    }
+    return false;
+}
+
+function sum(state_vector, num, range, total)
+{
+    let i = 0;
+    let res = 0;
+    let std = get_binary(num, range[1]-range[0]);
+    
+    for(i=0; i<state_vector.length; i++)
+    {
+        let tmp = get_binary(i,total);
+        
+        if(not_equal(std,tmp,range))
+            continue;
+        
+        res += state_vector[i];
+    }
+    
+    return res;
+}
+
+function get_varstate(state_vector,var_index)
+{
+    let res = {};
+
+    // for(i=0;i<state_vector.length;i++)
+    // {
+    //     state_vector[i]=state_vector[i]*state_vector[i];
+    // }
+    
+    for(key in var_index)
+    {       
+        res[key] = {};
+        res[key]['prob'] = [];
+        res[key]['magn'] = [];
+        let i = 0;
+        let bits = var_index[key][1] - var_index[key][0];
+        let prob = 0;
+        for(i=0; i<Math.pow(2,bits); i++)
+        {
+            prob = sum(state_vector,i,var_index[key],Math.log2(state_vector.length));
+            res[key]['prob'][i] = prob;
+            res[key]['magn'][i] = Math.sqrt(prob);
+        }        
+    }
+    
+    return res;
+}
+
+function alt_tensor(l1,l2)
+{   
+	let res = [];
+    let k = 0;
+    
+    for(i=0;i<l1.length;i++)
+    {
+    	for(j=0;j<l2.length;j++)
+        {
+            let med = l1[i].concat([l2[j]]);
+            res[k] = med;
+            k++;
+        }
+    }
+    return res;
+}
+
+function state_filtered(state_vector, var_index, filter)
+{
+    let i = 0;
+    let neo_sv = [];
+    let com = [];
+    for(key in filter)
+    {
+        if(com.length==0)
+        {
+            for(i = 0 ;i<filter[key].length;i++)
+                com[i]=[filter[key][i]];
+            continue;
+        }
+        com = alt_tensor(com,filter[key]);
+    }
+    
+    let k = 0;
+    let total = Math.log2(state_vector.length);
+    for(i=0; i<com.length; i++)
+    {
+        let tmp = com[i];
+        let index = 0;
+        
+        let j = 0;
+        
+        for (key in var_index)
+        {
+            index += tmp[j] * (Math.pow(2,total-var_index[key][1]));
+            j++;
+        }
+        
+        neo_sv[k] = index;
+        k++;
+    }
+    return neo_sv;
+    
+}
+
+function density(braket)
+{ 
+    let mat = new Matrix([braket]);
+    let mat_tr = mat.transpose();
+    let res = mat_tr.mmul(mat);
+    
+    return res;
+}
+
+function linear_entropy(var_state)
+{
+    let mat = density(var_state);
+    mat = mat.mmul(mat);
+    
+    let trace = 0;
+    let i = 0;
+    for(i=0; i<var_state.length; i++)
+    {
+        trace += mat.get(i,i);
+    }
+
+    return 1 - trace;
+}
+
+function get_entropy(vars)
+{
+    let i = 0;
+    let ent = 0;
+    for(i=0;i<vars.length;i++)
+    {
+        ent += linear_entropy(vars[i]);
+    }
+    return ent/vars.length;
+}
 
 export {
 	pow2,
@@ -150,4 +317,7 @@ export {
 	createFile,
 	exportSVG,
 	unique,
+	get_varstate,
+	state_filtered,
+	get_entropy,
 }
