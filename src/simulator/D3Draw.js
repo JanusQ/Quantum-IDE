@@ -1,3 +1,4 @@
+import { data } from 'browserslist'
 import * as d3 from 'd3'
 export default class d3Draw {
 	constructor(options) {
@@ -14,8 +15,9 @@ export default class d3Draw {
 		// had字体颜色
 		this.hadFontColor = options.hadFontColor || '#000'
 		// 现在设置的是每一列按50 前边空白区域100 所以之后每一项都是多算两列
-		this.firstX = 100
+		this.firstX = 150
 		this.svgItemWidth = 50
+		this.svgItemHeight = 30
 		// 计算比例
 		this.scaleNum = this.firstX / this.svgItemWidth
 	}
@@ -33,31 +35,42 @@ export default class d3Draw {
 		const col = qubit_number
 		// 设置SVG宽高 高度整体下移了一行
 		svg.attr('width', (row + this.scaleNum) * this.svgItemWidth)
-		svg.attr('height', (col + 2) * 30 + 40)
+		svg.attr('height', (col + 2) * this.svgItemHeight + 40)
 		// 加Label,先加载label label在最底层
 		for (let i = 0; i < data.labels.length; i++) {
-			const lineCol = data.labels[i].end_operation - data.labels[i].start_operation
-			if (data.labels[i].text) {
-				this.drawLabel(svg, this.svgItemWidth * data.labels[i].start_operation + 80, 40, this.svgItemWidth * lineCol, col * 30 + 10, data.labels[i].text)
+			if (data.labels[i].text && data.labels[i].end_operation !== undefined) {
+				const obj = data.getLabelUpDown(data.labels[i].id)
+				if (obj.down_qubit !== Infinity && obj.up_qubit !== Infinity) {
+					const lineCol = data.labels[i].end_operation - data.labels[i].start_operation
+					const labelRow = obj.down_qubit - obj.up_qubit
+					this.drawLabel(
+						svg,
+						this.svgItemWidth * data.labels[i].start_operation + 130,
+						this.svgItemHeight * (obj.up_qubit + 1.5),
+						this.svgItemWidth * lineCol,
+						this.svgItemHeight * labelRow,
+						data.labels[i].text
+					)
+				}
 			}
 		}
 		/**
-		 * 预留了前边是100，画线和添加name
+		 * 预留了前边是firstX，画线和添加name
 		 */
 		for (let i = 0; i < col; i++) {
-			this.drawLine(svg, this.firstX, 30 * (i + 2), (row + 2) * this.svgItemWidth, 30 * (i + 2))
-			this.drawName(svg, 60, 30 * (i + 2), `Q${i}`)
+			this.drawLine(svg, this.firstX, this.svgItemHeight * (i + 2), (row + 2) * this.svgItemWidth, this.svgItemHeight * (i + 2))
+			this.drawName(svg, this.svgItemWidth * 2 + 10, this.svgItemHeight * (i + 2), 'Q' + data.getQubit2Variable(i).index)
 		}
 		// 加入Qint
 		for (const key in data.name2index) {
 			for (let i = 0; i < data.name2index[key].length; i++) {
 				const lineNum = data.name2index[key][data.name2index[key].length - 1] - data.name2index[key][0]
-				this.drawQint(svg, 50, 30 * (data.name2index[key][0] + 2), 30 * lineNum - 10, key)
+				this.drawQint(svg, this.svgItemWidth * 2, this.svgItemHeight * (data.name2index[key][0] + 2), this.svgItemHeight * lineNum - 10, key)
 			}
 		}
 
 		// 处理操作
-		this.handleOperations(svg, operations)
+		this.handleOperations(svg, operations, data)
 	}
 
 	drawWrite1(svg, x, y) {
@@ -89,7 +102,7 @@ export default class d3Draw {
 		childG.append('text').attr('x', 10).attr('y', 15).attr('style', `font-size:16px;font-weight:bold;cursor:default;color:red`).append('tspan').text('H').attr('text-anchor', 'middle')
 	}
 	drawRead(svg, x, y) {
-		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`)
+		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
 		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', 'none').attr('stroke', '#000').attr('stroke-width', 1)
 		const childG = parentG.append('g')
 		const context = d3.path()
@@ -98,7 +111,8 @@ export default class d3Draw {
 		context.moveTo(10, 16)
 		context.lineTo(16, 8)
 		childG.append('path').attr('d', context.toString()).attr('stroke', '#000').attr('stroke-width', 1).attr('fill', 'none')
-		childG.append('rect').attr('x', 17).attr('y', 3).attr('width', 1).attr('height', 5).attr('fill', 'blue')
+		// 读取到的值
+		// childG.append('rect').attr('x', 17).attr('y', 3).attr('width', 1).attr('height', 5).attr('fill', 'blue')
 		// childG
 		// 	.append('circle')
 		// 	.attr('cx', 16)
@@ -173,7 +187,7 @@ export default class d3Draw {
 			.append('text')
 			.attr('x', width / 2)
 			.attr('y', height + 15)
-			.attr('text-anchor','middle')
+			.attr('text-anchor', 'middle')
 			.text(labelText)
 	}
 	// 绘制q
@@ -183,8 +197,8 @@ export default class d3Draw {
 		svg.append('text')
 			.attr('x', x)
 			.attr('y', y + 5)
-			.attr('text-anchor','middle')
-			
+			.attr('text-anchor', 'middle')
+
 			.text(name)
 			.attr('font-size', 14)
 	}
@@ -199,13 +213,19 @@ export default class d3Draw {
 		parentG.append('path').attr('d', context.toString()).attr('stroke', 'rgb(100, 159, 174)').attr('stroke-width', 1).attr('fill', 'none')
 		parentG
 			.append('text')
-			.attr('width',20)
-			.attr('x', -20)
+			.attr('width', 20)
+			.attr('x', -10)
 			.attr('y', height / 2)
+			.attr('text-anchor', 'end')
 			.text(name)
 	}
+	// 绘制self defined gate
+	drawSelfDefinedGate(svg, x, y) {
+		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
+		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', '#fff').attr('stroke-width', 1).attr('stroke', '#000').attr('rx', 4)
+	}
 	// 处理操作
-	handleOperations(svg, operations) {
+	handleOperations(svg, operations, data) {
 		for (let i = 0; i < operations.length; i++) {
 			switch (operations[i].operation) {
 				// write操作
@@ -213,29 +233,29 @@ export default class d3Draw {
 					// 处理数组
 					for (let j = operations[i].value.length - 1; j >= 0; j--) {
 						if (operations[i].value[j]) {
-							this.drawWrite1(svg, this.svgItemWidth * (i + this.scaleNum), 30 * (operations[i].qubits[j] + 2))
+							this.drawWrite1(svg, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits[j] + 2))
 						} else {
-							this.drawWrite0(svg, this.svgItemWidth * (i + this.scaleNum), 30 * (operations[i].qubits[j] + 2))
+							this.drawWrite0(svg, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits[j] + 2))
 						}
 					}
 					break
 				// had操作
 				case 'h':
 					for (let j = 0; j < operations[i].qubits.length; j++) {
-						this.drawH(svg, this.svgItemWidth * (i + this.scaleNum), 30 * (operations[i].qubits[j] + 2))
+						this.drawH(svg, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits[j] + 2))
 					}
 					break
 				case 'swap':
 					for (let j = 0; j < operations[i].qubits1.length; j++) {
-						this.drawSwap(svg, this.svgItemWidth * (i + this.scaleNum), 30 * (operations[i].qubits1[j] + 2))
+						this.drawSwap(svg, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits1[j] + 2))
 						for (let k = 0; k < operations[i].qubits2.length; k++) {
-							this.drawSwap(svg, this.svgItemWidth * (i + this.scaleNum), 30 * (operations[i].qubits2[k] + 2))
+							this.drawSwap(svg, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits2[k] + 2))
 							this.drawLine(
 								svg,
 								this.svgItemWidth * (i + this.scaleNum),
-								30 * (operations[i].qubits1[j] + 2),
+								this.svgItemHeight * (operations[i].qubits1[j] + 2),
 								this.svgItemWidth * (i + this.scaleNum),
-								30 * (operations[i].qubits2[k] + 2)
+								this.svgItemHeight * (operations[i].qubits2[k] + 2)
 							)
 						}
 					}
@@ -246,52 +266,94 @@ export default class d3Draw {
 					const controlsMax = Math.max(...operations[i].controls)
 					const g = svg.append('g')
 					if (controlsMax < operations[i].target[0]) {
-						this.drawLine(g, this.svgItemWidth * (i + this.scaleNum), 30 * (operations[i].target[0] + 2), this.svgItemWidth * (i + this.scaleNum), 30 * (controlsMin + 2))
+						this.drawLine(
+							g,
+							this.svgItemWidth * (i + this.scaleNum),
+							this.svgItemHeight * (operations[i].target[0] + 2),
+							this.svgItemWidth * (i + this.scaleNum),
+							this.svgItemHeight * (controlsMin + 2)
+						)
 					}
 					if (controlsMin > operations[i].target[0]) {
-						this.drawLine(g, this.svgItemWidth * (i + this.scaleNum), 30 * (operations[i].target[0] + 2), this.svgItemWidth * (i + this.scaleNum), 30 * (controlsMax + 2))
+						this.drawLine(
+							g,
+							this.svgItemWidth * (i + this.scaleNum),
+							this.svgItemHeight * (operations[i].target[0] + 2),
+							this.svgItemWidth * (i + this.scaleNum),
+							this.svgItemHeight * (controlsMax + 2)
+						)
 					}
 					if (controlsMin < operations[i].target[0] && operations[i].target[0] < controlsMax) {
-						this.drawLine(g, this.svgItemWidth * (i + this.scaleNum), 30 * (operations[i].target[0] + 2), this.svgItemWidth * (i + this.scaleNum), 30 * (controlsMax + 2))
-						this.drawLine(g, this.svgItemWidth * (i + this.scaleNum), 30 * (operations[i].target[0] + 2), this.svgItemWidth * (i + this.scaleNum), 30 * (controlsMin + 2))
+						this.drawLine(
+							g,
+							this.svgItemWidth * (i + this.scaleNum),
+							this.svgItemHeight * (operations[i].target[0] + 2),
+							this.svgItemWidth * (i + this.scaleNum),
+							this.svgItemHeight * (controlsMax + 2)
+						)
+						this.drawLine(
+							g,
+							this.svgItemWidth * (i + this.scaleNum),
+							this.svgItemHeight * (operations[i].target[0] + 2),
+							this.svgItemWidth * (i + this.scaleNum),
+							this.svgItemHeight * (controlsMin + 2)
+						)
 					}
 
 					for (let j = 0; j < operations[i].controls.length; j++) {
-						this.drawCircle(g, this.svgItemWidth * (i + this.scaleNum), 30 * (operations[i].controls[j] + 2))
+						this.drawCircle(g, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].controls[j] + 2))
 					}
 
-					this.drawCcnot(g, this.svgItemWidth * (i + this.scaleNum), 30 * (operations[i].target[0] + 2))
+					this.drawCcnot(g, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].target[0] + 2))
 
 					break
 				case 'ccphase':
 					this.drawLine(
 						svg,
 						this.svgItemWidth * (i + this.scaleNum),
-						30 * (operations[i].qubits[0] + 2),
+						this.svgItemHeight * (operations[i].qubits[0] + 2),
 						this.svgItemWidth * (i + this.scaleNum),
-						30 * (operations[i].qubits[operations[i].qubits.length - 1] + 2)
+						this.svgItemHeight * (operations[i].qubits[operations[i].qubits.length - 1] + 2)
 					)
 					for (let j = 0; j < operations[i].qubits.length; j++) {
-						this.drawCCPhase(svg, this.svgItemWidth * (i + this.scaleNum), 30 * (operations[i].qubits[j] + 2))
+						this.drawCCPhase(svg, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits[j] + 2))
 					}
 
 					break
 				case 'phase':
 					for (let j = 0; j < operations[i].qubits.length; j++) {
-						this.drawCCPhase(svg, this.svgItemWidth * (i + this.scaleNum), 30 * (operations[i].qubits[j] + 2))
+						this.drawCCPhase(svg, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits[j] + 2))
 						svg.append('text')
 							.attr('x', this.svgItemWidth * (i + this.scaleNum) - 6)
-							.attr('y', 30 * (operations[i].qubits[j] + 2) - 10)
+							.attr('y', this.svgItemHeight * 2 - 4)
 							.attr('style', 'font-size:12px;')
 							.append('tspan')
 							.text(operations[i].rotation + '°')
 					}
 
 					break
-				// case 'noop':
+				case 'read':
+					for (let j = 0; j < operations[i].qubits.length; j++) {
+						this.drawRead(svg, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits[j] + 2))
+					}
 
-				// 	break
+					break
 				default:
+					const qubits = data.getQubitsInvolved(operations[i])
+					if (qubits.length) {
+						const defaultG = svg.append('g')
+						this.drawLine(
+							defaultG,
+							this.svgItemWidth * (i + this.scaleNum),
+							this.svgItemHeight * (qubits[0] + 2),
+							this.svgItemWidth * (i + this.scaleNum),
+							this.svgItemHeight * (qubits[qubits.length - 1] + 2)
+						)
+
+						this.drawSelfDefinedGate(defaultG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (qubits[0] + 2))
+						this.drawSelfDefinedGate(defaultG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (qubits[qubits.length - 1] + 2))
+					}
+
 					break
 			}
 		}

@@ -29,11 +29,11 @@ a.add(b);
 qc.label('');
 qc.nop();
 
-qc.operations.forEach((op, i)=>{
-    const {operation, state_str, result} = op
-    console.log(op)
-    // if(operation == 'read'){
-    //     console.log(result)
-    // }
-    // console.log(state_str)
-})
+// qc.operations.forEach((op, i)=>{
+//     const {operation, state_str, result} = op
+//     console.log(op)
+//     // if(operation == 'read'){
+//     //     console.log(result)
+//     // }
+//     // console.log(state_str)
+// })

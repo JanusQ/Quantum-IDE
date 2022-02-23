@@ -25,7 +25,7 @@ const Ace = (props) => {
 
 	// 多个选择框
 	const { Option } = Select
-	const optionList = [ 'all gates', 'adding two integers', 'ex7-7', 'ex7-1', 'eeeee',]  // case的列表，public\js中需要存对应的文件
+	const optionList = [ 'all gates', 'adding two integers', 'ex7-7', 'ex7-1', 'about:black',]  // case的列表，public\js中需要存对应的文件
 	const optionChildren = []
 	for (let i = 0; i < optionList.length; i++) {
 		optionChildren.push(
@@ -109,7 +109,7 @@ const Ace = (props) => {
 				onChange={props.onChange}
 				name='ACE-EDITOR'
 				width='100%'
-				height='604px'
+				height='576px'
 				value={props.editorValue}
 				showGutter={false}
 				style={{ fontSize: fontSize + 'px' }}

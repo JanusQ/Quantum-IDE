@@ -1,0 +1,25 @@
+#console_div {
+	height: 179px;
+	width: 568px;
+	padding: 10px;
+	background: #fff;
+	margin-top: 10px;
+	padding-top: 5px;
+}
+#console_div .title {
+	font-size: 18px;
+	font-weight: bold;
+	margin-bottom: 10px;
+}
+#console_div .content_div {
+	height: 130px;
+	padding: 0 10px;
+	overflow: auto;
+}
+#console_div .error_content {
+	color: red;
+}
+#console_div .right_content p {
+    margin-bottom: 10px;
+	color: rgb(102, 100, 100);
+}
