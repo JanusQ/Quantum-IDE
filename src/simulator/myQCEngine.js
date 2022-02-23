@@ -43,9 +43,10 @@ export default class QCEngine {
             //     text: ""
             // }
         ]
-        this._now_label = 0
+        this._now_label = undefined
 
         this.now_state = undefined 
+        this.console_data = [] 
     }
 
 
@@ -120,7 +121,9 @@ export default class QCEngine {
         })
     }
 
-    // TODO: 之后写成数字数组都可以
+
+    // TODO: 之后写成二进制或者数组都可以
+    // TODO：判断下比特存不存在有没有溢出
     parseBinaryQubits(binary_qubits) {
         if (binary_qubits != undefined)
             return binary2qubit1(binary_qubits)
@@ -154,7 +157,7 @@ export default class QCEngine {
             'index': index,  //操作的index
             'state_after_opertaion': state,
             'state_str': circuit.stateAsString(),
-            'label': _now_label,
+            'label_id': _now_label,
         })
         
         this.now_state = state
@@ -179,8 +182,15 @@ export default class QCEngine {
         // this.nop()
     }
 
+    label_count = -1
+    genLabelId(){
+        this.label_count++
+        return this.label_count
+    }
+
     // 给某一段打个标签, 是用于前端的
     // 给之后所有的打上标签
+    // 如果传入空的就不会被话
     label(label) {
         const {_now_label, labels, operations} = this
         let former_label = labels[labels.length - 1]
@@ -189,11 +199,13 @@ export default class QCEngine {
             former_label.end_operation = operations.length  // 右开
         }
 
+        let label_id = this.genLabelId()
         labels.push({
             start_operation: operations.length,  //左闭
             text: label,
+            id: label_id
         })
-        this._now_label = label
+        this._now_label = label_id
     }
 
     // Hadamard Operation
@@ -206,6 +218,7 @@ export default class QCEngine {
             circuit.addGate('h', now_column, qubit);  // column = -1表示默认插到最后一个,最好不要用，会补到前面去
         })
 
+        // debugger
         this._addGate({
             'qubits': qubits,
             'operation': 'h',
@@ -283,7 +296,10 @@ export default class QCEngine {
 
     print(){
         console.log('qc_console', arguments)
-
+        // debugger
+        this.console_data.push(
+            [...arguments].map(elm => String(elm)).join('  ')
+        )
     }
 
     // TODO: 判断所有控制门的比特会不会重叠，重叠报错
@@ -389,6 +405,7 @@ export default class QCEngine {
     nop() {
         const { operations, circuit } = this
         this._now_label = undefined
+        this.label('')
         this._addGate({
             'operation': 'noop',
             'columns': undefined, //this.nextColumn()
@@ -407,7 +424,84 @@ export default class QCEngine {
         return index
     }
 
+    // 一下都是用来画图的函数
 
+    
+    getQubitsInvolved(operation){
+        let qubits_involved = []
+        const {controls, qubits, qubit, target, targets} = operation
+        if(target){
+            qubits_involved.push(target)
+        }
+        if(qubit){
+            qubits_involved.push(qubit)
+        }
+        qubits_involved = [...qubits_involved, ...(controls || [])]
+        qubits_involved = [...qubits_involved, ...(qubits || [])]
+        qubits_involved = [...qubits_involved, ...(targets || [])]
+
+        let qubits_involved_set  = [...new Set(qubits_involved)]
+        if(qubits_involved_set.length !== qubits_involved.length){
+            console.error('operation', operation, 'has repetitive qubit')
+            debugger
+        }
+        return qubits_involved_set
+    }
+
+    // 输入一个比特，返回对应的变量，和在变量内部的序号, 没有找到返回undefined, undefined
+    getQubit2Variable(qubit){
+        const {name2index} = this
+
+        let corresponding_variable = undefined, corresponding_index = undefined
+        for(let variable in name2index){
+            let index = name2index[variable]
+            if(index[0] <= qubit && index[1] > qubit){
+                corresponding_variable = variable
+                corresponding_index = qubit - index[0]
+            }
+        }
+
+        return { 
+            variable: corresponding_variable,
+            index: corresponding_index,
+        }
+    }
+
+
+    // 返回比特的上下界的比特, 传入label的text假设text唯一
+    getLabelUpDown(label_id){
+        const {operations, name2index} = this
+        let label = this.labels.find(elm=> elm.id === label_id)
+        if(!label){
+            console.error('label', label, '不存在')
+            debugger
+        }
+        if(label.text == ''){
+            console.warn(label, '是空的，不需要画')
+            return undefined
+        }
+        let {start_operation, end_operation} = label
+        if(!end_operation){
+            end_operation = operations.length
+        }
+
+        let qubits_involved = []
+        range(start_operation, end_operation).forEach(index=>{
+            // debugger
+            qubits_involved = [...qubits_involved, ...this.getQubitsInvolved(operations[index])]
+        })
+        // console.log(qubits_involved)
+        qubits_involved = [...new Set(qubits_involved)]
+
+        let down_qubit = Math.max(...qubits_involved), up_qubit = Math.min(...qubits_involved)
+        let down_varable = this.getQubit2Variable(down_qubit).variable, up_varable = this.getQubit2Variable(up_qubit).variable
+
+        // debugger
+        return {
+            up_qubit: up_varable? name2index[up_varable][0] : up_qubit,
+            down_qubit: down_varable? name2index[down_varable][1] : down_qubit
+        }
+    }
 
 }
 
@@ -447,6 +541,7 @@ class QInt {
     }
 
     // 这返回的还是二进制的,将自己内部的换算成全局的二进制
+    // TODO: 判断下比特存不存在，有没有溢出
     bits(binary_qubits){
         if (binary_qubits !== undefined){
             const qubits = binary2qubit1(binary_qubits).map(qubit=> qubit+this.index[0])
@@ -458,7 +553,6 @@ class QInt {
 
 
     hadamard(binary_qubits){
-        binary_qubits = this.bits(binary_qubits)
         this.had(binary_qubits)
     }
 

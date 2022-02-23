@@ -7,6 +7,7 @@ import axios from 'axios'
 import React, { useState, useRef } from 'react'
 import { exportSVG } from './simulator/CommonFunction'
 import QCEngine from './simulator/MyQCEngine'
+import { range } from 'd3'
 // import QCEngine from './simulator/MyQCEngine'
 // import './test/meausre'
 // import './test/reset'
@@ -49,9 +50,22 @@ function App() {
 			eval(editorValue)
 			exportSVG(qc)
 			// showInDebuggerArea(qc.circuit)
+
+
+			// siwei: 两个函数的案例
+			range(0, qc.qubit_number).forEach(qubit=>{
+				console.log(qc.getQubit2Variable(qubit))
+			})
+			qc.labels.forEach(label=>{
+				console.log(label, qc.getLabelUpDown(label.id))
+			})
+
+			// siwei: 这里还不能null，CD视图还要用
 			qc = null
+
 		} catch (error) {
 			// setEditorValue(error.message)
+			console.error(error)
 		}
 	}
 	return (
