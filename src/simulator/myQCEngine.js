@@ -14,7 +14,7 @@
 // let QuantumCircuit = require('../resource/js/quantum-circuit.min.js')
 import { write0, write1 } from './MyGate';
 import QuantumCircuit from './QuantumCircuit'
-import { pow2, binary, binary2qubit1, range, toPI, qubit12binary} from './CommonFunction'
+import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique} from './CommonFunction'
 import {
     cos, sin, round, pi, complex,
 } from 'mathjs'
@@ -307,6 +307,7 @@ export default class QCEngine {
 
     }
 
+    // TODO: ccnot 还没有写
     cnot(binary_control, binary_target) {
         const { operations, circuit, now_column } = this
         let control = this.parseBinaryQubits(binary_control)
@@ -314,9 +315,13 @@ export default class QCEngine {
 
         if(control.length != 1){
             console.error(control, 'control qubit number is not one')
+            debugger
+            control = [control[0]]
         }
         if(target.length != 1){
             console.error(target, 'target qubit number is not one')
+            debugger
+            target = [target[0]]
         }
 
         circuit.addGate("cx",  now_column, [...control, ...target], );
@@ -333,21 +338,34 @@ export default class QCEngine {
     // TODO: ncphase 之后直接整理到cphase里面
     cphase(rotation, binary_control, binary_target) {
         const { operations, circuit, now_column } = this
-        let control = this.parseBinaryQubits(binary_control)
-        let target = this.parseBinaryQubits(binary_target)
+        let control = binary_control? this.parseBinaryQubits(binary_control) : []
+        let target = binary_target? this.parseBinaryQubits(binary_target) : []
+        let qubits = unique([...control, ...target])
 
-        if(control.length != 1){
-            console.error(control, 'control qubit number is not one')
-            debugger
-        }
-        if(target.length != 1){
-            console.error(target, 'target qubit number is not one')
+        if(qubits.length === 0){
+            console.error('phase\'s qubits number is zero')
             debugger
         }
 
-        circuit.addGate("cu1",  now_column, [...control, ...target],  {
+        // if(control.length != 1){
+        //     console.error(control, 'control qubit number is not one')
+        //     debugger
+        // }
+        // if(target.length != 1){
+        //     console.error(target, 'target qubit number is not one')
+        //     debugger
+        // }
+
+        // circuit.addGate("cu1",  now_column, qubits,  {
+        //     params: {
+        //         lambda: "pi/" + (180/rotation)
+        //     }
+        // });
+
+        circuit.addGate("ncphase",  now_column, qubits, {
             params: {
-                lambda: "pi/" + (180/rotation)
+                qubit_number: qubits.length,
+                phi: toPI(rotation)
             }
         });
 
@@ -386,20 +404,31 @@ export default class QCEngine {
 
         qubits1.forEach((qubit1, index) => {
             const qubit2 = qubits2[index]
-            circuit.addGate("swap",  now_column, [qubit1, qubit2]);
+            this.swap(qubit12binary[qubit1], qubit12binary[qubit2])
         })
 
+    }
+
+
+    swap(binary_qubit1, binary_qubit2){
+        const { operations, circuit, now_column } = this
+        const qubit1 = this.parseBinaryQubits(binary_qubit1)
+        const qubit2 = this.parseBinaryQubits(binary_qubit2)
+        if(qubit1.length != 1 || qubit2.length != 1){
+            console.error(qubit1, 'or',qubit2, 'has more than one qubit, which can not be swapped')
+            debugger
+        }
+
+        circuit.addGate("swap",  now_column, [...qubit1, ...qubit2]);
         this._addGate({
-            qubits1, qubits2,
+            // qubits1, qubits2实际上只有一个，现在是暂时为之
+            'qubits1': qubit1, 
+            'qubits2': qubit2,
             'operation': 'swap',
             'columns': this.nextColumn()
         })
     }
 
-
-    swap(binary_qubits1, binary_qubits2){
-        this.exchange(binary_qubits1, binary_qubits2)
-    }
 
     // 啥事都不干，就空一格
     nop() {
@@ -424,18 +453,34 @@ export default class QCEngine {
         return index
     }
 
-    // 一下都是用来画图的函数
+    apply(gate_name, qubits){
+        this._addGate({
+            'qubits': qubits, 
+            'operation': gate_name,
+            'columns': this.nextColumn()
+        })
+    }
 
+
+    // 一下都是用来画图的函数
     
     getQubitsInvolved(operation){
         let qubits_involved = []
-        const {controls, qubits, qubit, target, targets} = operation
+        const {controls, qubits, qubit, target, targets, qubits1, qubits2, qubit1, qubit2} = operation
         if(target){
             qubits_involved.push(target)
         }
         if(qubit){
             qubits_involved.push(qubit)
         }
+        if(qubit1){
+            qubits_involved.push(qubit1)
+        }
+        if(qubit2){
+            qubits_involved.push(qubit2)
+        }
+        qubits_involved = [...qubits_involved, ...(qubits1 || [])]
+        qubits_involved = [...qubits_involved, ...(qubits2 || [])]
         qubits_involved = [...qubits_involved, ...(controls || [])]
         qubits_involved = [...qubits_involved, ...(qubits || [])]
         qubits_involved = [...qubits_involved, ...(targets || [])]
@@ -551,6 +596,9 @@ class QInt {
         }
     }
 
+    nop(){
+        this.qc.nop()
+    }
 
     hadamard(binary_qubits){
         this.had(binary_qubits)

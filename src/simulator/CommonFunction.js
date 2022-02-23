@@ -117,6 +117,10 @@ function getExp(complex_value) {
 	return complex_value.toPolar() //{r, phi}
 }
 
+function unique(list){
+	return [...new Set(list)]
+}
+
 // TODO: 判断这几个比特组成的状态是不是纯态
 function isPure(qubits, state) {
 
@@ -145,4 +149,5 @@ export {
 	qubit12binary,
 	createFile,
 	exportSVG,
+	unique,
 }

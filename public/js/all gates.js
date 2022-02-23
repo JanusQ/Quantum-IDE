@@ -21,13 +21,21 @@ qc.label('phase')
 a.phase(45, 0x8);
 
 qc.label('cnot')
-a.cnot(0x5, 0x2);
+qc.cnot(0x4, 0x2);
 
 qc.label('nop')
 a.nop();
 
-qc.label('cphase')
-a.cphase(0x7, 0x2)
+qc.label('ccphase')  //就是ccphase
+a.cphase(0x5, 0x2)
+
+qc.label('swap')
+qc.swap(0x4, 0x2)
+
+
+qc.label('self defined')
+// 对于所有文档里面没有出现的门，都用self defined gate那个图标，涉及的比特用qc.getQubitsInvolved(operation)获得
+qc.apply('self defined gate', [0,1,2])
 
 qc.operations.forEach((op, i)=>{
     const {operation, state_str, result} = op
