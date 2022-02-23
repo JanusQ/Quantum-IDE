@@ -80,28 +80,23 @@ const Ace = (props) => {
 			<div className='title'>QuCode</div>
 			{/* 操作按钮 */}
 			<div className='ace_operation'>
-				<Button type='primary' size='small' onClick={props.runProgram}>
+				<Button type='primary' onClick={props.runProgram}>
 					Run Program
 				</Button>
-				<Select
-					style={{ width: '30%', marginLeft: '10px' }}
-					size='small'
-					onChange={props.selectChange}
-					defaultValue={optionList[0]}
-				>
+				<Select style={{ width: '30%', marginLeft: '10px' }} onChange={props.selectChange} defaultValue={optionList[0]}>
 					{optionChildren}
 				</Select>
-				<Button size='small' style={{ marginLeft: '10px' }} onClick={exportFile}>
+				<Button style={{ marginLeft: '10px' }} onClick={exportFile} className='export_btn'>
 					Export
 				</Button>
 				<ZoomInOutlined
-					style={{ marginLeft: '10%', cursor: 'pointer' }}
+					style={{ marginLeft: '10%', cursor: 'pointer', fontSize: '18px' }}
 					onClick={() => {
 						controlFontSize('add')
 					}}
 				/>
 				<ZoomOutOutlined
-					style={{ marginLeft: '5px', cursor: 'pointer' }}
+					style={{ marginLeft: '5px', cursor: 'pointer', fontSize: '18px' }}
 					onClick={() => {
 						controlFontSize('sub')
 					}}
@@ -114,7 +109,7 @@ const Ace = (props) => {
 				onChange={props.onChange}
 				name='ACE-EDITOR'
 				width='100%'
-				height='60%'
+				height='604px'
 				value={props.editorValue}
 				showGutter={false}
 				style={{ fontSize: fontSize + 'px' }}

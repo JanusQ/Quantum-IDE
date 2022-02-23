@@ -11,6 +11,7 @@
 }
 .App .left-div{
 	width: 568px;
+	margin-right: 16px;
 }
 .App .left-div,
 .App .right-div {

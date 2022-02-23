@@ -8,7 +8,7 @@
 var num_qubits = 6;
 qc.reset(num_qubits);
 var a = qint.new(6, 'a');
-
+console.log(a)
 // prepare
 qc.label('write');
 // debugger

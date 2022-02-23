@@ -59,10 +59,6 @@ function App() {
 			qc.labels.forEach(label=>{
 				console.log(label, qc.getLabelUpDown(label.id))
 			})
-
-			// siwei: 这里还不能null，CD视图还要用
-			qc = null
-
 		} catch (error) {
 			// setEditorValue(error.message)
 			console.error(error)
