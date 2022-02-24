@@ -14,12 +14,16 @@ export default class d3Draw {
 		this.write0FontColor = options.write0FontColor || '#000'
 		// had字体颜色
 		this.hadFontColor = options.hadFontColor || '#000'
-		// 现在设置的是每一列按50 前边空白区域100 所以之后每一项都是多算两列
-		this.firstX = 150
-		this.svgItemWidth = 50
+		// 设置空白和间距
+		this.firstX = 120
+		this.svgItemWidth = 40
 		this.svgItemHeight = 30
+		// 鼠标放上的小label宽
+		this.svgItemLabelWidth = 30
 		// 计算比例
 		this.scaleNum = this.firstX / this.svgItemWidth
+		// label位置的偏移 x - 图形的宽
+		this.labelTranslate = this.firstX - 20
 	}
 	exportD3SVG(data) {
 		console.log(data)
@@ -28,7 +32,9 @@ export default class d3Draw {
 		if (d3DrawingDiv.select('svg')._groups[0]) {
 			d3DrawingDiv.select('svg').remove()
 		}
-		const svg = d3DrawingDiv.append('svg').attr('width', '100%').attr('height', '100%').attr('display', 'block')
+
+		const svg = d3DrawingDiv.append('svg').attr('width', '100%').attr('height', '100%')
+		const drawG = svg.append('g')
 		const { operations, qubit_number } = data
 		// 列数
 		const row = operations.length
@@ -36,6 +42,7 @@ export default class d3Draw {
 		// 设置SVG宽高 高度整体下移了一行
 		svg.attr('width', (row + this.scaleNum) * this.svgItemWidth)
 		svg.attr('height', (col + 2) * this.svgItemHeight + 40)
+
 		// 加Label,先加载label label在最底层
 		for (let i = 0; i < data.labels.length; i++) {
 			if (data.labels[i].text && data.labels[i].end_operation !== undefined) {
@@ -44,11 +51,11 @@ export default class d3Draw {
 					const lineCol = data.labels[i].end_operation - data.labels[i].start_operation
 					const labelRow = obj.down_qubit - obj.up_qubit
 					this.drawLabel(
-						svg,
-						this.svgItemWidth * data.labels[i].start_operation + 130,
-						this.svgItemHeight * (obj.up_qubit + 1.5),
+						drawG,
+						this.svgItemWidth * data.labels[i].start_operation + this.labelTranslate,
+						this.svgItemHeight * (obj.up_qubit + 1),
 						this.svgItemWidth * lineCol,
-						this.svgItemHeight * labelRow,
+						this.svgItemHeight * (labelRow + 1),
 						data.labels[i].text
 					)
 				}
@@ -58,19 +65,21 @@ export default class d3Draw {
 		 * 预留了前边是firstX，画线和添加name
 		 */
 		for (let i = 0; i < col; i++) {
-			this.drawLine(svg, this.firstX, this.svgItemHeight * (i + 2), (row + 2) * this.svgItemWidth, this.svgItemHeight * (i + 2))
-			this.drawName(svg, this.svgItemWidth * 2 + 10, this.svgItemHeight * (i + 2), 'Q' + data.getQubit2Variable(i).index)
+			this.drawLine(drawG, this.firstX, this.svgItemHeight * (i + 2), (row + 2) * this.svgItemWidth, this.svgItemHeight * (i + 2))
+			this.drawName(drawG, this.svgItemWidth * 2 + 10, this.svgItemHeight * (i + 2), 'Q' + data.getQubit2Variable(i).index)
 		}
 		// 加入Qint
 		for (const key in data.name2index) {
 			for (let i = 0; i < data.name2index[key].length; i++) {
 				const lineNum = data.name2index[key][data.name2index[key].length - 1] - data.name2index[key][0]
-				this.drawQint(svg, this.svgItemWidth * 2, this.svgItemHeight * (data.name2index[key][0] + 2), this.svgItemHeight * lineNum - 10, key)
+				this.drawQint(drawG, this.svgItemWidth * 2, this.svgItemHeight * (data.name2index[key][0] + 2), this.svgItemHeight * lineNum - 10, key)
 			}
 		}
 
 		// 处理操作
-		this.handleOperations(svg, operations, data)
+		this.handleOperations(drawG, operations, data)
+		// 框选
+		this.brushedFn(svg, drawG)
 	}
 
 	drawWrite1(svg, x, y) {
@@ -224,50 +233,117 @@ export default class d3Draw {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
 		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', '#fff').attr('stroke-width', 1).attr('stroke', '#000').attr('rx', 4)
 	}
+	// 鼠标选中效果
+	drawMouseHover(svg, x, y, height) {
+		svg.append('rect')
+			.attr('width', this.svgItemLabelWidth)
+			.attr('height', height)
+			.attr('rx', 10)
+			.attr('opacity', '0.5')
+			.attr('x', x)
+			.attr('y', y)
+			.attr('class', 'item_label_rect')
+			.attr('fill', 'transparent')
+		const context = d3.path()
+		context.moveTo(x, y + 10)
+		context.quadraticCurveTo(x, y, x + 10, y)
+		context.lineTo(x + this.svgItemLabelWidth - 10, y)
+		context.quadraticCurveTo(x + this.svgItemLabelWidth, y, x + this.svgItemLabelWidth, y + 10)
+		context.moveTo(x, y + height - 10)
+		context.quadraticCurveTo(x, y + height, x + 10, y + height)
+		context.lineTo(x + this.svgItemLabelWidth - 10, y + height)
+		context.quadraticCurveTo(x + this.svgItemLabelWidth, y + height, x + this.svgItemLabelWidth, y + height - 10)
+		svg.append('path').attr('d', context.toString()).attr('stroke-width', 1).attr('class', 'item_label_path').attr('fill', 'transparent')
+		svg.on('mouseover', function () {
+			d3.select(this).select('.item_label_path').attr('stroke', 'rgb(100, 159, 174)')
+			d3.select(this).select('.item_label_rect').attr('fill', '#f2f2f2')
+		})
+		svg.on('mouseout', function () {
+			d3.select(this).select('.item_label_path').attr('stroke', 'transparent')
+			d3.select(this).select('.item_label_rect').attr('fill', 'transparent')
+		})
+	}
+	// // 刷取选中
+	brushedFn(svg, drawG) {
+		const brush = d3.brush().on('brush end', brushed)
+		svg.append('g').call(brush)
+		function brushed({ selection }) {
+			console.log(selection)
+			drawG.each((d) => {
+				console.log(d)
+			})
+		}
+	}
 	// 处理操作
 	handleOperations(svg, operations, data) {
 		for (let i = 0; i < operations.length; i++) {
 			switch (operations[i].operation) {
 				// write操作
 				case 'write':
+					const writeG = svg.append('g').attr('style', 'cursor:pointer;')
 					// 处理数组
 					for (let j = operations[i].value.length - 1; j >= 0; j--) {
 						if (operations[i].value[j]) {
-							this.drawWrite1(svg, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits[j] + 2))
+							this.drawWrite1(writeG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits[j] + 2))
 						} else {
-							this.drawWrite0(svg, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits[j] + 2))
+							this.drawWrite0(writeG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits[j] + 2))
 						}
 					}
+					const qubitMin = Math.min(...operations[i].qubits)
+					const qubitMax = Math.max(...operations[i].qubits)
+					this.drawMouseHover(
+						writeG,
+						this.svgItemWidth * (i + this.scaleNum) - this.svgItemHeight / 2,
+						this.svgItemHeight * (qubitMin + 2) - this.svgItemHeight / 2,
+						this.svgItemHeight * (qubitMax - qubitMin + 1)
+					)
 					break
 				// had操作
 				case 'h':
+					const hG = svg.append('g').attr('style', 'cursor:pointer;')
 					for (let j = 0; j < operations[i].qubits.length; j++) {
-						this.drawH(svg, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits[j] + 2))
+						this.drawH(hG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits[j] + 2))
 					}
+					const qubitHMin = Math.min(...operations[i].qubits)
+					const qubitHMax = Math.max(...operations[i].qubits)
+					this.drawMouseHover(
+						hG,
+						this.svgItemWidth * (i + this.scaleNum) - this.svgItemHeight / 2,
+						this.svgItemHeight * (qubitHMin + 2) - this.svgItemHeight / 2,
+						this.svgItemHeight * (qubitHMax - qubitHMin + 1)
+					)
 					break
 				case 'swap':
 					for (let j = 0; j < operations[i].qubits1.length; j++) {
-						this.drawSwap(svg, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits1[j] + 2))
-						for (let k = 0; k < operations[i].qubits2.length; k++) {
-							this.drawSwap(svg, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits2[k] + 2))
-							this.drawLine(
-								svg,
-								this.svgItemWidth * (i + this.scaleNum),
-								this.svgItemHeight * (operations[i].qubits1[j] + 2),
-								this.svgItemWidth * (i + this.scaleNum),
-								this.svgItemHeight * (operations[i].qubits2[k] + 2)
-							)
-						}
+						const swapG = svg.append('g').attr('style', 'cursor:pointer;')
+						this.drawSwap(swapG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits1[j] + 2))
+						this.drawSwap(swapG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits2[j] + 2))
+						this.drawLine(
+							swapG,
+							this.svgItemWidth * (i + this.scaleNum),
+							this.svgItemHeight * (operations[i].qubits1[j] + 2),
+							this.svgItemWidth * (i + this.scaleNum),
+							this.svgItemHeight * (operations[i].qubits2[j] + 2)
+						)
+						const swapMinQ = Math.min(operations[i].qubits1[j], operations[i].qubits2[j])
+						const swapMaxQ = Math.max(operations[i].qubits1[j], operations[i].qubits2[j])
+						this.drawMouseHover(
+							swapG,
+							this.svgItemWidth * (i + this.scaleNum) - this.svgItemHeight / 2,
+							this.svgItemHeight * (swapMinQ + 2) - this.svgItemHeight / 2,
+							this.svgItemHeight * ((swapMaxQ - swapMinQ) + 1)
+						)
 					}
 					break
 				case 'ccnot':
+					const ccnotG = svg.append('g').attr('style', 'cursor:pointer;')
 					// 判断最大值最小值 向两个极端画线
 					const controlsMin = Math.min(...operations[i].controls)
 					const controlsMax = Math.max(...operations[i].controls)
-					const g = svg.append('g')
+
 					if (controlsMax < operations[i].target[0]) {
 						this.drawLine(
-							g,
+							ccnotG,
 							this.svgItemWidth * (i + this.scaleNum),
 							this.svgItemHeight * (operations[i].target[0] + 2),
 							this.svgItemWidth * (i + this.scaleNum),
@@ -276,7 +352,7 @@ export default class d3Draw {
 					}
 					if (controlsMin > operations[i].target[0]) {
 						this.drawLine(
-							g,
+							ccnotG,
 							this.svgItemWidth * (i + this.scaleNum),
 							this.svgItemHeight * (operations[i].target[0] + 2),
 							this.svgItemWidth * (i + this.scaleNum),
@@ -285,14 +361,14 @@ export default class d3Draw {
 					}
 					if (controlsMin < operations[i].target[0] && operations[i].target[0] < controlsMax) {
 						this.drawLine(
-							g,
+							ccnotG,
 							this.svgItemWidth * (i + this.scaleNum),
 							this.svgItemHeight * (operations[i].target[0] + 2),
 							this.svgItemWidth * (i + this.scaleNum),
 							this.svgItemHeight * (controlsMax + 2)
 						)
 						this.drawLine(
-							g,
+							ccnotG,
 							this.svgItemWidth * (i + this.scaleNum),
 							this.svgItemHeight * (operations[i].target[0] + 2),
 							this.svgItemWidth * (i + this.scaleNum),
@@ -301,36 +377,61 @@ export default class d3Draw {
 					}
 
 					for (let j = 0; j < operations[i].controls.length; j++) {
-						this.drawCircle(g, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].controls[j] + 2))
+						this.drawCircle(ccnotG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].controls[j] + 2))
 					}
 
-					this.drawCcnot(g, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].target[0] + 2))
-
+					this.drawCcnot(ccnotG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].target[0] + 2))
+					const ccnotMinLabelQ = Math.min(...operations[i].controls, ...operations[i].target)
+					const ccnotMaxLabelQ = Math.max(...operations[i].controls, ...operations[i].target)
+					this.drawMouseHover(
+						ccnotG,
+						this.svgItemWidth * (i + this.scaleNum) - this.svgItemHeight / 2,
+						this.svgItemHeight * (ccnotMinLabelQ + 2) - this.svgItemHeight / 2,
+						this.svgItemHeight * (ccnotMaxLabelQ - ccnotMinLabelQ + 1)
+					)
 					break
 				case 'ccphase':
+					const ccphaseG = svg.append('g').attr('style', 'cursor:pointer;')
 					this.drawLine(
-						svg,
+						ccphaseG,
 						this.svgItemWidth * (i + this.scaleNum),
 						this.svgItemHeight * (operations[i].qubits[0] + 2),
 						this.svgItemWidth * (i + this.scaleNum),
 						this.svgItemHeight * (operations[i].qubits[operations[i].qubits.length - 1] + 2)
 					)
 					for (let j = 0; j < operations[i].qubits.length; j++) {
-						this.drawCCPhase(svg, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits[j] + 2))
+						this.drawCCPhase(ccphaseG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits[j] + 2))
 					}
-
+					const ccphaseMinQ = Math.min(...operations[i].qubits)
+					const ccphaseMaxQ = Math.max(...operations[i].qubits)
+					const itemLableRow = ccphaseMaxQ - ccphaseMinQ + 1
+					this.drawMouseHover(
+						ccphaseG,
+						this.svgItemWidth * (i + this.scaleNum) - this.svgItemHeight / 2,
+						this.svgItemHeight * (ccphaseMinQ + 2) - this.svgItemHeight / 2,
+						itemLableRow * this.svgItemHeight
+					)
 					break
 				case 'phase':
+					const phaseG = svg.append('g').attr('style', 'cursor:pointer;')
 					for (let j = 0; j < operations[i].qubits.length; j++) {
-						this.drawCCPhase(svg, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits[j] + 2))
-						svg.append('text')
+						this.drawCCPhase(phaseG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits[j] + 2))
+						phaseG
+							.append('text')
 							.attr('x', this.svgItemWidth * (i + this.scaleNum) - 6)
-							.attr('y', this.svgItemHeight * 2 - 4)
+							.attr('y', this.svgItemHeight * (operations[i].qubits[j] + 2) - 15)
 							.attr('style', 'font-size:12px;')
 							.append('tspan')
 							.text(operations[i].rotation + '°')
 					}
-
+					const phaseMinQ = Math.min(...operations[i].qubits)
+					const phaseMaxQ = Math.max(...operations[i].qubits)
+					this.drawMouseHover(
+						phaseG,
+						this.svgItemWidth * (i + this.scaleNum) - this.svgItemHeight / 2,
+						this.svgItemHeight * (phaseMinQ + 2) - this.svgItemHeight / 2 - 12,
+						this.svgItemHeight * (phaseMaxQ - phaseMinQ + 1) + 15
+					)
 					break
 				case 'read':
 					for (let j = 0; j < operations[i].qubits.length; j++) {
@@ -338,10 +439,14 @@ export default class d3Draw {
 					}
 
 					break
+				case 'noop':
+					break
 				default:
+					const defaultG = svg.append('g').attr('style', 'cursor:pointer;')
 					const qubits = data.getQubitsInvolved(operations[i])
+					const defaultMinQ = Math.min(...qubits)
+					const defaultMaxQ = Math.max(...qubits)
 					if (qubits.length) {
-						const defaultG = svg.append('g')
 						this.drawLine(
 							defaultG,
 							this.svgItemWidth * (i + this.scaleNum),
@@ -350,8 +455,14 @@ export default class d3Draw {
 							this.svgItemHeight * (qubits[qubits.length - 1] + 2)
 						)
 
-						this.drawSelfDefinedGate(defaultG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (qubits[0] + 2))
-						this.drawSelfDefinedGate(defaultG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (qubits[qubits.length - 1] + 2))
+						this.drawSelfDefinedGate(defaultG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (defaultMinQ + 2))
+						this.drawSelfDefinedGate(defaultG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (defaultMaxQ + 2))
+						this.drawMouseHover(
+							defaultG,
+							this.svgItemWidth * (i + this.scaleNum) - this.svgItemHeight / 2,
+							this.svgItemHeight * (defaultMinQ + 2) - this.svgItemHeight / 2,
+							this.svgItemHeight * (defaultMaxQ - defaultMinQ + 1)
+						)
 					}
 
 					break

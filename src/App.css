@@ -1,16 +1,19 @@
 @import '~antd/dist/antd.css';
 .App {
 	width: 100%;
-	padding: 10px;
+	padding: 8px;
 	background: #f5f5f5;
 	display: flex;
+	
 }
 .App .right-div{
 	width: 1316px;
+	flex-shrink: 0;
 }
 .App .left-div{
 	width: 568px;
-	margin-right: 16px;
+	margin-right: 10px;
+	flex-shrink: 0;
 }
 .App .left-div,
 .App .right-div {
