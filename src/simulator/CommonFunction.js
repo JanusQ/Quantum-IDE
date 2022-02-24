@@ -1,6 +1,11 @@
 import { cos, sin, round, pi, complex } from 'mathjs'
+import { create, all } from 'mathjs'
 import d3Draw from './D3Draw'
 import {Matrix,inverse} from 'ml-matrix';
+const config = { }
+const math = create(all, config)
+
+
 // import { create, all } from 'mathjs'
 // const math = create(all)
 const options = {
@@ -128,21 +133,55 @@ function isPure(qubits, state) { //qubits: number of qubits ; state: a vector
 
 }
 
-function isUnitary(operator){
-    let mat = new Matrix(operator);
-    
-    let mat_tc = mat.transpose();
-
-    
-
-    
-    
-    return true;
-
+function conj_tran(mat)
+{
+    let mat_tr = math.transpose(mat);
+    for(let i=0; i<mat_tr.size()[0];i++)
+    {
+        for(let j=0; j < mat_tr.size()[1];j++)
+        {
+            mat_tr.set([i,j],mat_tr.get([i,j]).conjugate());
+        }
+    }
+    return mat_tr;
 }
 
-function isNormalized(vector){
-	
+function isUnitary(operator, precision = 1e-5){
+    let mat = math.matrix(operator);
+    
+    let mat_tr = conj_tran(mat);
+
+    let res = math.multiply(mat, mat_tr);
+
+    for(let i=0; i<mat_tr.size()[0];i++)
+    {
+        for(let j=0; j < mat_tr.size()[1];j++){
+            if(i == j){
+                if(Math.abs(res.get([i,j])-1) > precision)
+                    return false;
+            }
+            else{
+                if(Math.abs(res.get([i,j])-0) > precision)
+                    return false;
+            }
+        }
+    }
+    
+    return true;
+}
+
+function isNormalized(vector, precision = 1e-5){
+	let len = vector.length;
+    let res = 0;
+    for(let i=0; i<len; i++)
+    {
+        res += vector[i].re * vector[i].re + vector[i].im * vector[i].im;     
+    }
+
+    if(Math.abs(res - 1) < precision)
+        return true;
+    else
+        return false;
 }
 
 function get_binary(dec,len)
@@ -278,37 +317,27 @@ function state_filtered(state_vector, var_index, filter)
     
 }
 
-function density(braket)
+function density(state_vector) // input is an array 
 { 
-    let re_vec = [];
-    let im_vec = [];
-    let i,j;
-    for(i=0;i<braket.len;i++)
-    {
-        re_vec[i]=braket[i]['re'];
-        im_vec[i]=braket[i]['im'];
-    }
+    let mat = math.matrix(state_vector);
+    let mat_tr = conj_tran(mat);
+    let den = math.multiply(mat, mat_tr);
     
-    let re_mat = new Matrix([re_vec]);
-    let im_mat = new Matrix([im_vec]);
-    let re_mat_tr = re_mat.transpose();
-    let im_mat_tr = im_mat.transpose();
-    //let res = mat_tr.mmul(mat);
-    let res = [];
-    
-    return res;
+    return den;
+
 }
 
-function linear_entropy(var_state)
+function linear_entropy(state_vector)
 {
-    let mat = density(var_state);
-    mat = mat.mmul(mat);
+    let mat = density(state_vector);
+    mat = math.multiply(mat, mat);
     
     let trace = 0;
     let i = 0;
-    for(i=0; i<var_state.length; i++)
+    
+    for(i=0; i<state_vector.length; i++)
     {
-        trace += mat.get(i,i);
+        trace += mat.get([i,i]);
     }
 
     return 1 - trace;
@@ -344,4 +373,7 @@ export {
 	get_entropy,
     sum,
     alt_tensor,
+    isNormalized,
+    isUnitary,
+
 }

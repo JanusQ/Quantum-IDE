@@ -626,6 +626,11 @@ export default class QCEngine {
         
     }
 
+    get_entropy()
+    {
+        return 0;
+    }
+
 }
 
 class QCIntGenerator {
