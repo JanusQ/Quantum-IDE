@@ -14,7 +14,7 @@
 // let QuantumCircuit = require('../resource/js/quantum-circuit.min.js')
 import { write0, write1 } from './MyGate';
 import QuantumCircuit from './QuantumCircuit'
-import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, alt_tensor} from './CommonFunction'
+import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, alt_tensor, calibrate, getExp} from './CommonFunction'
 import {
     cos, sin, round, pi, complex,
 } from 'mathjs'
@@ -583,6 +583,25 @@ export default class QCEngine {
         return res;
     }
 
+    get_wholestate(operation_index)
+    {
+        let opera = this.operations[operation_index];
+        let state = opera['state_after_opertaion'];
+        let res = {};
+        res['magns'] = [];
+        res['phases'] = [];
+        
+        for(let i = 0;i<state.length;i++)
+        {
+            let comp = state['amplitude'];
+            let polar = getExp(comp);
+            res['magns'][i] = polar['r'];
+            res['phases'][i] = calibrate(polar['phi']);
+        }
+        
+        return res;
+    }
+
     get_index(operation_index, filter)
     {
         let opera = this.operations[operation_index];
@@ -629,6 +648,14 @@ export default class QCEngine {
     get_entropy()
     {
         return 0;
+    }
+
+    calc_pmi(operation_index,sel1,sel2)
+    {
+        return 0;
+
+
+
     }
 
 }

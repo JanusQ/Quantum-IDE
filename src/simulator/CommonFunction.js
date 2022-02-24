@@ -127,6 +127,20 @@ function unique(list){
 	return [...new Set(list)]
 }
 
+
+function calibrate(phase)
+{
+    while(phase < 0)
+    {
+        phase += Math.pi*2;
+    }
+    while(phase > 0)
+    {
+        phase -= Math.pi*2;
+    }
+    return phase;
+}
+
 // TODO: 判断这几个比特组成的状态是不是纯态
 function isPure(qubits, state) { //qubits: number of qubits ; state: a vector
    // qubits
@@ -375,5 +389,6 @@ export {
     alt_tensor,
     isNormalized,
     isUnitary,
-
+    calibrate,
+    
 }
