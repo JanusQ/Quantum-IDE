@@ -1,6 +1,6 @@
 import { cos, sin, round, pi, complex } from 'mathjs'
 import d3Draw from './D3Draw'
-import {Matrix} from 'ml-matrix';
+import {Matrix,inverse} from 'ml-matrix';
 // import { create, all } from 'mathjs'
 // const math = create(all)
 const options = {
@@ -123,11 +123,21 @@ function unique(list){
 }
 
 // TODO: 判断这几个比特组成的状态是不是纯态
-function isPure(qubits, state) {
+function isPure(qubits, state) { //qubits: number of qubits ; state: a vector
+   // qubits
 
 }
 
 function isUnitary(operator){
+    let mat = new Matrix(operator);
+    
+    let mat_tc = mat.transpose();
+
+    
+
+    
+    
+    return true;
 
 }
 
@@ -270,9 +280,21 @@ function state_filtered(state_vector, var_index, filter)
 
 function density(braket)
 { 
-    let mat = new Matrix([braket]);
-    let mat_tr = mat.transpose();
-    let res = mat_tr.mmul(mat);
+    let re_vec = [];
+    let im_vec = [];
+    let i,j;
+    for(i=0;i<braket.len;i++)
+    {
+        re_vec[i]=braket[i]['re'];
+        im_vec[i]=braket[i]['im'];
+    }
+    
+    let re_mat = new Matrix([re_vec]);
+    let im_mat = new Matrix([im_vec]);
+    let re_mat_tr = re_mat.transpose();
+    let im_mat_tr = im_mat.transpose();
+    //let res = mat_tr.mmul(mat);
+    let res = [];
     
     return res;
 }
@@ -320,4 +342,6 @@ export {
 	get_varstate,
 	state_filtered,
 	get_entropy,
+    sum,
+    alt_tensor,
 }

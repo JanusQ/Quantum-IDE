@@ -14,7 +14,7 @@
 // let QuantumCircuit = require('../resource/js/quantum-circuit.min.js')
 import { write0, write1 } from './MyGate';
 import QuantumCircuit from './QuantumCircuit'
-import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique} from './CommonFunction'
+import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, alt_tensor} from './CommonFunction'
 import {
     cos, sin, round, pi, complex,
 } from 'mathjs'
@@ -546,6 +546,84 @@ export default class QCEngine {
             up_qubit: up_varable? name2index[up_varable][0] : up_qubit,
             down_qubit: down_varable? name2index[down_varable][1] : down_qubit
         }
+    }
+
+    get_varstate(operation_index){
+        let res = {};
+        let opera = this.operations[operation_index];
+        let state = opera['state_after_opertaion'];
+        let magnitudes = [];
+        for(let i = 0;i<state.length;i++)
+        {
+            magnitudes[i] = state[i]['magnitude'];
+        }
+
+        let var_index = this.name2index;
+        // for(i=0;i<magnitudes.length;i++)
+        // {
+        //     magnitudes[i]=magnitudes[i]*magnitudes[i];
+        // }
+    
+        for(let key in var_index)
+        {       
+            res[key] = {};
+            res[key]['prob'] = [];
+            res[key]['magn'] = [];
+            let i = 0;
+            let bits = var_index[key][1] - var_index[key][0];
+            let prob = 0;
+            for(i=0; i<Math.pow(2,bits); i++)
+            {
+                prob = sum(magnitudes,i,var_index[key],Math.log2(magnitudes.length));
+                res[key]['prob'][i] = prob;
+                res[key]['magn'][i] = Math.sqrt(prob);
+            }        
+        }
+    
+        return res;
+    }
+
+    get_index(operation_index, filter)
+    {
+        let opera = this.operations[operation_index];
+        let state = opera['state_after_opertaion'];
+
+        let var_index = this.name2index;
+            
+        let i = 0;
+        let neo_sv = [];
+        let com = [];
+        for(let key in filter)
+        {
+            if(com.length==0)
+            {
+                for(i = 0 ;i<filter[key].length;i++)
+                    com[i]=[filter[key][i]];
+                continue;
+            }
+            com = alt_tensor(com,filter[key]);
+        }
+        
+        let k = 0;
+        let total = Math.log2(state.length);
+        for(i=0; i<com.length; i++)
+        {
+            let tmp = com[i];
+            let index = 0;
+            
+            let j = 0;
+            
+            for (let key in var_index)
+            {
+                index += tmp[j] * (Math.pow(2,total-var_index[key][1]));
+                j++;
+            }
+            
+            neo_sv[k] = index;
+            k++;
+        }
+        return neo_sv;
+        
     }
 
 }
