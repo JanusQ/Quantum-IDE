@@ -4,3 +4,6 @@
 	background: #fff;
 	overflow: auto;
 }
+.svgtext{
+	user-select: none;
+}
