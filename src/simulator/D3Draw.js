@@ -108,7 +108,7 @@ export default class d3Draw {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
 		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', '#fff').attr('stroke', '#000').attr('stroke-width', 1)
 		const childG = parentG.append('g')
-		childG.append('text').attr('x', 10).attr('y', 15).attr('style', `font-size:16px;font-weight:bold;cursor:default;color:red`).append('tspan').text('H').attr('text-anchor', 'middle')
+		childG.append('text').attr('x', 10).attr('y', 15).attr('style', `font-size:16px;font-weight:bold;`).append('tspan').text('H').attr('text-anchor', 'middle').classed('svgtext', true)
 	}
 	drawRead(svg, x, y) {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
@@ -198,6 +198,7 @@ export default class d3Draw {
 			.attr('y', height + 15)
 			.attr('text-anchor', 'middle')
 			.text(labelText)
+			.classed('svgtext', true)
 	}
 	// 绘制q
 	drawName(svg, x, y, name) {
@@ -210,6 +211,7 @@ export default class d3Draw {
 
 			.text(name)
 			.attr('font-size', 14)
+			.classed('svgtext', true)
 	}
 	// 绘制括号Qint
 	drawQint(svg, x, y, height, name) {
@@ -227,6 +229,7 @@ export default class d3Draw {
 			.attr('y', height / 2)
 			.attr('text-anchor', 'end')
 			.text(name)
+			.classed('svgtext', true)
 	}
 	// 绘制self defined gate
 	drawSelfDefinedGate(svg, x, y) {
@@ -265,15 +268,19 @@ export default class d3Draw {
 	}
 	// // 刷取选中
 	brushedFn(svg, drawG) {
-		const brush = d3.brush().on('brush end', brushed)
-		svg.append('g').call(brush)
+		const brush = d3.brush().on('end', brushed)
+		const brushG = svg.append('g').attr('class', 'brush')
+		drawG.on('click', function (e) {
+			if (!e.target.classList.contains('item_label_rect')) {
+				brushG.call(brush)
+			}
+		})
 		function brushed({ selection }) {
 			console.log(selection)
-			drawG.each((d) => {
-				console.log(d)
-			})
+			// svg.remove(brushG)
 		}
 	}
+
 	// 处理操作
 	handleOperations(svg, operations, data) {
 		for (let i = 0; i < operations.length; i++) {
@@ -331,7 +338,7 @@ export default class d3Draw {
 							swapG,
 							this.svgItemWidth * (i + this.scaleNum) - this.svgItemHeight / 2,
 							this.svgItemHeight * (swapMinQ + 2) - this.svgItemHeight / 2,
-							this.svgItemHeight * ((swapMaxQ - swapMinQ) + 1)
+							this.svgItemHeight * (swapMaxQ - swapMinQ + 1)
 						)
 					}
 					break
@@ -420,7 +427,7 @@ export default class d3Draw {
 							.append('text')
 							.attr('x', this.svgItemWidth * (i + this.scaleNum) - 6)
 							.attr('y', this.svgItemHeight * (operations[i].qubits[j] + 2) - 15)
-							.attr('style', 'font-size:12px;')
+							.classed('svgtext', true)
 							.append('tspan')
 							.text(operations[i].rotation + '°')
 					}
