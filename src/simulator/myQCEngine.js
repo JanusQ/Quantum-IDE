@@ -14,10 +14,13 @@
 // let QuantumCircuit = require('../resource/js/quantum-circuit.min.js')
 import { write0, write1 } from './MyGate';
 import QuantumCircuit from './QuantumCircuit'
-import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, alt_tensor, calibrate, getExp} from './CommonFunction'
+import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, alt_tensor, calibrate, getExp, linear_entropy, binary2int} from './CommonFunction'
 import {
-    cos, sin, round, pi, complex,
+    cos, sin, round, pi, complex, create, all,
 } from 'mathjs'
+import { Binding } from '@babel/traverse';
+const config = { };
+const math = create(all, config);
 
 // 统一规定高位在后
 
@@ -553,16 +556,13 @@ export default class QCEngine {
         let opera = this.operations[operation_index];
         let state = opera['state_after_opertaion'];
         let magnitudes = [];
-        for(let i = 0;i<state.length;i++)
+        
+        for(let i=0; i<state.length; i++)
         {
             magnitudes[i] = state[i]['magnitude'];
         }
 
         let var_index = this.name2index;
-        // for(i=0;i<magnitudes.length;i++)
-        // {
-        //     magnitudes[i]=magnitudes[i]*magnitudes[i];
-        // }
     
         for(let key in var_index)
         {       
@@ -572,9 +572,10 @@ export default class QCEngine {
             let i = 0;
             let bits = var_index[key][1] - var_index[key][0];
             let prob = 0;
+            
             for(i=0; i<Math.pow(2,bits); i++)
             {
-                prob = sum(magnitudes,i,var_index[key],Math.log2(magnitudes.length));
+                prob = sum(magnitudes, i, var_index[key], this.qubit_number);
                 res[key]['prob'][i] = prob;
                 res[key]['magn'][i] = Math.sqrt(prob);
             }        
@@ -591,7 +592,7 @@ export default class QCEngine {
         res['magns'] = [];
         res['phases'] = [];
         
-        for(let i = 0;i<state.length;i++)
+        for(let i=0; i<state.length; i++)
         {
             let comp = state['amplitude'];
             let polar = getExp(comp);
@@ -606,17 +607,17 @@ export default class QCEngine {
     {
         let opera = this.operations[operation_index];
         let state = opera['state_after_opertaion'];
-
         let var_index = this.name2index;
             
         let i = 0;
         let neo_sv = [];
         let com = [];
+        
         for(let key in filter)
         {
             if(com.length==0)
             {
-                for(i = 0 ;i<filter[key].length;i++)
+                for(i=0; i<filter[key].length; i++)
                     com[i]=[filter[key][i]];
                 continue;
             }
@@ -625,6 +626,7 @@ export default class QCEngine {
         
         let k = 0;
         let total = Math.log2(state.length);
+        
         for(i=0; i<com.length; i++)
         {
             let tmp = com[i];
@@ -634,28 +636,143 @@ export default class QCEngine {
             
             for (let key in var_index)
             {
-                index += tmp[j] * (Math.pow(2,total-var_index[key][1]));
+                index += tmp[j] * (Math.pow(2, total - var_index[key][1]));
                 j++;
             }
             
             neo_sv[k] = index;
             k++;
         }
-        return neo_sv;
         
+        return neo_sv;       
+    }
+    
+    _selected_state(operation_index, num, bit_range)
+    {
+        let opera = this.operations[operation_index];
+        let state = opera['state_after_opertaion'];
+        let res = [];
+        let min = bit_range[0];
+        let max = bit_range[1];
+        let ran = max - min;
+        let bin = binary(num, this.qubit_number - ran);
+        let ret = [];
+        for(let i=0; i<Math.pow(2,ran); i++)
+        {
+            let bini = binary(i,ran);
+            for(let j=0; j<bin[i].length; j++)
+            {
+                bin.splice(bin.length-max-1,0,bini[j]);
+            }
+            ret[i] = binary2int(bin,this.qubit_number);
+        }
+        return ret;
+
     }
 
-    get_entropy()
+    _get_fake_vector(name, operation_index)
     {
-        return 0;
+        let opera = this.operations[operation_index];
+        let state = opera['state_after_opertaion'];
+        let var_index = this.name2index;
+        let bits = var_index[name][1] - var_index[name][0];
+        let whole_state = this.get_wholestate(operation_index);
+        let now_num = 0;
+        let fin_vec = [];
+        
+        for(let i=0; i<Math.pow(2,bits);i++)
+            fin_vec[i]=complex(0,0);
+        
+        for(now_num=0; now_num<Math.pow(2, this.qubit_number-bits); now_num++)
+        {
+            let ids = this._get_selected(now_num, operation_index);
+            let prob = 0;
+            let vecs = [];
+            
+            for(let i=0; i<ids.length; i++){
+                prob += whole_state['magns'][ids[i]];
+                vecs[i] = state[i]['amplitude'];
+            }
+            for(let i=0; i<vecs.length; i++)
+            {
+                vecs[i] = math.multiply(vecs[i],prob);
+                fin_vec[i] = math.add(fin_vec[i],vecs[i]);
+            }          
+        }
+        
+        return fin_vec;
     }
 
-    calc_pmi(operation_index,sel1,sel2)
+    get_entropy(operation_index)
     {
-        return 0;
+        let len = 0;
+        let ent = 0;
+        let var_index = this.name2index;
+        let vec = [];
+        
+        for(let key in var_index){
+            vec = this._get_fake_vector(key,operation_index);
+            ent += linear_entropy(vec);
+            len++;
+        }
+        return ent/len;
+    }
 
+    _calc_pmi(operation_index, select)
+    {
+        let index = this.get_index(operation_index, select);
+        let whole_state = this.get_wholestate(operation_index);
+        let p_xy = 0;
+        let i = 0;
+        
+        for(i=0 ; i<index.length; i++)
+        {
+            let magn = whole_state['magns'][index[i]];
+            p_xy += magn*magn;
+        }
+        
+        let var_state = this.get_varstate(operation_index);
+        let div = 1;
+        
+        for(let key in select)
+        {
+            div *= var_state[key]['prob'][select[key]]; 
+        }
+        
+        return p_xy / div;
+    }
 
+    get_pmi_index(operation_index, threshold)
+    {
+        let ids = [];
+        let i,j = 0;
+        let var_index = this.name2index;
+        
+        for(let key in var_index){
+            let len = Math.pow(2,var_index[key][1] - var_index[key][0]);
+            for (let key2 in var_index){
+                let len2 = Math.pow(2,var_index[key2][1] - var_index[key2][0]);
+                for(i=0; i<len; i++)
+                    for(j=0; j<len2; j++)
+                    {
+                        if(key != key2){
+                            let select = {};
+                            select[key] = [i];
+                            select[key2] = [j];
+                            let pmi = this._calc_pmi(operation_index,select);
+                            if(pmi >= threshold){
+                                select[key] = select[key][0];
+                                select[key2] = select[key2][0];
+                                ids[i] = select;
+                            }
+                        }
+                    }
 
+            }
+        }
+            
+
+        return ids;
     }
 
 }

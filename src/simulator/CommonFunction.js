@@ -132,18 +132,22 @@ function calibrate(phase)
 {
     while(phase < 0)
     {
-        phase += Math.pi*2;
+        phase += Math.PI*2;
     }
-    while(phase > 0)
+    while(phase > 2*Math.PI)
     {
-        phase -= Math.pi*2;
+        phase -= Math.PI*2;
     }
     return phase;
 }
 
 // TODO: 判断这几个比特组成的状态是不是纯态
-function isPure(qubits, state) { //qubits: number of qubits ; state: a vector
-   // qubits
+function isPure(state) {// state: state vector of a grouped qubits  
+    let mat = density(state);
+    let trace = math.trace(mat);
+    
+    return trace;
+
 
 }
 
@@ -170,12 +174,14 @@ function isUnitary(operator, precision = 1e-5){
     for(let i=0; i<mat_tr.size()[0];i++)
     {
         for(let j=0; j < mat_tr.size()[1];j++){
+            let tmp =res.get([i,j]);
+            tmp = tmp.re*tmp.re + tmp.im*tmp.im;
             if(i == j){
-                if(Math.abs(res.get([i,j])-1) > precision)
+                if(Math.abs(tmp-1) > precision)
                     return false;
             }
             else{
-                if(Math.abs(res.get([i,j])-0) > precision)
+                if(Math.abs(tmp-0) > precision)
                     return false;
             }
         }
@@ -220,7 +226,7 @@ function not_equal(bin1,bin2,range)
 {
     let i = 0;
     let j = 0;
-    for(i=range[0];i<range[1];i++)
+    for(i=range[0]; i<range[1]; i++)
     {
         if(bin1[j] != bin2[i])
             return true;
@@ -237,40 +243,12 @@ function sum(state_vector, num, range, total)
     
     for(i=0; i<state_vector.length; i++)
     {
-        let tmp = get_binary(i,total);
+        let tmp = get_binary(i, total);
         
-        if(not_equal(std,tmp,range))
+        if(not_equal(std, tmp, range))
             continue;
         
         res += state_vector[i];
-    }
-    
-    return res;
-}
-
-function get_varstate(state_vector,var_index)
-{
-    let res = {};
-
-    // for(i=0;i<state_vector.length;i++)
-    // {
-    //     state_vector[i]=state_vector[i]*state_vector[i];
-    // }
-    
-    for(let key in var_index)
-    {       
-        res[key] = {};
-        res[key]['prob'] = [];
-        res[key]['magn'] = [];
-        let i = 0;
-        let bits = var_index[key][1] - var_index[key][0];
-        let prob = 0;
-        for(i=0; i<Math.pow(2,bits); i++)
-        {
-            prob = sum(state_vector,i,var_index[key],Math.log2(state_vector.length));
-            res[key]['prob'][i] = prob;
-            res[key]['magn'][i] = Math.sqrt(prob);
-        }        
     }
     
     return res;
@@ -281,80 +259,42 @@ function alt_tensor(l1,l2)
 	let res = [];
     let k = 0;
     
-    for(let i=0;i<l1.length;i++)
+    for(let i=0; i<l1.length; i++)
     {
-    	for(let j=0;j<l2.length;j++)
+    	for(let j=0; j<l2.length; j++)
         {
             let med = l1[i].concat([l2[j]]);
             res[k] = med;
             k++;
         }
     }
+    
     return res;
 }
 
-function state_filtered(state_vector, var_index, filter)
-{
-    let i = 0;
-    let neo_sv = [];
-    let com = [];
-    for(let key in filter)
-    {
-        if(com.length==0)
-        {
-            for(i = 0 ;i<filter[key].length;i++)
-                com[i]=[filter[key][i]];
-            continue;
-        }
-        com = alt_tensor(com,filter[key]);
-    }
-    
-    let k = 0;
-    let total = Math.log2(state_vector.length);
-    for(i=0; i<com.length; i++)
-    {
-        let tmp = com[i];
-        let index = 0;
-        
-        let j = 0;
-        
-        for (let key in var_index)
-        {
-            index += tmp[j] * (Math.pow(2,total-var_index[key][1]));
-            j++;
-        }
-        
-        neo_sv[k] = index;
-        k++;
-    }
-    return neo_sv;
-    
-}
-
-function density(state_vector) // input is an array 
+function density(fake_vector) // input is an array 
 { 
-    let mat = math.matrix(state_vector);
+    let mat = math.matrix(fake_vector);
     let mat_tr = conj_tran(mat);
     let den = math.multiply(mat, mat_tr);
     
     return den;
-
 }
 
-function linear_entropy(state_vector)
+function linear_entropy(fake_vector)
 {
-    let mat = density(state_vector);
+    let mat = density(fake_vector);
     mat = math.multiply(mat, mat);
     
-    let trace = 0;
+    let trace = complex(0,0);
     let i = 0;
     
-    for(i=0; i<state_vector.length; i++)
+    for(i=0; i<fake_vector.length; i++)
     {
-        trace += mat.get([i,i]);
+        trace = math.add(trace, mat.get([i,i]));
     }
 
-    return 1 - trace;
+    return 1 - trace.re;
 }
 
 function get_entropy(vars)
@@ -382,13 +322,13 @@ export {
 	createFile,
 	exportSVG,
 	unique,
-	get_varstate,
-	state_filtered,
 	get_entropy,
     sum,
     alt_tensor,
+    isPure,
     isNormalized,
     isUnitary,
     calibrate,
-    
+    linear_entropy,
+
 }
