@@ -14,7 +14,7 @@
 // let QuantumCircuit = require('../resource/js/quantum-circuit.min.js')
 import { write0, write1 } from './MyGate';
 import QuantumCircuit from './QuantumCircuit'
-import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, alt_tensor, calibrate, getExp, linear_entropy, binary2int} from './CommonFunction'
+import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, alt_tensor, calibrate, getExp, linear_entropy, binary2int, average, spec} from './CommonFunction'
 import {
     cos, sin, round, pi, complex, create, all,
 } from 'mathjs'
@@ -365,7 +365,7 @@ export default class QCEngine {
         //     }
         // });
 
-        circuit.addGate("ncphase",  now_column, qubits, {
+        circuit.addGate("ncphase", now_column, qubits, {
             params: {
                 qubit_number: qubits.length,
                 phi: toPI(rotation)
@@ -790,15 +790,87 @@ export default class QCEngine {
         return ids;
     }
 
-    get_input_state(label_id)
+    
+
+    _make_state(label_id, status)
     {
         let ops = this.labels[label_id]['operations'];
-        let start_op = ops[0];
-        let end_op = ops[1];
-        let input_state = {};
-        input_state['vars'] = [];
-        input_state['bases'] = [];
+        let op_index;
+        if(status == 'start')
+            op_index = ops[0];
+        else if (status == 'end')
+            op_index = ops[1];
 
+        let whole = this.get_wholestate(ops[0]);
+        let opera = this.operations[op_index];
+        let state = opera['state_after_opertaion'];
+        let involved_qubits = this.getQubitsInvolved(opera);
+        let var_index = this.name2index;
+        let vars = [];
+        
+        for(let qubit of involved_qubits){
+            let tmp_array = [];
+            let tmp_var = this.getQubit2Variable(qubit);
+            tmp_array.push(tmp_var['variable']);
+            vars = [...new Set(tmp_array)];         
+        }
+
+        let input_state = {};
+        input_state['vars'] = vars;
+        let deep_length = 1;
+        let qubit_num = 0;
+        
+        for(let key in vars)
+        {
+            let bits = var_index[vars[key]][1] - var_index[vars[key]][0];
+            deep_length *= bits;
+            qubit_num += bits;
+        }
+        
+        for(let i=0; i<deep_length; i++)
+        {
+            input_state['bases'][i]={};
+            
+            input_state['bases'][i]['id'] = i;
+            
+            input_state['bases'][i]['var2value']={};
+            let bin = binary(i,qubit_num);
+            bin = bin.reverse();
+            for(let k=0; k<vars.length; k++)
+            {
+                let tmp  = bin.slice(var_index[vars[k]][0], var_index[vars[k]][1]);
+                tmp = tmp.reverse();
+                let dec = binary2int(tmp);
+                input_state['bases'][i]['var2value'][vars[k]] = dec;
+            }
+
+            //TODO: switch to power
+            let tmp_index = this.get_index(ops[0],input_state['bases'][i]['var2value']);
+            input_state['bases'][i]['magnitude'] = average(whole['magns'],tmp_index);
+            input_state['bases'][i]['phases'] = average(whole['phases'],tmp_index);
+
+            input_state['bases'][i]['related_bases'] = [];
+
+            for(let k=0; k<Math.pow(2,this.qubit_number-qubit_num); k++)
+            {
+                let order;
+                input_state['bases'][i]['related_bases'][k] = {};
+                let all_bin = spec(this.qubit_number, k, this.qubit_number-qubit_num, var_index,input_state['bases'][i]['var2value']);
+                all_bin = all_bin.reverse();
+
+                for(let key in var_index){
+                    let bin = all_bin.slice(var_index[key][0],var_index[key][1]);
+                    bin = bin.reverse();
+                    input_state['bases'][i]['related_bases'][k][key] = binary2int(bin);                
+                }
+                
+                input_state['bases'][i]['related_bases'][k]['var2value'] = {};
+                input_state['bases'][i]['related_bases'][k]['magnitude'] = whole['magns'][order];
+                input_state['bases'][i]['related_bases'][k]['magnitude'] = whole['phases'][order];
+
+            }
+
+        }
 
         return input_state;
 
@@ -806,17 +878,18 @@ export default class QCEngine {
 
     get_evo_matrix(label_id)
     {
+        
 
+    }
+
+    get_input_state(label_id)
+    {
+        return this._make_state(label_id, 'start');
     }
 
     get_output_state(label_id)
     {
-
-    }
-
-    base2varvalues(label_id, base_id)
-    {
-        
+        return this._make_state(label_id, 'end');
     }
 
 }
