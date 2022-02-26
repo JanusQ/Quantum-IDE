@@ -18,7 +18,7 @@ import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, a
 import {
     cos, sin, round, pi, complex, create, all,
 } from 'mathjs'
-import { Binding } from '@babel/traverse';
+
 const config = { };
 const math = create(all, config);
 
