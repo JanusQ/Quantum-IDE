@@ -612,10 +612,25 @@ export default class QCEngine {
         let i = 0;
         let neo_sv = [];
         let com = [];
+
+        for(let key in var_index)
+        {
+            if(filter[key] == undefined)
+                continue;
+            else{
+                let tmp_ar = [];
+                let len = var_index[key][1]-var_index[key][0];
+                for(i=0;i<Math.pow(2,len);i++)
+                {
+                    tmp_ar[i] = i;
+                }
+                filter[key] = tmp_ar;
+            }
+        }
         
         for(let key in filter)
         {
-            if(com.length==0)
+            if(com.length == 0)
             {
                 for(i=0; i<filter[key].length; i++)
                     com[i]=[filter[key][i]];
@@ -736,7 +751,7 @@ export default class QCEngine {
         
         for(let key in select)
         {
-            div *= var_state[key]['prob'][select[key]]; 
+            div *= var_state[key]['prob'][select[key][0]]; 
         }
         
         return p_xy / div;
@@ -773,6 +788,35 @@ export default class QCEngine {
             
 
         return ids;
+    }
+
+    get_input_state(label_id)
+    {
+        let ops = this.labels[label_id]['operations'];
+        let start_op = ops[0];
+        let end_op = ops[1];
+        let input_state = {};
+        input_state['vars'] = [];
+        input_state['bases'] = [];
+
+
+        return input_state;
+
+    }
+
+    get_evo_matrix(label_id)
+    {
+
+    }
+
+    get_output_state(label_id)
+    {
+
+    }
+
+    base2varvalues(label_id, base_id)
+    {
+        
     }
 
 }
