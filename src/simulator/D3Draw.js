@@ -15,24 +15,22 @@ export default class d3Draw {
 		// had字体颜色
 		this.hadFontColor = options.hadFontColor || '#000'
 		// 设置空白和间距
-		this.firstX = 120
-		this.svgItemWidth = 40
+		this.firstX = 90
+		this.svgItemWidth = 30
 		this.svgItemHeight = 30
 		// 鼠标放上的小label宽
 		this.svgItemLabelWidth = 30
 		// 计算比例
 		this.scaleNum = this.firstX / this.svgItemWidth
 		// label位置的偏移 x - 图形的宽
-		this.labelTranslate = this.firstX - 20
+		this.labelTranslate = this.firstX - this.svgItemWidth / 2
 	}
 	exportD3SVG(data) {
-		console.log(data)
 		const d3DrawingDiv = d3.select('#d3_drawing')
 		// 移除已经添加过的
 		if (d3DrawingDiv.select('svg')._groups[0]) {
 			d3DrawingDiv.select('svg').remove()
 		}
-
 		const svg = d3DrawingDiv.append('svg').attr('width', '100%').attr('height', '100%')
 		const drawG = svg.append('g')
 		const { operations, qubit_number } = data
@@ -66,7 +64,11 @@ export default class d3Draw {
 		 */
 		for (let i = 0; i < col; i++) {
 			this.drawLine(drawG, this.firstX, this.svgItemHeight * (i + 2), (row + 2) * this.svgItemWidth, this.svgItemHeight * (i + 2))
-			this.drawName(drawG, this.svgItemWidth * 2 + 10, this.svgItemHeight * (i + 2), 'Q' + data.getQubit2Variable(i).index)
+			this.drawName(drawG, this.svgItemWidth * 2 + 5, this.svgItemHeight * (i + 2), 'Q' + data.getQubit2Variable(i).index)
+		}
+		// 绘制选择线
+		for (let i = 0; i < row; i++) {
+			this.drawCselectLine(drawG, this.svgItemWidth * (i + 3) + 14, this.svgItemHeight * 2 - 6, this.svgItemHeight * col - 15, i, data)
 		}
 		// 加入Qint
 		for (const key in data.name2index) {
@@ -79,47 +81,56 @@ export default class d3Draw {
 		// 处理操作
 		this.handleOperations(drawG, operations, data)
 		// 框选
-		this.brushedFn(svg, drawG)
+		// this.brushedFn(svg, drawG)
 	}
 
 	drawWrite1(svg, x, y) {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
-		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', 'none')
+		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', 'none').classed('operation_item', true)
 		const childG = parentG.append('g')
 		const context = d3.path()
 		context.moveTo(3, 3)
 		context.lineTo(20, 10)
 		context.lineTo(3, 17)
-		childG.append('path').attr('d', context.toString()).attr('stroke', '#000').attr('stroke-width', 1).attr('fill', this.write1Background)
-		childG.append('rect').attr('x', 2).attr('y', 7).attr('width', 2).attr('height', 6).attr('fill', this.write1FontColor)
+		childG.append('path').attr('d', context.toString()).attr('stroke', '#000').attr('stroke-width', 1).attr('fill', this.write1Background).classed('operation_item', true)
+		childG.append('rect').attr('x', 2).attr('y', 7).attr('width', 2).attr('height', 6).attr('fill', this.write1FontColor).classed('operation_item', true)
 	}
 	drawWrite0(svg, x, y) {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
-		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', 'none')
+		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', 'none').classed('operation_item', true)
 		const childG = parentG.append('g')
 		const context = d3.path()
 		context.moveTo(3, 3)
 		context.lineTo(20, 10)
 		context.lineTo(3, 17)
-		childG.append('path').attr('d', context.toString()).attr('stroke', '#000').attr('stroke-width', 1).attr('fill', this.write0Background)
-		childG.append('circle').attr('cx', 4).attr('cy', 10).attr('r', 3).attr('stroke-width', 1).attr('stroke', this.write0FontColor).attr('fill', 'none')
+		childG.append('path').attr('d', context.toString()).attr('stroke', '#000').attr('stroke-width', 1).attr('fill', this.write0Background).classed('operation_item', true)
+		childG.append('circle').attr('cx', 4).attr('cy', 10).attr('r', 3).attr('stroke-width', 1).attr('stroke', this.write0FontColor).attr('fill', 'none').classed('operation_item', true)
 	}
 	drawH(svg, x, y) {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
-		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', '#fff').attr('stroke', '#000').attr('stroke-width', 1)
+		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', '#fff').attr('stroke', '#000').attr('stroke-width', 1).classed('operation_item', true)
 		const childG = parentG.append('g')
-		childG.append('text').attr('x', 10).attr('y', 15).attr('style', `font-size:16px;font-weight:bold;`).append('tspan').text('H').attr('text-anchor', 'middle').classed('svgtext', true)
+		childG
+			.append('text')
+			.attr('x', 10)
+			.attr('y', 15)
+			.attr('style', `font-size:16px;font-weight:bold;`)
+			.append('tspan')
+			.text('H')
+			.attr('text-anchor', 'middle')
+			.classed('svgtext', true)
+			.classed('operation_item', true)
 	}
 	drawRead(svg, x, y) {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
-		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', 'none').attr('stroke', '#000').attr('stroke-width', 1)
+		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', 'none').attr('stroke', '#000').attr('stroke-width', 1).classed('operation_item', true)
 		const childG = parentG.append('g')
 		const context = d3.path()
 		context.moveTo(3, 14)
 		context.quadraticCurveTo(10, 4, 17, 14)
 		context.moveTo(10, 16)
 		context.lineTo(16, 8)
-		childG.append('path').attr('d', context.toString()).attr('stroke', '#000').attr('stroke-width', 1).attr('fill', 'none')
+		childG.append('path').attr('d', context.toString()).attr('stroke', '#000').attr('stroke-width', 1).attr('fill', 'none').classed('operation_item', true)
 		// 读取到的值
 		// childG.append('rect').attr('x', 17).attr('y', 3).attr('width', 1).attr('height', 5).attr('fill', 'blue')
 		// childG
@@ -134,49 +145,49 @@ export default class d3Draw {
 	// 需要计算直线和target位置再加个实心圆
 	drawCcnot(svg, x, y) {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
-		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', '#fff')
+		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', '#fff').classed('operation_item', true)
 		const childG = parentG.append('g')
-		childG.append('circle').attr('cx', 10).attr('cy', 10).attr('r', 10).attr('fill', '#fff').attr('stroke', '#000').attr('stroke-width', 1)
+		childG.append('circle').attr('cx', 10).attr('cy', 10).attr('r', 10).attr('fill', '#fff').attr('stroke', '#000').attr('stroke-width', 1).classed('operation_item', true)
 		const context = d3.path()
 		context.moveTo(10, 1)
 		context.lineTo(10, 19)
 		context.moveTo(1, 10)
 		context.lineTo(19, 10)
-		childG.append('path').attr('d', context.toString()).attr('stroke', '#000').attr('stroke-width', 1).attr('fill', 'none')
+		childG.append('path').attr('d', context.toString()).attr('stroke', '#000').attr('stroke-width', 1).attr('fill', 'none').classed('operation_item', true)
 	}
 	// 叉号 x
 	drawSwap(svg, x, y) {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
-		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', 'none')
+		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', 'none').classed('operation_item', true)
 		const childG = parentG.append('g')
 		const context = d3.path()
 		context.moveTo(2, 2)
 		context.lineTo(18, 18)
 		context.moveTo(18, 2)
 		context.lineTo(2, 18)
-		childG.append('path').attr('d', context.toString()).attr('stroke', '#000').attr('stroke-width', 1).attr('fill', 'none')
+		childG.append('path').attr('d', context.toString()).attr('stroke', '#000').attr('stroke-width', 1).attr('fill', 'none').classed('operation_item', true)
 	}
 	drawCCPhase(svg, x, y) {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
-		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', '#fff')
+		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', '#fff').classed('operation_item', true)
 		const childG = parentG.append('g')
-		childG.append('circle').attr('cx', 10).attr('cy', 10).attr('r', 10).attr('fill', '#fff').attr('stroke', '#000').attr('stroke-width', 1)
-		childG.append('circle').attr('cx', 10).attr('cy', 10).attr('r', 4).attr('fill', 'none').attr('stroke', '#000').attr('stroke-width', 1)
+		childG.append('circle').attr('cx', 10).attr('cy', 10).attr('r', 10).attr('fill', '#fff').attr('stroke', '#000').attr('stroke-width', 1).classed('operation_item', true)
+		childG.append('circle').attr('cx', 10).attr('cy', 10).attr('r', 4).attr('fill', 'none').attr('stroke', '#000').attr('stroke-width', 1).classed('operation_item', true)
 		const context = d3.path()
 		context.moveTo(12, 2)
 		context.lineTo(9, 18)
-		childG.append('path').attr('d', context.toString()).attr('stroke', '#000').attr('stroke-width', 1).attr('fill', 'none')
+		childG.append('path').attr('d', context.toString()).attr('stroke', '#000').attr('stroke-width', 1).attr('fill', 'none').classed('operation_item', true)
 	}
 	//  绘制需要的实心圆，实线
 	drawCircle(svg, x, y) {
-		svg.append('circle').attr('cx', x).attr('cy', y).attr('r', 4).attr('stroke', '#000').attr('stroke-width', 1).attr('fill', '#000')
+		svg.append('circle').attr('cx', x).attr('cy', y).attr('r', 4).attr('stroke', '#000').attr('stroke-width', 1).attr('fill', '#000').classed('operation_item', true)
 	}
 	// x,y 起始位置 targetX/Y 结束位置
 	drawLine(svg, x, y, targetX, targetY) {
 		const context = d3.path()
 		context.moveTo(x, y)
 		context.lineTo(targetX, targetY)
-		svg.append('path').attr('d', context.toString()).attr('stroke', '#000').attr('stroke-width', 1).attr('fill', 'none')
+		svg.append('path').attr('d', context.toString()).attr('stroke', '#000').attr('stroke-width', 1).attr('fill', 'none').classed('operation_item', true)
 	}
 	// 绘制label
 	drawLabel(svg, x, y, width, height, labelText) {
@@ -221,7 +232,7 @@ export default class d3Draw {
 		context.quadraticCurveTo(0, 0, 0, 10)
 		context.lineTo(0, height - 10)
 		context.quadraticCurveTo(0, height, 10, height)
-		parentG.append('path').attr('d', context.toString()).attr('stroke', 'rgb(100, 159, 174)').attr('stroke-width', 1).attr('fill', 'none')
+		parentG.append('path').attr('d', context.toString()).attr('stroke', 'rgb(100, 159, 174)').attr('stroke-width', 1).attr('fill', 'none').classed('operation_item', true)
 		parentG
 			.append('text')
 			.attr('width', 20)
@@ -234,7 +245,7 @@ export default class d3Draw {
 	// 绘制self defined gate
 	drawSelfDefinedGate(svg, x, y) {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
-		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', '#fff').attr('stroke-width', 1).attr('stroke', '#000').attr('rx', 4)
+		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', '#fff').attr('stroke-width', 1).attr('stroke', '#000').attr('rx', 4).classed('operation_item', true)
 	}
 	// 鼠标选中效果
 	drawMouseHover(svg, x, y, height) {
@@ -257,29 +268,63 @@ export default class d3Draw {
 		context.lineTo(x + this.svgItemLabelWidth - 10, y + height)
 		context.quadraticCurveTo(x + this.svgItemLabelWidth, y + height, x + this.svgItemLabelWidth, y + height - 10)
 		svg.append('path').attr('d', context.toString()).attr('stroke-width', 1).attr('class', 'item_label_path').attr('fill', 'transparent')
-		svg.on('mouseover', function () {
-			d3.select(this).select('.item_label_path').attr('stroke', 'rgb(100, 159, 174)')
-			d3.select(this).select('.item_label_rect').attr('fill', '#f2f2f2')
-		})
-		svg.on('mouseout', function () {
-			d3.select(this).select('.item_label_path').attr('stroke', 'transparent')
-			d3.select(this).select('.item_label_rect').attr('fill', 'transparent')
-		})
+		// svg.on('mouseover', function () {
+		// 	d3.select(this).select('.item_label_path').attr('stroke', 'rgb(100, 159, 174)')
+		// 	d3.select(this).select('.item_label_rect').attr('fill', '#f2f2f2')
+		// })
+		// svg.on('mouseout', function () {
+		// 	d3.select(this).select('.item_label_path').attr('stroke', 'transparent')
+		// 	d3.select(this).select('.item_label_rect').attr('fill', 'transparent')
+		// })
 	}
-	// // 刷取选中
-	brushedFn(svg, drawG) {
-		const brush = d3.brush().on('end', brushed)
-		const brushG = svg.append('g').attr('class', 'brush')
-		drawG.on('click', function (e) {
-			if (!e.target.classList.contains('item_label_rect')) {
-				brushG.call(brush)
-			}
+	// 绘制C模块选中线
+	drawCselectLine(svg, x, y, height, index, data) {
+		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`).attr('style', 'cursor:pointer;')
+		parentG.append('rect').attr('width', 2).attr('height', height).attr('fill', 'transparent').classed('select_rect', true).attr('operationIndex', index)
+		const childG = parentG.append('g')
+		const context = d3.path()
+		context.moveTo(1, 1)
+		context.lineTo(6, -4)
+		context.lineTo(-4, -4)
+		context.closePath()
+		context.moveTo(1, height - 1)
+		context.lineTo(6, height + 5)
+		context.lineTo(-4, height + 5)
+		context.closePath()
+		childG.append('path').attr('d', context.toString()).attr('stroke', 'transparent').attr('stroke-width', 1).attr('fill', 'transparent').classed('select_path', true)
+		parentG.on('click', function (e) {
+			console.log(e.target.attributes.operationIndex.value)
+			d3.selectAll('.select_path').attr('stroke', 'transparent').attr('fill', 'transparent')
+			d3.selectAll('.select_rect').attr('stroke', 'transparent').attr('fill', 'transparent')
+			d3.select(this).select('.select_path').attr('stroke', 'rgb(149, 143, 143)').attr('fill', 'rgb(149, 143, 143)')
+			d3.select(this).select('.select_rect').attr('fill', 'rgb(149, 143, 143)')
 		})
-		function brushed({ selection }) {
-			console.log(selection)
-			// svg.remove(brushG)
-		}
+		// context.lineTo(20, 10)
+		// context.lineTo(3, 17)
 	}
+	// // // 刷取选中
+	// brushedFn(svg, drawG) {
+	// 	const brush = d3.brush().on('end', brushed)
+
+	// 	drawG.on('mousedown', function (e) {
+	// 		console.log(e)
+	// 		if (!e.target.classList.contains('operation_item')) {
+	// 			const brushG = svg.append('g').attr('class', 'brush')
+	// 			brushG.call(brush)
+
+	// 			// drawG.on('mouseout',function(){
+	// 			// 	const brushG = svg.append('g').attr('class', 'brush')
+	// 			// })
+	// 		}
+	// 	})
+
+	// 	function brushed({ selection }) {
+	// 		console.log(selection)
+	// 		// svg.remove(brushG)
+	// 		// console.log(brush)
+	// 		d3.select('.brush').on('.brush', null).remove()
+	// 	}
+	// }
 
 	// 处理操作
 	handleOperations(svg, operations, data) {
@@ -287,42 +332,26 @@ export default class d3Draw {
 			switch (operations[i].operation) {
 				// write操作
 				case 'write':
-					const writeG = svg.append('g').attr('style', 'cursor:pointer;')
 					// 处理数组
 					for (let j = operations[i].value.length - 1; j >= 0; j--) {
+						const writeG = svg.append('g').classed('operation_item', true)
 						if (operations[i].value[j]) {
 							this.drawWrite1(writeG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits[j] + 2))
 						} else {
 							this.drawWrite0(writeG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits[j] + 2))
 						}
 					}
-					const qubitMin = Math.min(...operations[i].qubits)
-					const qubitMax = Math.max(...operations[i].qubits)
-					this.drawMouseHover(
-						writeG,
-						this.svgItemWidth * (i + this.scaleNum) - this.svgItemHeight / 2,
-						this.svgItemHeight * (qubitMin + 2) - this.svgItemHeight / 2,
-						this.svgItemHeight * (qubitMax - qubitMin + 1)
-					)
 					break
 				// had操作
 				case 'h':
-					const hG = svg.append('g').attr('style', 'cursor:pointer;')
 					for (let j = 0; j < operations[i].qubits.length; j++) {
+						const hG = svg.append('g').classed('operation_item', true)
 						this.drawH(hG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits[j] + 2))
 					}
-					const qubitHMin = Math.min(...operations[i].qubits)
-					const qubitHMax = Math.max(...operations[i].qubits)
-					this.drawMouseHover(
-						hG,
-						this.svgItemWidth * (i + this.scaleNum) - this.svgItemHeight / 2,
-						this.svgItemHeight * (qubitHMin + 2) - this.svgItemHeight / 2,
-						this.svgItemHeight * (qubitHMax - qubitHMin + 1)
-					)
 					break
 				case 'swap':
 					for (let j = 0; j < operations[i].qubits1.length; j++) {
-						const swapG = svg.append('g').attr('style', 'cursor:pointer;')
+						const swapG = svg.append('g').classed('operation_item', true)
 						this.drawSwap(swapG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits1[j] + 2))
 						this.drawSwap(swapG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits2[j] + 2))
 						this.drawLine(
@@ -332,18 +361,10 @@ export default class d3Draw {
 							this.svgItemWidth * (i + this.scaleNum),
 							this.svgItemHeight * (operations[i].qubits2[j] + 2)
 						)
-						const swapMinQ = Math.min(operations[i].qubits1[j], operations[i].qubits2[j])
-						const swapMaxQ = Math.max(operations[i].qubits1[j], operations[i].qubits2[j])
-						this.drawMouseHover(
-							swapG,
-							this.svgItemWidth * (i + this.scaleNum) - this.svgItemHeight / 2,
-							this.svgItemHeight * (swapMinQ + 2) - this.svgItemHeight / 2,
-							this.svgItemHeight * (swapMaxQ - swapMinQ + 1)
-						)
 					}
 					break
 				case 'ccnot':
-					const ccnotG = svg.append('g').attr('style', 'cursor:pointer;')
+					const ccnotG = svg.append('g').classed('operation_item', true)
 					// 判断最大值最小值 向两个极端画线
 					const controlsMin = Math.min(...operations[i].controls)
 					const controlsMax = Math.max(...operations[i].controls)
@@ -388,17 +409,9 @@ export default class d3Draw {
 					}
 
 					this.drawCcnot(ccnotG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].target[0] + 2))
-					const ccnotMinLabelQ = Math.min(...operations[i].controls, ...operations[i].target)
-					const ccnotMaxLabelQ = Math.max(...operations[i].controls, ...operations[i].target)
-					this.drawMouseHover(
-						ccnotG,
-						this.svgItemWidth * (i + this.scaleNum) - this.svgItemHeight / 2,
-						this.svgItemHeight * (ccnotMinLabelQ + 2) - this.svgItemHeight / 2,
-						this.svgItemHeight * (ccnotMaxLabelQ - ccnotMinLabelQ + 1)
-					)
 					break
 				case 'ccphase':
-					const ccphaseG = svg.append('g').attr('style', 'cursor:pointer;')
+					const ccphaseG = svg.append('g').classed('operation_item', true)
 					this.drawLine(
 						ccphaseG,
 						this.svgItemWidth * (i + this.scaleNum),
@@ -409,18 +422,9 @@ export default class d3Draw {
 					for (let j = 0; j < operations[i].qubits.length; j++) {
 						this.drawCCPhase(ccphaseG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits[j] + 2))
 					}
-					const ccphaseMinQ = Math.min(...operations[i].qubits)
-					const ccphaseMaxQ = Math.max(...operations[i].qubits)
-					const itemLableRow = ccphaseMaxQ - ccphaseMinQ + 1
-					this.drawMouseHover(
-						ccphaseG,
-						this.svgItemWidth * (i + this.scaleNum) - this.svgItemHeight / 2,
-						this.svgItemHeight * (ccphaseMinQ + 2) - this.svgItemHeight / 2,
-						itemLableRow * this.svgItemHeight
-					)
 					break
 				case 'phase':
-					const phaseG = svg.append('g').attr('style', 'cursor:pointer;')
+					const phaseG = svg.append('g').classed('operation_item', true)
 					for (let j = 0; j < operations[i].qubits.length; j++) {
 						this.drawCCPhase(phaseG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits[j] + 2))
 						phaseG
@@ -431,14 +435,14 @@ export default class d3Draw {
 							.append('tspan')
 							.text(operations[i].rotation + '°')
 					}
-					const phaseMinQ = Math.min(...operations[i].qubits)
-					const phaseMaxQ = Math.max(...operations[i].qubits)
-					this.drawMouseHover(
-						phaseG,
-						this.svgItemWidth * (i + this.scaleNum) - this.svgItemHeight / 2,
-						this.svgItemHeight * (phaseMinQ + 2) - this.svgItemHeight / 2 - 12,
-						this.svgItemHeight * (phaseMaxQ - phaseMinQ + 1) + 15
-					)
+					// const phaseMinQ = Math.min(...operations[i].qubits)
+					// const phaseMaxQ = Math.max(...operations[i].qubits)
+					// this.drawMouseHover(
+					// 	phaseG,
+					// 	this.svgItemWidth * (i + this.scaleNum) - this.svgItemHeight / 2,
+					// 	this.svgItemHeight * (phaseMinQ + 2) - this.svgItemHeight / 2 - 12,
+					// 	this.svgItemHeight * (phaseMaxQ - phaseMinQ + 1) + 15
+					// )
 					break
 				case 'read':
 					for (let j = 0; j < operations[i].qubits.length; j++) {
@@ -449,7 +453,7 @@ export default class d3Draw {
 				case 'noop':
 					break
 				default:
-					const defaultG = svg.append('g').attr('style', 'cursor:pointer;')
+					const defaultG = svg.append('g').classed('operation_item', true)
 					const qubits = data.getQubitsInvolved(operations[i])
 					const defaultMinQ = Math.min(...qubits)
 					const defaultMaxQ = Math.max(...qubits)
@@ -464,12 +468,6 @@ export default class d3Draw {
 
 						this.drawSelfDefinedGate(defaultG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (defaultMinQ + 2))
 						this.drawSelfDefinedGate(defaultG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (defaultMaxQ + 2))
-						this.drawMouseHover(
-							defaultG,
-							this.svgItemWidth * (i + this.scaleNum) - this.svgItemHeight / 2,
-							this.svgItemHeight * (defaultMinQ + 2) - this.svgItemHeight / 2,
-							this.svgItemHeight * (defaultMaxQ - defaultMinQ + 1)
-						)
 					}
 
 					break
