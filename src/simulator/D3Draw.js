@@ -26,13 +26,15 @@ export default class d3Draw {
 		this.labelTranslate = this.firstX - this.svgItemWidth / 2
 	}
 	exportD3SVG(data) {
-		const d3DrawingDiv = d3.select('#d3_drawing')
+		const svg = d3.select('#circuit_svg')
+
+		const drawG = svg.select('#circuit_graph')
+		const brushG = svg.select('#circuit_brush')
+		const labelG = svg.select('#circuit_label')
 		// 移除已经添加过的
-		if (d3DrawingDiv.select('svg')._groups[0]) {
-			d3DrawingDiv.select('svg').remove()
-		}
-		const svg = d3DrawingDiv.append('svg').attr('width', '100%').attr('height', '100%')
-		const drawG = svg.append('g')
+		drawG.selectAll('*').remove()
+		labelG.selectAll('*').remove()
+
 		const { operations, qubit_number } = data
 		// 列数
 		const row = operations.length
@@ -49,7 +51,7 @@ export default class d3Draw {
 					const lineCol = data.labels[i].end_operation - data.labels[i].start_operation
 					const labelRow = obj.down_qubit - obj.up_qubit
 					this.drawLabel(
-						drawG,
+						labelG,
 						this.svgItemWidth * data.labels[i].start_operation + this.labelTranslate,
 						this.svgItemHeight * (obj.up_qubit + 1),
 						this.svgItemWidth * lineCol,
@@ -70,7 +72,7 @@ export default class d3Draw {
 		for (let i = 0; i < row; i++) {
 			this.drawCselectLine(drawG, this.svgItemWidth * (i + 3) + 14, this.svgItemHeight * 2 - 6, this.svgItemHeight * col - 15, i, data)
 		}
-		// 加入Qint
+		// 加入Qint, 右边的继承关系
 		for (const key in data.name2index) {
 			for (let i = 0; i < data.name2index[key].length; i++) {
 				const lineNum = data.name2index[key][data.name2index[key].length - 1] - data.name2index[key][0]
@@ -79,12 +81,13 @@ export default class d3Draw {
 		}
 
 		// 处理操作
-		this.handleOperations(drawG, operations, data)
+		this.drawOperations(drawG, operations, data)
+		
 		// 框选
-		// this.brushedFn(svg, drawG)
+		this.brushedFn(svg, brushG)
 	}
 
-	drawWrite1(svg, x, y) {
+	drawWrite1(svg, x, y, operation) {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
 		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', 'none').classed('operation_item', true)
 		const childG = parentG.append('g')
@@ -94,6 +97,7 @@ export default class d3Draw {
 		context.lineTo(3, 17)
 		childG.append('path').attr('d', context.toString()).attr('stroke', '#000').attr('stroke-width', 1).attr('fill', this.write1Background).classed('operation_item', true)
 		childG.append('rect').attr('x', 2).attr('y', 7).attr('width', 2).attr('height', 6).attr('fill', this.write1FontColor).classed('operation_item', true)
+		return parentG
 	}
 	drawWrite0(svg, x, y) {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
@@ -105,6 +109,7 @@ export default class d3Draw {
 		context.lineTo(3, 17)
 		childG.append('path').attr('d', context.toString()).attr('stroke', '#000').attr('stroke-width', 1).attr('fill', this.write0Background).classed('operation_item', true)
 		childG.append('circle').attr('cx', 4).attr('cy', 10).attr('r', 3).attr('stroke-width', 1).attr('stroke', this.write0FontColor).attr('fill', 'none').classed('operation_item', true)
+		return parentG
 	}
 	drawH(svg, x, y) {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
@@ -120,6 +125,7 @@ export default class d3Draw {
 			.attr('text-anchor', 'middle')
 			.classed('svgtext', true)
 			.classed('operation_item', true)
+		return parentG
 	}
 	drawRead(svg, x, y) {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
@@ -141,6 +147,7 @@ export default class d3Draw {
 		// 	.attr('stroke-width', 1)
 		// 	.attr('stroke', 'blue')
 		// 	.attr('fill', 'none')
+		return parentG
 	}
 	// 需要计算直线和target位置再加个实心圆
 	drawCcnot(svg, x, y) {
@@ -154,6 +161,7 @@ export default class d3Draw {
 		context.moveTo(1, 10)
 		context.lineTo(19, 10)
 		childG.append('path').attr('d', context.toString()).attr('stroke', '#000').attr('stroke-width', 1).attr('fill', 'none').classed('operation_item', true)
+		return parentG
 	}
 	// 叉号 x
 	drawSwap(svg, x, y) {
@@ -166,6 +174,7 @@ export default class d3Draw {
 		context.moveTo(18, 2)
 		context.lineTo(2, 18)
 		childG.append('path').attr('d', context.toString()).attr('stroke', '#000').attr('stroke-width', 1).attr('fill', 'none').classed('operation_item', true)
+		return parentG
 	}
 	drawCCPhase(svg, x, y) {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
@@ -177,6 +186,7 @@ export default class d3Draw {
 		context.moveTo(12, 2)
 		context.lineTo(9, 18)
 		childG.append('path').attr('d', context.toString()).attr('stroke', '#000').attr('stroke-width', 1).attr('fill', 'none').classed('operation_item', true)
+		return parentG
 	}
 	//  绘制需要的实心圆，实线
 	drawCircle(svg, x, y) {
@@ -302,69 +312,101 @@ export default class d3Draw {
 		// context.lineTo(20, 10)
 		// context.lineTo(3, 17)
 	}
+
 	// // // 刷取选中
-	// brushedFn(svg, drawG) {
-	// 	const brush = d3.brush().on('end', brushed)
+	brushedFn(svg, brushG) {
+		// Example: https://observablehq.com/@d3/double-click-brush-clear
 
-	// 	drawG.on('mousedown', function (e) {
-	// 		console.log(e)
-	// 		if (!e.target.classList.contains('operation_item')) {
-	// 			const brushG = svg.append('g').attr('class', 'brush')
-	// 			brushG.call(brush)
+		let brushed_start = (event) => {
+			const {selection, type} = event
+			// console.log(event)
+			if (selection) {
+				// const [[x0, y0], [x1, y1]] = selection;
+				const [x0, x1] = selection;
+			}
+		}
 
-	// 			// drawG.on('mouseout',function(){
-	// 			// 	const brushG = svg.append('g').attr('class', 'brush')
-	// 			// })
-	// 		}
-	// 	})
+		// let brushed = (event) => {
+		// 	const {selection, type} = event
+		// 	console.log(event)
+		// 	if (selection) {
+		// 		const [[x0, y0], [x1, y1]] = selection;
 
-	// 	function brushed({ selection }) {
-	// 		console.log(selection)
-	// 		// svg.remove(brushG)
-	// 		// console.log(brush)
-	// 		d3.select('.brush').on('.brush', null).remove()
-	// 	}
-	// }
+		// 	}
+		// }
+
+		let brush_event = d3.brushX() //如果是用brush是const [[x0, y0], [x1, y1]] = selection;
+		brush_event
+		.on("start", brushed_start)
+		// .on("brush", brushed)
+
+		let brushed_end = (event) => {
+			const {selection, type} = event
+			if (selection) {
+				// const [[x0, y0], [x1, y1]] = selection;
+				const [x0, x1] = selection;
+				let operation_notations = svg.selectAll('.operation_g').filter(elm=>{
+					const {x} = elm
+					// console.log(x,  elm)
+					return x <= x1 && x > x0
+				})
+				console.log(operation_notations.data())
+				brushG.call(brush_event.clear)  // 如果当前有选择才需要清空
+			}
+		}
+
+		brush_event.on("end", brushed_end)
+
+		brushG.attr("class", "brush")
+		.call(brush_event);
+	}
 
 	// 处理操作
-	handleOperations(svg, operations, data) {
+	drawOperations(svg, operations, data) {
 		for (let i = 0; i < operations.length; i++) {
+			let operation = operations[i];
+			const x = this.svgItemWidth * (i + this.scaleNum)
+			operation.x = x
 			switch (operations[i].operation) {
 				// write操作
 				case 'write':
 					// 处理数组
 					for (let j = operations[i].value.length - 1; j >= 0; j--) {
-						const writeG = svg.append('g').classed('operation_item', true)
+						const writeG = svg.append('g').classed('operation_item', true).classed('operation_g', true) 
+						writeG.datum(operation)  //绑定数据到dom节点
 						if (operations[i].value[j]) {
-							this.drawWrite1(writeG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits[j] + 2))
+							this.drawWrite1(writeG, x, this.svgItemHeight * (operations[i].qubits[j] + 2))
 						} else {
-							this.drawWrite0(writeG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits[j] + 2))
+							this.drawWrite0(writeG, x, this.svgItemHeight * (operations[i].qubits[j] + 2))
 						}
 					}
 					break
 				// had操作
 				case 'h':
 					for (let j = 0; j < operations[i].qubits.length; j++) {
-						const hG = svg.append('g').classed('operation_item', true)
-						this.drawH(hG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits[j] + 2))
+						const hG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
+						hG.datum(operation)  //绑定数据到dom节点
+						this.drawH(hG, x, this.svgItemHeight * (operations[i].qubits[j] + 2))
 					}
 					break
 				case 'swap':
 					for (let j = 0; j < operations[i].qubits1.length; j++) {
-						const swapG = svg.append('g').classed('operation_item', true)
-						this.drawSwap(swapG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits1[j] + 2))
-						this.drawSwap(swapG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits2[j] + 2))
+						const swapG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
+						swapG.datum(operation)  //绑定数据到dom节点
+						this.drawSwap(swapG, x, this.svgItemHeight * (operations[i].qubits1[j] + 2))
+						this.drawSwap(swapG, x, this.svgItemHeight * (operations[i].qubits2[j] + 2))
 						this.drawLine(
 							swapG,
-							this.svgItemWidth * (i + this.scaleNum),
+							x,
 							this.svgItemHeight * (operations[i].qubits1[j] + 2),
-							this.svgItemWidth * (i + this.scaleNum),
+							x,
 							this.svgItemHeight * (operations[i].qubits2[j] + 2)
 						)
 					}
 					break
 				case 'ccnot':
-					const ccnotG = svg.append('g').classed('operation_item', true)
+					const ccnotG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
+					ccnotG.datum(operation)  //绑定数据到dom节点
 					// 判断最大值最小值 向两个极端画线
 					const controlsMin = Math.min(...operations[i].controls)
 					const controlsMax = Math.max(...operations[i].controls)
@@ -372,64 +414,66 @@ export default class d3Draw {
 					if (controlsMax < operations[i].target[0]) {
 						this.drawLine(
 							ccnotG,
-							this.svgItemWidth * (i + this.scaleNum),
+							x,
 							this.svgItemHeight * (operations[i].target[0] + 2),
-							this.svgItemWidth * (i + this.scaleNum),
+							x,
 							this.svgItemHeight * (controlsMin + 2)
 						)
 					}
 					if (controlsMin > operations[i].target[0]) {
 						this.drawLine(
 							ccnotG,
-							this.svgItemWidth * (i + this.scaleNum),
+							x,
 							this.svgItemHeight * (operations[i].target[0] + 2),
-							this.svgItemWidth * (i + this.scaleNum),
+							x,
 							this.svgItemHeight * (controlsMax + 2)
 						)
 					}
 					if (controlsMin < operations[i].target[0] && operations[i].target[0] < controlsMax) {
 						this.drawLine(
 							ccnotG,
-							this.svgItemWidth * (i + this.scaleNum),
+							x,
 							this.svgItemHeight * (operations[i].target[0] + 2),
-							this.svgItemWidth * (i + this.scaleNum),
+							x,
 							this.svgItemHeight * (controlsMax + 2)
 						)
 						this.drawLine(
 							ccnotG,
-							this.svgItemWidth * (i + this.scaleNum),
+							x,
 							this.svgItemHeight * (operations[i].target[0] + 2),
-							this.svgItemWidth * (i + this.scaleNum),
+							x,
 							this.svgItemHeight * (controlsMin + 2)
 						)
 					}
 
 					for (let j = 0; j < operations[i].controls.length; j++) {
-						this.drawCircle(ccnotG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].controls[j] + 2))
+						this.drawCircle(ccnotG, x, this.svgItemHeight * (operations[i].controls[j] + 2))
 					}
 
-					this.drawCcnot(ccnotG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].target[0] + 2))
+					this.drawCcnot(ccnotG, x, this.svgItemHeight * (operations[i].target[0] + 2))
 					break
 				case 'ccphase':
-					const ccphaseG = svg.append('g').classed('operation_item', true)
+					const ccphaseG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
+					ccphaseG.datum(operation)  //绑定数据到dom节点
 					this.drawLine(
 						ccphaseG,
-						this.svgItemWidth * (i + this.scaleNum),
+						x,
 						this.svgItemHeight * (operations[i].qubits[0] + 2),
-						this.svgItemWidth * (i + this.scaleNum),
+						x,
 						this.svgItemHeight * (operations[i].qubits[operations[i].qubits.length - 1] + 2)
 					)
 					for (let j = 0; j < operations[i].qubits.length; j++) {
-						this.drawCCPhase(ccphaseG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits[j] + 2))
+						this.drawCCPhase(ccphaseG, x, this.svgItemHeight * (operations[i].qubits[j] + 2))
 					}
 					break
 				case 'phase':
-					const phaseG = svg.append('g').classed('operation_item', true)
+					const phaseG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
+					phaseG.datum(operation)  //绑定数据到dom节点
 					for (let j = 0; j < operations[i].qubits.length; j++) {
-						this.drawCCPhase(phaseG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits[j] + 2))
+						this.drawCCPhase(phaseG, x, this.svgItemHeight * (operations[i].qubits[j] + 2))
 						phaseG
 							.append('text')
-							.attr('x', this.svgItemWidth * (i + this.scaleNum) - 6)
+							.attr('x', x - 6)
 							.attr('y', this.svgItemHeight * (operations[i].qubits[j] + 2) - 15)
 							.classed('svgtext', true)
 							.append('tspan')
@@ -439,35 +483,38 @@ export default class d3Draw {
 					// const phaseMaxQ = Math.max(...operations[i].qubits)
 					// this.drawMouseHover(
 					// 	phaseG,
-					// 	this.svgItemWidth * (i + this.scaleNum) - this.svgItemHeight / 2,
+					// 	x - this.svgItemHeight / 2,
 					// 	this.svgItemHeight * (phaseMinQ + 2) - this.svgItemHeight / 2 - 12,
 					// 	this.svgItemHeight * (phaseMaxQ - phaseMinQ + 1) + 15
 					// )
 					break
 				case 'read':
+					// TODO: 需要要一个大G,在写绑定
 					for (let j = 0; j < operations[i].qubits.length; j++) {
-						this.drawRead(svg, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (operations[i].qubits[j] + 2))
+						this.drawRead(svg, x, this.svgItemHeight * (operations[i].qubits[j] + 2))
 					}
+					// readG.datum(operation)  //绑定数据到dom节点
 
 					break
 				case 'noop':
 					break
 				default:
-					const defaultG = svg.append('g').classed('operation_item', true)
+					const defaultG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
+					defaultG.datum(operation)  //绑定数据到dom节点
 					const qubits = data.getQubitsInvolved(operations[i])
 					const defaultMinQ = Math.min(...qubits)
 					const defaultMaxQ = Math.max(...qubits)
 					if (qubits.length) {
 						this.drawLine(
 							defaultG,
-							this.svgItemWidth * (i + this.scaleNum),
+							x,
 							this.svgItemHeight * (qubits[0] + 2),
-							this.svgItemWidth * (i + this.scaleNum),
+							x,
 							this.svgItemHeight * (qubits[qubits.length - 1] + 2)
 						)
 
-						this.drawSelfDefinedGate(defaultG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (defaultMinQ + 2))
-						this.drawSelfDefinedGate(defaultG, this.svgItemWidth * (i + this.scaleNum), this.svgItemHeight * (defaultMaxQ + 2))
+						this.drawSelfDefinedGate(defaultG, x, this.svgItemHeight * (defaultMinQ + 2))
+						this.drawSelfDefinedGate(defaultG, x, this.svgItemHeight * (defaultMaxQ + 2))
 					}
 
 					break

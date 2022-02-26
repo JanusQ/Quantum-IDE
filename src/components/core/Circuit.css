@@ -1,8 +1,9 @@
-#d3_drawing {
+#circuit_view {
 	height: 361px;
 	width: 100%;
 	background: #fff;
 	overflow: auto;
+	cursor: auto ,
 }
 .svgtext{
 	user-select: none;

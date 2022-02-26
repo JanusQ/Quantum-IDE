@@ -18,7 +18,7 @@ function showInDebuggerArea(circuit) {
 	// SVG is returned as string
 	let svg = circuit.exportSVG(true)
 	// console.log(svg)
-	let container = document.getElementById('d3_drawing') //index.html里面预留的部分
+	let container = document.getElementById('circuit_view') //index.html里面预留的部分
 
 	// add SVG into container
 	container.innerHTML = svg
