@@ -297,16 +297,54 @@ function linear_entropy(fake_vector)
     return 1 - trace.re;
 }
 
-function get_entropy(vars)
+function average(list,index)
 {
-    let i = 0;
-    let ent = 0;
-    for(i=0;i<vars.length;i++)
+    let res = 0;
+    for(let i=0; i<index.length; i++)
     {
-        ent += linear_entropy(vars[i]);
+        res += list[index[i]];
     }
-    return ent/vars.length;
+    return res/index.length;
 }
+
+function spec(total, num, remain, maps, values)
+{
+    let done = binary(0, total);
+    let res = binary(0, total);
+    let cri = binary(num,remain);
+    cri = cri.reverse();
+
+    for(let key in values)
+    {
+        let ran = maps[key];
+        let tmp = binary(values[key], ran[1]-ran[0]); 
+        
+        tmp = tmp.reverse();
+        let k = 0;
+        for(let i=ran[0]; i<ran[1]; i++)
+        {
+            res[i] = tmp[k];
+            done[i] = 1;
+            k++;
+        } 
+    }
+
+    let k = 0;
+    for(let i=0; i<total; i++)
+    { 
+        if(done[i] == 0)
+        {
+            res[i] = cri[k];
+            
+            done[i] = 1;
+            k++;
+        }      
+    }
+    res = res.reverse();
+
+    return res;
+}
+
 
 export {
 	pow2,
@@ -322,7 +360,6 @@ export {
 	createFile,
 	exportSVG,
 	unique,
-	get_entropy,
     sum,
     alt_tensor,
     isPure,
@@ -330,5 +367,6 @@ export {
     isUnitary,
     calibrate,
     linear_entropy,
-
+    average,
+    spec,
 }
