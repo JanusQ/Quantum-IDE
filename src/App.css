@@ -20,6 +20,10 @@
 	height: 100%;
 	/* background: #fff; */
 }
+.App .right_down_div{
+	display: flex;
+	width: 100%;
+}
 .App-logo {
 	height: 40vmin;
 	pointer-events: none;

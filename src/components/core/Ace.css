@@ -1,3 +1,4 @@
+@import url('./AntDesign.css');
 .ace_div {
 	width: 100%;
 	height: 864px;
@@ -26,33 +27,4 @@
 }
 .export_type_ul li:hover {
 	background: #f5f5f5;
-}
-.ant-btn-primary {
-	background: #26A442;
-	border: #26A442;
-    border-radius: 4px;
-}
-.ant-btn-primary:hover,.ant-btn-primary:focus{
-    background: #26C842;
-    border: #26C842;
-}
-.export_btn{
-    border-radius: 4px;
-}
-.export_btn:hover{
-    border-color: #26A442;
-    color: #26A442;
-}
-.ant-select:not(.ant-select-customize-input) .ant-select-selector{
-    border-radius: 4px;
-}
-.ant-select:not(.ant-select-customize-input) .ant-select-selector:hover{
-    border-color: #26A442;
-}
-.ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input) .ant-select-selector{
-    border-color: #26A442;
-    box-shadow: none;
-}
-.ant-select-item-option-selected:not(.ant-select-item-option-disabled){
-    background: rgba(38,164,66,0.1);
 }

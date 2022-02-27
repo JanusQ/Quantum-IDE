@@ -1,5 +1,6 @@
 import { data } from 'browserslist'
 import * as d3 from 'd3'
+import Chart from './Chart'
 export default class d3Draw {
 	constructor(options) {
 		// 扩展颜色可配置
@@ -27,7 +28,6 @@ export default class d3Draw {
 	}
 	exportD3SVG(data) {
 		const svg = d3.select('#circuit_svg')
-
 		const drawG = svg.select('#circuit_graph')
 		const brushG = svg.select('#circuit_brush')
 		const labelG = svg.select('#circuit_label')
@@ -82,7 +82,7 @@ export default class d3Draw {
 
 		// 处理操作
 		this.drawOperations(drawG, operations, data)
-		
+
 		// 框选
 		this.brushedFn(svg, brushG)
 	}
@@ -229,7 +229,6 @@ export default class d3Draw {
 			.attr('x', x)
 			.attr('y', y + 5)
 			.attr('text-anchor', 'middle')
-
 			.text(name)
 			.attr('font-size', 14)
 			.classed('svgtext', true)
@@ -302,15 +301,15 @@ export default class d3Draw {
 		context.lineTo(-4, height + 5)
 		context.closePath()
 		childG.append('path').attr('d', context.toString()).attr('stroke', 'transparent').attr('stroke-width', 1).attr('fill', 'transparent').classed('select_path', true)
+		const self = this
 		parentG.on('click', function (e) {
-			console.log(e.target.attributes.operationIndex.value)
 			d3.selectAll('.select_path').attr('stroke', 'transparent').attr('fill', 'transparent')
 			d3.selectAll('.select_rect').attr('stroke', 'transparent').attr('fill', 'transparent')
 			d3.select(this).select('.select_path').attr('stroke', 'rgb(149, 143, 143)').attr('fill', 'rgb(149, 143, 143)')
 			d3.select(this).select('.select_rect').attr('fill', 'rgb(149, 143, 143)')
+			let i = 0
+			self.drawStackedBar(data.get_varstate(e.target.attributes.operationIndex.value), i)
 		})
-		// context.lineTo(20, 10)
-		// context.lineTo(3, 17)
 	}
 
 	// // // 刷取选中
@@ -318,11 +317,11 @@ export default class d3Draw {
 		// Example: https://observablehq.com/@d3/double-click-brush-clear
 
 		let brushed_start = (event) => {
-			const {selection, type} = event
+			const { selection, type } = event
 			// console.log(event)
 			if (selection) {
 				// const [[x0, y0], [x1, y1]] = selection;
-				const [x0, x1] = selection;
+				const [x0, x1] = selection
 			}
 		}
 
@@ -336,35 +335,33 @@ export default class d3Draw {
 		// }
 
 		let brush_event = d3.brushX() //如果是用brush是const [[x0, y0], [x1, y1]] = selection;
-		brush_event
-		.on("start", brushed_start)
+		brush_event.on('start', brushed_start)
 		// .on("brush", brushed)
 
 		let brushed_end = (event) => {
-			const {selection, type} = event
+			const { selection, type } = event
 			if (selection) {
 				// const [[x0, y0], [x1, y1]] = selection;
-				const [x0, x1] = selection;
-				let operation_notations = svg.selectAll('.operation_g').filter(elm=>{
-					const {x} = elm
+				const [x0, x1] = selection
+				let operation_notations = svg.selectAll('.operation_g').filter((elm) => {
+					const { x } = elm
 					// console.log(x,  elm)
 					return x <= x1 && x > x0
 				})
 				console.log(operation_notations.data())
-				brushG.call(brush_event.clear)  // 如果当前有选择才需要清空
+				brushG.call(brush_event.clear) // 如果当前有选择才需要清空
 			}
 		}
 
-		brush_event.on("end", brushed_end)
+		brush_event.on('end', brushed_end)
 
-		brushG.attr("class", "brush")
-		.call(brush_event);
+		brushG.attr('class', 'brush').call(brush_event)
 	}
 
 	// 处理操作
 	drawOperations(svg, operations, data) {
 		for (let i = 0; i < operations.length; i++) {
-			let operation = operations[i];
+			let operation = operations[i]
 			const x = this.svgItemWidth * (i + this.scaleNum)
 			operation.x = x
 			switch (operations[i].operation) {
@@ -372,8 +369,8 @@ export default class d3Draw {
 				case 'write':
 					// 处理数组
 					for (let j = operations[i].value.length - 1; j >= 0; j--) {
-						const writeG = svg.append('g').classed('operation_item', true).classed('operation_g', true) 
-						writeG.datum(operation)  //绑定数据到dom节点
+						const writeG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
+						writeG.datum(operation) //绑定数据到dom节点
 						if (operations[i].value[j]) {
 							this.drawWrite1(writeG, x, this.svgItemHeight * (operations[i].qubits[j] + 2))
 						} else {
@@ -385,65 +382,35 @@ export default class d3Draw {
 				case 'h':
 					for (let j = 0; j < operations[i].qubits.length; j++) {
 						const hG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
-						hG.datum(operation)  //绑定数据到dom节点
+						hG.datum(operation) //绑定数据到dom节点
 						this.drawH(hG, x, this.svgItemHeight * (operations[i].qubits[j] + 2))
 					}
 					break
 				case 'swap':
 					for (let j = 0; j < operations[i].qubits1.length; j++) {
 						const swapG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
-						swapG.datum(operation)  //绑定数据到dom节点
+						swapG.datum(operation) //绑定数据到dom节点
 						this.drawSwap(swapG, x, this.svgItemHeight * (operations[i].qubits1[j] + 2))
 						this.drawSwap(swapG, x, this.svgItemHeight * (operations[i].qubits2[j] + 2))
-						this.drawLine(
-							swapG,
-							x,
-							this.svgItemHeight * (operations[i].qubits1[j] + 2),
-							x,
-							this.svgItemHeight * (operations[i].qubits2[j] + 2)
-						)
+						this.drawLine(swapG, x, this.svgItemHeight * (operations[i].qubits1[j] + 2), x, this.svgItemHeight * (operations[i].qubits2[j] + 2))
 					}
 					break
 				case 'ccnot':
 					const ccnotG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
-					ccnotG.datum(operation)  //绑定数据到dom节点
+					ccnotG.datum(operation) //绑定数据到dom节点
 					// 判断最大值最小值 向两个极端画线
 					const controlsMin = Math.min(...operations[i].controls)
 					const controlsMax = Math.max(...operations[i].controls)
 
 					if (controlsMax < operations[i].target[0]) {
-						this.drawLine(
-							ccnotG,
-							x,
-							this.svgItemHeight * (operations[i].target[0] + 2),
-							x,
-							this.svgItemHeight * (controlsMin + 2)
-						)
+						this.drawLine(ccnotG, x, this.svgItemHeight * (operations[i].target[0] + 2), x, this.svgItemHeight * (controlsMin + 2))
 					}
 					if (controlsMin > operations[i].target[0]) {
-						this.drawLine(
-							ccnotG,
-							x,
-							this.svgItemHeight * (operations[i].target[0] + 2),
-							x,
-							this.svgItemHeight * (controlsMax + 2)
-						)
+						this.drawLine(ccnotG, x, this.svgItemHeight * (operations[i].target[0] + 2), x, this.svgItemHeight * (controlsMax + 2))
 					}
 					if (controlsMin < operations[i].target[0] && operations[i].target[0] < controlsMax) {
-						this.drawLine(
-							ccnotG,
-							x,
-							this.svgItemHeight * (operations[i].target[0] + 2),
-							x,
-							this.svgItemHeight * (controlsMax + 2)
-						)
-						this.drawLine(
-							ccnotG,
-							x,
-							this.svgItemHeight * (operations[i].target[0] + 2),
-							x,
-							this.svgItemHeight * (controlsMin + 2)
-						)
+						this.drawLine(ccnotG, x, this.svgItemHeight * (operations[i].target[0] + 2), x, this.svgItemHeight * (controlsMax + 2))
+						this.drawLine(ccnotG, x, this.svgItemHeight * (operations[i].target[0] + 2), x, this.svgItemHeight * (controlsMin + 2))
 					}
 
 					for (let j = 0; j < operations[i].controls.length; j++) {
@@ -454,21 +421,15 @@ export default class d3Draw {
 					break
 				case 'ccphase':
 					const ccphaseG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
-					ccphaseG.datum(operation)  //绑定数据到dom节点
-					this.drawLine(
-						ccphaseG,
-						x,
-						this.svgItemHeight * (operations[i].qubits[0] + 2),
-						x,
-						this.svgItemHeight * (operations[i].qubits[operations[i].qubits.length - 1] + 2)
-					)
+					ccphaseG.datum(operation) //绑定数据到dom节点
+					this.drawLine(ccphaseG, x, this.svgItemHeight * (operations[i].qubits[0] + 2), x, this.svgItemHeight * (operations[i].qubits[operations[i].qubits.length - 1] + 2))
 					for (let j = 0; j < operations[i].qubits.length; j++) {
 						this.drawCCPhase(ccphaseG, x, this.svgItemHeight * (operations[i].qubits[j] + 2))
 					}
 					break
 				case 'phase':
 					const phaseG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
-					phaseG.datum(operation)  //绑定数据到dom节点
+					phaseG.datum(operation) //绑定数据到dom节点
 					for (let j = 0; j < operations[i].qubits.length; j++) {
 						this.drawCCPhase(phaseG, x, this.svgItemHeight * (operations[i].qubits[j] + 2))
 						phaseG
@@ -500,18 +461,12 @@ export default class d3Draw {
 					break
 				default:
 					const defaultG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
-					defaultG.datum(operation)  //绑定数据到dom节点
+					defaultG.datum(operation) //绑定数据到dom节点
 					const qubits = data.getQubitsInvolved(operations[i])
 					const defaultMinQ = Math.min(...qubits)
 					const defaultMaxQ = Math.max(...qubits)
 					if (qubits.length) {
-						this.drawLine(
-							defaultG,
-							x,
-							this.svgItemHeight * (qubits[0] + 2),
-							x,
-							this.svgItemHeight * (qubits[qubits.length - 1] + 2)
-						)
+						this.drawLine(defaultG, x, this.svgItemHeight * (qubits[0] + 2), x, this.svgItemHeight * (qubits[qubits.length - 1] + 2))
 
 						this.drawSelfDefinedGate(defaultG, x, this.svgItemHeight * (defaultMinQ + 2))
 						this.drawSelfDefinedGate(defaultG, x, this.svgItemHeight * (defaultMaxQ + 2))
@@ -520,5 +475,167 @@ export default class d3Draw {
 					break
 			}
 		}
+	}
+	// 绘制C视图
+	drawStackedBar(data, i) {
+		const chart_svg = d3.select('#chart_svg')
+		chart_svg.selectAll('*').remove()
+		const dataArr = []
+		const keyArr = Object.keys(data)
+		const width = 546 / keyArr.length
+		for (const key in data) {
+			for (let i = 0; i < data[key].magn.length; i++) {
+				dataArr.push({ name: key, magn: data[key].magn[i], prob: data[key].prob[i], index: i })
+			}
+			const g = chart_svg
+				.append('g')
+				.attr('transform', 'translate(' + i * width + ',' + 0 + ')')
+			this.StackedBarChart(dataArr, g, width)
+			i += 1
+		}
+	}
+	StackedBarChart(data, g, width) {
+		const chart = new Chart()
+		const config = {
+			barPadding: 0.15,
+			margins: { top: 20, left: 40, bottom: 80, right: 0 },
+			tickShowGrid: [60, 120, 180],
+			textColor: 'black',
+			gridColor: 'gray',
+			hoverColor: 'white',
+			animateDuration: 1000,
+		}
+		chart.width(width)
+		chart.box(d3.select('.c_up_draw'))
+		chart.svg(g)
+		chart.margins(config.margins)
+		chart.scaleX = d3
+			.scaleBand()
+			.domain(data.map((d) => d.index))
+			.range([0, 20 * data.length])
+			.padding(config.barPadding)
+
+		chart.scaleY = d3
+			.scaleLinear()
+			.domain([0, d3.max(data.map((d) => d.magn + d.prob))])
+			.range([chart.getBodyHeight(), 0])
+		// 处理x轴样式
+		function customXAxis(g) {
+			const xAxis = d3.axisBottom(chart.scaleX).tickSize(20)
+			g.call(xAxis)
+			g.select('.domain').remove()
+			g.selectAll('.tick line').remove()
+			g.append('rect').attr('width', chart.getBodyWidth()).attr('height', 6).attr('fill', 'red')
+		}
+		// 处理Y轴样式
+		function customYAxis(g) {
+			const yAxis = d3.axisBottom(chart.scaleY)
+			g.call(yAxis)
+			g.select('.domain').remove()
+			g.selectAll('.tick line').remove()
+			g.selectAll('.tick text').remove()
+		}
+		chart.stack = d3.stack().keys(['magn', 'prob']).order(d3.stackOrderAscending).offset(d3.stackOffsetNone)
+		chart.renderBars = function () {
+			let groups = chart.body().selectAll('.g').data(chart.stack(data))
+			let bars = groups
+				.enter()
+				.append('g')
+				.merge(groups)
+				.attr('class', (d) => 'g ' + d.index)
+				.attr('fill', (d, i) => chart._colors[i])
+				.selectAll('.bar')
+				.data((d) => {
+					return d.map((item) => {
+						item.index = d.index
+						item.name = d.key
+						return item
+					})
+				})
+
+			groups.exit().remove()
+
+			bars.enter()
+				.append('rect')
+				.attr('class', 'bar')
+				.merge(bars)
+				.attr('x', (d) => chart.scaleX(d.data.index))
+				.attr('y', (d) => chart.scaleY(d[0]))
+				.attr('width', chart.scaleX.bandwidth())
+				.attr('height', 0)
+				.transition()
+				.duration(config.animateDuration)
+				.attr('height', (d) => chart.scaleY(d[0]) - chart.scaleY(d[1]))
+				.attr('y', (d) => chart.scaleY(d[1]))
+
+			bars.exit().remove()
+		}
+		chart.renderX = function () {
+			chart
+				.svg()
+				.insert('g', '.body')
+				.attr('transform', 'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight()) + ')')
+				.attr('class', 'xAxis')
+				.call(customXAxis)
+		}
+
+		chart.renderY = function () {
+			chart
+				.svg()
+				.insert('g', '.body')
+				.attr('transform', 'translate(' + chart.bodyX() + ',' + chart.bodyY() + ')')
+				.attr('class', 'yAxis')
+				.call(customYAxis)
+		}
+		// 绘制坐标轴
+		chart.renderAxis = function () {
+			chart.renderX()
+			chart.renderY()
+		}
+		chart.renderText = function () {
+			d3.select('.xAxis').append('text').attr('class', 'axisText').attr('x', chart.getBodyWidth()).attr('y', 0).attr('fill', config.textColor).attr('dy', 30)
+
+			d3.select('.yAxis')
+				.append('text')
+				.attr('class', 'axisText')
+				.attr('x', 0)
+				.attr('y', chart.bodyY() + chart.getBodyHeight())
+				.attr('fill', config.textColor)
+				.attr('text-anchor', 'end')
+				.text('a')
+		}
+		chart.renderGrid = function () {
+			d3.selectAll('.yAxis .tick').each(function (d, i) {
+				if (config.tickShowGrid.indexOf(d) > -1) {
+					d3.select(this).append('line').attr('class', 'grid').attr('stroke', config.gridColor).attr('x1', 0).attr('y1', 0).attr('x2', chart.getBodyWidth()).attr('y2', 0)
+				}
+			})
+		}
+		chart.renderTitle = function () {
+			chart
+				.svg()
+				.append('text')
+				.classed('title', true)
+				.attr('x', chart.width() / 2)
+				.attr('y', 0)
+				.attr('dy', '2em')
+				.text(config.title)
+				.attr('fill', config.textColor)
+				.attr('text-anchor', 'middle')
+				.attr('stroke', config.textColor)
+		}
+		chart.render = function () {
+			chart.renderAxis()
+
+			chart.renderText()
+
+			chart.renderGrid()
+
+			chart.renderBars()
+
+			chart.renderTitle()
+		}
+
+		chart.renderChart()
 	}
 }
