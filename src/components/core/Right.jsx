@@ -25,7 +25,9 @@ const Right = () => {
 					<div className='title'>
 						<span className='title_name'>Whole State</span>
 					</div>
-					<div className='c_down_draw'></div>
+					<div className='c_down_draw'>
+						<svg id='chart_down_svg'></svg>
+					</div>
 				</div>
 			</div>
 		</div>
