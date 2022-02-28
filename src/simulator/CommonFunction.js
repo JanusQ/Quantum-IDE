@@ -239,15 +239,17 @@ function sum(state_vector, num, range, total)
 {
     let i = 0;
     let res = 0;
-    let std = get_binary(num, range[1]-range[0]);
+    let std = binary(num, range[1]-range[0]);
+    std = std.reverse();
     
     for(i=0; i<state_vector.length; i++)
     {
-        let tmp = get_binary(i, total);
+        let tmp = binary(i, total);
+        tmp = tmp.reverse();
         
-        if(not_equal(std, tmp, range))
+        if(not_equal(std, tmp, range)){
             continue;
-        
+        }
         res += state_vector[i];
     }
     

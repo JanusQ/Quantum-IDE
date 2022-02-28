@@ -561,7 +561,7 @@ export default class QCEngine {
         {
             magnitudes[i] = state[i]['magnitude'];
         }
-
+        console.log("magnitudes",magnitudes);
         let var_index = this.name2index;
     
         for(let key in var_index)
