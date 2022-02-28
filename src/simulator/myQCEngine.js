@@ -595,7 +595,6 @@ export default class QCEngine {
         for(let i=0; i<state.length; i++)
         {
             let comp = state[i]['amplitude'];
-            console.log(comp)
             let polar = getExp(comp);
             res['magns'][i] = polar['r'];
             res['phases'][i] = calibrate(polar['phi']) * 180 / Math.PI;
