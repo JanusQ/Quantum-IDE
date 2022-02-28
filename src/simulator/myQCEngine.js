@@ -803,8 +803,8 @@ export default class QCEngine {
             op_index = ops[1];
 
         let whole = this.get_wholestate(op_index);
-        let opera = this.operations[op_index];
-        let state = opera['state_after_opertaion'];
+        //let opera = this.operations[op_index];
+        //let state = opera['state_after_opertaion'];
         //let involved_qubits = this.getQubitsInvolved(opera);
         let var_index = this.name2index;
         
@@ -826,16 +826,23 @@ export default class QCEngine {
 
         let input_state = {};
         input_state['vars'] = vars;
+        
         let deep_length = 1;
         let qubit_num = 0;
-        
+        let new_var_index = {};
+        let bottom = 0;
         for(let key in vars)
         {
             let bits = var_index[vars[key]][1] - var_index[vars[key]][0];
             deep_length *= bits;
             qubit_num += bits;
+            new_var_index[key] = [];
+            new_var_index[key][0] = bottom;
+            new_var_index[key][1] = bottom + bits;
+            bottom = bottom + bits;
         }
         
+        input_state['bases'] = [];
         for(let i=0; i<deep_length; i++)
         {
             input_state['bases'][i]={};
@@ -847,16 +854,16 @@ export default class QCEngine {
             bin = bin.reverse();
             for(let k=0; k<vars.length; k++)
             {
-                let tmp  = bin.slice(var_index[vars[k]][0], var_index[vars[k]][1]);
+                let tmp = bin.slice(new_var_index[vars[k]][0], new_var_index[vars[k]][1]);
                 tmp = tmp.reverse();
                 let dec = binary2int(tmp);
                 input_state['bases'][i]['var2value'][vars[k]] = dec;
             }
 
             //TODO: switch to power
-            let tmp_index = this.get_index(op_index,input_state['bases'][i]['var2value']);
-            input_state['bases'][i]['magnitude'] = average(whole['magns'],tmp_index);
-            input_state['bases'][i]['phases'] = average(whole['phases'],tmp_index);
+            let tmp_index = this.get_index(op_index, input_state['bases'][i]['var2value']);
+            input_state['bases'][i]['magnitude'] = average(whole['magns'], tmp_index);
+            input_state['bases'][i]['phases'] = average(whole['phases'], tmp_index);
 
             input_state['bases'][i]['related_bases'] = [];
 
@@ -867,13 +874,14 @@ export default class QCEngine {
                 let all_bin = spec(this.qubit_number, k, this.qubit_number-qubit_num, var_index,input_state['bases'][i]['var2value']);
                 all_bin = all_bin.reverse();
 
+                input_state['bases'][i]['related_bases'][k]['var2value'] = {};
                 for(let key in var_index){
                     let bin = all_bin.slice(var_index[key][0],var_index[key][1]);
                     bin = bin.reverse();
-                    input_state['bases'][i]['related_bases'][k][key] = binary2int(bin);                
+                    input_state['bases'][i]['related_bases'][k]['var2value'][key] = binary2int(bin);                
                 }
                 
-                input_state['bases'][i]['related_bases'][k]['var2value'] = {};
+                
                 input_state['bases'][i]['related_bases'][k]['magnitude'] = whole['magns'][order];
                 input_state['bases'][i]['related_bases'][k]['magnitude'] = whole['phases'][order];
 
