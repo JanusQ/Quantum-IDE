@@ -1,6 +1,13 @@
 import { pow2, binary, binary2qubit1, range, binary2int,} from '../simulator/CommonFunction'
 import * as deepcopy from 'deepcopy';
 
+import {
+    create, all,complex
+} from 'mathjs'
+
+const config = { };
+const math = create(all, config);
+
 // 这里放了一些计算门需要的函数
 class QObject {
     // 行，列
@@ -14,7 +21,7 @@ class QObject {
         }
         for (i = 0; i < r; i++) {
             for (j = 0; j < c; j++) {
-                this.data[i][j] = 0;
+                this.data[i][j] = complex(0, 0);
             }
         }
     }
@@ -25,6 +32,8 @@ class QObject {
         return new_obj;
     }
 }
+
+
 
 
 function dot()
@@ -61,7 +70,7 @@ function mt_dot(m1,m2)
             let tmp = 0;
             for(k=0;k<mu;k++)
             {
-                tmp += m1.con[i][k] * m2.con[k][j]; 
+                tmp += math.multiply(m1.con[i][k], m2.con[k][j]); 
             }
             res.con[i][j] = tmp;
         }
@@ -98,7 +107,7 @@ function innerTensor(t1, t2) {
 
     for (i = 0; i < row; i++) {
         for (j = 0; j < col; j++) {
-            result.data[i][j] = t1.data[Math.floor(i / t2.rows)][Math.floor(j / t2.cols)] * t2.data[i % t2.rows][j % t2.cols];
+            result.data[i][j] = math.multiply(t1.data[Math.floor(i / t2.rows)][Math.floor(j / t2.cols)], t2.data[i % t2.rows][j % t2.cols]);
 
         }
     }
@@ -111,7 +120,7 @@ function identity(N) {
     let id = new QObject(N, N);
     let i;
     for (i = 0; i < N; i++) {
-        id.data[i][i] = 1;
+        id.data[i][i] = complex(1,0);
     }
     return id;
 }
@@ -119,7 +128,7 @@ function identity(N) {
 
 function fockDm(dim, N) {
     let res = new QObject(dim, dim);
-    res.data[N][N] = 1;
+    res.data[N][N] = complex(1,0);
     return res;
 }
 
@@ -266,7 +275,7 @@ function controlledGate(U, N = 2, control = 0, target = 1, control_value = 1) {
         let tar2 = tensor(fockDm(2, control_value), U);
         for (let i = 0; i < tar1.rows; i++) {
             for (let j = 0; j < tar1.cols; j++) {
-                tar1.data[i][j] += tar2.data[i][j];
+                tar1.data[i][j] =math.add(tar1.data[i][j], tar2.data[i][j]);
             }
         }
         return tar1;

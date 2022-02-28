@@ -18,6 +18,7 @@ import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, a
 import {
     cos, sin, round, pi, complex, create, all,
 } from 'mathjs'
+import { gateExpand1toN } from './MatrixOperation';
 
 const config = { };
 const math = create(all, config);
@@ -804,16 +805,24 @@ export default class QCEngine {
         let whole = this.get_wholestate(op_index);
         let opera = this.operations[op_index];
         let state = opera['state_after_opertaion'];
-        let involved_qubits = this.getQubitsInvolved(opera);
+        //let involved_qubits = this.getQubitsInvolved(opera);
         let var_index = this.name2index;
-        let vars = [];
         
-        for(let qubit of involved_qubits){
-            let tmp_array = [];
-            let tmp_var = this.getQubit2Variable(qubit);
-            tmp_array.push(tmp_var['variable']);
-            vars = [...new Set(tmp_array)];         
+        let vars = [];
+        let tmp_array = [];
+
+        for(let i=ops[0]+1; i<=ops[1]; i++)
+        {
+            let opera = this.operations[i];
+            let involved_qubits = this.getQubitsInvolved(opera);
+           
+            for(let qubit of involved_qubits){    
+                let tmp_var = this.getQubit2Variable(qubit);
+                tmp_array.push(tmp_var['variable']);                     
+            }          
+
         }
+        vars = [...new Set(tmp_array)];
 
         let input_state = {};
         input_state['vars'] = vars;
@@ -880,19 +889,66 @@ export default class QCEngine {
     {
         let gate_mats = [];
         let ops = this.labels[label_id]['operations'];
-        for(let i=ops[0]; i<ops[1]; i++)
+        let vars = [];
+        let tmp_array = [];
+        let detailed = [];
+        for(let i=ops[0]+1; i<=ops[1]; i++)
         {
             let opera = this.operations[i];
-            
+            let involved_qubits = this.getQubitsInvolved(opera);
+           
+            for(let qubit of involved_qubits){    
+                let tmp_var = this.getQubit2Variable(qubit);
+                tmp_array.push(tmp_var['variable']);  
+                detailed.push(tmp_var);                    
+            }          
+
+        }
+        vars = [...new Set(tmp_array)];
+        let var_index = this.name2index;
+        
+        let deep_length = 1;
+        let qubit_num = 0;
+        for(let key in vars)
+        {
+            let bits = var_index[vars[key]][1] - var_index[vars[key]][0];
+            deep_length *= bits;
+            qubit_num += bits;
+        }
+        
+        let all_gate = math.identity(deep_length);
+        for(let i=ops[0]+1; i<=ops[1]; i++)
+        {
+            let opera = this.operations[i];
+            let gate = opera['operation'];
+            let gate_mat = this.circuit.getGateMatrix(gate);
+            //gate_mat = expandgate(gate_mat);
+            all_gate = math.multiply(all_gate, gate_mat);
 
         }
 
         
 
+        for(let i=0; i<deep_length; i++)
+        {
+            gate_mats[i]= [];
+            for(let j=0; j< deep_length; j++)
+            {
+                gate_mats[i][j] = {};
+                gate_mats[i][j]['magnitude'] = 0.5;
+                gate_mats[i][j]['phase'] = 30;
+                gate_mats[i][j]['used'] = true;
+            }
+        }
+        
+        return gate_mats;
+
     }
+
 
     transferSankey(matrix)
     {
+
 
     }
 
