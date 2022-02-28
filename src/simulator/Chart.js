@@ -7,6 +7,7 @@ export default class Chart {
 		this._data = []
 		this._scaleX = null
 		this._scaleY = null
+		this._scaleY2 = null
 		this._colors = ['rgb(80, 128, 132)','rgb(220, 216, 216)']
 		this._box = null
 		this._svg = null
@@ -49,7 +50,11 @@ export default class Chart {
 		this._scaleY = y
 		return this
 	}
-
+	scaleY2(y){
+		if (arguments.length === 0) return this._scaleY2
+		this._scaleY2 = y
+		return this
+	}
 	svg(s) {
 		if (arguments.length === 0) return this._svg
 		this._svg = s
