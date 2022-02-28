@@ -66,42 +66,18 @@ export default class d3Draw {
 		 * 预留了前边是firstX，画线和添加name
 		 */
 		for (let i = 0; i < col; i++) {
-			this.drawLine(
-				drawG,
-				this.firstX,
-				this.svgItemHeight * (i + 2),
-				(row + 2) * this.svgItemWidth,
-				this.svgItemHeight * (i + 2)
-			)
-			this.drawName(
-				drawG,
-				this.svgItemWidth * 2 + 5,
-				this.svgItemHeight * (i + 2),
-				'Q' + data.getQubit2Variable(i).index
-			)
+			this.drawLine(drawG, this.firstX, this.svgItemHeight * (i + 2), (row + 2) * this.svgItemWidth, this.svgItemHeight * (i + 2))
+			this.drawName(drawG, this.svgItemWidth * 2 + 5, this.svgItemHeight * (i + 2), 'Q' + data.getQubit2Variable(i).index)
 		}
 		// 绘制选择线
 		for (let i = 0; i < row; i++) {
-			this.drawCselectLine(
-				drawG,
-				this.svgItemWidth * (i + 3) + 14,
-				this.svgItemHeight * 2 - 6,
-				this.svgItemHeight * col - 15,
-				i,
-				data
-			)
+			this.drawCselectLine(drawG, this.svgItemWidth * (i + 3) + 14, this.svgItemHeight * 2 - 6, this.svgItemHeight * col - 15, i, data)
 		}
 		// 加入Qint, 右边的继承关系
 		for (const key in data.name2index) {
 			for (let i = 0; i < data.name2index[key].length; i++) {
 				const lineNum = data.name2index[key][data.name2index[key].length - 1] - data.name2index[key][0]
-				this.drawQint(
-					drawG,
-					this.svgItemWidth * 2,
-					this.svgItemHeight * (data.name2index[key][0] + 2),
-					this.svgItemHeight * lineNum - 10,
-					key
-				)
+				this.drawQint(drawG, this.svgItemWidth * 2, this.svgItemHeight * (data.name2index[key][0] + 2), this.svgItemHeight * lineNum - 10, key)
 			}
 		}
 
@@ -120,21 +96,8 @@ export default class d3Draw {
 		context.moveTo(3, 3)
 		context.lineTo(20, 10)
 		context.lineTo(3, 17)
-		childG
-			.append('path')
-			.attr('d', context.toString())
-			.attr('stroke', '#000')
-			.attr('stroke-width', 1)
-			.attr('fill', this.write1Background)
-			.classed('operation_item', true)
-		childG
-			.append('rect')
-			.attr('x', 2)
-			.attr('y', 7)
-			.attr('width', 2)
-			.attr('height', 6)
-			.attr('fill', this.write1FontColor)
-			.classed('operation_item', true)
+		childG.append('path').attr('d', context.toString()).attr('stroke', '#000').attr('stroke-width', 1).attr('fill', this.write1Background).classed('operation_item', true)
+		childG.append('rect').attr('x', 2).attr('y', 7).attr('width', 2).attr('height', 6).attr('fill', this.write1FontColor).classed('operation_item', true)
 		return parentG
 	}
 	drawWrite0(svg, x, y) {
@@ -145,34 +108,13 @@ export default class d3Draw {
 		context.moveTo(3, 3)
 		context.lineTo(20, 10)
 		context.lineTo(3, 17)
-		childG
-			.append('path')
-			.attr('d', context.toString())
-			.attr('stroke', '#000')
-			.attr('stroke-width', 1)
-			.attr('fill', this.write0Background)
-			.classed('operation_item', true)
-		childG
-			.append('circle')
-			.attr('cx', 4)
-			.attr('cy', 10)
-			.attr('r', 3)
-			.attr('stroke-width', 1)
-			.attr('stroke', this.write0FontColor)
-			.attr('fill', 'none')
-			.classed('operation_item', true)
+		childG.append('path').attr('d', context.toString()).attr('stroke', '#000').attr('stroke-width', 1).attr('fill', this.write0Background).classed('operation_item', true)
+		childG.append('circle').attr('cx', 4).attr('cy', 10).attr('r', 3).attr('stroke-width', 1).attr('stroke', this.write0FontColor).attr('fill', 'none').classed('operation_item', true)
 		return parentG
 	}
 	drawH(svg, x, y) {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
-		parentG
-			.append('rect')
-			.attr('width', 20)
-			.attr('height', 20)
-			.attr('fill', '#fff')
-			.attr('stroke', '#000')
-			.attr('stroke-width', 1)
-			.classed('operation_item', true)
+		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', '#fff').attr('stroke', '#000').attr('stroke-width', 1).classed('operation_item', true)
 		const childG = parentG.append('g')
 		childG
 			.append('text')
@@ -188,27 +130,14 @@ export default class d3Draw {
 	}
 	drawRead(svg, x, y) {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
-		parentG
-			.append('rect')
-			.attr('width', 20)
-			.attr('height', 20)
-			.attr('fill', 'none')
-			.attr('stroke', '#000')
-			.attr('stroke-width', 1)
-			.classed('operation_item', true)
+		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', 'none').attr('stroke', '#000').attr('stroke-width', 1).classed('operation_item', true)
 		const childG = parentG.append('g')
 		const context = d3.path()
 		context.moveTo(3, 14)
 		context.quadraticCurveTo(10, 4, 17, 14)
 		context.moveTo(10, 16)
 		context.lineTo(16, 8)
-		childG
-			.append('path')
-			.attr('d', context.toString())
-			.attr('stroke', '#000')
-			.attr('stroke-width', 1)
-			.attr('fill', 'none')
-			.classed('operation_item', true)
+		childG.append('path').attr('d', context.toString()).attr('stroke', '#000').attr('stroke-width', 1).attr('fill', 'none').classed('operation_item', true)
 		// 读取到的值
 		// childG.append('rect').attr('x', 17).attr('y', 3).attr('width', 1).attr('height', 5).attr('fill', 'blue')
 		// childG
@@ -226,27 +155,13 @@ export default class d3Draw {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
 		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', '#fff').classed('operation_item', true)
 		const childG = parentG.append('g')
-		childG
-			.append('circle')
-			.attr('cx', 10)
-			.attr('cy', 10)
-			.attr('r', 10)
-			.attr('fill', '#fff')
-			.attr('stroke', '#000')
-			.attr('stroke-width', 1)
-			.classed('operation_item', true)
+		childG.append('circle').attr('cx', 10).attr('cy', 10).attr('r', 10).attr('fill', '#fff').attr('stroke', '#000').attr('stroke-width', 1).classed('operation_item', true)
 		const context = d3.path()
 		context.moveTo(10, 1)
 		context.lineTo(10, 19)
 		context.moveTo(1, 10)
 		context.lineTo(19, 10)
-		childG
-			.append('path')
-			.attr('d', context.toString())
-			.attr('stroke', '#000')
-			.attr('stroke-width', 1)
-			.attr('fill', 'none')
-			.classed('operation_item', true)
+		childG.append('path').attr('d', context.toString()).attr('stroke', '#000').attr('stroke-width', 1).attr('fill', 'none').classed('operation_item', true)
 		return parentG
 	}
 	// 叉号 x
@@ -259,82 +174,36 @@ export default class d3Draw {
 		context.lineTo(18, 18)
 		context.moveTo(18, 2)
 		context.lineTo(2, 18)
-		childG
-			.append('path')
-			.attr('d', context.toString())
-			.attr('stroke', '#000')
-			.attr('stroke-width', 1)
-			.attr('fill', 'none')
-			.classed('operation_item', true)
+		childG.append('path').attr('d', context.toString()).attr('stroke', '#000').attr('stroke-width', 1).attr('fill', 'none').classed('operation_item', true)
 		return parentG
 	}
 	drawCCPhase(svg, x, y) {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
 		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', '#fff').classed('operation_item', true)
 		const childG = parentG.append('g')
-		childG
-			.append('circle')
-			.attr('cx', 10)
-			.attr('cy', 10)
-			.attr('r', 10)
-			.attr('fill', '#fff')
-			.attr('stroke', '#000')
-			.attr('stroke-width', 1)
-			.classed('operation_item', true)
-		childG
-			.append('circle')
-			.attr('cx', 10)
-			.attr('cy', 10)
-			.attr('r', 4)
-			.attr('fill', 'none')
-			.attr('stroke', '#000')
-			.attr('stroke-width', 1)
-			.classed('operation_item', true)
+		childG.append('circle').attr('cx', 10).attr('cy', 10).attr('r', 10).attr('fill', '#fff').attr('stroke', '#000').attr('stroke-width', 1).classed('operation_item', true)
+		childG.append('circle').attr('cx', 10).attr('cy', 10).attr('r', 4).attr('fill', 'none').attr('stroke', '#000').attr('stroke-width', 1).classed('operation_item', true)
 		const context = d3.path()
 		context.moveTo(12, 2)
 		context.lineTo(9, 18)
-		childG
-			.append('path')
-			.attr('d', context.toString())
-			.attr('stroke', '#000')
-			.attr('stroke-width', 1)
-			.attr('fill', 'none')
-			.classed('operation_item', true)
+		childG.append('path').attr('d', context.toString()).attr('stroke', '#000').attr('stroke-width', 1).attr('fill', 'none').classed('operation_item', true)
 		return parentG
 	}
 	//  绘制需要的实心圆，实线
 	drawCircle(svg, x, y) {
-		svg.append('circle')
-			.attr('cx', x)
-			.attr('cy', y)
-			.attr('r', 4)
-			.attr('stroke', '#000')
-			.attr('stroke-width', 1)
-			.attr('fill', '#000')
-			.classed('operation_item', true)
+		svg.append('circle').attr('cx', x).attr('cy', y).attr('r', 4).attr('stroke', '#000').attr('stroke-width', 1).attr('fill', '#000').classed('operation_item', true)
 	}
 	// x,y 起始位置 targetX/Y 结束位置
 	drawLine(svg, x, y, targetX, targetY) {
 		const context = d3.path()
 		context.moveTo(x, y)
 		context.lineTo(targetX, targetY)
-		svg.append('path')
-			.attr('d', context.toString())
-			.attr('stroke', '#000')
-			.attr('stroke-width', 1)
-			.attr('fill', 'none')
-			.classed('operation_item', true)
+		svg.append('path').attr('d', context.toString()).attr('stroke', '#000').attr('stroke-width', 1).attr('fill', 'none').classed('operation_item', true)
 	}
 	// 绘制label
 	drawLabel(svg, x, y, width, height, labelText) {
 		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`)
-		parentG
-			.append('rect')
-			.attr('width', width)
-			.attr('height', height)
-			.attr('fill', '#f2f2f2')
-			.attr('rx', 10)
-			.attr('opacity', '0.5')
+		parentG.append('rect').attr('width', width).attr('height', height).attr('fill', '#f2f2f2').attr('rx', 10).attr('opacity', '0.5')
 		const context = d3.path()
 		context.moveTo(0, 10)
 		context.quadraticCurveTo(0, 0, 10, 0)
@@ -344,12 +213,7 @@ export default class d3Draw {
 		context.quadraticCurveTo(0, height, 10, height)
 		context.lineTo(width - 10, height)
 		context.quadraticCurveTo(width, height, width, height - 10)
-		parentG
-			.append('path')
-			.attr('d', context.toString())
-			.attr('stroke', 'rgb(100, 159, 174)')
-			.attr('stroke-width', 1)
-			.attr('fill', 'none')
+		parentG.append('path').attr('d', context.toString()).attr('stroke', 'rgb(100, 159, 174)').attr('stroke-width', 1).attr('fill', 'none')
 		parentG
 			.append('text')
 			.attr('x', width / 2)
@@ -378,13 +242,7 @@ export default class d3Draw {
 		context.quadraticCurveTo(0, 0, 0, 10)
 		context.lineTo(0, height - 10)
 		context.quadraticCurveTo(0, height, 10, height)
-		parentG
-			.append('path')
-			.attr('d', context.toString())
-			.attr('stroke', 'rgb(100, 159, 174)')
-			.attr('stroke-width', 1)
-			.attr('fill', 'none')
-			.classed('operation_item', true)
+		parentG.append('path').attr('d', context.toString()).attr('stroke', 'rgb(100, 159, 174)').attr('stroke-width', 1).attr('fill', 'none').classed('operation_item', true)
 		parentG
 			.append('text')
 			.attr('width', 20)
@@ -397,15 +255,7 @@ export default class d3Draw {
 	// 绘制self defined gate
 	drawSelfDefinedGate(svg, x, y) {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
-		parentG
-			.append('rect')
-			.attr('width', 20)
-			.attr('height', 20)
-			.attr('fill', '#fff')
-			.attr('stroke-width', 1)
-			.attr('stroke', '#000')
-			.attr('rx', 4)
-			.classed('operation_item', true)
+		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', '#fff').attr('stroke-width', 1).attr('stroke', '#000').attr('rx', 4).classed('operation_item', true)
 	}
 	// 鼠标选中效果
 	drawMouseHover(svg, x, y, height) {
@@ -427,11 +277,7 @@ export default class d3Draw {
 		context.quadraticCurveTo(x, y + height, x + 10, y + height)
 		context.lineTo(x + this.svgItemLabelWidth - 10, y + height)
 		context.quadraticCurveTo(x + this.svgItemLabelWidth, y + height, x + this.svgItemLabelWidth, y + height - 10)
-		svg.append('path')
-			.attr('d', context.toString())
-			.attr('stroke-width', 1)
-			.attr('class', 'item_label_path')
-			.attr('fill', 'transparent')
+		svg.append('path').attr('d', context.toString()).attr('stroke-width', 1).attr('class', 'item_label_path').attr('fill', 'transparent')
 		// svg.on('mouseover', function () {
 		// 	d3.select(this).select('.item_label_path').attr('stroke', 'rgb(100, 159, 174)')
 		// 	d3.select(this).select('.item_label_rect').attr('fill', '#f2f2f2')
@@ -444,13 +290,7 @@ export default class d3Draw {
 	// 绘制C模块选中线
 	drawCselectLine(svg, x, y, height, index, data) {
 		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`).attr('style', 'cursor:pointer;')
-		parentG
-			.append('rect')
-			.attr('width', 2)
-			.attr('height', height)
-			.attr('fill', 'transparent')
-			.classed('select_rect', true)
-			.attr('operationIndex', index)
+		parentG.append('rect').attr('width', 2).attr('height', height).attr('fill', 'transparent').classed('select_rect', true).attr('operationIndex', index)
 		const childG = parentG.append('g')
 		const context = d3.path()
 		context.moveTo(1, 1)
@@ -461,24 +301,15 @@ export default class d3Draw {
 		context.lineTo(6, height + 5)
 		context.lineTo(-4, height + 5)
 		context.closePath()
-		childG
-			.append('path')
-			.attr('d', context.toString())
-			.attr('stroke', 'transparent')
-			.attr('stroke-width', 1)
-			.attr('fill', 'transparent')
-			.classed('select_path', true)
+		childG.append('path').attr('d', context.toString()).attr('stroke', 'transparent').attr('stroke-width', 1).attr('fill', 'transparent').classed('select_path', true)
 		const self = this
 		parentG.on('click', function (e) {
 			d3.selectAll('.select_path').attr('stroke', 'transparent').attr('fill', 'transparent')
 			d3.selectAll('.select_rect').attr('stroke', 'transparent').attr('fill', 'transparent')
-			d3.select(this)
-				.select('.select_path')
-				.attr('stroke', 'rgb(149, 143, 143)')
-				.attr('fill', 'rgb(149, 143, 143)')
+			d3.select(this).select('.select_path').attr('stroke', 'rgb(149, 143, 143)').attr('fill', 'rgb(149, 143, 143)')
 			d3.select(this).select('.select_rect').attr('fill', 'rgb(149, 143, 143)')
 			let i = 0
-			self.drawStackedBar(data.get_varstate(e.target.attributes.operationIndex.value), i)
+			self.drawStackedBar(data.get_varstate(e.target.attributes.operationIndex.value), i, data)
 		})
 	}
 
@@ -562,13 +393,7 @@ export default class d3Draw {
 						swapG.datum(operation) //绑定数据到dom节点
 						this.drawSwap(swapG, x, this.svgItemHeight * (operations[i].qubits1[j] + 2))
 						this.drawSwap(swapG, x, this.svgItemHeight * (operations[i].qubits2[j] + 2))
-						this.drawLine(
-							swapG,
-							x,
-							this.svgItemHeight * (operations[i].qubits1[j] + 2),
-							x,
-							this.svgItemHeight * (operations[i].qubits2[j] + 2)
-						)
+						this.drawLine(swapG, x, this.svgItemHeight * (operations[i].qubits1[j] + 2), x, this.svgItemHeight * (operations[i].qubits2[j] + 2))
 					}
 					break
 				case 'ccnot':
@@ -579,38 +404,14 @@ export default class d3Draw {
 					const controlsMax = Math.max(...operations[i].controls)
 
 					if (controlsMax < operations[i].target[0]) {
-						this.drawLine(
-							ccnotG,
-							x,
-							this.svgItemHeight * (operations[i].target[0] + 2),
-							x,
-							this.svgItemHeight * (controlsMin + 2)
-						)
+						this.drawLine(ccnotG, x, this.svgItemHeight * (operations[i].target[0] + 2), x, this.svgItemHeight * (controlsMin + 2))
 					}
 					if (controlsMin > operations[i].target[0]) {
-						this.drawLine(
-							ccnotG,
-							x,
-							this.svgItemHeight * (operations[i].target[0] + 2),
-							x,
-							this.svgItemHeight * (controlsMax + 2)
-						)
+						this.drawLine(ccnotG, x, this.svgItemHeight * (operations[i].target[0] + 2), x, this.svgItemHeight * (controlsMax + 2))
 					}
 					if (controlsMin < operations[i].target[0] && operations[i].target[0] < controlsMax) {
-						this.drawLine(
-							ccnotG,
-							x,
-							this.svgItemHeight * (operations[i].target[0] + 2),
-							x,
-							this.svgItemHeight * (controlsMax + 2)
-						)
-						this.drawLine(
-							ccnotG,
-							x,
-							this.svgItemHeight * (operations[i].target[0] + 2),
-							x,
-							this.svgItemHeight * (controlsMin + 2)
-						)
+						this.drawLine(ccnotG, x, this.svgItemHeight * (operations[i].target[0] + 2), x, this.svgItemHeight * (controlsMax + 2))
+						this.drawLine(ccnotG, x, this.svgItemHeight * (operations[i].target[0] + 2), x, this.svgItemHeight * (controlsMin + 2))
 					}
 
 					for (let j = 0; j < operations[i].controls.length; j++) {
@@ -622,13 +423,7 @@ export default class d3Draw {
 				case 'ccphase':
 					const ccphaseG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
 					ccphaseG.datum(operation) //绑定数据到dom节点
-					this.drawLine(
-						ccphaseG,
-						x,
-						this.svgItemHeight * (operations[i].qubits[0] + 2),
-						x,
-						this.svgItemHeight * (operations[i].qubits[operations[i].qubits.length - 1] + 2)
-					)
+					this.drawLine(ccphaseG, x, this.svgItemHeight * (operations[i].qubits[0] + 2), x, this.svgItemHeight * (operations[i].qubits[operations[i].qubits.length - 1] + 2))
 					for (let j = 0; j < operations[i].qubits.length; j++) {
 						this.drawCCPhase(ccphaseG, x, this.svgItemHeight * (operations[i].qubits[j] + 2))
 					}
@@ -672,13 +467,7 @@ export default class d3Draw {
 					const defaultMinQ = Math.min(...qubits)
 					const defaultMaxQ = Math.max(...qubits)
 					if (qubits.length) {
-						this.drawLine(
-							defaultG,
-							x,
-							this.svgItemHeight * (qubits[0] + 2),
-							x,
-							this.svgItemHeight * (qubits[qubits.length - 1] + 2)
-						)
+						this.drawLine(defaultG, x, this.svgItemHeight * (qubits[0] + 2), x, this.svgItemHeight * (qubits[qubits.length - 1] + 2))
 
 						this.drawSelfDefinedGate(defaultG, x, this.svgItemHeight * (defaultMinQ + 2))
 						this.drawSelfDefinedGate(defaultG, x, this.svgItemHeight * (defaultMaxQ + 2))
@@ -689,7 +478,7 @@ export default class d3Draw {
 		}
 	}
 	// 绘制C视图上半
-	drawStackedBar(data, i) {
+	drawStackedBar(data, i, qc) {
 		const chart_svg = d3.select('#chart_svg')
 		chart_svg.selectAll('*').remove()
 		const dataArr = []
@@ -700,11 +489,12 @@ export default class d3Draw {
 				dataArr.push({ name: key, magn: data[key].magn[i], prob: data[key].prob[i], index: i })
 			}
 			const g = chart_svg.append('g').attr('transform', 'translate(' + i * width + ',' + 0 + ')')
-			this.StackedBarChart(dataArr, g, width)
+			this.StackedBarChart(dataArr, g, width, key, qc)
 			i += 1
 		}
 	}
-	StackedBarChart(data, g, width) {
+	StackedBarChart(data, g, width, name, qc) {
+		console.log(data)
 		const chart = new Chart()
 		const config = {
 			barPadding: 0.15,
@@ -737,9 +527,13 @@ export default class d3Draw {
 			g.selectAll('.tick line').remove()
 			// g.selectAll('.tick text').remove()
 			g.append('svg')
-			// <line x1="0.25" x2="0.25" y2="9" stroke="black" stroke-width="0.5"/>
-			.append('line').attr('x1',0.25).attr('y2',9).attr('stroke-width',0.5).attr('stroke','black')
-			// g.append('rect').attr('width', chart.getBodyWidth()).attr('height', 6).attr('fill', 'red')
+				// <line x1="0.25" x2="0.25" y2="9" stroke="black" stroke-width="0.5"/>
+				.append('line')
+				.attr('x1', 0.25)
+				.attr('y2', 9)
+				.attr('stroke-width', 0.5)
+				.attr('stroke', 'black')
+			g.append('rect').attr('width', chart.getBodyWidth()).attr('height', 6).attr('fill', 'red')
 		}
 		// 处理Y轴样式
 		function customYAxis(g) {
@@ -807,34 +601,22 @@ export default class d3Draw {
 			chart.renderY()
 		}
 		chart.renderText = function () {
-			d3.select('.xAxis')
-				.append('text')
-				.attr('class', 'axisText')
-				.attr('x', chart.getBodyWidth())
-				.attr('y', 0)
-				.attr('fill', config.textColor)
-				.attr('dy', 30)
+			g.select('.xAxis').append('text').attr('class', 'axisText').attr('x', chart.getBodyWidth()).attr('y', 0).attr('fill', config.textColor).attr('dy', 30)
 
-			d3.select('.yAxis')
+			g.select('.yAxis')
 				.append('text')
 				.attr('class', 'axisText')
-				.attr('x', 0)
-				.attr('y', chart.bodyY() + chart.getBodyHeight())
+				.attr('x', -10)
+				.attr('y', chart.getBodyHeight())
 				.attr('fill', config.textColor)
 				.attr('text-anchor', 'end')
-				.text('a')
+				.attr('style', 'font-size:18px')
+				.text(`${name}`)
 		}
 		chart.renderGrid = function () {
-			d3.selectAll('.yAxis .tick').each(function (d, i) {
+			g.selectAll('.yAxis .tick').each(function (d, i) {
 				if (config.tickShowGrid.indexOf(d) > -1) {
-					d3.select(this)
-						.append('line')
-						.attr('class', 'grid')
-						.attr('stroke', config.gridColor)
-						.attr('x1', 0)
-						.attr('y1', 0)
-						.attr('x2', chart.getBodyWidth())
-						.attr('y2', 0)
+					g.select(this).append('line').attr('class', 'grid').attr('stroke', config.gridColor).attr('x1', 0).attr('y1', 0).attr('x2', chart.getBodyWidth()).attr('y2', 0)
 				}
 			})
 		}
@@ -852,11 +634,9 @@ export default class d3Draw {
 				.attr('stroke', config.textColor)
 		}
 		chart.addMouseOn = function () {
-			d3.selectAll('.bar')
+			g.selectAll('.bar')
 				.on('mouseover', function (e, d) {
-			
 					const position = d3.pointer(e)
-					// console.log(position)
 					chart
 						.svg()
 						.append('text')
@@ -867,14 +647,13 @@ export default class d3Draw {
 						.text(d.name + d.data[d.name])
 				})
 				.on('mouseleave', function (e, d) {
-				
-					d3.select('.tip').remove()
+					g.select('.tip').remove()
 				})
 				.on(
 					'mousemove',
 					function (e) {
 						const position = d3.pointer(e)
-						d3.select('.tip')
+						g.select('.tip')
 							.attr('x', position[0] + 5)
 							.attr('y', position[1] - 5)
 					}
@@ -882,9 +661,10 @@ export default class d3Draw {
 
 					// }, 6)
 				)
-				.on('click', function (e,d) {
+				.on('click', function (e, d) {
+					d3.selectAll('.bar').attr('stroke', config.hoverColor).attr('stroke-width', 0)
 					d3.select(this).attr('stroke', config.hoverColor).attr('stroke-width', 1)
-					console.log(d)
+					console.log(qc.get_wholestate(d.data.index))
 				})
 		}
 
