@@ -561,7 +561,7 @@ export default class QCEngine {
         {
             magnitudes[i] = state[i]['magnitude'];
         }
-        console.log("magnitudes",magnitudes);
+        
         let var_index = this.name2index;
     
         for(let key in var_index)
@@ -594,10 +594,11 @@ export default class QCEngine {
         
         for(let i=0; i<state.length; i++)
         {
-            let comp = state['amplitude'];
+            let comp = state[i]['amplitude'];
+            console.log(comp)
             let polar = getExp(comp);
             res['magns'][i] = polar['r'];
-            res['phases'][i] = calibrate(polar['phi']);
+            res['phases'][i] = calibrate(polar['phi']) * 180 / Math.PI;
         }
         
         return res;
@@ -801,7 +802,7 @@ export default class QCEngine {
         else if (status == 'end')
             op_index = ops[1];
 
-        let whole = this.get_wholestate(ops[0]);
+        let whole = this.get_wholestate(op_index);
         let opera = this.operations[op_index];
         let state = opera['state_after_opertaion'];
         let involved_qubits = this.getQubitsInvolved(opera);
@@ -845,7 +846,7 @@ export default class QCEngine {
             }
 
             //TODO: switch to power
-            let tmp_index = this.get_index(ops[0],input_state['bases'][i]['var2value']);
+            let tmp_index = this.get_index(op_index,input_state['bases'][i]['var2value']);
             input_state['bases'][i]['magnitude'] = average(whole['magns'],tmp_index);
             input_state['bases'][i]['phases'] = average(whole['phases'],tmp_index);
 
@@ -878,7 +879,21 @@ export default class QCEngine {
 
     get_evo_matrix(label_id)
     {
+        let gate_mats = [];
+        let ops = this.labels[label_id]['operations'];
+        for(let i=ops[0]; i<ops[1]; i++)
+        {
+            let opera = this.operations[i];
+            
+
+        }
+
         
+
+    }
+
+    transferSankey(matrix)
+    {
 
     }
 
