@@ -1,5 +1,6 @@
 import { data } from 'browserslist'
 import * as d3 from 'd3'
+import { group } from 'd3'
 import { event as currentEvent } from 'd3-selection'
 import Chart from './Chart'
 export default class d3Draw {
@@ -310,6 +311,7 @@ export default class d3Draw {
 			d3.select(this).select('.select_rect').attr('fill', 'rgb(149, 143, 143)')
 			let i = 0
 			self.drawStackedBar(data.get_varstate(e.target.attributes.operationIndex.value), i, data)
+			self.drawCdownStackedBar(data.get_wholestate(e.target.attributes.operationIndex.value), data)
 		})
 	}
 
@@ -481,24 +483,29 @@ export default class d3Draw {
 	drawStackedBar(data, i, qc) {
 		const chart_svg = d3.select('#chart_svg')
 		chart_svg.selectAll('*').remove()
-		const dataArr = []
 		const keyArr = Object.keys(data)
-		const width = 546 / keyArr.length
+		let allWidth = 0
+		const widthArr = []
 		for (const key in data) {
+			const dataArr = []
 			for (let i = 0; i < data[key].magn.length; i++) {
-				dataArr.push({ name: key, magn: data[key].magn[i], prob: data[key].prob[i], index: i })
+				const prob = data[key].prob[i] > data[key].magn[i] ? data[key].prob[i] - data[key].magn[i] : 0
+				dataArr.push({ name: key, magn: data[key].magn[i], prob: prob, index: i, realProb: data[key].prob[i] })
 			}
-			const g = chart_svg.append('g').attr('transform', 'translate(' + i * width + ',' + 0 + ')')
+			const width = 30 * dataArr.length + 120
+			widthArr.push(width)
+			const g = chart_svg.append('g').attr('transform', `translate(${i ? widthArr[i - 1] : 0},0)`)
 			this.StackedBarChart(dataArr, g, width, key, qc)
+			allWidth += width
+			chart_svg.attr('width', allWidth)
 			i += 1
 		}
 	}
 	StackedBarChart(data, g, width, name, qc) {
-		console.log(data)
 		const chart = new Chart()
 		const config = {
 			barPadding: 0.15,
-			margins: { top: 20, left: 40, bottom: 80, right: 0 },
+			margins: { top: 20, left: 80, bottom: 100, right: 40 },
 			tickShowGrid: [60, 120, 180],
 			textColor: 'black',
 			gridColor: 'gray',
@@ -521,36 +528,48 @@ export default class d3Draw {
 			.range([chart.getBodyHeight(), 0])
 		// 处理x轴样式
 		function customXAxis(g) {
-			const xAxis = d3.axisBottom(chart.scaleX).tickSize(20)
+			const xAxis = d3.axisBottom(chart.scaleX)
 			g.call(xAxis)
 			g.select('.domain').remove()
 			g.selectAll('.tick line').remove()
-			// g.selectAll('.tick text').remove()
-			g.append('svg')
-				// <line x1="0.25" x2="0.25" y2="9" stroke="black" stroke-width="0.5"/>
+			g.selectAll('.tick text').classed('svgtext', true)
+			g.selectAll('.tick')
+				.append('g')
+				.attr('transform', 'translate(-8,8)')
 				.append('line')
 				.attr('x1', 0.25)
 				.attr('y2', 9)
 				.attr('stroke-width', 0.5)
 				.attr('stroke', 'black')
-			g.append('rect').attr('width', chart.getBodyWidth()).attr('height', 6).attr('fill', 'red')
+				.classed('svgtext', true)
+			g.selectAll('.tick')
+				.append('g')
+				.attr('transform', 'translate(8,7)')
+				.append('path')
+				.attr('d', 'M0.845337 1L2.63087 5.40266L0.845337 9.71606')
+				.attr('stroke', 'black')
+				.attr('stroke-width', 0.5)
+				.attr('stroke-linecap', 'round')
+				.classed('svgtext', true)
+			g.append('rect').attr('width', chart.getBodyWidth()).attr('height', 5).attr('fill', 'rgb(220, 216, 216)').classed('x_rect', true).classed('svgtext', true).attr('rx', 5).attr('ry', 5)
 		}
 		// 处理Y轴样式
 		function customYAxis(g) {
-			const yAxis = d3.axisBottom(chart.scaleY)
+			const yAxis = d3.axisLeft(chart.scaleY)
 			g.call(yAxis)
 			g.select('.domain').remove()
 			g.selectAll('.tick line').remove()
 			g.selectAll('.tick text').remove()
 		}
-		chart.stack = d3.stack().keys(['magn', 'prob']).order(d3.stackOrderAscending).offset(d3.stackOffsetNone)
+		// 绘制bar
+		chart.stack = d3.stack().keys(['magn', 'prob'])
 		chart.renderBars = function () {
 			let groups = chart.body().selectAll('.g').data(chart.stack(data))
 			let bars = groups
 				.enter()
 				.append('g')
 				.merge(groups)
-				.attr('class', (d) => 'g ' + d.index)
+				.attr('class', (d) => 'g' + d.index)
 				.attr('fill', (d) => chart._colors[d.index])
 				.selectAll('.bar')
 				.data((d) => {
@@ -560,9 +579,7 @@ export default class d3Draw {
 						return item
 					})
 				})
-
 			groups.exit().remove()
-
 			bars.enter()
 				.append('rect')
 				.attr('class', 'bar')
@@ -600,9 +617,9 @@ export default class d3Draw {
 			chart.renderX()
 			chart.renderY()
 		}
+		// 绘制名称
 		chart.renderText = function () {
 			g.select('.xAxis').append('text').attr('class', 'axisText').attr('x', chart.getBodyWidth()).attr('y', 0).attr('fill', config.textColor).attr('dy', 30)
-
 			g.select('.yAxis')
 				.append('text')
 				.attr('class', 'axisText')
@@ -612,72 +629,195 @@ export default class d3Draw {
 				.attr('text-anchor', 'end')
 				.attr('style', 'font-size:18px')
 				.text(`${name}`)
+				.classed('svgtext', true)
 		}
-		chart.renderGrid = function () {
-			g.selectAll('.yAxis .tick').each(function (d, i) {
-				if (config.tickShowGrid.indexOf(d) > -1) {
-					g.select(this).append('line').attr('class', 'grid').attr('stroke', config.gridColor).attr('x1', 0).attr('y1', 0).attr('x2', chart.getBodyWidth()).attr('y2', 0)
-				}
-			})
-		}
-		chart.renderTitle = function () {
-			chart
-				.svg()
-				.append('text')
-				.classed('title', true)
-				.attr('x', chart.width() / 2)
-				.attr('y', 0)
-				.attr('dy', '2em')
-				.text(config.title)
-				.attr('fill', config.textColor)
-				.attr('text-anchor', 'middle')
-				.attr('stroke', config.textColor)
-		}
+		// 绑定事件
 		chart.addMouseOn = function () {
 			g.selectAll('.bar')
 				.on('mouseover', function (e, d) {
 					const position = d3.pointer(e)
-					chart
-						.svg()
+					const text = g
 						.append('text')
 						.classed('tip', true)
-						.attr('x', position[0] + chart.scaleX.bandwidth())
+						.attr('x', position[0] + 100)
 						.attr('y', position[1])
 						.attr('fill', chart.textColor)
-						.text(d.name + d.data[d.name])
+					text.append('tspan').text('magn:' + d.data['magn'])
+					text.append('tspan')
+						.attr('x', position[0] + 100)
+						.attr('dy', '1em')
+						.text('prob:' + d.data['realProb'])
 				})
 				.on('mouseleave', function (e, d) {
 					g.select('.tip').remove()
 				})
-				.on(
-					'mousemove',
-					function (e) {
-						const position = d3.pointer(e)
-						g.select('.tip')
-							.attr('x', position[0] + 5)
-							.attr('y', position[1] - 5)
-					}
-					// debounce(function (e) {
-
-					// }, 6)
-				)
+				.on('mousemove', function (e) {
+					const position = d3.pointer(e)
+					g.select('.tip')
+						.attr('x', position[0] + 100)
+						.attr('y', position[1] + 20)
+					g.selectAll('.tip tspan').attr('x', position[0] + 100)
+				})
 				.on('click', function (e, d) {
 					d3.selectAll('.bar').attr('stroke', config.hoverColor).attr('stroke-width', 0)
 					d3.select(this).attr('stroke', config.hoverColor).attr('stroke-width', 1)
 					console.log(qc.get_wholestate(d.data.index))
 				})
 		}
-
+		// 总体绘制
 		chart.render = function () {
 			chart.renderAxis()
 			chart.renderText()
-			chart.renderGrid()
 			chart.renderBars()
 			chart.addMouseOn()
-			chart.renderTitle()
 		}
 
 		chart.renderChart()
 	}
 	// 绘制C视图下半
+	drawCdownStackedBar(data, qc) {
+		const chart_down_svg = d3.select('#chart_down_svg')
+		chart_down_svg.selectAll('*').remove()
+		const keyArr = Object.keys(data)
+		const dataArr = []
+		for (let i = 0; i < data.magns.length; i++) {
+			dataArr.push({ magns: data.magns[i], phases: 1, index: i })
+		}
+		const g = chart_down_svg.append('g')
+		this.cDownStackedBarChart(dataArr, g)
+	}
+	cDownStackedBarChart(data, g) {
+		const chart = new Chart()
+		const config = {
+			barPadding: 0.15,
+			margins: { top: 20, left: 80, bottom: 100, right: 40 },
+			tickShowGrid: [60, 120, 180],
+			textColor: 'black',
+			gridColor: 'gray',
+			hoverColor: 'gray',
+			animateDuration: 1000,
+		}
+		chart.width(500)
+		chart.box(d3.select('.c_down_draw'))
+		chart.svg(g)
+		chart.margins(config.margins)
+		chart.scaleX = d3
+			.scaleBand()
+			.domain(data.map((d) => d.index))
+			.range([0, chart.getBodyWidth()])
+			.padding(config.barPadding)
+
+		chart.scaleY = d3
+			.scaleLinear()
+			.domain([0, d3.max(data.map((d) => d.magns))])
+			.range([chart.getBodyHeight(), 0])
+		// 处理x轴样式
+		function customXAxis(g) {
+			const xAxis = d3.axisBottom(chart.scaleX)
+			g.call(xAxis)
+			// g.select('.domain').remove()
+			g.selectAll('.tick line').remove()
+			g.selectAll('.tick text').remove()
+		}
+		// 处理Y轴样式
+		function customYAxis(g) {
+			const yAxis = d3.axisLeft(chart.scaleY).tickValues([2])
+			g.call(yAxis)
+			// g.select('.domain').remove()
+			// g.selectAll('.tick line').remove()
+			// g.selectAll('.tick text').remove()
+		}
+		// 绘制bar
+		chart.stack = d3.stack().keys(['magns', 'phases'])
+		chart.renderBars = function () {
+			let groups = chart.body().selectAll('.g').data(chart.stack(data))
+			let bars = groups
+				.enter()
+				.append('g')
+				.merge(groups)
+				.attr('class', (d) => 'g' + d.index)
+				.attr('fill', (d) => chart._colors[d.index])
+				.selectAll('.bar')
+				.data((d) => {
+					return d.map((item) => {
+						item.index = d.index
+						item.name = d.key
+						return item
+					})
+				})
+			groups.exit().remove()
+			bars.enter()
+				.append('rect')
+				.attr('class', 'bar')
+				.merge(bars)
+				.attr('x', (d) => chart.scaleX(d.data.index))
+				.attr('y', (d) => chart.scaleY(d[0]))
+				.attr('width', chart.scaleX.bandwidth())
+				.attr('height', 0)
+				.transition()
+				.duration(config.animateDuration)
+				.attr('height', (d) => chart.scaleY(d[0]) - chart.scaleY(d[1]))
+				.attr('y', (d) => chart.scaleY(d[1]))
+
+			bars.exit().remove()
+		}
+		chart.renderX = function () {
+			chart
+				.svg()
+				.insert('g', '.body')
+				.attr('transform', 'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight()) + ')')
+				.attr('class', 'xAxis')
+				.call(customXAxis)
+		}
+
+		chart.renderY = function () {
+			chart
+				.svg()
+				.insert('g', '.body')
+				.attr('transform', 'translate(' + chart.bodyX() + ',' + chart.bodyY() + ')')
+				.attr('class', 'yAxis')
+				.call(customYAxis)
+		}
+		// 绘制坐标轴
+		chart.renderAxis = function () {
+			chart.renderX()
+			chart.renderY()
+		}
+		// 绑定事件
+		chart.addMouseOn = function () {
+			g.selectAll('.bar')
+				.on('mouseover', function (e, d) {
+					const position = d3.pointer(e)
+					const text = g
+						.append('text')
+						.classed('tip', true)
+						.attr('x', position[0] + 100)
+						.attr('y', position[1])
+						.attr('fill', chart.textColor)
+					text.append('tspan').text('magns:' + d.data['magns'])
+					text.append('tspan')
+						.attr('x', position[0] + 100)
+						.attr('dy', '1em')
+						.text('phases:' + d.data['phases'])
+				})
+				.on('mouseleave', function (e, d) {
+					g.select('.tip').remove()
+				})
+				.on('mousemove', function (e) {
+					const position = d3.pointer(e)
+					g.select('.tip')
+						.attr('x', position[0] + 100)
+						.attr('y', position[1] + 20)
+					g.selectAll('.tip tspan').attr('x', position[0] + 100)
+				})
+		}
+		// 总体绘制
+		chart.render = function () {
+			chart.renderAxis()
+			chart.renderBars()
+			chart.addMouseOn()
+		}
+
+		chart.renderChart()
+	}
 }
