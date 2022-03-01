@@ -1,7 +1,7 @@
 import { showInDebuggerArea } from '../simulator/CommonFunction';
 import QCEngine from '../simulator/MyQCEngine'
 import {
-    cos, sin, round, pi, complex, create, all,
+    create, all,
 } from 'mathjs'
 const config = { };
 const math = create(all, config);
@@ -9,7 +9,7 @@ const math = create(all, config);
 var qc = new QCEngine()
 var {qint} = qc
 
-console.log("hello 2021");
+
 // Programming Quantum Computers
 //   by Eric Johnston, Nic Harrigan and Mercedes Gimeno-Segovia
 //   O'Reilly Media

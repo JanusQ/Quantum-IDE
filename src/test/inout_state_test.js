@@ -1,10 +1,13 @@
-
 import { showInDebuggerArea } from '../simulator/CommonFunction';
 import QCEngine from '../simulator/MyQCEngine'
+import {
+    create, all,
+} from 'mathjs'
+const config = { };
+const math = create(all, config);
 
 var qc = new QCEngine()
 var {qint} = qc
-
 
 // Programming Quantum Computers
 //   by Eric Johnston, Nic Harrigan and Mercedes Gimeno-Segovia
@@ -38,7 +41,6 @@ qc.nop();
 
 
 console.log("hello 2022");
-let filt = {'a':[0,1,2],'b':[0,1]};
-console.log(filt);
-console.log(qc.get_index(3,filt));
+console.log(qc.get_input_state(4));
+//console.log(math.multiply(complex(1,2),0.5));
 console.log("end 2002");
