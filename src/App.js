@@ -23,6 +23,10 @@ import { range } from 'd3'
 // import './test/ex7-1'
 // import './test/ex7-7'
 // import './test/all_operation'
+// import './test/istest.js'
+// import './test/index.js';
+// import './test/test_entropy';
+// import './test/test_pmi.js'
 
 function App() {
 	// 编辑器内容
