@@ -811,7 +811,7 @@ export default class d3Draw {
 		const chart = new Chart()
 		const config = {
 			barPadding: 0.1,
-			margins: { top: 20, left: 80, bottom: 100, right: 80 },
+			margins: { top: 20, left: 40, bottom: 0, right: 0 },
 			tickShowGrid: [60, 120, 180],
 			textColor: 'black',
 			gridColor: 'gray',
@@ -972,7 +972,7 @@ export default class d3Draw {
 		chart.addZoom = function () {
 			const extent = [
 				[0, config.margins.top],
-				[chart.getBodyWidth(), chart.getBodyHeight()],
+				[chart.getBodyWidth() - 10, chart.getBodyHeight()],
 			]
 			chart.svg().call(d3.zoom().scaleExtent([1, 8]).translateExtent(extent).extent(extent).on('zoom', zoomed))
 			function zoomed(event) {
@@ -987,16 +987,17 @@ export default class d3Draw {
 					.selectAll('.phases_bar')
 					.attr('x', (d) => chart.scaleX(d.index))
 					.attr('width', chart.scaleX.bandwidth())
-				chart.svg().selectAll('.xAxis').call(chart.renderX)
+				// chart.svg().selectAll('.xAxis').call(chart.renderX)
 			}
 		}
 		// 总体绘制
 		chart.render = function () {
-			chart.renderAxis()
+		
 			chart.renderMagnsBars()
 			chart.renderPhasesBars()
 			chart.addMouseOn()
 			chart.addZoom()
+			chart.renderAxis()
 		}
 
 		chart.renderChart()

@@ -12,7 +12,7 @@ export default class Chart {
 		this._box = null
 		this._svg = null
 		this._body = null
-		this._padding = { top: 10, left: 10, right: 10, bottom: 10 }
+		this._padding = { top: 10, left: 0, right: 0, bottom: 120 }
 	}
 
 	width(w) {
@@ -95,7 +95,7 @@ export default class Chart {
 			.append('clipPath')
 			.attr('id', 'clip')
 			.append('rect')
-			.attr('width', this.getBodyWidth() + this._padding.left + this._padding.right)
+			.attr('width', this.getBodyWidth() + this._padding.right)
 			.attr('height', this.getBodyHeight() + this._padding.top + this._padding.bottom)
 			.attr('x', -this._padding.left)
 			.attr('y', -this._padding.top)
