@@ -18,6 +18,7 @@ import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, a
 import {
     cos, sin, round, pi, complex, create, all,
 } from 'mathjs'
+import { gateExpand1toN } from './MatrixOperation';
 
 const config = { };
 const math = create(all, config);
@@ -561,7 +562,7 @@ export default class QCEngine {
         {
             magnitudes[i] = state[i]['magnitude'];
         }
-
+        
         let var_index = this.name2index;
     
         for(let key in var_index)
@@ -594,10 +595,10 @@ export default class QCEngine {
         
         for(let i=0; i<state.length; i++)
         {
-            let comp = state['amplitude'];
+            let comp = state[i]['amplitude'];
             let polar = getExp(comp);
             res['magns'][i] = polar['r'];
-            res['phases'][i] = calibrate(polar['phi']);
+            res['phases'][i] = calibrate(polar['phi']) * 180 / Math.PI;
         }
         
         return res;
@@ -605,19 +606,19 @@ export default class QCEngine {
 
     get_index(operation_index, filter)
     {
-        let opera = this.operations[operation_index];
-        let state = opera['state_after_opertaion'];
+        //let opera = this.operations[operation_index];
+        //let state = opera['state_after_opertaion'];
+        //filter = {'a':[0,1,2,5,7,9],'b':[0,3]};
+        //console.log(filter);
         let var_index = this.name2index;
-            
+        //console.log(var_index);
         let i = 0;
         let neo_sv = [];
         let com = [];
-
+        //console.log(filter);
         for(let key in var_index)
         {
-            if(filter[key] == undefined)
-                continue;
-            else{
+            if(filter[key] == undefined){
                 let tmp_ar = [];
                 let len = var_index[key][1]-var_index[key][0];
                 for(i=0;i<Math.pow(2,len);i++)
@@ -627,21 +628,26 @@ export default class QCEngine {
                 filter[key] = tmp_ar;
             }
         }
-        
+        //console.log(filter);
         for(let key in filter)
         {
             if(com.length == 0)
             {
-                for(i=0; i<filter[key].length; i++)
-                    com[i]=[filter[key][i]];
+                for(i=0; i<filter[key].length; i++){
+                    com[i] = {};//{key:filter[key][i]};
+                    com[i][key] = filter[key][i];
+                    //console.log(com[i]);
+                    //com[i] = [filter[key][i]];
+                }
+                //console.log(com);
                 continue;
             }
-            com = alt_tensor(com,filter[key]);
+            com = alt_tensor(com,filter[key],key);
         }
-        
+        //console.log(com);
         let k = 0;
-        let total = Math.log2(state.length);
-        
+        //let total = this.qubit_number;
+        //console.log('com',com);
         for(i=0; i<com.length; i++)
         {
             let tmp = com[i];
@@ -651,36 +657,62 @@ export default class QCEngine {
             
             for (let key in var_index)
             {
-                index += tmp[j] * (Math.pow(2, total - var_index[key][1]));
+                //console.log(index);
+                index += tmp[key] * (Math.pow(2, var_index[key][0]));
+                //console.log(index);
                 j++;
             }
             
             neo_sv[k] = index;
             k++;
         }
-        
+        neo_sv = neo_sv.sort(function(a, b){return a - b});
         return neo_sv;       
     }
     
-    _selected_state(operation_index, num, bit_range)
+    _selected_state(num, bit_range)
     {
-        let opera = this.operations[operation_index];
-        let state = opera['state_after_opertaion'];
-        let res = [];
+        //let opera = this.operations[operation_index];
+        //let state = opera['state_after_opertaion'];
+        //let res = [];
         let min = bit_range[0];
         let max = bit_range[1];
         let ran = max - min;
         let bin = binary(num, this.qubit_number - ran);
+        
+        let all_bin = [];
+        let mask = [];
         let ret = [];
         for(let i=0; i<Math.pow(2,ran); i++)
         {
             let bini = binary(i,ran);
-            for(let j=0; j<bin[i].length; j++)
+            let j = 0;
+            
+            for(let k=0; k<this.qubit_number; k++)
             {
-                bin.splice(bin.length-max-1,0,bini[j]);
+                all_bin[k] = 0;
+                mask[k] = 0;
             }
-            ret[i] = binary2int(bin,this.qubit_number);
+
+            for(let k=min; k<max; k++)
+            {
+                all_bin[k] = bini[j];
+                mask[k] = 1;
+                j++;
+            }
+            j = 0;
+            for(let k=0; k<this.qubit_number; k++)
+            {
+                if(mask[k] == 0)
+                {
+                    all_bin[k] = bin[j];
+                    mask[k] = 1;
+                    j++;
+                }             
+            }
+            ret[i] = binary2int(all_bin,this.qubit_number);
         }
+       
         return ret;
 
     }
@@ -700,17 +732,19 @@ export default class QCEngine {
         
         for(now_num=0; now_num<Math.pow(2, this.qubit_number-bits); now_num++)
         {
-            let ids = this._get_selected(now_num, operation_index);
+            let ids = this._selected_state(now_num, var_index[name]);
             let prob = 0;
             let vecs = [];
             
             for(let i=0; i<ids.length; i++){
                 prob += whole_state['magns'][ids[i]];
-                vecs[i] = state[i]['amplitude'];
+                vecs[i] = state[ids[i]]['amplitude'];
             }
+            
             for(let i=0; i<vecs.length; i++)
             {
                 vecs[i] = math.multiply(vecs[i],prob);
+                
                 fin_vec[i] = math.add(fin_vec[i],vecs[i]);
             }          
         }
@@ -726,7 +760,9 @@ export default class QCEngine {
         let vec = [];
         
         for(let key in var_index){
-            vec = this._get_fake_vector(key,operation_index);
+            //console.log("abd");
+            vec = this._get_fake_vector(key, operation_index);
+            //console.log(vec);
             ent += linear_entropy(vec);
             len++;
         }
@@ -736,6 +772,7 @@ export default class QCEngine {
     _calc_pmi(operation_index, select)
     {
         let index = this.get_index(operation_index, select);
+        //console.log(select);
         let whole_state = this.get_wholestate(operation_index);
         let p_xy = 0;
         let i = 0;
@@ -743,6 +780,7 @@ export default class QCEngine {
         for(i=0 ; i<index.length; i++)
         {
             let magn = whole_state['magns'][index[i]];
+            //console.log(index[i]);
             p_xy += magn*magn;
         }
         
@@ -754,7 +792,10 @@ export default class QCEngine {
             div *= var_state[key]['prob'][select[key][0]]; 
         }
         
-        return p_xy / div;
+        if(div == 0)
+            return 0;
+        else
+            return p_xy / div;
     }
 
     get_pmi_index(operation_index, threshold)
@@ -763,6 +804,7 @@ export default class QCEngine {
         let i,j = 0;
         let var_index = this.name2index;
         
+        let k = 0;
         for(let key in var_index){
             let len = Math.pow(2,var_index[key][1] - var_index[key][0]);
             for (let key2 in var_index){
@@ -774,11 +816,14 @@ export default class QCEngine {
                             let select = {};
                             select[key] = [i];
                             select[key2] = [j];
+                            //console.log(select);
                             let pmi = this._calc_pmi(operation_index,select);
+                            //console.log(pmi);
                             if(pmi >= threshold){
                                 select[key] = select[key][0];
                                 select[key2] = select[key2][0];
-                                ids[i] = select;
+                                ids[k] = select;
+                                k++;
                             }
                         }
                     }
@@ -794,39 +839,62 @@ export default class QCEngine {
 
     _make_state(label_id, status)
     {
-        let ops = this.labels[label_id]['operations'];
+        let ops = [this.labels[label_id]['start_operation'],this.labels[label_id]['end_operation']];
+        
         let op_index;
         if(status == 'start')
             op_index = ops[0];
         else if (status == 'end')
             op_index = ops[1];
 
-        let whole = this.get_wholestate(ops[0]);
-        let opera = this.operations[op_index];
-        let state = opera['state_after_opertaion'];
-        let involved_qubits = this.getQubitsInvolved(opera);
-        let var_index = this.name2index;
-        let vars = [];
+        let whole = this.get_wholestate(op_index);
         
-        for(let qubit of involved_qubits){
-            let tmp_array = [];
-            let tmp_var = this.getQubit2Variable(qubit);
-            tmp_array.push(tmp_var['variable']);
-            vars = [...new Set(tmp_array)];         
+        //let opera = this.operations[op_index];
+        //let state = opera['state_after_opertaion'];
+        //let involved_qubits = this.getQubitsInvolved(opera);
+        let var_index = this.name2index;
+        
+        let vars = [];
+        let tmp_array = [];
+
+        for(let i=ops[0]+1; i<=ops[1]; i++)
+        {
+            let opera = this.operations[i];
+            let involved_qubits = this.getQubitsInvolved(opera);
+           
+            for(let qubit of involved_qubits){    
+                let tmp_var = this.getQubit2Variable(qubit);
+                tmp_array.push(tmp_var['variable']);                     
+            }          
+
         }
+       
+        vars = [...new Set(tmp_array)];
+        
 
         let input_state = {};
         input_state['vars'] = vars;
+        
         let deep_length = 1;
         let qubit_num = 0;
-        
-        for(let key in vars)
+        let new_var_index = {};
+        let bottom = 0;
+        let i = 0;
+        for(i=0; i<vars.length; i++)
         {
-            let bits = var_index[vars[key]][1] - var_index[vars[key]][0];
-            deep_length *= bits;
+            let bits = var_index[vars[i]][1] - var_index[vars[i]][0];
+            //deep_length *= bits;
             qubit_num += bits;
+            new_var_index[vars[i]] = [];
+            new_var_index[vars[i]][0] = bottom;
+            new_var_index[vars[i]][1] = bottom + bits;
+            bottom = bottom + bits;
         }
+        deep_length = Math.pow(2,qubit_num);
+        //console.log(qubit_num,deep_length);
+        //console.log(new_var_index);
         
+        input_state['bases'] = [];
         for(let i=0; i<deep_length; i++)
         {
             input_state['bases'][i]={};
@@ -838,16 +906,23 @@ export default class QCEngine {
             bin = bin.reverse();
             for(let k=0; k<vars.length; k++)
             {
-                let tmp  = bin.slice(var_index[vars[k]][0], var_index[vars[k]][1]);
+                let tmp = bin.slice(new_var_index[vars[k]][0], new_var_index[vars[k]][1]);
                 tmp = tmp.reverse();
                 let dec = binary2int(tmp);
                 input_state['bases'][i]['var2value'][vars[k]] = dec;
             }
 
             //TODO: switch to power
-            let tmp_index = this.get_index(ops[0],input_state['bases'][i]['var2value']);
-            input_state['bases'][i]['magnitude'] = average(whole['magns'],tmp_index);
-            input_state['bases'][i]['phases'] = average(whole['phases'],tmp_index);
+            let input_index ={...input_state['bases'][i]['var2value']};
+            for(let key in input_index)
+            {
+                input_index[key]=[input_index[key]];
+            }
+            //console.log(input_index);
+            let tmp_index = this.get_index(op_index, input_index);
+            //console.log(tmp_index);
+            input_state['bases'][i]['magnitude'] = average(whole['magns'], tmp_index);
+            input_state['bases'][i]['phases'] = average(whole['phases'], tmp_index);
 
             input_state['bases'][i]['related_bases'] = [];
 
@@ -858,15 +933,23 @@ export default class QCEngine {
                 let all_bin = spec(this.qubit_number, k, this.qubit_number-qubit_num, var_index,input_state['bases'][i]['var2value']);
                 all_bin = all_bin.reverse();
 
+                input_state['bases'][i]['related_bases'][k]['var2value'] = {};
                 for(let key in var_index){
                     let bin = all_bin.slice(var_index[key][0],var_index[key][1]);
                     bin = bin.reverse();
-                    input_state['bases'][i]['related_bases'][k][key] = binary2int(bin);                
+                    input_state['bases'][i]['related_bases'][k]['var2value'][key] = binary2int(bin);                
                 }
+                let total_index = input_state['bases'][i]['related_bases'][k]['var2value'];
+                for(let key in total_index)
+                {
+                    total_index[key] =  [total_index[key]];
+
+                }
+                order = this.get_index(op_index, total_index);
+                //console.log(order);
                 
-                input_state['bases'][i]['related_bases'][k]['var2value'] = {};
                 input_state['bases'][i]['related_bases'][k]['magnitude'] = whole['magns'][order];
-                input_state['bases'][i]['related_bases'][k]['magnitude'] = whole['phases'][order];
+                input_state['bases'][i]['related_bases'][k]['phases'] = whole['phases'][order];
 
             }
 
@@ -878,7 +961,69 @@ export default class QCEngine {
 
     get_evo_matrix(label_id)
     {
+        let gate_mats = [];
+        let ops = this.labels[label_id]['operations'];
+        let vars = [];
+        let tmp_array = [];
+        let detailed = [];
+        for(let i=ops[0]+1; i<=ops[1]; i++)
+        {
+            let opera = this.operations[i];
+            let involved_qubits = this.getQubitsInvolved(opera);
+           
+            for(let qubit of involved_qubits){    
+                let tmp_var = this.getQubit2Variable(qubit);
+                tmp_array.push(tmp_var['variable']);  
+                detailed.push(tmp_var);                    
+            }          
+
+        }
+        vars = [...new Set(tmp_array)];
+        let var_index = this.name2index;
         
+        let deep_length = 1;
+        let qubit_num = 0;
+        for(let key in vars)
+        {
+            let bits = var_index[vars[key]][1] - var_index[vars[key]][0];
+            deep_length *= bits;
+            qubit_num += bits;
+        }
+        
+        let all_gate = math.identity(deep_length);
+        for(let i=ops[0]+1; i<=ops[1]; i++)
+        {
+            let opera = this.operations[i];
+            let gate = opera['operation'];
+            let gate_mat = this.circuit.getGateMatrix(gate);
+            //gate_mat = expandgate(gate_mat);
+            all_gate = math.multiply(all_gate, gate_mat);
+
+        }
+
+        
+
+        //fill fake data
+        for(let i=0; i<deep_length; i++)
+        {
+            gate_mats[i]= [];
+            for(let j=0; j< deep_length; j++)
+            {
+                gate_mats[i][j] = {};
+                gate_mats[i][j]['magnitude'] = 0.5;
+                gate_mats[i][j]['phase'] = 30;
+                gate_mats[i][j]['used'] = true;
+            }
+        }
+        
+        return gate_mats;
+
+    }
+
+
+    transferSankey(matrix)
+    {
+
 
     }
 

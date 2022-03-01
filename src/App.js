@@ -1,7 +1,7 @@
 import logo from './logo.svg'
 import './App.css'
 import Ace from './components/core/Ace'
-import Circuit from './components/core/Circuit'
+import Right from './components/core/Right'
 import ConsoleComponent from './components/core/ConsoleComponent'
 import axios from 'axios'
 import React, { useState, useRef } from 'react'
@@ -23,6 +23,11 @@ import { range } from 'd3'
 // import './test/ex7-1'
 // import './test/ex7-7'
 // import './test/all_operation'
+// import './test/istest.js'
+// import './test/index.js';
+// import './test/test_entropy';
+// import './test/test_pmi.js'
+// import './test/inout_state_test.js'
 
 function App() {
 	// 编辑器内容
@@ -90,7 +95,7 @@ function App() {
 				<ConsoleComponent consoleValue={consoleValue}></ConsoleComponent>
 			</div>
 			<div className='right-div'>
-				<Circuit></Circuit>
+				<Right></Right>
 			</div>
 		</div>
 	)

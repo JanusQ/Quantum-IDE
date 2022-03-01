@@ -175,6 +175,7 @@ function isUnitary(operator, precision = 1e-5){
     {
         for(let j=0; j < mat_tr.size()[1];j++){
             let tmp =res.get([i,j]);
+            
             tmp = tmp.re*tmp.re + tmp.im*tmp.im;
             if(i == j){
                 if(Math.abs(tmp-1) > precision)
@@ -204,24 +205,6 @@ function isNormalized(vector, precision = 1e-5){
         return false;
 }
 
-function get_binary(dec,len)
-{
-    let bin = [];
-    let k = 0;
-    for(k=0;k<len;k++)
-    {
-        bin[k] = 0;
-    }
-    k = len-1;
-    while(dec > 0)
-    {
-        bin[k] = dec%2;
-        dec = Math.floor(dec/2);
-        k--;
-    }    
-    return bin;    
-}
-
 function not_equal(bin1,bin2,range)
 {
     let i = 0;
@@ -239,22 +222,24 @@ function sum(state_vector, num, range, total)
 {
     let i = 0;
     let res = 0;
-    let std = get_binary(num, range[1]-range[0]);
-    
+    let std = binary(num, range[1]-range[0]);
+    std = std.reverse();
+
     for(i=0; i<state_vector.length; i++)
     {
-        let tmp = get_binary(i, total);
+        let tmp = binary(i, total);
+        tmp = tmp.reverse();
         
-        if(not_equal(std, tmp, range))
+        if(not_equal(std, tmp, range)){
             continue;
-        
+        }
         res += state_vector[i];
     }
     
     return res;
 }
 
-function alt_tensor(l1,l2)
+function alt_tensor(l1,l2,key)
 {   
 	let res = [];
     let k = 0;
@@ -263,7 +248,8 @@ function alt_tensor(l1,l2)
     {
     	for(let j=0; j<l2.length; j++)
         {
-            let med = l1[i].concat([l2[j]]);
+            let med = {...l1[i]};//.concat([l2[j]]);
+            med[key] = l2[j];
             res[k] = med;
             k++;
         }
@@ -274,16 +260,17 @@ function alt_tensor(l1,l2)
 
 function density(fake_vector) // input is an array 
 { 
-    let mat = math.matrix(fake_vector);
+    let mat = math.matrix([fake_vector]);
     let mat_tr = conj_tran(mat);
-    let den = math.multiply(mat, mat_tr);
-    
+    let den = math.multiply(mat_tr, mat);
+
     return den;
 }
 
 function linear_entropy(fake_vector)
 {
     let mat = density(fake_vector);
+    
     mat = math.multiply(mat, mat);
     
     let trace = complex(0,0);
@@ -293,7 +280,7 @@ function linear_entropy(fake_vector)
     {
         trace = math.add(trace, mat.get([i,i]));
     }
-
+    //console.log(trace);
     return 1 - trace.re;
 }
 
@@ -369,4 +356,5 @@ export {
     linear_entropy,
     average,
     spec,
+    conj_tran,
 }
