@@ -11,7 +11,7 @@ const math = create(all, config);
 // 这里放了一些计算门需要的函数
 class QObject {
     // 行，列
-    constructor(r, c) {
+    constructor(r, c, content = undefined) {
         this.rows = r;
         this.cols = c;
         this.data = [];
@@ -21,7 +21,10 @@ class QObject {
         }
         for (i = 0; i < r; i++) {
             for (j = 0; j < c; j++) {
-                this.data[i][j] = complex(0, 0);
+                if(content != undefined)
+                    this.data[i][j] = content[i][j];
+                else
+                    this.data[i][j] = complex(0, 0);
             }
         }
     }

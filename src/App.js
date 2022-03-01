@@ -28,6 +28,7 @@ import { range } from 'd3'
 // import './test/test_entropy';
 // import './test/test_pmi.js'
 // import './test/inout_state_test.js'
+// import './test/evomatrix_test'
 
 function App() {
 	// 编辑器内容

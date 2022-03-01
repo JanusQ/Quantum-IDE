@@ -592,12 +592,14 @@ export default class QCEngine {
         let res = {};
         res['magns'] = [];
         res['phases'] = [];
+        res['probs'] = [];
         
         for(let i=0; i<state.length; i++)
         {
             let comp = state[i]['amplitude'];
             let polar = getExp(comp);
             res['magns'][i] = polar['r'];
+            res['probs'][i]= res['magns'][i] * res['magns'][i];
             res['phases'][i] = calibrate(polar['phi']) * 180 / Math.PI;
         }
         
@@ -835,7 +837,28 @@ export default class QCEngine {
         return ids;
     }
 
-    
+    variable_filter(operation_index, target, filter)
+    {
+        let index = this.get_index(operation_index, filter);
+        let whole = this.get_wholestate(operation_index);
+        let var_index = this.name2index;
+        let ran = [];
+        let var_filtered = {};
+        var_filtered['magns'] = [];
+        var_filtered['probs'] = [];
+        if(filter[target] == undefined)
+            ran = range(0, Math.pow(2,var_index[target][1]-var_index[target][0]));
+        else
+            ran = filter[target];
+
+        for(let i=0; i<ran.length; i++)
+        {
+            var_filtered['prob'][i] += 0;
+
+        }
+
+
+    }
 
     _make_state(label_id, status)
     {
@@ -962,7 +985,8 @@ export default class QCEngine {
     get_evo_matrix(label_id)
     {
         let gate_mats = [];
-        let ops = this.labels[label_id]['operations'];
+        let ops = [this.labels[label_id]['start_operation'],this.labels[label_id]['end_operation']];
+        console.log(ops);
         let vars = [];
         let tmp_array = [];
         let detailed = [];
@@ -979,6 +1003,8 @@ export default class QCEngine {
 
         }
         vars = [...new Set(tmp_array)];
+        console.log(vars);
+        console.log(detailed);
         let var_index = this.name2index;
         
         let deep_length = 1;
