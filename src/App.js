@@ -29,6 +29,7 @@ import { range } from 'd3'
 // import './test/test_pmi.js'
 // import './test/inout_state_test.js'
 // import './test/evomatrix_test'
+// import './test/variablefilter_test.js'
 
 function App() {
 	// 编辑器内容

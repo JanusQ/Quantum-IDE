@@ -655,14 +655,14 @@ export default class QCEngine {
             let tmp = com[i];
             let index = 0;
             
-            let j = 0;
+            //let j = 0;
             
             for (let key in var_index)
             {
                 //console.log(index);
                 index += tmp[key] * (Math.pow(2, var_index[key][0]));
                 //console.log(index);
-                j++;
+                //j++;
             }
             
             neo_sv[k] = index;
@@ -839,24 +839,37 @@ export default class QCEngine {
 
     variable_filter(operation_index, target, filter)
     {
+        
         let index = this.get_index(operation_index, filter);
         let whole = this.get_wholestate(operation_index);
         let var_index = this.name2index;
-        let ran = [];
+
         let var_filtered = {};
         var_filtered['magns'] = [];
         var_filtered['probs'] = [];
-        if(filter[target] == undefined)
-            ran = range(0, Math.pow(2,var_index[target][1]-var_index[target][0]));
-        else
-            ran = filter[target];
 
-        for(let i=0; i<ran.length; i++)
+        for(let i=0; i<Math.pow(2,var_index[target][1]-var_index[target][0]); i++)
         {
-            var_filtered['prob'][i] += 0;
-
+            var_filtered['probs'][i] = 0;
+            var_filtered['magns'][i] = 0;
+        }
+        //console.log(index);
+        for(let i=0; i<index.length; i++)
+        {
+            let bin = binary(index[i],this.qubit_number);
+            bin = bin.reverse();
+            let sel = bin.slice(var_index[target][0],var_index[target][1]);
+            sel = sel.reverse();
+            let dec = binary2int(sel);
+            var_filtered['probs'][dec] += whole['probs'][index[i]];
         }
 
+        for(let i=0; i<Math.pow(2,var_index[target][1]-var_index[target][0]); i++)
+        {
+            var_filtered['magns'][i] = Math.sqrt(var_filtered['probs'][i]);
+        }
+
+        return var_filtered;
 
     }
 
