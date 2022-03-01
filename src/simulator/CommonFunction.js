@@ -27,8 +27,11 @@ function exportSVG(qc) {
 	const options = {
 		data: qc,
 	}
-
+    d3.clear()
 	d3.exportD3SVG(qc)
+}
+function restore(){
+    d3.restore()
 }
 function createFile(circuit, type) {
 	let file
@@ -357,4 +360,5 @@ export {
     average,
     spec,
     conj_tran,
+    restore
 }

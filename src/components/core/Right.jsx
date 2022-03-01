@@ -1,6 +1,7 @@
 import React from 'react'
 import './Right.css'
 import { Button } from 'antd'
+import { restore } from '../../simulator/CommonFunction'
 const Right = () => {
 	return (
 		<div id='right_div_box'>
@@ -17,10 +18,12 @@ const Right = () => {
 				<div className='c_component'>
 					<div className='title'>
 						<span className='title_name'>Variable State</span>
-						<Button className='export_btn restore_btn'>restore filter</Button>
+						<Button className='export_btn restore_btn' onClick={restore}>restore filter</Button>
 					</div>
 					<div className='c_up_draw'>
-						<svg id='chart_svg'></svg>
+						<svg id='chart_svg'>
+							<g id='chart_up_brush' />
+						</svg>
 					</div>
 					<div className='title'>
 						<span className='title_name'>Whole State</span>
