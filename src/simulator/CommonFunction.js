@@ -239,7 +239,7 @@ function sum(state_vector, num, range, total)
     return res;
 }
 
-function alt_tensor(l1,l2)
+function alt_tensor(l1,l2,key)
 {   
 	let res = [];
     let k = 0;
@@ -248,7 +248,8 @@ function alt_tensor(l1,l2)
     {
     	for(let j=0; j<l2.length; j++)
         {
-            let med = l1[i].concat([l2[j]]);
+            let med = {...l1[i]};//.concat([l2[j]]);
+            med[key] = l2[j];
             res[k] = med;
             k++;
         }

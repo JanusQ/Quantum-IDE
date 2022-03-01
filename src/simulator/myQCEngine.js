@@ -609,7 +609,7 @@ export default class QCEngine {
         //let opera = this.operations[operation_index];
         //let state = opera['state_after_opertaion'];
         //filter = {'a':[0,1,2,5,7,9],'b':[0,3]};
-        console.log(filter);
+        //console.log(filter);
         let var_index = this.name2index;
         //console.log(var_index);
         let i = 0;
@@ -628,18 +628,22 @@ export default class QCEngine {
                 filter[key] = tmp_ar;
             }
         }
-        console.log(filter);
+        //console.log(filter);
         for(let key in filter)
         {
             if(com.length == 0)
             {
-                for(i=0; i<filter[key].length; i++)
-                    com[i]=[filter[key][i]];
+                for(i=0; i<filter[key].length; i++){
+                    com[i] = {};//{key:filter[key][i]};
+                    com[i][key] = filter[key][i];
+                    //console.log(com[i]);
+                    //com[i] = [filter[key][i]];
+                }
                 continue;
             }
-            com = alt_tensor(com,filter[key]);
+            com = alt_tensor(com,filter[key],key);
         }
-        console.log(com);
+        //console.log(com);
         let k = 0;
         //let total = this.qubit_number;
         //console.log(com);
@@ -652,9 +656,9 @@ export default class QCEngine {
             
             for (let key in var_index)
             {
-                console.log(index);
-                index += tmp[j] * (Math.pow(2, var_index[key][0]));
-                console.log(index);
+                //console.log(index);
+                index += tmp[key] * (Math.pow(2, var_index[key][0]));
+                //console.log(index);
                 j++;
             }
             
@@ -755,7 +759,7 @@ export default class QCEngine {
         let vec = [];
         
         for(let key in var_index){
-            console.log("abd");
+            //console.log("abd");
             vec = this._get_fake_vector(key, operation_index);
             //console.log(vec);
             ent += linear_entropy(vec);
@@ -767,7 +771,7 @@ export default class QCEngine {
     _calc_pmi(operation_index, select)
     {
         let index = this.get_index(operation_index, select);
-        console.log(select);
+        //console.log(select);
         let whole_state = this.get_wholestate(operation_index);
         let p_xy = 0;
         let i = 0;
@@ -775,7 +779,7 @@ export default class QCEngine {
         for(i=0 ; i<index.length; i++)
         {
             let magn = whole_state['magns'][index[i]];
-            console.log(index[i]);
+            //console.log(index[i]);
             p_xy += magn*magn;
         }
         
@@ -813,7 +817,7 @@ export default class QCEngine {
                             select[key2] = [j];
                             //console.log(select);
                             let pmi = this._calc_pmi(operation_index,select);
-                            //console.log(pmi);
+                            console.log(pmi);
                             if(pmi >= threshold){
                                 select[key] = select[key][0];
                                 select[key2] = select[key2][0];
