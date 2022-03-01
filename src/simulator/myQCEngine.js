@@ -1025,18 +1025,18 @@ export default class QCEngine {
         for(let key in vars)
         {
             let bits = var_index[vars[key]][1] - var_index[vars[key]][0];
-            deep_length *= bits;
             qubit_num += bits;
         }
-        
+
+        deep_length = Math.pow(2,qubit_num);
         let all_gate = math.identity(deep_length);
         for(let i=ops[0]+1; i<=ops[1]; i++)
         {
             let opera = this.operations[i];
             let gate = opera['operation'];
-            let gate_mat = this.circuit.getGateMatrix(gate);
+            //let gate_mat = this.circuit.getGateMatrix(gate);
             //gate_mat = expandgate(gate_mat);
-            all_gate = math.multiply(all_gate, gate_mat);
+            //all_gate = math.multiply(all_gate, gate_mat);
 
         }
 
@@ -1050,6 +1050,7 @@ export default class QCEngine {
             {
                 gate_mats[i][j] = {};
                 gate_mats[i][j]['magnitude'] = 0.5;
+                gate_mats[i][j]['ratio'] = 0.8;
                 gate_mats[i][j]['phase'] = 30;
                 gate_mats[i][j]['used'] = true;
             }
@@ -1059,11 +1060,22 @@ export default class QCEngine {
 
     }
 
-
     transferSankey(matrix)
     {
+        let res = [];
+        for(let i=0; i<matrix.length; i++)
+        {
+            res[i]= {};
+            res[i]['maganitude'] = 0.5;
+            res[i]['phase'] =  30;
+            res[i]['used'] = true;
+            res[i]['from_id'] = 0;
+            res[i]['to_id'] = 1;
+            res[i]['y_index'] = i;
+            res[i]['ratio'] = 0.8;
+        }
 
-
+        return res;
     }
 
     get_input_state(label_id)
