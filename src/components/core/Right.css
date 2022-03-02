@@ -27,6 +27,7 @@
 	height: 100%;
 	margin-right: 9px;
 	background: #fff;
+	padding: 10px;
 }
 #right_down_div .c_component {
 	width: 566px;
@@ -34,7 +35,7 @@
 	background: #fff;
 	padding: 10px;
 }
-#right_down_div .c_component .title {
+#right_down_div .c_component .title,#right_down_div .d_component .title  {
 	height: 32px;
 	line-height: 32px;
 }
@@ -55,7 +56,7 @@
 	width: 100%;
 	height: 303px;
 }
-#right_down_div .c_component .title .title_name {
+#right_down_div .c_component .title .title_name ,#right_down_div .d_component .title .title_name{
 	font-size: 18px;
 }
 .svgtext {
@@ -64,4 +65,8 @@
 }
 .restore_btn {
 	float: right;
+}
+#d_chart{
+	width: 100%;
+	height: calc(100% - 32px);
 }

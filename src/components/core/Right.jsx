@@ -14,11 +14,19 @@ const Right = () => {
 				</svg>
 			</div>
 			<div id='right_down_div'>
-				<div className='d_component'></div>
+				<div className='d_component'>
+					<div className='title'>
+						<span className='title_name'>Evolution</span>
+					
+					</div>
+					<svg id='d_chart'></svg>
+				</div>
 				<div className='c_component'>
 					<div className='title'>
 						<span className='title_name'>Variable State</span>
-						<Button className='export_btn restore_btn' onClick={restore}>restore filter</Button>
+						<Button className='export_btn restore_btn' onClick={restore}>
+							restore filter
+						</Button>
 					</div>
 					<div className='c_up_draw'>
 						<svg id='chart_svg'>

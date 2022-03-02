@@ -12,7 +12,7 @@ export default class Chart {
 		this._box = null
 		this._svg = null
 		this._body = null
-		this._padding = { top: 10, left: 0, right: 0, bottom: 120 }
+		this._padding = { top: 20, left: 0, right: 170, bottom: 120 }
 	}
 
 	width(w) {
@@ -119,7 +119,7 @@ export default class Chart {
 				.append('g')
 				.attr('class', 'body')
 				.attr('transform', 'translate(' + this.bodyX() + ',' + this.bodyY() + ')')
-				.attr('clip-path', 'url(#clip)')
+				// .attr('clip-path', 'url(#clip)')
 		}
 
 		this.render()

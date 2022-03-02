@@ -100,10 +100,11 @@ export default class d3Draw {
 	}
 	// c视图restore
 	restore() {
-		const drawData = { magns: [], phases: [] }
+		const drawData = { magns: [], phases: [], probs: [] }
 		this.get_wholestate.forEach((item) => {
 			drawData.magns.push(item.magns)
 			drawData.phases.push(item.phases)
+			drawData.probs.push(item.probs)
 		})
 		this.drawCdownStackedBar(drawData)
 		d3.selectAll('#chart_svg .brushed_rect').remove()
@@ -498,6 +499,33 @@ export default class d3Draw {
 			}
 		}
 	}
+	// 绘制C的连线
+	drawCLine(svg, lineData, lineXArr) {
+		if (!lineData.length) {
+			return
+		}
+
+		const getKey = (obj, i) => {
+			return Object.keys(obj)[i]
+		}
+		const getValue = (obj, i) => {
+			return obj[getKey(obj, i)]
+		}
+		const getX = (obj, i) => {
+			return lineXArr[getKey(obj, i)][getValue(obj, i)]
+		}
+		const initY = 210
+		const heightSetp = 5
+		for (let i = 0; i < lineData.length; i++) {
+			const lineG = svg.append('g').classed('threshold_line', true)
+			const context = d3.path()
+			context.moveTo(getX(lineData[i], 0), initY)
+			context.lineTo(getX(lineData[i], 0), initY + heightSetp * (i + 1))
+			context.lineTo(getX(lineData[i], 1), initY + heightSetp * (i + 1))
+			context.lineTo(getX(lineData[i], 1), initY)
+			lineG.append('path').attr('d', context.toString()).attr('stroke', '#A79C9C').attr('stroke-width', 1).attr('fill', 'none')
+		}
+	}
 	// 绘制C视图上半
 	drawStackedBar(index, j, qc) {
 		const data = qc.get_varstate(index)
@@ -507,31 +535,44 @@ export default class d3Draw {
 			tickShowGrid: [60, 120, 180],
 			textColor: 'black',
 			gridColor: 'gray',
-			hoverColor: 'gray',
+			hoverColor: 'gray'
 		}
-		const barWidth = 30
+
+		const barWidth = 20
 		const chart_svg = d3.select('#chart_svg')
 		chart_svg.selectAll('*').remove()
 		const keyArr = Object.keys(data)
 		let allWidth = 0
 		const widthArr = []
+		// 定义所有线X轴的数据
+		const lineXArr = {}
 		for (const key in data) {
 			const dataArr = []
+			lineXArr[key] = []
 			for (let i = 0; i < data[key].magn.length; i++) {
 				// 80 是作图是的margins 的 left 这个x设置的是柱中间的距离 选中超过一半算选中
-				dataArr.push({ name: key, magn: 2, prob: 4, index: i, x: barWidth * i + barWidth / 2 + config.margins.left })
+				dataArr.push({
+					name: key,
+					magn: data[key].magn[i],
+					prob: data[key].prob[i],
+					index: i,
+					x: barWidth * i + barWidth / 2 + config.margins.left,
+				})
+				lineXArr[key].push(barWidth * i + barWidth / 2 + config.margins.left + (j ? widthArr[j - 1] : 0))
 			}
 			const width = barWidth * dataArr.length + config.margins.left + config.margins.right
 			widthArr.push(width)
 			const g = chart_svg.append('g').attr('transform', `translate(${j ? widthArr[j - 1] : 0},0)`)
+
 			this.StackedBarChart(dataArr, g, width, key, qc, config)
 			allWidth += width
 			chart_svg.attr('width', allWidth)
 			j += 1
 			this.chartBrushFn(g, barWidth, config, index, qc, key)
 		}
+		const lineData = qc.get_pmi_index(index, 1)
+		this.drawCLine(chart_svg, lineData, lineXArr)
 	}
-	// 绘图
 	StackedBarChart(data, g, width, name, qc, config) {
 		const brush_g = g.append('g').classed('brush_g', true)
 		const chart = new Chart()
@@ -555,19 +596,20 @@ export default class d3Draw {
 			g.call(xAxis)
 			g.select('.domain').remove()
 			g.selectAll('.tick line').remove()
-			g.selectAll('.tick text').classed('svgtext', true).attr('transform','rotate(45)').attr('x',10).attr('y',6)
+			g.selectAll('.tick text').classed('svgtext', true).attr('transform', 'rotate(45)').attr('x', 8).attr('y', 8)
 			g.selectAll('.tick')
 				.append('g')
-				.attr('transform', 'translate(-6,8)')
+				.attr('transform', 'translate(-6,8) rotate(45)')
 				.append('line')
 				.attr('x1', 0.25)
 				.attr('y2', 9)
 				.attr('stroke-width', 0.5)
 				.attr('stroke', 'black')
+
 				.classed('svgtext', true)
 			g.selectAll('.tick')
 				.append('g')
-				.attr('transform', 'translate(6,7)')
+				.attr('transform', 'translate(6,12) rotate(45)')
 				.append('path')
 				.attr('d', 'M0.845337 1L2.63087 5.40266L0.845337 9.71606')
 				.attr('stroke', 'black')
@@ -717,10 +759,30 @@ export default class d3Draw {
 					d3.select(this).attr('stroke', config.hoverColor).attr('stroke-width', 1)
 				})
 		}
+		// 绘制最高的值
+		chart.renderBarText = function () {
+			let bar_texts = chart
+				.body()
+				.selectAll('.bar_text')
+				.data([d3.max([...data.map((d) => d.magn), ...data.map((d) => d.prob)])])
+
+			bar_texts
+				.enter()
+				.append('text')
+				.attr('class', 'bar_text')
+				.attr('x', 0)
+				.attr('y',-2)
+				.attr('text-anchor', 'start')
+				.text((d) => d)
+				.classed('svgText', true)
+
+			bar_texts.exit().remove()
+		}
 		// 总体绘制
 		chart.render = function () {
 			chart.renderAxis()
 			chart.renderText()
+			chart.renderBarText()
 			chart.renderProbBars()
 			chart.renderMagnBars()
 			chart.addMouseOn()
@@ -733,6 +795,7 @@ export default class d3Draw {
 		const brushG = svg.append('g')
 		let brushed_start = (event) => {
 			const { selection, type } = event
+
 			if (selection) {
 				const [x0, x1] = selection
 			}
@@ -746,6 +809,7 @@ export default class d3Draw {
 				svg.select('.brushed_rect').remove()
 				const [x0, x1] = selection
 				let bars = svg.selectAll('.magn_bar').filter((elm) => {
+					console.log(elm)
 					const { x } = elm
 					return x <= x1 && x > x0
 				})
@@ -775,19 +839,19 @@ export default class d3Draw {
 
 				const allKeys = Object.keys(qc.name2index)
 				const filterKeys = Object.keys(self.filter)
-				if (allKeys.length === filterKeys.length) {
-					const filterResult = qc.get_index(index, JSON.parse(JSON.stringify(self.filter)))
-					const filterData = self.get_wholestate.filter((item) => {
-						return filterResult.includes(item.index)
-					})
-					const drawData = { magns: [], phases: [] }
-					filterData.forEach((item) => {
-						drawData.magns.push(item.magns)
-						drawData.phases.push(item.phases)
-					})
-
-					self.drawCdownStackedBar(drawData)
-				}
+				// if (allKeys.length === filterKeys.length) {
+				const filterResult = qc.get_index(index, JSON.parse(JSON.stringify(self.filter)))
+				const filterData = self.get_wholestate.filter((item) => {
+					return filterResult.includes(item.index)
+				})
+				const drawData = { magns: [], phases: [], probs: [] }
+				filterData.forEach((item) => {
+					drawData.magns.push(item.magns)
+					drawData.phases.push(item.phases)
+					drawData.probs.push(item.probs)
+				})
+				self.drawCdownStackedBar(drawData)
+				// }
 			}
 		}
 		brush_event.on('end', brushed_end)
@@ -799,19 +863,21 @@ export default class d3Draw {
 		chart_down_svg.selectAll('*').remove()
 		const keyArr = Object.keys(data)
 		const dataArr = []
+		// const barWidth = 20
 		for (let i = 0; i < data.magns.length; i++) {
-			dataArr.push({ magns: data.magns[i], phases: data.phases[i], index: i })
+			dataArr.push({ magns: data.magns[i], phases: data.phases[i], probs: data.probs[i], index: i })
 		}
 		if (!this.get_wholestate.length) {
 			this.get_wholestate = dataArr
 		}
+		// const width = barWidth * data.magns.length
 		this.cDownStackedBarChart(dataArr, chart_down_svg)
 	}
 	cDownStackedBarChart(data, g) {
 		const chart = new Chart()
 		const config = {
 			barPadding: 0.1,
-			margins: { top: 20, left: 40, bottom: 0, right: 0 },
+			margins: { top: 20, left: 40, bottom: 0, right: 10 },
 			tickShowGrid: [60, 120, 180],
 			textColor: 'black',
 			gridColor: 'gray',
@@ -819,6 +885,7 @@ export default class d3Draw {
 			animateDuration: 1000,
 		}
 		chart.box(d3.select('.c_down_draw'))
+		chart.width(546)
 		chart.svg(g)
 		chart.margins(config.margins)
 		chart.scaleX = d3
@@ -834,7 +901,7 @@ export default class d3Draw {
 		// phases Y轴
 		chart.scaleY2 = d3
 			.scaleLinear()
-			.domain([0, d3.max(data, (d) => d.phases)])
+			.domain([0, 360])
 			.range([0, chart.getBodyHeight() / 2])
 		// 处理x轴样式
 		function customXAxis(g) {
@@ -843,6 +910,11 @@ export default class d3Draw {
 			// g.select('.domain').remove()
 			g.selectAll('.tick line').remove()
 			g.selectAll('.tick text').remove()
+			const context = d3.path()
+			// 自定义X轴线
+			context.moveTo(chart.scaleX(0), 0)
+			context.lineTo(chart.scaleX(data.length - 1), 0)
+			g.select('.domain').attr('d', context.toString()).attr('stroke', '#000').attr('stroke-width', 1)
 		}
 		// 处理mangns Y轴样式
 		function customYAxis(g) {
@@ -861,7 +933,7 @@ export default class d3Draw {
 		function customYAxis2(g) {
 			const yAxis = d3
 				.axisLeft(chart.scaleY2)
-				.tickValues([0, d3.max(data, (d) => d.phases)])
+				.tickValues([0, 360])
 				.tickFormat((d) => `${d}°`)
 			g.call(yAxis)
 			g.select('.domain').remove()
@@ -877,11 +949,24 @@ export default class d3Draw {
 				.attr('class', 'magns_bar')
 				.merge(bars)
 				.attr('x', (d) => chart.scaleX(d.index))
-				.attr('y', (d) => chart.scaleY(d.magns))
+				.attr('y', (d) => chart.scaleY(d.magns) - 1)
 				.attr('width', chart.scaleX.bandwidth())
 				.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.magns))
 				.attr('fill', chart._colors[1])
 
+			bars.exit().remove()
+		}
+		chart.renderProbsBars = function () {
+			let bars = chart.body().selectAll('.probs_bar').data(data)
+			bars.enter()
+				.append('rect')
+				.attr('class', 'probs_bar')
+				.merge(bars)
+				.attr('x', (d) => chart.scaleX(d.index))
+				.attr('y', (d) => chart.scaleY(d.probs) - 1)
+				.attr('width', chart.scaleX.bandwidth())
+				.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.probs))
+				.attr('fill', chart._colors[1])
 			bars.exit().remove()
 		}
 		chart.renderPhasesBars = function () {
@@ -891,13 +976,14 @@ export default class d3Draw {
 				.attr('class', 'phases_bar')
 				.merge(bars)
 				.attr('x', (d) => chart.scaleX(d.index))
-				.attr('y', (d) => chart.getBodyHeight() / 2)
+				.attr('y', (d) => chart.getBodyHeight() / 2 + 1)
 				.attr('width', chart.scaleX.bandwidth())
 				.attr('height', (d) => chart.scaleY2(d.phases))
 				.attr('fill', chart._colors[0])
 
 			bars.exit().remove()
 		}
+
 		chart.renderX = function () {
 			chart.svg().select('.xAxis').remove()
 			chart
@@ -929,9 +1015,9 @@ export default class d3Draw {
 		}
 		// 绘制坐标轴
 		chart.renderAxis = function () {
-			chart.renderX()
 			chart.renderMagnsY()
 			chart.renderPhasesY()
+			chart.renderX()
 		}
 		// 绑定事件
 		chart.addMouseOn = function () {
@@ -984,22 +1070,29 @@ export default class d3Draw {
 					.attr('width', chart.scaleX.bandwidth())
 				chart
 					.svg()
+					.selectAll('.probs_bar')
+					.attr('x', (d) => chart.scaleX(d.index))
+					.attr('width', chart.scaleX.bandwidth())
+				chart
+					.svg()
 					.selectAll('.phases_bar')
 					.attr('x', (d) => chart.scaleX(d.index))
 					.attr('width', chart.scaleX.bandwidth())
-				// chart.svg().selectAll('.xAxis').call(chart.renderX)
+				chart.svg().selectAll('.xAxis').call(chart.renderX)
 			}
 		}
 		// 总体绘制
 		chart.render = function () {
-		
+			chart.renderProbsBars()
 			chart.renderMagnsBars()
 			chart.renderPhasesBars()
+
 			chart.addMouseOn()
 			chart.addZoom()
+
 			chart.renderAxis()
 		}
-
 		chart.renderChart()
 	}
+	
 }
