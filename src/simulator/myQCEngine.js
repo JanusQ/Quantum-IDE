@@ -552,7 +552,7 @@ export default class QCEngine {
         }
     }
 
-    get_varstate(operation_index){
+    get_varstate(operation_index, filter = undefined){
         let res = {};
         let opera = this.operations[operation_index];
         let state = opera['state_after_opertaion'];
@@ -581,6 +581,13 @@ export default class QCEngine {
                 res[key]['magn'][i] = Math.sqrt(prob);
             }        
         }
+
+        if(filter != undefined)
+        {
+            for(let key in var_index)
+                res[key] = this._variable_filter(operation_index, key, filter);
+        }
+
     
         return res;
     }
@@ -837,7 +844,7 @@ export default class QCEngine {
         return ids;
     }
 
-    variable_filter(operation_index, target, filter)
+    _variable_filter(operation_index, target, filter)
     {
         
         let index = this.get_index(operation_index, filter);
