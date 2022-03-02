@@ -800,11 +800,12 @@ export default class QCEngine {
         {
             div *= var_state[key]['prob'][select[key][0]]; 
         }
+        let pmi = p_xy * Math.log(p_xy / div);
         
         if(div == 0)
             return 0;
         else
-            return p_xy / div;
+            return pmi;
     }
 
     get_pmi_index(operation_index, threshold)
