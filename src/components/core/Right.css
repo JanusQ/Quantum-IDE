@@ -60,6 +60,7 @@
 }
 .svgtext {
 	user-select: none;
+	font-family: 'Ubuntu-R';
 }
 .restore_btn {
 	float: right;

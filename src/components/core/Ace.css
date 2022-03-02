@@ -1,4 +1,7 @@
 @import url('./AntDesign.css');
+.ace_editor{
+	font-family:'Ubuntu-R' ;
+}
 .ace_div {
 	width: 100%;
 	height: 864px;

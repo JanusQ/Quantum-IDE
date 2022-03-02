@@ -800,7 +800,7 @@ export default class d3Draw {
 		const keyArr = Object.keys(data)
 		const dataArr = []
 		for (let i = 0; i < data.magns.length; i++) {
-			dataArr.push({ magns: 1, phases: i % 2 === 0 ? 360 : 180, index: i })
+			dataArr.push({ magns: data.magns[i], phases: data.phases[i], index: i })
 		}
 		if (!this.get_wholestate.length) {
 			this.get_wholestate = dataArr
@@ -848,7 +848,7 @@ export default class d3Draw {
 		function customYAxis(g) {
 			const yAxis = d3
 				.axisLeft(chart.scaleY)
-				.tickValues([0, 1])
+				.tickValues([0, d3.max(data, (d) => d.magns)])
 				.tickFormat((d) => `${d}`)
 			g.call(yAxis)
 			g.select('.domain').remove()
