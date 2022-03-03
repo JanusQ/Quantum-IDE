@@ -66,7 +66,16 @@
 .restore_btn {
 	float: right;
 }
-#d_chart{
+#d_chart_div{
 	width: 100%;
 	height: calc(100% - 32px);
 }
+.d_chart_title{
+	height: 32px;
+	width: 100%;
+}
+#d_chart_svg{
+	width: 100%;
+	height: calc(100% - 32px);
+}
+

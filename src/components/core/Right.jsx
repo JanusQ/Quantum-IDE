@@ -17,9 +17,11 @@ const Right = () => {
 				<div className='d_component'>
 					<div className='title'>
 						<span className='title_name'>Evolution</span>
-					
 					</div>
-					<svg id='d_chart'></svg>
+					<div id='d_chart_div'>
+						<div className='d_chart_title'></div>
+						<svg id='d_chart_svg'></svg>
+					</div>
 				</div>
 				<div className='c_component'>
 					<div className='title'>
