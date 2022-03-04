@@ -18,9 +18,18 @@ const Right = () => {
 					<div className='title'>
 						<span className='title_name'>Evolution</span>
 					</div>
-					<div id='d_chart_div'>
-						<div className='d_chart_title'></div>
-						<svg id='d_chart_svg'></svg>
+					<div id='d_draw_div'>
+						{/* <div className='d_chart_div'>
+							<div className='d_chart_title'>
+								<span className='label_name'>abc</span>
+								<div className='btn_group'>
+									<img src='/icon/save_icon.svg' alt='' />
+									<img src='/icon/expand_icon.svg' alt='' />
+									<img src='/icon/delete_icon.svg' alt='' />
+								</div>
+							</div>
+							<svg className='d_chart_svg'></svg>
+						</div> */}
 					</div>
 				</div>
 				<div className='c_component'>
