@@ -18,7 +18,7 @@ import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, a
 import {
     cos, sin, round, pi, complex, create, all,
 } from 'mathjs'
-import { gateExpand1toN } from './MatrixOperation';
+import { gateExpand1toN, QObject, tensor, identity } from './MatrixOperation';
 
 const config = { };
 const math = create(all, config);
@@ -815,28 +815,32 @@ export default class QCEngine {
         let var_index = this.name2index;
         
         let k = 0;
+        let done = [];
         for(let key in var_index){
+            done.push(key);
             let len = Math.pow(2,var_index[key][1] - var_index[key][0]);
             for (let key2 in var_index){
                 let len2 = Math.pow(2,var_index[key2][1] - var_index[key2][0]);
-                for(i=0; i<len; i++)
-                    for(j=0; j<len2; j++)
-                    {
-                        if(key != key2){
-                            let select = {};
-                            select[key] = [i];
-                            select[key2] = [j];
-                            //console.log(select);
-                            let pmi = this._calc_pmi(operation_index,select);
-                            //console.log(pmi);
-                            if(pmi >= threshold){
-                                select[key] = select[key][0];
-                                select[key2] = select[key2][0];
-                                ids[k] = select;
-                                k++;
+                if(!done.includes(key2)){
+                    for(i=0; i<len; i++)
+                        for(j=0; j<len2; j++)
+                        {
+                            if(key != key2){
+                                let select = {};
+                                select[key] = [i];
+                                select[key2] = [j];
+                                //console.log(select);
+                                let pmi = this._calc_pmi(operation_index,select);
+                                //console.log(pmi);
+                                if(pmi >= threshold){
+                                    select[key] = select[key][0];
+                                    select[key2] = select[key2][0];
+                                    ids[k] = select;
+                                    k++;
+                                }
                             }
                         }
-                    }
+                }
 
             }
         }
@@ -1006,6 +1010,7 @@ export default class QCEngine {
     get_evo_matrix(label_id)
     {
         let gate_mats = [];
+        console.log(this.labels);
         let ops = [this.labels[label_id]['start_operation'],this.labels[label_id]['end_operation']];
         console.log(ops);
         let vars = [];
@@ -1015,7 +1020,7 @@ export default class QCEngine {
         {
             let opera = this.operations[i];
             let involved_qubits = this.getQubitsInvolved(opera);
-           
+
             for(let qubit of involved_qubits){    
                 let tmp_var = this.getQubit2Variable(qubit);
                 tmp_array.push(tmp_var['variable']);  
@@ -1038,15 +1043,45 @@ export default class QCEngine {
 
         deep_length = Math.pow(2,qubit_num);
         let all_gate = math.identity(deep_length);
-        for(let i=ops[0]+1; i<=ops[1]; i++)
-        {
-            let opera = this.operations[i];
-            let gate = opera['operation'];
-            //let gate_mat = this.circuit.getGateMatrix(gate);
-            //gate_mat = expandgate(gate_mat);
-            //all_gate = math.multiply(all_gate, gate_mat);
+        
+        // for(let i=ops[0]+1; i<=ops[1]; i++)
+        // {
+        //     let opera = this.operations[i];
+        //     let gate = opera['operation'];
+        //     let gate_mat = this.circuit.getGateMatrix(gate);
 
-        }
+        //     gate_mat = new QObject(gate_mat.length, gate_mat.length, gate_mat);
+            
+        //     let qus = this.getQubitsInvolved(opera);
+
+        //     for(let qubit of qus){    
+        //         let tmp_var = this.getQubit2Variable(qubit);
+                
+        //     }  
+
+        //     for(let j=0; j<vars.length; j++)
+        //     {
+        //         let variable = vars[j];
+        //         // if(cond)
+        //         //     tensor(tensor_mat,gate);
+        //         // else
+        //         // {
+
+        //         // }
+        //     }
+
+
+            // console.log(gate_mat);
+            
+            // let tensor_mat = tensor(gate_mat);
+            // all_gate = math.multiply(all_gate,gate_mat);
+            // //gate_mat = expandgate(gate_mat);
+            // //all_gate = math.multiply(all_gate, gate_mat);
+            // console.log(gate);
+            // let gate_mat = this.circuit.getGateMatrix(gate);
+            
+
+        // }
 
         
 

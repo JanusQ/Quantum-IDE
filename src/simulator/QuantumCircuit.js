@@ -505,7 +505,7 @@ QuantumCircuit.prototype.applyGate = function (gateName, column, wires, options)
 	var rawGate = undefined
 	if (gate) {
 		// 自定义的
-		// debugger
+		// 
 		rawGate = gate(options.params)
 	} else {
 		// 原先的
@@ -520,7 +520,6 @@ QuantumCircuit.prototype.applyGate = function (gateName, column, wires, options)
 
 	// 已经是具体值
 	// debugger
-
 	this.collapsed = []
 	this.prob = []
 
