@@ -71,13 +71,14 @@
 #d_draw_div {
 	width: 100%;
 	height: calc(100% - 32px);
-
+	display: flex;
 }
 .d_chart_div {
 	width: 48%;
-	height: 48%;
+	height: 60%;
 	border: 1px solid #c4c4c4;
 	border-radius: 4px;
+	position: relative;
 }
 .d_chart_title {
 	height: 32px;
@@ -89,6 +90,7 @@
 	width: 100%;
 	height: calc(100% - 32px);
 	padding: 0 10px;
+	position: relative;
 }
 .btn_group {
 	float: right;
@@ -97,6 +99,11 @@
 	margin-left: 8px;
 	cursor: pointer;
 }
-.label_name{
+.label_name {
 	color: rgb(100, 159, 174);
+}
+.relaed_div {
+	position: absolute;
+	border-radius: 4px;
+	background: #fff;
 }

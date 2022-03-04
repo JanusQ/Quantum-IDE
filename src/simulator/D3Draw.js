@@ -2,7 +2,8 @@ import { data } from 'browserslist'
 import * as d3 from 'd3'
 import { color, group } from 'd3'
 import { event as currentEvent } from 'd3-selection'
-import { ConsoleErrorListener } from '../resource/js/quantum-circuit.min'
+import { number } from 'mathjs'
+import { ConsoleErrorListener, toDocs } from '../resource/js/quantum-circuit.min'
 import Chart from './Chart'
 export default class d3Draw {
 	constructor(options) {
@@ -32,6 +33,8 @@ export default class d3Draw {
 		this.get_wholestate = []
 		// 存 c filter过滤条件
 		this.filter = {}
+		// 设置D模块的长度
+		this.dLength = 26
 	}
 	exportD3SVG(data) {
 		const svg = d3.select('#circuit_svg')
@@ -811,7 +814,6 @@ export default class d3Draw {
 				svg.select('.brushed_rect').remove()
 				const [x0, x1] = selection
 				let bars = svg.selectAll('.magn_bar').filter((elm) => {
-					console.log(elm)
 					const { x } = elm
 					return x <= x1 && x > x0
 				})
@@ -1127,7 +1129,7 @@ export default class d3Draw {
 	// 绘制input
 	drawDInput(svg, x, y, inWidth, deg, color) {
 		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`).classed('d_item', true)
-		parentG.append('rect').attr('width', 26).attr('height', 26).attr('fill', 'none')
+		parentG.append('rect').attr('width', this.dLength).attr('height', this.dLength).attr('fill', 'none')
 		const childG = parentG.append('g').attr('transform', `translate(3,3)`)
 		childG.append('rect').attr('width', 20).attr('height', 20).attr('fill', 'none').attr('stroke', '#000').attr('stroke-width', 1)
 		childG
@@ -1148,9 +1150,9 @@ export default class d3Draw {
 	}
 	// 绘制circle
 	drawDCircle(svg, x, y, color, arcR, arcDeg) {
-		// 26 * 26  R 10
+		//   R 10
 		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`).classed('d_item', true)
-		parentG.append('rect').attr('width', 26).attr('height', 26).attr('fill', 'none').attr('stroke', 'rgb(128, 128, 128)').attr('stroke-width', 1)
+		parentG.append('rect').attr('width', this.dLength).attr('height', this.dLength).attr('fill', 'none').attr('stroke', 'rgb(128, 128, 128)').attr('stroke-width', 1)
 		const childG = parentG.append('g')
 		childG.append('circle').attr('cx', 13).attr('cy', 13).attr('r', 10).attr('stroke-width', 1).attr('stroke', color).attr('fill', 'none').classed('d_item', true)
 		const data = { startAngle: 0, endAngle: (Math.PI * arcDeg) / 180 }
@@ -1161,7 +1163,7 @@ export default class d3Draw {
 	// 绘制text
 	drawText(svg, x, y, index) {
 		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`).classed('d_item', true)
-		parentG.append('rect').attr('width', 26).attr('height', 26).attr('fill', 'none')
+		parentG.append('rect').attr('width', this.dLength).attr('height', this.dLength).attr('fill', 'none')
 
 		const ketLieftG = parentG.append('g').append('line').attr('x1', 0.25).attr('y2', 9).attr('stroke-width', 0.5).attr('stroke', 'black').attr('transform', 'translate(6,9)').attr('svgText', true)
 		const textG = parentG.append('g').attr('transform', 'translate(9,18)').append('text').text(index).attr('style', 'font-size:12px;').attr('fill', 'gray').classed('svgtext', true)
@@ -1178,8 +1180,55 @@ export default class d3Draw {
 
 		return parentG
 	}
-	// 绘制基本机构
+	// 绘制浅色块text
+	drawRelaedNum(svg, x, y, number, data, textX, chartDiv) {
+		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`).classed('d_item', true)
+		parentG.append('rect').attr('width', this.dLength).attr('height', 14).attr('fill', 'none')
+		const self = this
+		const childG = parentG.append('g')
+		childG
+			.append('text')
+			.text(`10+`)
+			.attr('style', 'font-size:12px;')
+			.classed('svgtext', true)
+			.attr('transform', `translate(${textX}, ${13}) scale(0.6)`)
+			.on('mouseover', function (e) {
+				// const position = d3.pointer(e)
+				// svg.selectAll('.relaed_div').remove()
+				// const relaedG = childG.append('g').attr('transform', `translate(${self.dLength},15)`).classed('relaed_div', true)
+				// relaedG
+				// 	.append('rect')
+				// 	.attr('fill', '#fff')
+				// 	.attr('width', self.dLength)
+				// 	.attr('height', self.dLength * data.length)
+				// 	.attr('stroke', 'black')
+				// 	.attr('stroke-width', 1)
+				// 	.attr('rx', 4)
+				// 误差来自于触发事件的e来自于svg g元素
+				chartDiv.selectAll('.relaed_div').remove()
+				const relaedDiv = chartDiv
+					.append('div')
+					.attr('class', 'relaed_div')
+					.attr('style', `top:${e.offsetY + 36}px;left:${e.offsetX + 10}px;height:${self.dLength * data.length + 2}px;width:${self.dLength + 2}px;border:1px solid black`)
+				const relaedSVG = relaedDiv.append('svg').classed('relaed_svg', true).attr('width', '100%').attr('height', '100%')
+				for (let i = 0; i < data.length; i++) {
+					self.drawDInput(relaedSVG, 0, self.dLength * i, data[i].magnitude, data[i].phases, 'rgb(137, 214, 220)')
+				}
+			})
+	}
+	// 绘制基本结构
 	drawElement(labelName = '123') {
+		//删除
+		const getParentNode = (obj) => {
+			if (!obj.classList.contains('d_chart_div')) {
+				getParentNode(obj.parentNode)
+			} else {
+				d3.select(obj).remove()
+			}
+		}
+		const close = (e) => {
+			getParentNode(e.target)
+		}
 		const drawDiv = d3.select('#d_draw_div')
 		drawDiv.selectAll('*').remove()
 		const chartDiv = drawDiv.append('div').classed('d_chart_div', true)
@@ -1188,59 +1237,91 @@ export default class d3Draw {
 		const btnDiv = titleDiv.append('div').classed('btn_group', true)
 		btnDiv.append('img').attr('src', '/icon/save_icon.svg')
 		btnDiv.append('img').attr('src', '/icon/expand_icon.svg')
-		btnDiv.append('img').attr('src', '/icon/delete_icon.svg')
-		const svg = chartDiv.append('svg').classed('d_chart_svg', true)
-		return svg
+		btnDiv.append('img').attr('src', '/icon/delete_icon.svg').on('click', close)
 
+		const svg = chartDiv.append('svg').classed('d_chart_svg', true)
+		return {
+			svg,
+			chartDiv,
+		}
 	}
 	drawDChart(data) {
-		const svg = this.drawElement()
+		const { svg, chartDiv } = this.drawElement()
 		const inputStateData = data.get_input_state(data.labels[0].id)
-		console.log(inputStateData)
 		const outStateData = data.get_output_state(data.labels[0].id)
 		// 计算矩阵g Y轴向下移动的距离
-		const inputHeight = inputStateData.vars.length * 26 * 2
+		const circleGtransformY = (inputStateData.vars.length + 2) * this.dLength + 14
+		// 计算输入input Y轴移动
+		const inputGTransformY = (inputStateData.vars.length + 1) * this.dLength + 14
 		// 计算out_input X轴移动
-		const inputWidth = inputStateData.bases.length * 26
-		// 绘制input_state
-		for (let i = 0; i < inputStateData.vars.length; i++) {
-			const inputG = svg
-				.append('g')
-				.classed('input_g', true)
-				.attr('transform', `translate(0,${26 * (i + 1)})`)
-			const textG = svg
-				.append('g')
-				.classed('text_g', true)
-				.attr('transform', `translate(0,${26 * i})`)
-			for (let j = 0; j < inputStateData.bases.length; j++) {
-				this.drawDInput(inputG, 26 * j, 26 * i, inputStateData.bases[j].magnitude, inputStateData.bases[j].phases, 'rgb(80, 128, 132)')
-				this.drawText(textG, 26 * j, 26 * i, inputStateData.bases[j].id)
-			}
-		}
-		// 绘制out_state
-		for (let i = 0; i < outStateData.vars.length; i++) {
-			const outG = svg
-				.append('g')
-				.classed('put_g', true)
-				.attr('transform', `translate(${inputWidth + 26 * i},${inputHeight})`)
-			const textG = svg
-				.append('g')
-				.classed('text_g', true)
-				.attr('transform', `translate(${inputWidth + 26 * (i + 1)},${inputHeight})`)
-			for (let j = 0; j < outStateData.bases.length; j++) {
-				this.drawDInput(outG, 26 * i, 26 * j, outStateData.bases[j].magnitude, outStateData.bases[j].phases, 'rgb(80, 128, 132)')
-				this.drawText(textG, 26 * i, 26 * j, outStateData.bases[j].id)
-			}
-		}
+		const inputWidth = inputStateData.bases.length * this.dLength
+		// 计算out_input 浅色块X轴移动
+		const outRelatedGX = inputWidth + (outStateData.vars.length + 1) * this.dLength
 		// 绘制矩阵
 		const circleData = data.get_evo_matrix(data.labels[0].id)
-
-		const circleG = svg.append('g').classed('circle_g', true).attr('transform', `translate(${0},${inputHeight})`)
+		const circleG = svg.append('g').classed('circle_g', true).attr('transform', `translate(${0},${circleGtransformY})`)
 		for (let i = 0; i < circleData.length; i++) {
 			for (let j = 0; j < circleData[i].length; j++) {
 				const color = circleData[i][j].used ? 'rgb(246, 175, 31)' : 'rgb(142, 132, 112)'
 				const arcR = circleData[i][j].ratio * 10
-				this.drawDCircle(circleG, 26 * i, 26 * j, color, arcR, circleData[i][j].phase)
+				this.drawDCircle(circleG, this.dLength * i, this.dLength * j, color, arcR, circleData[i][j].phase)
+			}
+		}
+		// 绘制out_state
+		for (let i = 0; i < outStateData.vars.length; i++) {
+			const textG = svg
+				.append('g')
+				.classed('text_g', true)
+				.attr('transform', `translate(${inputWidth + this.dLength * (i + 1)},${circleGtransformY})`)
+			for (let j = 0; j < outStateData.bases.length; j++) {
+				this.drawText(textG, 0, this.dLength * j, outStateData.bases[j].id)
+			}
+		}
+		const outG = svg.append('g').classed('put_g', true).attr('transform', `translate(${inputWidth},${circleGtransformY})`)
+		const outRelatedG = svg.append('g').classed('input_related_g', true).attr('transform', `translate(${outRelatedGX},${circleGtransformY})`)
+		const drawOutRelaedNumG = svg
+			.append('g')
+			.classed('input_related_num', true)
+			.attr('transform', `translate(${outRelatedGX + this.dLength},${circleGtransformY})`)
+		for (let j = 0; j < outStateData.bases.length; j++) {
+			this.drawDInput(outG, 0, this.dLength * j, outStateData.bases[j].magnitude, outStateData.bases[j].phases, 'rgb(80, 128, 132)')
+			for (let k = 0; k < outStateData.bases[j].related_bases.length; k++) {
+				if (k === 0) {
+					// 只绘一个 然后显示几个 开发时候是全传入了
+					this.drawDInput(outRelatedG, 0, this.dLength * j, outStateData.bases[j].related_bases[k].magnitude, outStateData.bases[j].related_bases[k].phases, 'rgb(137, 214, 220)')
+				}
+				if (outStateData.bases[j].related_bases.length > 0) {
+					this.drawRelaedNum(drawOutRelaedNumG, 0, this.dLength * j, outStateData.bases[j].related_bases[k].length - 1, outStateData.bases[j].related_bases, 0, chartDiv)
+				}
+			}
+		}
+		// 绘制input_state
+		for (let i = 0; i < inputStateData.vars.length; i++) {
+			const textG = svg
+				.append('g')
+				.classed('text_g', true)
+				.attr('transform', `translate(0,${this.dLength * (i + 1) + 14})`)
+			// 绘制文字 |0>
+			for (let j = 0; j < inputStateData.bases.length; j++) {
+				this.drawText(textG, this.dLength * j, 0, inputStateData.bases[j].id)
+			}
+		}
+		const inputG = svg.append('g').classed('input_g', true).attr('transform', `translate(0,${inputGTransformY})`)
+		const inputRelatedG = svg.append('g').classed('input_related_g', true).attr('transform', `translate(0,14)`)
+		const drawRelaedNumG = svg.append('g').classed('input_related_num', true).attr('transform', `translate(0,0)`)
+		for (let j = 0; j < inputStateData.bases.length; j++) {
+			this.drawDInput(inputG, this.dLength * j, 0, inputStateData.bases[j].magnitude, inputStateData.bases[j].phases, 'rgb(80, 128, 132)')
+			// 绘制浅色块
+			if (inputStateData.bases[j].related_bases.length) {
+				for (let k = 0; k < inputStateData.bases[j].related_bases.length; k++) {
+					if (k === 0) {
+						// 只绘一个 然后显示几个 开发时候是全传入了
+						this.drawDInput(inputRelatedG, this.dLength * j, 0, inputStateData.bases[j].related_bases[k].magnitude, inputStateData.bases[j].related_bases[k].phases, 'rgb(137, 214, 220)')
+					}
+					if (inputStateData.bases[j].related_bases.length > 0) {
+						this.drawRelaedNum(drawRelaedNumG, this.dLength * j, 0, inputStateData.bases[j].related_bases[k].length - 1, inputStateData.bases[j].related_bases, 10, chartDiv)
+					}
+				}
 			}
 		}
 	}
