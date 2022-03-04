@@ -18,7 +18,7 @@ import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, a
 import {
     cos, sin, round, pi, complex, create, all,
 } from 'mathjs'
-import { gateExpand1toN, QObject, tensor, identity } from './MatrixOperation';
+import { gateExpand1toN, QObject, tensor, identity, dot } from './MatrixOperation';
 
 const config = { };
 const math = create(all, config);
@@ -142,7 +142,7 @@ export default class QCEngine {
         const index = operations.length
         const { columns, operation } = gate
 
-        const {state} = this._circuitStep()
+        const {state, rawgate} = this._circuitStep()
 
 
         // columns是左闭右开的, 存的是quantum circuit库中的对应关系
@@ -162,6 +162,7 @@ export default class QCEngine {
             'state_after_opertaion': state,
             'state_str': circuit.stateAsString(),
             'label_id': _now_label,
+            'rawgate': rawgate,
         })
         
         this.now_state = state
@@ -174,8 +175,10 @@ export default class QCEngine {
     _circuitStep(){
         const { circuit, operations } = this
         // 之后应该还会返回门矩阵等信息
+        let res =circuit.myStepRun();
         return {
-            state: circuit.myStepRun(), 
+            state: res['state'],
+            rawgate: res['rawgate'],
         }
     }
 
@@ -1010,12 +1013,12 @@ export default class QCEngine {
     get_evo_matrix(label_id)
     {
         let gate_mats = [];
-        console.log(this.labels);
         let ops = [this.labels[label_id]['start_operation'],this.labels[label_id]['end_operation']];
         console.log(ops);
         let vars = [];
         let tmp_array = [];
         let detailed = [];
+        
         for(let i=ops[0]+1; i<=ops[1]; i++)
         {
             let opera = this.operations[i];
@@ -1029,8 +1032,7 @@ export default class QCEngine {
 
         }
         vars = [...new Set(tmp_array)];
-        console.log(vars);
-        console.log(detailed);
+
         let var_index = this.name2index;
         
         let deep_length = 1;
@@ -1042,46 +1044,71 @@ export default class QCEngine {
         }
 
         deep_length = Math.pow(2,qubit_num);
-        let all_gate = math.identity(deep_length);
         
-        // for(let i=ops[0]+1; i<=ops[1]; i++)
-        // {
-        //     let opera = this.operations[i];
-        //     let gate = opera['operation'];
-        //     let gate_mat = this.circuit.getGateMatrix(gate);
-
-        //     gate_mat = new QObject(gate_mat.length, gate_mat.length, gate_mat);
+        let all_gate = identity(deep_length);
+        
+        for(let i=ops[0]+1; i<=ops[1]; i++)
+        {
+            let opera = this.operations[i];
+            let gate = opera['rawgate'];
+            let column_res;
+            //console.log(gate);
             
-        //     let qus = this.getQubitsInvolved(opera);
+            if(gate == undefined)
+                continue;
 
-        //     for(let qubit of qus){    
-        //         let tmp_var = this.getQubit2Variable(qubit);
-                
-        //     }  
-
-        //     for(let j=0; j<vars.length; j++)
-        //     {
-        //         let variable = vars[j];
-        //         // if(cond)
-        //         //     tensor(tensor_mat,gate);
-        //         // else
-        //         // {
-
-        //         // }
-        //     }
-
-
-            // console.log(gate_mat);
+            let gate_mat = new QObject(gate.length, gate.length, gate);
+            //console.log(gate_mat);
+            let tensor_list = [];
+            if(opera['qubits'])
+            {
+                for(let j=0; j<this.qubit_number; j++)
+                {
+                    let judge = this.getQubit2Variable(j);
+                    if(vars.includes(judge['variable'])){
+                        if(opera['qubits'].includes(j))
+                            tensor_list.push(gate_mat);
+                        else
+                            tensor_list.push(identity(2));
+                    }
+                }
+                column_res = tensor(tensor_list);
+               
+            }
+            all_gate =dot(all_gate, column_res);
             
-            // let tensor_mat = tensor(gate_mat);
-            // all_gate = math.multiply(all_gate,gate_mat);
-            // //gate_mat = expandgate(gate_mat);
-            // //all_gate = math.multiply(all_gate, gate_mat);
-            // console.log(gate);
-            // let gate_mat = this.circuit.getGateMatrix(gate);
-            
+ 
+        }
+        console.log(all_gate);
 
-        // }
+        
+        
+        
+        let max = 0;
+        for(let i=0; i<deep_length; i++)
+        {
+            gate_mats[i]= [];
+            for(let j=0; j< deep_length; j++)
+            {
+                let polar = getExp(all_gate[i][j].data);
+                if(max < polar['r'])
+                    max = polar['r'];
+                gate_mats[i][j] = {};
+                gate_mats[i][j]['magnitude'] = polar['r'];
+                gate_mats[i][j]['phase'] = polar['phi'];
+                gate_mats[i][j]['used'] = true;
+            }
+        }
+
+        for(let i=0; i<deep_length; i++)
+        {
+            for(let j=0; j< deep_length; j++)
+            {
+                let polar = getExp(all_gate[i][j].data);
+                gate_mats[i][j]['ratio'] = polar['r'] / max;
+            }
+        }
+
 
         
 

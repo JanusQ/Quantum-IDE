@@ -22,7 +22,7 @@ class QObject {
         for (i = 0; i < r; i++) {
             for (j = 0; j < c; j++) {
                 if(content != undefined)
-                    this.data[i][j] = content[i][j];
+                    this.data[i][j] = complex(content[i][j]);
                 else
                     this.data[i][j] = complex(0, 0);
             }
@@ -46,7 +46,7 @@ function dot()
     
     let i = 1;
     let result = arguments[0];
-    
+   
     while (i<arguments.length){
         result = mt_dot(result,arguments[i]);
         i++;
@@ -64,18 +64,18 @@ function mt_dot(m1,m2)
     }
     let mu = m1.cols;
     let res = new QObject(m1.rows,m2.cols);
-
+    
     let i,j,k;
     for(i=0;i<r;i++)
     {
         for(j=0;j<c;j++)
         {
-            let tmp = 0;
+            let tmp = complex(0,0);
             for(k=0;k<mu;k++)
             {
-                tmp += math.multiply(m1.con[i][k], m2.con[k][j]); 
+                tmp = math.add(tmp, math.multiply(m1.data[i][k], m2.data[k][j])); 
             }
-            res.con[i][j] = tmp;
+            res.data[i][j] = tmp;
         }
     }
     return res;

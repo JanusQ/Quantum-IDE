@@ -94,7 +94,7 @@ QuantumCircuit.prototype.myStepRun = function () {
 	const { my_session } = this
 	const { options, partitioning } = my_session
 	let { column } = my_session
-
+	let rawgate;
 	// 每次都要重新加载一下，因为后面在加东西，这要保证之前的都没有被改!!
 	const decomposed = new QuantumCircuit()
 	decomposed.load(this.save(true))
@@ -136,7 +136,8 @@ QuantumCircuit.prototype.myStepRun = function () {
 						pcirc.applyGate(pgate.name, pcolumn, pgate.wires, pgate.options)
 						this.cregs = JSON.parse(JSON.stringify(pcirc.cregs))
 					} else {
-						this.applyGate(gate.name, column, gate.wires, gate.options)
+						rawgate = this.applyGate(gate.name, column, gate.wires, gate.options);
+						//console.log("not step run",rawgate);
 					}
 				}
 
@@ -151,11 +152,16 @@ QuantumCircuit.prototype.myStepRun = function () {
 		if (options && options.onColumn) {
 			options.onColumn(column)
 		}
+		//console.log("once");
 	}
 
 	my_session['column'] = column
-
-	return this.stateAsArray()
+	//console.log("not step run",rawgate);
+	let res = {};
+	res['state'] = this.stateAsArray();
+	res['rawgate'] = rawgate;
+	
+	return res;
 }
 
 QuantumCircuit.prototype.myEndRun = function () {
@@ -500,7 +506,7 @@ QuantumCircuit.prototype.applyGate = function (gateName, column, wires, options)
 		this.resetQubit(wires[0], 0)
 		return
 	}
-
+	
 	var gate = this.siwei_define_gate[gateName]
 	var rawGate = undefined
 	if (gate) {
@@ -525,6 +531,7 @@ QuantumCircuit.prototype.applyGate = function (gateName, column, wires, options)
 
 	// console.log(rawGate, wires)
 	this.applyTransform(rawGate, wires)
+	return rawGate;
 }
 
 QuantumCircuit.prototype.getGateMatrix = function (gate_name, options = {}) {
