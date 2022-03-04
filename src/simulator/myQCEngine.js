@@ -1082,7 +1082,7 @@ export default class QCEngine {
         console.log(all_gate);
 
         
-        
+        let stru = this.get_input_state(label_id);
         
         let max = 0;
         for(let i=0; i<deep_length; i++)
@@ -1090,13 +1090,17 @@ export default class QCEngine {
             gate_mats[i]= [];
             for(let j=0; j< deep_length; j++)
             {
-                let polar = getExp(all_gate[i][j].data);
+                let polar = getExp(all_gate.data[i][j]);
                 if(max < polar['r'])
                     max = polar['r'];
                 gate_mats[i][j] = {};
                 gate_mats[i][j]['magnitude'] = polar['r'];
                 gate_mats[i][j]['phase'] = polar['phi'];
-                gate_mats[i][j]['used'] = true;
+                
+                if(stru['bases'][i]['magnitude'] != 0)
+                    gate_mats[i][j]['used'] = true;
+                else
+                    gate_mats[i][j]['used'] = false;
             }
         }
 
@@ -1104,19 +1108,19 @@ export default class QCEngine {
         {
             for(let j=0; j< deep_length; j++)
             {
-                let polar = getExp(all_gate[i][j].data);
+                let polar = getExp(all_gate.data[i][j]);
                 gate_mats[i][j]['ratio'] = polar['r'] / max;
             }
         }
 
-
+        
         
 
         //fill fake data
         for(let i=0; i<deep_length; i++)
         {
             gate_mats[i]= [];
-            for(let j=0; j< deep_length; j++)
+            for(let j=0; j<deep_length; j++)
             {
                 gate_mats[i][j] = {};
                 gate_mats[i][j]['magnitude'] = 0.5;
@@ -1129,23 +1133,48 @@ export default class QCEngine {
         return gate_mats;
 
     }
-
-    transferSankey(matrix)
+    
+    isSparse(matrix, threshold = 1.3, precision = 1e-5)
     {
-        let res = [];
+        let count = 0;
         for(let i=0; i<matrix.length; i++)
         {
-            res[i]= {};
-            res[i]['maganitude'] = 0.5;
-            res[i]['phase'] =  30;
-            res[i]['used'] = true;
-            res[i]['from_id'] = 0;
-            res[i]['to_id'] = 1;
-            res[i]['y_index'] = i;
-            res[i]['ratio'] = 0.8;
+            for(let j=0; j<matrix.length; j++)
+            {
+                if(Math.abs(matrix[i][j]['magnitude'] - 0) < precision)
+                {
+                    count++;
+                }
+            }
+        }
+        if(count > threshold *matrix.length)
+            return false;
+        else
+            return true;
+    }
+
+    transferSankey(matrix, precision = 1e-5)
+    {
+        let sankey = [];
+        let k = 0;
+        for(let i=0; i<matrix.length; i++)
+        {
+            for(let j=0; j<matrix.length; j++){
+                if(Math.abs(matrix[i][j]['magnitude'] - 0) > precision){
+                    sankey[k]= {};
+                    sankey[k]['maganitude'] = matrix[i][j]['magnitude'];
+                    sankey[k]['phase'] = matrix[i][j]['phase'];
+                    sankey[k]['used'] = matrix[i][j]['used'];
+                    sankey[i]['from_id'] = j;
+                    sankey[i]['to_id'] = i;
+                    sankey[i]['y_index'] = k;
+                    sankey[i]['ratio'] = matrix[i][j]['ratio'];
+                    k++;
+                }
+            }
         }
 
-        return res;
+        return sankey;
     }
 
     get_input_state(label_id)
