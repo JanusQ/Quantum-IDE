@@ -1134,8 +1134,9 @@ export default class QCEngine {
 
     }
     
-    isSparse(matrix, threshold = 1.3, precision = 1e-5)
+    isSparse(label_id, threshold = 1.3, precision = 1e-5)
     {
+        let matrix = this.get_evo_matrix(label_id);
         let count = 0;
         for(let i=0; i<matrix.length; i++)
         {
@@ -1153,8 +1154,9 @@ export default class QCEngine {
             return true;
     }
 
-    transferSankey(matrix, precision = 1e-5)
+    transferSankey(label_id, precision = 1e-5)
     {
+        let matrix = this.get_evo_matrix(label_id);
         let sankey = [];
         let k = 0;
         for(let i=0; i<matrix.length; i++)
