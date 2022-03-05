@@ -18,7 +18,7 @@ import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, a
 import {
     cos, sin, round, pi, complex, create, all,
 } from 'mathjs'
-import { gateExpand1toN, QObject, tensor, identity, dot } from './MatrixOperation';
+import { gateExpand1toN, QObject, tensor, identity, dot, controlledGate, } from './MatrixOperation';
 
 const config = { };
 const math = create(all, config);
@@ -920,7 +920,14 @@ export default class QCEngine {
 
         }
        
-        vars = [...new Set(tmp_array)];
+        //vars = [...new Set(tmp_array)];
+        vars = [];
+
+        for (let key in var_index)
+        {
+            if (tmp_array.includes(key))
+                vars.push(key);
+        }
         
 
         let input_state = {};
@@ -1012,6 +1019,7 @@ export default class QCEngine {
 
     get_evo_matrix(label_id)
     {
+        console.log(this.operations);
         let gate_mats = [];
         let ops = [this.labels[label_id]['start_operation'],this.labels[label_id]['end_operation']];
         console.log(ops);
@@ -1031,16 +1039,27 @@ export default class QCEngine {
             }          
 
         }
-        vars = [...new Set(tmp_array)];
-
+        //vars = [...new Set(tmp_array)];
+        vars = [];
         let var_index = this.name2index;
+
+        for (let key in var_index)
+        {
+            if (tmp_array.includes(key))
+                vars.push(key);
+        }
         
         let deep_length = 1;
         let qubit_num = 0;
-        for(let key in vars)
+        let new_var_index = {};
+        let bottom = 0;
+        for(let i=0; i<vars.length; i++)
         {
-            let bits = var_index[vars[key]][1] - var_index[vars[key]][0];
+            let bits = var_index[vars[i]][1] - var_index[vars[i]][0];
             qubit_num += bits;
+            new_var_index[vars[i]] = [];
+            new_var_index[vars[i]][0] = bottom;
+            new_var_index[vars[i]][1] = bottom + bits;
         }
 
         deep_length = Math.pow(2,qubit_num);
@@ -1075,6 +1094,18 @@ export default class QCEngine {
                 column_res = tensor(tensor_list);
                
             }
+            else if(opera['control'] && opera['target'])
+            {
+                let inc = this.getQubit2Variable(opera['control']);
+                let int = this.getQubit2Variable(opera['target']);
+                let btc = new_var_index[inc['variable']];
+                let btt = new_var_index[int['variable']];
+                let con = btc + inc['index'];
+                let tar = btt + int['index'];
+
+                column_res = controlledGate(gate_mat, qubit_num, con, tar);
+            }
+
             all_gate =dot(all_gate, column_res);
             
  
