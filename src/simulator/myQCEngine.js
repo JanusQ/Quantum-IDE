@@ -986,7 +986,7 @@ export default class QCEngine {
                 input_state['bases'][i]['var2value'][vars[k]] = dec;
             }
 
-            //TODO: switch to power
+            //switch to power
             let input_index ={...input_state['bases'][i]['var2value']};
             for(let key in input_index)
             {
@@ -1197,7 +1197,7 @@ export default class QCEngine {
                 }
             }
         }
-        if(count > threshold *matrix.length)
+        if(count > threshold * matrix.length)
             return false;
         else
             return true;
