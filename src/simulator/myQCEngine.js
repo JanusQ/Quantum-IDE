@@ -460,6 +460,22 @@ export default class QCEngine {
         return index
     }
 
+    // 保存为一个自定义门
+    loadGate(gate_name, gate){
+        // // export circuit to variable
+        // var obj = someCircuit.save();
+        // // register it as a gate in another circuit
+        // anotherCircuit.registerGate("my_gate", obj);
+
+        
+        if(typeof(gate) === '') { // 如果是矩阵
+
+        }else if(typeof(gate) === ''){  // 如果是operations
+
+        }
+        
+    }
+    
     apply(gate_name, qubits){
         this._addGate({
             'qubits': qubits, 
