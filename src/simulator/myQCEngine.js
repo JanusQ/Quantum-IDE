@@ -18,7 +18,7 @@ import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, a
 import {
     cos, sin, round, pi, complex, create, all,
 } from 'mathjs'
-import { gateExpand1toN, QObject, tensor, identity, dot, controlledGate, } from './MatrixOperation';
+import { gateExpand1toN, QObject, tensor, identity, dot, controlledGate, permute} from './MatrixOperation';
 
 const config = { };
 const math = create(all, config);
@@ -1033,15 +1033,34 @@ export default class QCEngine {
 
     }
 
+    _get_new_index(new_var_index, old)
+    {
+        let inc = this.getQubit2Variable(old);
+        let btc = new_var_index[inc['variable']][0];
+        let tar = btc + inc['index'];
+        return tar;
+    }
+
+    _tensor_permute(rawgate, new_ar, bits)
+    {
+        let gate = rawgate.copy();
+        while(gate.data.length < Math.pow(2,bits))
+        {
+            gate = tensor(gate, identity(2));
+        }
+        gate = permute(gate, new_ar);
+        
+        return gate;
+
+    }
+
     get_evo_matrix(label_id)
     {
-        console.log(this.operations);
         let gate_mats = [];
         let ops = [this.labels[label_id]['start_operation'],this.labels[label_id]['end_operation']];
-        console.log(ops);
+        //console.log(ops);
         let vars = [];
         let tmp_array = [];
-        let detailed = [];
         
         for(let i=ops[0]+1; i<=ops[1]; i++)
         {
@@ -1050,8 +1069,7 @@ export default class QCEngine {
 
             for(let qubit of involved_qubits){    
                 let tmp_var = this.getQubit2Variable(qubit);
-                tmp_array.push(tmp_var['variable']);  
-                detailed.push(tmp_var);                    
+                tmp_array.push(tmp_var['variable']);                     
             }          
 
         }
@@ -1076,6 +1094,7 @@ export default class QCEngine {
             new_var_index[vars[i]] = [];
             new_var_index[vars[i]][0] = bottom;
             new_var_index[vars[i]][1] = bottom + bits;
+            bottom += bits;
         }
 
         deep_length = Math.pow(2,qubit_num);
@@ -1094,39 +1113,22 @@ export default class QCEngine {
 
             let gate_mat = new QObject(gate.length, gate.length, gate);
             //console.log(gate_mat);
-            let tensor_list = [];
-            if(opera['qubits'])
-            {
-                for(let j=0; j<this.qubit_number; j++)
-                {
-                    let judge = this.getQubit2Variable(j);
-                    if(vars.includes(judge['variable'])){
-                        if(opera['qubits'].includes(j))
-                            tensor_list.push(gate_mat);
-                        else
-                            tensor_list.push(identity(2));
-                    }
-                }
-                column_res = tensor(tensor_list);
-               
-            }
-            else if(opera['control'] && opera['target'])
-            {
-                let inc = this.getQubit2Variable(opera['control']);
-                let int = this.getQubit2Variable(opera['target']);
-                let btc = new_var_index[inc['variable']];
-                let btt = new_var_index[int['variable']];
-                let con = btc + inc['index'];
-                let tar = btt + int['index'];
 
-                column_res = controlledGate(gate_mat, qubit_num, con, tar);
+            let qubit_index = this.getQubitsInvolved(opera);
+            let new_index = range(0, qubit_num);
+            for(let j=0; j<qubit_index.length; j++)
+            {
+                let new_ind = this._get_new_index(new_var_index, qubit_index[j]);
+                new_index[j] = new_ind;
+                new_index[new_ind] = j;
             }
+            
+            column_res = this._tensor_permute(gate_mat, new_index, qubit_num);
 
             all_gate =dot(all_gate, column_res);
             
- 
         }
-        console.log(all_gate);
+        //console.log(all_gate);
 
         
         let stru = this.get_input_state(label_id);
@@ -1142,7 +1144,7 @@ export default class QCEngine {
                     max = polar['r'];
                 gate_mats[i][j] = {};
                 gate_mats[i][j]['magnitude'] = polar['r'];
-                gate_mats[i][j]['phase'] = polar['phi'];
+                gate_mats[i][j]['phase'] = calibrate(polar['phi']) * 180 / Math.PI;
                 
                 if(stru['bases'][i]['magnitude'] != 0)
                     gate_mats[i][j]['used'] = true;
@@ -1160,22 +1162,22 @@ export default class QCEngine {
             }
         }
 
-        
+        console.log(gate_mats);
         
 
         //fill fake data
-        for(let i=0; i<deep_length; i++)
-        {
-            gate_mats[i]= [];
-            for(let j=0; j<deep_length; j++)
-            {
-                gate_mats[i][j] = {};
-                gate_mats[i][j]['magnitude'] = 0.5;
-                gate_mats[i][j]['ratio'] = 0.8;
-                gate_mats[i][j]['phase'] = 30;
-                gate_mats[i][j]['used'] = true;
-            }
-        }
+        // for(let i=0; i<deep_length; i++)
+        // {
+        //     gate_mats[i]= [];
+        //     for(let j=0; j<deep_length; j++)
+        //     {
+        //         gate_mats[i][j] = {};
+        //         gate_mats[i][j]['magnitude'] = 0.5;
+        //         gate_mats[i][j]['ratio'] = 0.8;
+        //         gate_mats[i][j]['phase'] = 30;
+        //         gate_mats[i][j]['used'] = true;
+        //     }
+        // }
         
         return gate_mats;
 
@@ -1214,10 +1216,10 @@ export default class QCEngine {
                     sankey[k]['maganitude'] = matrix[i][j]['magnitude'];
                     sankey[k]['phase'] = matrix[i][j]['phase'];
                     sankey[k]['used'] = matrix[i][j]['used'];
-                    sankey[i]['from_id'] = j;
-                    sankey[i]['to_id'] = i;
-                    sankey[i]['y_index'] = k;
-                    sankey[i]['ratio'] = matrix[i][j]['ratio'];
+                    sankey[k]['from_id'] = j;
+                    sankey[k]['to_id'] = i;
+                    sankey[k]['y_index'] = k;
+                    sankey[k]['ratio'] = matrix[i][j]['ratio'];
                     k++;
                 }
             }

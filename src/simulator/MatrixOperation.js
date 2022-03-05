@@ -30,8 +30,8 @@ class QObject {
     }
 
     copy(){
-        let new_obj = new QObject(this.rows, this.cols);
-        new_obj.data = deepcopy(this.data) 
+        let new_obj = new QObject(this.rows, this.cols, this.data);
+        //new_obj.data = deepcopy(this.data) 
         return new_obj;
     }
 }
