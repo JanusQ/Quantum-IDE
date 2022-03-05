@@ -1025,6 +1025,13 @@ export default class QCEngine {
                     bin = bin.reverse();
                     input_state['bases'][i]['related_bases'][k]['var2value'][key] = binary2int(bin);                
                 }
+
+                input_state['bases'][i]['related_bases'][k]['range'] = {};
+                for(let key in var_index){
+                    let var_bits = var_index[key][1] - var_index[key][0];
+                    input_state['bases'][i]['related_bases'][k]['range'][key] = Math.pow(2, var_bits);                
+                }
+
                 let total_index = input_state['bases'][i]['related_bases'][k]['var2value'];
                 for(let key in total_index)
                 {
