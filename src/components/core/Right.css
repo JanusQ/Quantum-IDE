@@ -20,7 +20,7 @@
 	height: 677px;
 	display: flex;
 	margin-top: 15px;
-	display: flex;
+	
 }
 #right_down_div .d_component {
 	width: 741px;
@@ -71,14 +71,16 @@
 #d_draw_div {
 	width: 100%;
 	height: calc(100% - 32px);
-	display: flex;
+	
 }
 .d_chart_div {
 	width: 48%;
-	height: 60%;
+	height: 50%;
+	margin-right: 2%;
 	border: 1px solid #c4c4c4;
 	border-radius: 4px;
 	position: relative;
+	display: inline-block;
 }
 .d_chart_title {
 	height: 32px;

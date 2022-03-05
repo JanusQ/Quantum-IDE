@@ -1149,12 +1149,16 @@ export default class d3Draw {
 		return parentG
 	}
 	// 绘制circle
-	drawDCircle(svg, x, y, color, arcR, arcDeg) {
+	drawDCircle(svg, x, y, color, arcR, arcDeg, isNeedBorder) {
 		//   R 10
 		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`).classed('d_item', true)
-		parentG.append('rect').attr('width', this.dLength).attr('height', this.dLength).attr('fill', 'none').attr('stroke', 'rgb(128, 128, 128)').attr('stroke-width', 1)
+		const borderRect = parentG.append('rect').attr('width', this.dLength).attr('height', this.dLength).attr('fill', 'none')
+		if (isNeedBorder) {
+			borderRect.attr('stroke', 'rgb(128, 128, 128)').attr('stroke-width', 1)
+		}
 		const childG = parentG.append('g')
-		childG.append('circle').attr('cx', 13).attr('cy', 13).attr('r', 10).attr('stroke-width', 1).attr('stroke', color).attr('fill', 'none').classed('d_item', true)
+		const circleR = this.dLength / 2
+		childG.append('circle').attr('cx', circleR).attr('cy', circleR).attr('r', circleR - 2).attr('stroke-width', 1).attr('stroke', color).attr('fill', 'none').classed('d_item', true)
 		const data = { startAngle: 0, endAngle: (Math.PI * arcDeg) / 180 }
 		const acrPath = d3.arc().innerRadius(0).outerRadius(arcR)
 		childG.append('path').attr('d', acrPath(data)).attr('fill', color).attr('transform', 'translate(13,13)')
@@ -1209,10 +1213,22 @@ export default class d3Draw {
 				const relaedDiv = chartDiv
 					.append('div')
 					.attr('class', 'relaed_div')
-					.attr('style', `top:${e.offsetY + 36}px;left:${e.offsetX + 10}px;height:${self.dLength * data.length + 2}px;width:${self.dLength + 2}px;border:1px solid black`)
-				const relaedSVG = relaedDiv.append('svg').classed('relaed_svg', true).attr('width', '100%').attr('height', '100%')
+					.attr('style', `top:${e.offsetY + 36}px;left:${e.offsetX + 10}px;height:${self.dLength * data.length + 10}px;width:${self.dLength + 8}px;border:1px solid black`)
+				relaedDiv
+					.append('div')
+					.classed('relaed_div_close', true)
+					.attr('style', 'width:100%;height:8px;line-height:8px;padding:2px;')
+					.append('img')
+					.attr('src', '/icon/delete_icon.svg')
+					.attr('width', 6)
+					.attr('height', 6)
+					.attr('style', 'float:right;cursor:pointer;')
+					.on('click', (e) => {
+						d3.select(e.target.parentNode.parentNode).remove()
+					})
+				const relaedSVG = relaedDiv.append('svg').classed('relaed_svg', true).attr('width', '100%').attr('height', 'calc(100% - 8px)')
 				for (let i = 0; i < data.length; i++) {
-					self.drawDInput(relaedSVG, 0, self.dLength * i, data[i].magnitude, data[i].phases, 'rgb(137, 214, 220)')
+					self.drawDInput(relaedSVG, 3, self.dLength * i, data[i].magnitude, data[i].phases, 'rgb(137, 214, 220)')
 				}
 			})
 	}
@@ -1245,9 +1261,99 @@ export default class d3Draw {
 			chartDiv,
 		}
 	}
-	drawDChart(data) {
-		const { svg, chartDiv } = this.drawElement()
+	// 绘制sankey图
+	drawSankey(data) {
+		const { svg, chartDiv } = this.drawElement(data.labels[0].text)
+		const sankeyData = data.transferSankey(data.labels[0].id).slice(0, 8)
 		const inputStateData = data.get_input_state(data.labels[0].id)
+		console.log(sankeyData)
+		const outStateData = data.get_output_state(data.labels[0].id)
+		const inputBases = inputStateData.bases.slice(0, 8)
+		const outBases = outStateData.bases.slice(0, 8)
+		// 计算圆圈g X轴向右移动的距离
+		const circleGtransformX = (inputStateData.vars.length + 3) * this.dLength + 14
+		// 计算输入input X轴移动
+		const inputGTransformX = (inputStateData.vars.length + 1) * this.dLength + 14
+		// 计算out_input X轴移动
+		const outGTransformX = (inputStateData.vars.length + 5) * this.dLength + 14
+		// 计算out_input 浅色块X轴移动
+		const outRelatedGX = outGTransformX + (outStateData.vars.length + 1) * this.dLength
+		// 绘制圈
+		const circleG = svg.append('g').classed('circle_g', true).attr('transform', `translate(${circleGtransformX},${this.dLength})`)
+		for (let i = 0; i < sankeyData.length; i++) {
+			const color = sankeyData[i].used ? 'rgb(246, 175, 31)' : 'rgb(142, 132, 112)'
+			const arcR = sankeyData[i].ratio * 10
+			this.drawDCircle(circleG, 0, this.dLength * i, color, arcR, sankeyData[i].phase, false)
+		}
+		// 绘制input_state
+		for (let i = 0; i < inputStateData.vars.length; i++) {
+			const textG = svg
+				.append('g')
+				.classed('text_g', true)
+				.attr('transform', `translate(${this.dLength * (i + 1) + 14},${this.dLength})`)
+			// 需要改为正确数据
+			for (let j = 0; j < inputBases.length; j++) {
+				this.drawText(textG, 0, this.dLength * j, inputBases[j].id)
+			}
+		}
+		const inputG = svg.append('g').classed('put_g', true).attr('transform', `translate(${inputGTransformX},${this.dLength})`)
+		const inputRelatedG = svg.append('g').classed('input_related_g', true).attr('transform', `translate(14,${this.dLength})`)
+		const drawInputRelaedNumG = svg.append('g').classed('input_related_num', true).attr('transform', `translate(0,${this.dLength})`)
+		for (let j = 0; j < inputBases.length; j++) {
+			this.drawDInput(inputG, 0, this.dLength * j, inputBases[j].magnitude, inputBases[j].phases, 'rgb(80, 128, 132)')
+			for (let k = 0; k < inputBases[j].related_bases.length; k++) {
+				if (k === 0) {
+					// 只绘一个 然后显示几个 开发时候是全传入了
+					this.drawDInput(inputRelatedG, 0, this.dLength * j, inputBases[j].related_bases[k].magnitude, inputBases[j].related_bases[k].phases, 'rgb(137, 214, 220)')
+				}
+				if (inputBases[j].related_bases.length > 0) {
+					this.drawRelaedNum(drawInputRelaedNumG, 0, this.dLength * j, inputBases[j].related_bases[k].length - 1, inputBases[j].related_bases, 0, chartDiv)
+				}
+			}
+		}
+		// 绘制out_state
+		for (let i = 0; i < outStateData.vars.length; i++) {
+			const textG = svg
+				.append('g')
+				.classed('text_g', true)
+				.attr('transform', `translate(${outGTransformX + this.dLength * (i + 1)},${this.dLength})`)
+			// 需要改为正确数据
+			for (let j = 0; j < outBases.length; j++) {
+				this.drawText(textG, 0, this.dLength * j, outBases[j].id)
+			}
+		}
+		const outG = svg.append('g').classed('put_g', true).attr('transform', `translate(${outGTransformX},${this.dLength})`)
+		const outRelatedG = svg.append('g').classed('input_related_g', true).attr('transform', `translate(${outRelatedGX},${this.dLength})`)
+		const drawOutRelaedNumG = svg
+			.append('g')
+			.classed('input_related_num', true)
+			.attr('transform', `translate(${outRelatedGX + this.dLength},${this.dLength})`)
+		for (let j = 0; j < outBases.length; j++) {
+			this.drawDInput(outG, 0, this.dLength * j, outBases[j].magnitude, outBases[j].phases, 'rgb(80, 128, 132)')
+			for (let k = 0; k < outBases[j].related_bases.length; k++) {
+				if (k === 0) {
+					// 只绘一个 然后显示几个 开发时候是全传入了
+					this.drawDInput(outRelatedG, 0, this.dLength * j, outBases[j].related_bases[k].magnitude, outBases[j].related_bases[k].phases, 'rgb(137, 214, 220)')
+				}
+				if (outBases[j].related_bases.length > 0) {
+					this.drawRelaedNum(drawOutRelaedNumG, 0, this.dLength * j, outBases[j].related_bases[k].length - 1, outBases[j].related_bases, 0, chartDiv)
+				}
+			}
+		}
+		// 绘制连线
+		for (let i = 0; i < sankeyData.length; i++) {
+			sankeyData[i].from_id = 0
+			// 绘制to
+			this.drawLine(svg, circleGtransformX + this.dLength, this.dLength * (i + 1) + this.dLength / 2, outGTransformX, this.dLength * (sankeyData[i].to_id + 1) + this.dLength / 2)
+			// 绘制form
+			this.drawLine(svg, circleGtransformX, this.dLength * (i + 1) + this.dLength / 2, inputGTransformX + this.dLength, this.dLength * (sankeyData[i].from_id + 1) + this.dLength / 2)
+		}
+	}
+	// 绘制普通完整表示
+	drawMatrix(data) {
+		const { svg, chartDiv } = this.drawElement(data.labels[0].text)
+		const inputStateData = data.get_input_state(data.labels[0].id)
+
 		const outStateData = data.get_output_state(data.labels[0].id)
 		// 计算矩阵g Y轴向下移动的距离
 		const circleGtransformY = (inputStateData.vars.length + 2) * this.dLength + 14
@@ -1259,12 +1365,12 @@ export default class d3Draw {
 		const outRelatedGX = inputWidth + (outStateData.vars.length + 1) * this.dLength
 		// 绘制矩阵
 		const circleData = data.get_evo_matrix(data.labels[0].id)
-		const circleG = svg.append('g').classed('circle_g', true).attr('transform', `translate(${0},${circleGtransformY})`)
+		const circleG = svg.append('g').classed('circle_g', true).attr('transform', `translate(0,${circleGtransformY})`)
 		for (let i = 0; i < circleData.length; i++) {
 			for (let j = 0; j < circleData[i].length; j++) {
 				const color = circleData[i][j].used ? 'rgb(246, 175, 31)' : 'rgb(142, 132, 112)'
 				const arcR = circleData[i][j].ratio * 10
-				this.drawDCircle(circleG, this.dLength * i, this.dLength * j, color, arcR, circleData[i][j].phase)
+				this.drawDCircle(circleG, this.dLength * i, this.dLength * j, color, arcR, circleData[i][j].phase, true)
 			}
 		}
 		// 绘制out_state
@@ -1323,6 +1429,14 @@ export default class d3Draw {
 					}
 				}
 			}
+		}
+	}
+	drawDChart(data) {
+		// 判断绘制类型
+		if (data.isSparse(data.labels[0].id)) {
+			this.drawSankey(data)
+		} else {
+			this.drawMatrix(data)
 		}
 	}
 }
