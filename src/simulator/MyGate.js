@@ -61,7 +61,6 @@ function getRawGateNcphase(options) {
 
 function getRawGateCCNOT(options)
 {
-    console.log("here");
     const {qubit_number} = options;
 
     if(qubit_number < 3){

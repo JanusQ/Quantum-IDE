@@ -145,13 +145,14 @@ function calibrate(phase)
 }
 
 // TODO: 判断这几个比特组成的状态是不是纯态
-function isPure(state) {// state: state vector of a grouped qubits  
+function isPure(state, precision = 1e-5) {// state: state vector of a grouped qubits  
     let mat = density(state);
     let trace = math.trace(mat);
     
-    return trace;
-
-
+    if(Math.abs(1-trace.re) > precision)
+        return false;
+    else
+        return true;
 }
 
 function conj_tran(mat)

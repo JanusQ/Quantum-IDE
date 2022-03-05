@@ -311,7 +311,12 @@ export default class QCEngine {
 
     // TODO: 判断所有控制门的比特会不会重叠，重叠报错
     checkOverlap(controls, targets){
-
+        for(let ele in targets)
+        {
+            if(controls.includes(ele))
+                return true;
+        }
+        return false;
     }
 
     // TODO: ccnot 还没有写
@@ -1063,7 +1068,7 @@ export default class QCEngine {
 
     get_evo_matrix(label_id)
     {
-        console.log(this.operations);
+        //console.log(this.operations);
         let gate_mats = [];
         let ops = [this.labels[label_id]['start_operation'],this.labels[label_id]['end_operation']];
         //console.log(ops);
@@ -1170,7 +1175,7 @@ export default class QCEngine {
             }
         }
 
-        console.log(gate_mats);
+        //console.log(gate_mats);
         
 
         //fill fake data
