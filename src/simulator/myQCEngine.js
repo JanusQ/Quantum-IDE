@@ -386,9 +386,16 @@ export default class QCEngine {
 
     // TODO: 还没有实现，包括ncnot
     ccnot(binary_control, binary_target){
-        const { operations, circuit, now_column } = this
-        let controls = this.parseBinaryQubits(binary_control)
-        let target = this.parseBinaryQubits(binary_target)
+        const { operations, circuit, now_column } = this;
+        let controls = this.parseBinaryQubits(binary_control);
+        let target = this.parseBinaryQubits(binary_target);
+        let qubits = unique([...controls, ...target]);
+
+        circuit.addGate("ccnot", now_column, qubits, {
+            params: {
+                qubit_number: qubits.length,
+            }
+        });
 
         this._addGate({
             'controls': controls,
@@ -1056,6 +1063,7 @@ export default class QCEngine {
 
     get_evo_matrix(label_id)
     {
+        console.log(this.operations);
         let gate_mats = [];
         let ops = [this.labels[label_id]['start_operation'],this.labels[label_id]['end_operation']];
         //console.log(ops);

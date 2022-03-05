@@ -3,6 +3,7 @@
 import QuantumCircuit from './QuantumCircuit'
 import {QObject} from './MatrixOperation'
 import { pow2, getComplex, range, toPI } from './CommonFunction';
+import { complex } from 'mathjs';
 
 // write0
 var write0 = new QuantumCircuit(1)
@@ -48,7 +49,7 @@ function getRawGateNcphase(options) {
     let matrix = new QObject(state_num, state_num)
 
     range(0, state_num).forEach(i=>{
-        matrix.data[i][i] = 1 //getComplex({r:1, phi: -phi/2})
+        matrix.data[i][i] = complex(1,0); //getComplex({r:1, phi: -phi/2})
     })
     
     matrix.data[state_num-1][state_num-1] = getComplex({r:1, phi})
@@ -58,6 +59,31 @@ function getRawGateNcphase(options) {
     return matrix.data
 }
 
+function getRawGateCCNOT(options)
+{
+    console.log("here");
+    const {qubit_number} = options;
+
+    if(qubit_number < 3){
+        console.error("qubit_number <3");
+        debugger
+    }
+
+    const state_num = pow2(qubit_number);
+    let matrix = new QObject(state_num, state_num);
+
+    range(0, state_num).forEach(i=>{
+        matrix.data[i][i] = complex(1,0); //getComplex({r:1, phi: -phi/2})
+    })
+
+    matrix.data[state_num-1][state_num-1] = complex(0,0);
+    matrix.data[state_num-1][state_num-2] = complex(1,0);
+    matrix.data[state_num-2][state_num-2] = complex(0,0);
+    matrix.data[state_num-2][state_num-1] = complex(1,0);
+
+    return matrix.data;
+}
+
 
 export { 
     write0, 
@@ -65,5 +91,6 @@ export {
     // ncphase,
 
     getRawGateNcphase,
+    getRawGateCCNOT,
     // write,
 }
