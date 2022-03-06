@@ -20,7 +20,6 @@
 	height: 677px;
 	display: flex;
 	margin-top: 15px;
-	
 }
 #right_down_div .d_component {
 	width: 741px;
@@ -71,7 +70,6 @@
 #d_draw_div {
 	width: 100%;
 	height: calc(100% - 32px);
-	
 }
 .d_chart_div {
 	width: 48%;
@@ -81,6 +79,16 @@
 	border-radius: 4px;
 	position: relative;
 	display: inline-block;
+	transition: all 0.3s;
+}
+.d_chart_div_full {
+	width: 1900px;
+	height: 1080px;
+	position: absolute;
+	top: 0;
+	left: 0;
+	background: #fff;
+	z-index: 999;
 }
 .d_chart_title {
 	height: 32px;
@@ -88,6 +96,7 @@
 	line-height: 32px;
 	padding: 0 5px;
 }
+
 .d_chart_svg {
 	width: 100%;
 	height: calc(100% - 32px);
@@ -96,6 +105,22 @@
 }
 .btn_group {
 	float: right;
+	position: relative;
+}
+.btn_group .operation_div {
+	width: 31px;
+	height: 56px;
+	position: absolute;
+	border: 1px solid #cccc;
+	padding: 0 8px;
+	left: -2px;
+	top: 32px;
+	z-index: 999;
+	background: #fff;
+	line-height: 26px;
+}
+.btn_group .operation_div img {
+	margin: 0 0;
 }
 .btn_group img {
 	margin-left: 8px;
@@ -104,8 +129,14 @@
 .label_name {
 	color: rgb(100, 159, 174);
 }
-.relaed_div {
+.relaed_div,.show_data_div {
 	position: absolute;
 	border-radius: 4px;
 	background: #fff;
+	z-index: 99;
 }
+.show_data_div{
+	width: 140px;
+	height: 198px;
+}
+
