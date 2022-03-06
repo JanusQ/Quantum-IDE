@@ -137,6 +137,7 @@
 }
 .show_data_div{
 	width: 140px;
-	height: 198px;
+	/* height: 198px; */
+	padding: 10px;
 }
 
