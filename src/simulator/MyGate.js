@@ -68,6 +68,7 @@ function getRawGateCCNOT(options)
         debugger
     }
 
+
     const state_num = pow2(qubit_number);
     let matrix = new QObject(state_num, state_num);
 
@@ -81,11 +82,17 @@ function getRawGateCCNOT(options)
     matrix.data[state_num-2][state_num-1] = complex(1,0);
 
     let p = range(0, qubit_number);
- 
-    let tmp = p[target[0]];
-    p[target[0]]=p[p.length - 1];
-    p[p.length - 1] = tmp;
+    let index = 0;
+    for(let ke in controls)
+    {
+        if(target[0]> ke )
+            index++;
+    }
     
+    let tmp = p[index];
+    p[index]=p[p.length - 1];
+    p[p.length - 1] = tmp;
+
     let matrix_p = permute(matrix,p);
 
     return matrix_p.data;

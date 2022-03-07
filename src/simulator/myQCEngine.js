@@ -19,6 +19,7 @@ import {
     cos, sin, round, pi, complex, create, all, max,
 } from 'mathjs'
 import { gateExpand1toN, QObject, tensor, identity, dot, controlledGate, permute} from './MatrixOperation';
+import * as deepcopy from 'deepcopy';
 
 const config = { };
 const math = create(all, config);
@@ -687,42 +688,43 @@ export default class QCEngine {
     {
         //let opera = this.operations[operation_index];
         //let state = opera['state_after_opertaion'];
-        //filter = {'a':[0,1,2,5,7,9],'b':[0,3]};
-        //console.log(filter);
-        //let filter = [...filter];
+        //cp_filter = {'a':[0,1,2,5,7,9],'b':[0,3]};
+        //console.log(cp_filter);
+        let cp_filter = deepcopy(filter);
+        //console.log(cp_filter);
         let var_index = this.name2index;
         //console.log(var_index);
         let i = 0;
         let neo_sv = [];
         let com = [];
-        //console.log(filter);
+        //console.log(cp_filter);
         for(let key in var_index)
         {
-            if(filter[key] == undefined){
+            if(cp_filter[key] == undefined){
                 let tmp_ar = [];
                 let len = var_index[key][1]-var_index[key][0];
                 for(i=0;i<Math.pow(2,len);i++)
                 {
                     tmp_ar[i] = i;
                 }
-                filter[key] = tmp_ar;
+                cp_filter[key] = tmp_ar;
             }
         }
-        //console.log(filter);
-        for(let key in filter)
+        //console.log(cp_filter);
+        for(let key in cp_filter)
         {
             if(com.length == 0)
             {
-                for(i=0; i<filter[key].length; i++){
-                    com[i] = {};//{key:filter[key][i]};
-                    com[i][key] = filter[key][i];
+                for(i=0; i<cp_filter[key].length; i++){
+                    com[i] = {};//{key:cp_filter[key][i]};
+                    com[i][key] = cp_filter[key][i];
                     //console.log(com[i]);
-                    //com[i] = [filter[key][i]];
+                    //com[i] = [cp_filter[key][i]];
                 }
                 //console.log(com);
                 continue;
             }
-            com = alt_tensor(com,filter[key],key);
+            com = alt_tensor(com,cp_filter[key],key);
         }
         //console.log(com);
         let k = 0;
@@ -871,9 +873,13 @@ export default class QCEngine {
         {
             div *= var_state[key]['prob'][select[key][0]]; 
         }
+
+        // console.log("p_xy",p_xy);
+        // console.log("div",div);
+
         let pmi = p_xy * Math.log(p_xy / div);
         
-        if(div == 0)
+        if(p_xy ==0 || div == 0)
             return 0;
         else
             return pmi;
@@ -882,7 +888,6 @@ export default class QCEngine {
     // TODO: 能复用的数据可以存一下
     get_pmi_index(operation_index, threshold)
     {
-        debugger
         let ids = [];
         let i,j = 0;
         let var_index = this.name2index;
@@ -902,10 +907,11 @@ export default class QCEngine {
                                 let select = {};
                                 select[key] = [i];
                                 select[key2] = [j];
-                                console.log(select);
+                                //console.log(select);
                                 let pmi = this._calc_pmi(operation_index,select);
-                                console.log(pmi);
-                                
+                                // if(pmi != 0){
+                                //     console.log(select,pmi);
+                                // }
                                 if(pmi >= threshold){
                                     select[key] = select[key][0];
                                     select[key2] = select[key2][0];
@@ -918,7 +924,7 @@ export default class QCEngine {
 
             }
         }
-            
+        console.log(ids);
         // debugger
         return ids;
     }
