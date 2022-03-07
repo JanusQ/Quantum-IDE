@@ -905,6 +905,7 @@ export default class QCEngine {
                                 console.log(select);
                                 let pmi = this._calc_pmi(operation_index,select);
                                 console.log(pmi);
+                                
                                 if(pmi >= threshold){
                                     select[key] = select[key][0];
                                     select[key2] = select[key2][0];
