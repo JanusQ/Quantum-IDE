@@ -232,7 +232,7 @@ export default class d3Draw {
 	}
 	// 绘制label
 	drawLabel(svg, x, y, width, height, labelText, labelId) {
-		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`).classed(`${labelId}`, true)
+		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`).classed(`label_${labelId}`, true)
 		parentG.append('rect').attr('width', width).attr('height', height).attr('fill', '#f2f2f2').attr('rx', 10).attr('opacity', '0.5')
 		const context = d3.path()
 		context.moveTo(0, 10)
@@ -1136,12 +1136,8 @@ export default class d3Draw {
 		}
 		// 浅色块鼠标事件 需要显示图
 		if (isNeedShowData) {
-			data.var2value = {
-				a: [1],
-				b: [1],
-				c: [1],
-			}
 			const self = this
+			data.probability = Math.pow(data.magnitude.toFixed(1), 2)
 			const allKeys = [...Object.keys(data), ...Object.keys(data.var2value)].filter((item) => item !== 'var2value' && item !== 'range')
 			childG.on('mouseover', function (e) {
 				// 误差来自于触发事件的e来自于svg g元素
@@ -1180,10 +1176,6 @@ export default class d3Draw {
 		const keys = Object.keys(data.var2value)
 		const allKeys = Object.keys(data).filter((item) => item !== 'range' && item !== 'var2value')
 		const arr = []
-		for (let i = 0; i < keys.length; i++) {
-			arr.push(...data.var2value[keys[i]])
-		}
-		const maxNumber = Math.max(...arr)
 
 		svg.append('line')
 			.attr('x1', 111)
@@ -1202,7 +1194,7 @@ export default class d3Draw {
 			const text = childG.append('text').text(`${keys[i]}`).attr('style', 'font-size:12px;').classed('svgtext', true).attr('x', 0).attr('y', 19)
 			childG
 				.append('rect')
-				.attr('width', 90 * (data.var2value[keys[i]] / maxNumber))
+				.attr('width', 90 * (data.var2value[keys[i]] / data.range[keys[i]]))
 				.attr('height', 20)
 				.attr('x', 20)
 				.attr('y', 6)
@@ -1213,17 +1205,23 @@ export default class d3Draw {
 				.text(`${data.var2value[keys[i]]}`)
 				.attr('style', 'font-size:12px;')
 				.classed('svgtext', true)
-				.attr('x', 22 + 90 * (data.var2value[keys[i]] / maxNumber))
+				.attr('x', 22 + 90 * (data.var2value[keys[i]] / data.range[keys[i]]))
 				.attr('y', 19)
 		}
 		for (let i = 0; i < allKeys.length; i++) {
 			const parentG = svg.append('g').attr('transform', `translate(0, ${26 * i + 26 * keys.length})`)
 			parentG.append('rect').attr('width', 120).attr('height', 32).attr('fill', 'none')
 			const childG = parentG.append('g')
-			const text = childG.append('text').text(`${allKeys[i]}:${data[allKeys[i]]}`).attr('style', 'font-size:12px;').classed('svgtext', true).attr('x', 0).attr('y', 19)
+			const text = childG
+				.append('text')
+				.text(`${allKeys[i]}:${data[allKeys[i]].toFixed(1)}`)
+				.attr('style', 'font-size:12px;')
+				.classed('svgtext', true)
+				.attr('x', 0)
+				.attr('y', 19)
 		}
 	}
-	// 绘制circle
+	// 绘制D circle
 	drawDCircle(svg, x, y, color, arcR, arcDeg, isNeedBorder) {
 		//   R 10
 		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`).classed('d_item', true)
@@ -1233,7 +1231,6 @@ export default class d3Draw {
 		}
 		const childG = parentG.append('g')
 		const circleR = this.dLength / 2
-		arcR = (arcR * this.dLength) / 2 - 2
 		childG
 			.append('circle')
 			.attr('cx', circleR)
@@ -1243,20 +1240,32 @@ export default class d3Draw {
 			.attr('stroke', color)
 			.attr('fill', 'none')
 			.classed('d_item', true)
-		const data = { startAngle: 0, endAngle: (Math.PI * arcDeg) / 180 }
-		const acrPath = d3.arc().innerRadius(0).outerRadius(arcR)
-		childG.append('path').attr('d', acrPath(data)).attr('fill', color).attr('transform', 'translate(13,13)')
+		if (arcDeg) {
+			arcR = (arcR * this.dLength) / 2 - 2
+
+			const data = { startAngle: 0, endAngle: (Math.PI * arcDeg) / 180 }
+			const acrPath = d3.arc().innerRadius(0).outerRadius(arcR)
+			childG.append('path').attr('d', acrPath(data)).attr('fill', color).attr('transform', 'translate(13,13)')
+		} else if (!arcDeg && arcR) {
+			arcR = (arcR * this.dLength) / 2 - 2
+			const context = d3.path()
+			context.moveTo(circleR, circleR)
+			context.lineTo(circleR, circleR - arcR)
+			childG.append('path').attr('d', context.toString()).attr('stroke', color).attr('stroke-width', 1)
+		}
+
 		return parentG
 	}
 	// 绘制text
 	drawText(svg, x, y, index) {
 		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`).classed('d_item', true)
 		parentG.append('rect').attr('width', this.dLength).attr('height', this.dLength).attr('fill', 'none')
-		const ketLieftG = parentG.append('g').append('line').attr('x1', 0.25).attr('y2', 9).attr('stroke-width', 0.5).attr('stroke', 'black').attr('transform', 'translate(6,9)').attr('svgText', true)
-		const textG = parentG.append('g').attr('transform', 'translate(9,18)').append('text').text(index).attr('style', 'font-size:12px;').attr('fill', 'gray').classed('svgtext', true)
+		const ketLieftG = parentG.append('g').append('line').attr('x1', 0.25).attr('y2', 9).attr('stroke-width', 0.5).attr('stroke', 'black').attr('svgText', true)
+
+		const textG = parentG.append('g').append('text').text(index).attr('style', 'font-size:12px;').attr('fill', 'gray').classed('svgtext', true)
+
 		const kitRightG = parentG
 			.append('g')
-			.attr('transform', 'translate(17,8)')
 			.append('path')
 			.attr('d', 'M0.845337 1L2.63087 5.40266L0.845337 9.71606')
 			.attr('stroke', 'black')
@@ -1265,17 +1274,28 @@ export default class d3Draw {
 			.attr('fill', 'none')
 			.classed('svgtext', true)
 
+		if (index > 9) {
+			// textG.attr('')
+			ketLieftG.attr('transform', 'translate(4,9)')
+			textG.attr('transform', 'translate(7,18)')
+			kitRightG.attr('transform', 'translate(21,8)')
+		} else {
+			ketLieftG.attr('transform', 'translate(6,9)')
+			textG.attr('transform', 'translate(9,18)')
+			kitRightG.attr('transform', 'translate(17,8)')
+		}
+
 		return parentG
 	}
 	// 绘制浅色块text
-	drawRelaedNum(svg, x, y, number, data, textX, chartDiv) {
+	drawRelaedNum(svg, x, y, data, textX, chartDiv) {
 		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`).classed('d_item', true)
 		parentG.append('rect').attr('width', this.dLength).attr('height', 14).attr('fill', 'none')
 		const self = this
 		const childG = parentG.append('g')
 		childG
 			.append('text')
-			.text(`10+`)
+			.text(`${data.length - 1}+`)
 			.attr('style', 'font-size:12px;')
 			.classed('svgtext', true)
 			.attr('transform', `translate(${textX}, ${13}) scale(0.6)`)
@@ -1307,6 +1327,7 @@ export default class d3Draw {
 
 	// 绘制基本结构
 	drawElement(labelName, labelId) {
+		const self = this
 		let isShowMore = false
 		let isFull = false
 		//删除
@@ -1314,6 +1335,7 @@ export default class d3Draw {
 			if (!obj.classList.contains('d_chart_div')) {
 				getParentNode(obj.parentNode)
 			} else {
+				d3.select(`#circuit_svg #circuit_label .label_${labelId}`).remove()
 				d3.select(obj).remove()
 			}
 		}
@@ -1345,12 +1367,16 @@ export default class d3Draw {
 				isFull = !isFull
 			}
 		}
+
 		const drawDiv = d3.select('#d_draw_div')
 		// drawDiv.selectAll('*').remove()
 		const chartDiv = drawDiv.append('div').classed('d_chart_div', true)
 		const titleDiv = chartDiv.append('div').classed('d_chart_title', true)
 		titleDiv.append('span').classed('label_name', true).text(`${labelName}`)
 		const btnDiv = titleDiv.append('div').classed('btn_group', true)
+
+		const chartSvgDiv = chartDiv.append('div').classed('chart_svg_div', true)
+		const svg = chartSvgDiv.append('svg').classed('d_chart_svg', true)
 		const operationDiv = btnDiv.append('div').classed('operation_div', true).attr('style', 'display:none;')
 		btnDiv
 			.append('img')
@@ -1361,20 +1387,47 @@ export default class d3Draw {
 				showMoreOperation(operationDiv)
 			})
 
-		operationDiv.append('img').attr('src', '/icon/save_icon.svg')
+		operationDiv
+			.append('img')
+			.attr('src', '/icon/save_icon.svg')
+			.on('click', function () {
+				self.saveFn(chartSvgDiv.html())
+				// console.log()
+			})
 		operationDiv
 			.append('img')
 			.attr('src', '/icon/expand_icon.svg')
 			.on('click', function () {
 				expandFn(chartDiv, operationDiv)
 			})
-		btnDiv.append('img').attr('src', '/icon/delete_icon.svg').on('click', close)
-
-		const svg = chartDiv.append('svg').classed('d_chart_svg', true)
+		operationDiv.append('img').attr('src', '/icon/delete_icon.svg').on('click', close)
 		return {
 			svg,
 			chartDiv,
 		}
+	}
+	// 保存
+	saveFn(elm) {
+		const getParentNode = (obj) => {
+			if (!obj.classList.contains('save_draw_div')) {
+				getParentNode(obj.parentNode)
+			} else {
+				d3.select(obj).remove()
+			}
+		}
+		const close = (e) => {
+			getParentNode(e.target)
+		}
+		const saveDiv = d3.select('#self_definded_draw')
+		const drawDiv = saveDiv.append('div').classed('save_draw_div', true)
+		const titleDiv = drawDiv.append('div').classed('save_div_title', true)
+		const btnDiv = titleDiv.append('div').classed('save_btn_group', true)
+		btnDiv.append('img').attr('src', '/icon/delete_icon.svg').on('click', close)
+		titleDiv.append('span').classed('label_name', true).text(`123`)
+		const saveSvg = drawDiv.append('div').classed('save_svg', true)
+		saveSvg.html(elm)
+		// d3.select('.save_svg .d_chart_svg').attr('transform', 'translate(0,0) scale(0.1)')
+		// console.log(svg)
 	}
 	// 绘制曲线
 	ribbonPathString(sx, sy, sdy, tx, ty, tdy, tension) {
@@ -1460,7 +1513,6 @@ export default class d3Draw {
 				.append('g')
 				.classed('text_g', true)
 				.attr('transform', `translate(${this.dLength * (i + 1) + 14},${this.dLength})`)
-			// 需要改为正确数据
 			for (let j = 0; j < inputBases.length; j++) {
 				this.drawText(textG, 0, this.dLength * j, inputBases[j].id)
 			}
@@ -1470,6 +1522,7 @@ export default class d3Draw {
 		const drawInputRelaedNumG = svg.append('g').classed('input_related_num', true).attr('transform', `translate(0,${this.dLength})`)
 		for (let j = 0; j < inputBases.length; j++) {
 			this.drawDInput(inputG, 0, this.dLength * j, inputBases[j].magnitude, inputBases[j].phases, 'rgb(80, 128, 132)')
+			const number = 0
 			for (let k = 0; k < inputBases[j].related_bases.length; k++) {
 				if (k === 0) {
 					// 只绘一个 然后显示几个 开发时候是全传入了
@@ -1485,9 +1538,9 @@ export default class d3Draw {
 						chartDiv
 					)
 				}
-				if (inputBases[j].related_bases.length > 0) {
-					this.drawRelaedNum(drawInputRelaedNumG, 0, this.dLength * j, inputBases[j].related_bases[k].length - 1, inputBases[j].related_bases, 0, chartDiv)
-				}
+			}
+			if (inputBases[j].related_bases.length > 1) {
+				this.drawRelaedNum(drawInputRelaedNumG, 0, this.dLength * j, inputBases[j].related_bases, 0, chartDiv)
 			}
 		}
 		// 绘制out_state
@@ -1524,9 +1577,9 @@ export default class d3Draw {
 						chartDiv
 					)
 				}
-				if (outBases[j].related_bases.length > 0) {
-					this.drawRelaedNum(drawOutRelaedNumG, 0, this.dLength * j, outBases[j].related_bases[k].length - 1, outBases[j].related_bases, 0, chartDiv)
-				}
+			}
+			if (outBases[j].related_bases.length > 1) {
+				this.drawRelaedNum(drawOutRelaedNumG, 0, this.dLength * j, outBases[j].related_bases, 0, chartDiv)
 			}
 		}
 		// 绘制连线
@@ -1571,7 +1624,7 @@ export default class d3Draw {
 
 	// 绘制普通完整表示
 	drawMatrix(qc, data) {
-		const { svg, chartDiv } = this.drawElement(data.text)
+		const { svg, chartDiv } = this.drawElement(data.text, data.id)
 		const inputStateData = qc.get_input_state(data.id)
 
 		const outStateData = qc.get_output_state(data.id)
@@ -1630,9 +1683,9 @@ export default class d3Draw {
 						chartDiv
 					)
 				}
-				if (outStateData.bases[j].related_bases.length > 0) {
-					this.drawRelaedNum(drawOutRelaedNumG, 0, this.dLength * j, outStateData.bases[j].related_bases[k].length - 1, outStateData.bases[j].related_bases, 0, chartDiv)
-				}
+			}
+			if (outStateData.bases[j].related_bases.length > 1) {
+				this.drawRelaedNum(drawOutRelaedNumG, 0, this.dLength * j, outStateData.bases[j].related_bases, 0, chartDiv)
 			}
 		}
 		// 绘制input_state
@@ -1668,9 +1721,9 @@ export default class d3Draw {
 							chartDiv
 						)
 					}
-					if (inputStateData.bases[j].related_bases.length > 0) {
-						this.drawRelaedNum(drawRelaedNumG, this.dLength * j, 0, inputStateData.bases[j].related_bases[k].length - 1, inputStateData.bases[j].related_bases, 10, chartDiv)
-					}
+				}
+				if (inputStateData.bases[j].related_bases.length > 1) {
+					this.drawRelaedNum(drawRelaedNumG, this.dLength * j, 0, inputStateData.bases[j].related_bases, 10, chartDiv)
 				}
 			}
 		}
