@@ -16,7 +16,7 @@ import { write0, write1 } from './MyGate';
 import QuantumCircuit from './QuantumCircuit'
 import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, alt_tensor, calibrate, getExp, linear_entropy, binary2int, average, spec} from './CommonFunction'
 import {
-    cos, sin, round, pi, complex, create, all,
+    cos, sin, round, pi, complex, create, all, max,
 } from 'mathjs'
 import { gateExpand1toN, QObject, tensor, identity, dot, controlledGate, permute} from './MatrixOperation';
 
@@ -1014,6 +1014,8 @@ export default class QCEngine {
         //console.log(new_var_index);
         
         input_state['bases'] = [];
+        input_state['max_magn'] = 0;
+
         for(let i=0; i<deep_length; i++)
         {
             input_state['bases'][i]={};
@@ -1043,8 +1045,15 @@ export default class QCEngine {
             input_state['bases'][i]['magnitude'] = average(whole['magns'], tmp_index);
             input_state['bases'][i]['phases'] = average(whole['phases'], tmp_index);
 
+            if(input_state['max_magn'] < input_state['bases'][i]['magnitude'])
+                input_state['max_magn'] = input_state['bases'][i]['magnitude'];
+
+
+
             input_state['bases'][i]['related_bases'] = [];
 
+
+            input_state['bases'][i]['max_base_magn'] = 0;
             for(let k=0; k<Math.pow(2,this.qubit_number-qubit_num); k++)
             {
                 let order;
@@ -1077,9 +1086,23 @@ export default class QCEngine {
                 input_state['bases'][i]['related_bases'][k]['magnitude'] = whole['magns'][order];
                 input_state['bases'][i]['related_bases'][k]['phases'] = whole['phases'][order];
 
+                if(input_state['bases'][i]['max_base_magn'] < whole['magns'][order])
+                    input_state['bases'][i]['max_base_magn'] = whole['magns'][order];
+
+            }
+            for(let k=0; k<Math.pow(2,this.qubit_number-qubit_num); k++)
+            {
+                input_state['bases'][i]['related_bases'][k]['ratio'] = input_state['bases'][i]['related_bases'][k]['magnitude'] / input_state['bases'][i]['max_base_magn']; 
             }
 
         }
+
+        for(let k=0; k<Math.pow(2,this.qubit_number-qubit_num); k++)
+        {
+            input_state['bases'][i]['ratio'] = input_state['bases'][i]['magnitude'] / input_state['max_magn']; 
+        }
+
+
 
         return input_state;
 
