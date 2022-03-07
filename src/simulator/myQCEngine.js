@@ -423,7 +423,7 @@ export default class QCEngine {
         })
     }
 
-    id(binary_qubits = undefined){
+    identity(binary_qubits = undefined){
         const { circuit, operations, now_column } = this
         const qubits = this.parseBinaryQubits(binary_qubits)
 
@@ -683,6 +683,7 @@ export default class QCEngine {
         //let state = opera['state_after_opertaion'];
         //filter = {'a':[0,1,2,5,7,9],'b':[0,3]};
         //console.log(filter);
+        //let filter = [...filter];
         let var_index = this.name2index;
         //console.log(var_index);
         let i = 0;
@@ -893,9 +894,9 @@ export default class QCEngine {
                                 let select = {};
                                 select[key] = [i];
                                 select[key2] = [j];
-                                //console.log(select);
+                                console.log(select);
                                 let pmi = this._calc_pmi(operation_index,select);
-                                //console.log(pmi);
+                                console.log(pmi);
                                 if(pmi >= threshold){
                                     select[key] = select[key][0];
                                     select[key2] = select[key2][0];
