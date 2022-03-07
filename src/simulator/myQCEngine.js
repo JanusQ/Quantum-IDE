@@ -1108,7 +1108,8 @@ export default class QCEngine {
 
     get_evo_matrix(label_id)
     {
-        console.log(label_id);
+        console.log(this.labels);
+        console.log(this.operations);
         
         let gate_mats = [];
         let ops = [this.labels[label_id]['start_operation'],this.labels[label_id]['end_operation']];
@@ -1116,7 +1117,7 @@ export default class QCEngine {
         let vars = [];
         let tmp_array = [];
         
-        for(let i=ops[0]+1; i<=ops[1]; i++)
+        for(let i=ops[0]; i<ops[1]; i++)
         {
             let opera = this.operations[i];
             let involved_qubits = this.getQubitsInvolved(opera);
@@ -1155,7 +1156,7 @@ export default class QCEngine {
         
         let all_gate = identity(deep_length);
         
-        for(let i=ops[0]+1; i<=ops[1]; i++)
+        for(let i=ops[0]; i<ops[1]; i++)
         {
             let opera = this.operations[i];
             let gate = opera['rawgate'];
