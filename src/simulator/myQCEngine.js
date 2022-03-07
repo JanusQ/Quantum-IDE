@@ -16,7 +16,7 @@ import { write0, write1 } from './MyGate';
 import QuantumCircuit from './QuantumCircuit'
 import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, alt_tensor, calibrate, getExp, linear_entropy, binary2int, average, spec} from './CommonFunction'
 import {
-    cos, sin, round, pi, complex, create, all,
+    cos, sin, round, pi, complex, create, all, max,
 } from 'mathjs'
 import { gateExpand1toN, QObject, tensor, identity, dot, controlledGate, permute} from './MatrixOperation';
 
@@ -364,15 +364,28 @@ export default class QCEngine {
     }
 
     // TODO: 还没有实现，包括ncnot
-    ccnot(binary_control, binary_target){
+    ccnot(binary_control, binary_target){   
         const { operations, circuit, now_column } = this;
         let controls = this.parseBinaryQubits(binary_control);
         let target = this.parseBinaryQubits(binary_target);
         let qubits = unique([...controls, ...target]);
 
+        if(qubits.length === 0){
+            console.error('ccnot\'s qubits number is zero')
+            debugger
+        }
+        
+        if(target.length != 1){
+            console.error(target, 'target qubit number is not one')
+            debugger
+            target = [target[0]]
+        }
+
         circuit.addGate("ccnot", now_column, qubits, {
             params: {
                 qubit_number: qubits.length,
+                controls: controls,
+                target: target,
             }
         });
 
@@ -384,35 +397,23 @@ export default class QCEngine {
         })
     }
 
-    // TODO: ccnot 还没有写
-    cnot(binary_control, binary_target) {
-        const { operations, circuit, now_column } = this
-        let control = this.parseBinaryQubits(binary_control)
-        let target = this.parseBinaryQubits(binary_target)
+    id(binary_qubits = undefined){
+        const { circuit, operations, now_column } = this
+        const qubits = this.parseBinaryQubits(binary_qubits)
 
-        if(target.length != 1){
-            console.error(target, 'target qubit number is not one')
-            debugger
-            target = [target[0]]
-        }
+        circuit.addGate('identity', now_column, qubits, {
+            params: {
+                qubit_number: qubits.length,
+            }
+        });
 
-        if(control.length == 0){
-            console.error(control, 'control qubit number should be larger than zero')
-            debugger
-        }else if(control.length != 1){
-            this.ccnot(binary_control, binary_target)
-        }else{
-            circuit.addGate("cx",  now_column, [...control, ...target], );
-
-            // TODO: 允许多个吗
-            this._addGate({
-                'controls': [control],
-                'target': target,
-                'operation': 'ccnot',
-                'columns': this.nextColumn()
-            })            
-        }
+        this._addGate({
+            'qubits':qubits,
+            'operation':'identity',
+            'columns': this.nextColumn(),            
+        })
     }
+
 
     exchange(binary_qubits1, binary_qubits2){
         const { operations, circuit, now_column } = this
@@ -463,6 +464,8 @@ export default class QCEngine {
             'columns': undefined, //this.nextColumn()
         })
     }
+
+
 
     new(qubit_number, name = undefined) {
         let start_index = this.assigned_qubit_number
@@ -990,6 +993,8 @@ export default class QCEngine {
         //console.log(new_var_index);
         
         input_state['bases'] = [];
+        input_state['max_magn'] = 0;
+
         for(let i=0; i<deep_length; i++)
         {
             input_state['bases'][i]={};
@@ -1019,8 +1024,15 @@ export default class QCEngine {
             input_state['bases'][i]['magnitude'] = average(whole['magns'], tmp_index);
             input_state['bases'][i]['phases'] = average(whole['phases'], tmp_index);
 
+            if(input_state['max_magn'] < input_state['bases'][i]['magnitude'])
+                input_state['max_magn'] = input_state['bases'][i]['magnitude'];
+
+
+
             input_state['bases'][i]['related_bases'] = [];
 
+
+            input_state['bases'][i]['max_base_magn'] = 0;
             for(let k=0; k<Math.pow(2,this.qubit_number-qubit_num); k++)
             {
                 let order;
@@ -1038,7 +1050,7 @@ export default class QCEngine {
                 input_state['bases'][i]['related_bases'][k]['range'] = {};
                 for(let key in var_index){
                     let var_bits = var_index[key][1] - var_index[key][0];
-                    input_state['bases'][i]['related_bases'][k]['range'][key] = Math.pow(2, var_bits);                
+                    input_state['bases'][i]['related_bases'][k]['range'][key] = Math.pow(2, var_bits) - 1;                
                 }
 
                 let total_index = input_state['bases'][i]['related_bases'][k]['var2value'];
@@ -1053,9 +1065,23 @@ export default class QCEngine {
                 input_state['bases'][i]['related_bases'][k]['magnitude'] = whole['magns'][order];
                 input_state['bases'][i]['related_bases'][k]['phases'] = whole['phases'][order];
 
+                if(input_state['bases'][i]['max_base_magn'] < whole['magns'][order])
+                    input_state['bases'][i]['max_base_magn'] = whole['magns'][order];
+
+            }
+            for(let k=0; k<Math.pow(2,this.qubit_number-qubit_num); k++)
+            {
+                input_state['bases'][i]['related_bases'][k]['ratio'] = input_state['bases'][i]['related_bases'][k]['magnitude'] / input_state['bases'][i]['max_base_magn']; 
             }
 
         }
+
+        for(let k=0; k<Math.pow(2,this.qubit_number-qubit_num); k++)
+        {
+            input_state['bases'][i]['ratio'] = input_state['bases'][i]['magnitude'] / input_state['max_magn']; 
+        }
+
+
 
         return input_state;
 
@@ -1084,14 +1110,16 @@ export default class QCEngine {
 
     get_evo_matrix(label_id)
     {
+        //console.log(this.labels);
         //console.log(this.operations);
+        
         let gate_mats = [];
         let ops = [this.labels[label_id]['start_operation'],this.labels[label_id]['end_operation']];
         //console.log(ops);
         let vars = [];
         let tmp_array = [];
         
-        for(let i=ops[0]+1; i<=ops[1]; i++)
+        for(let i=ops[0]; i<ops[1]; i++)
         {
             let opera = this.operations[i];
             let involved_qubits = this.getQubitsInvolved(opera);
@@ -1130,7 +1158,7 @@ export default class QCEngine {
         
         let all_gate = identity(deep_length);
         
-        for(let i=ops[0]+1; i<=ops[1]; i++)
+        for(let i=ops[0]; i<ops[1]; i++)
         {
             let opera = this.operations[i];
             let gate = opera['rawgate'];
@@ -1207,7 +1235,7 @@ export default class QCEngine {
         //         gate_mats[i][j]['used'] = true;
         //     }
         // }
-        
+        //console.log(gate_mats);
         return gate_mats;
 
     }

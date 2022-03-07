@@ -1,5 +1,5 @@
 import { create, all } from 'mathjs'
-import { getRawGateNcphase, getRawGateCCNOT, } from './MyGate'
+import { getRawGateNcphase, getRawGateCCNOT, getRawGateIdentity} from './MyGate'
 
 let QuantumCircuit = require('../resource/js/quantum-circuit.min.js')
 
@@ -364,6 +364,7 @@ QuantumCircuit.prototype.myAllRun = function (initialValues, options) {
 QuantumCircuit.prototype.siwei_define_gate = {
 	ncphase: getRawGateNcphase,
 	ccnot: getRawGateCCNOT,
+	identity: getRawGateIdentity,
 }
 
 // 拿到门矩阵和对应的比特，作用于State
