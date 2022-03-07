@@ -414,6 +414,35 @@ export default class QCEngine {
         })
     }
 
+    // TODO: ccnot 还没有写
+    cnot(binary_control, binary_target) {
+        const { operations, circuit, now_column } = this
+        let control = this.parseBinaryQubits(binary_control)
+        let target = this.parseBinaryQubits(binary_target)
+
+        if(target.length != 1){
+            console.error(target, 'target qubit number is not one')
+            debugger
+            target = [target[0]]
+        }
+
+        if(control.length == 0){
+            console.error(control, 'control qubit number should be larger than zero')
+            debugger
+        }else if(control.length != 1){
+            this.ccnot(binary_control, binary_target)
+        }else{
+            circuit.addGate("cx",  now_column, [...control, ...target], );
+
+            // TODO: 允许多个吗
+            this._addGate({
+                'controls': [control],
+                'target': target,
+                'operation': 'ccnot',
+                'columns': this.nextColumn()
+            })            
+        }
+    }
 
     exchange(binary_qubits1, binary_qubits2){
         const { operations, circuit, now_column } = this
@@ -1367,6 +1396,7 @@ class QInt {
         qc.had(binary_qubits)
     }
 
+    
     // TODO: console要换成throw
     // TODO: 还没有检查过
     // condition类似qint.bits(0x4)
