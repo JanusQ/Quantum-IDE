@@ -390,15 +390,28 @@ export default class QCEngine {
     }
 
     // TODO: 还没有实现，包括ncnot
-    ccnot(binary_control, binary_target){
+    ccnot(binary_control, binary_target){   
         const { operations, circuit, now_column } = this;
         let controls = this.parseBinaryQubits(binary_control);
         let target = this.parseBinaryQubits(binary_target);
         let qubits = unique([...controls, ...target]);
 
+        if(qubits.length === 0){
+            console.error('ccnot\'s qubits number is zero')
+            debugger
+        }
+        
+        if(target.length != 1){
+            console.error(target, 'target qubit number is not one')
+            debugger
+            target = [target[0]]
+        }
+
         circuit.addGate("ccnot", now_column, qubits, {
             params: {
                 qubit_number: qubits.length,
+                controls: controls,
+                target: target,
             }
         });
 
@@ -1029,7 +1042,7 @@ export default class QCEngine {
                 input_state['bases'][i]['related_bases'][k]['range'] = {};
                 for(let key in var_index){
                     let var_bits = var_index[key][1] - var_index[key][0];
-                    input_state['bases'][i]['related_bases'][k]['range'][key] = Math.pow(2, var_bits);                
+                    input_state['bases'][i]['related_bases'][k]['range'][key] = Math.pow(2, var_bits) - 1;                
                 }
 
                 let total_index = input_state['bases'][i]['related_bases'][k]['var2value'];

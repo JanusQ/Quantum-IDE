@@ -1,7 +1,7 @@
 
 // let QuantumCircuit = require('../resource/js/quantum-circuit.min.js')
 import QuantumCircuit from './QuantumCircuit'
-import {QObject} from './MatrixOperation'
+import {QObject, permute, } from './MatrixOperation'
 import { pow2, getComplex, range, toPI } from './CommonFunction';
 import { complex } from 'mathjs';
 
@@ -61,10 +61,10 @@ function getRawGateNcphase(options) {
 
 function getRawGateCCNOT(options)
 {
-    const {qubit_number} = options;
+    const {qubit_number, controls, target} = options;
 
-    if(qubit_number < 3){
-        console.error("qubit_number <3");
+    if(qubit_number < 2){
+        console.error("qubit_number < 2");
         debugger
     }
 
@@ -80,7 +80,15 @@ function getRawGateCCNOT(options)
     matrix.data[state_num-2][state_num-2] = complex(0,0);
     matrix.data[state_num-2][state_num-1] = complex(1,0);
 
-    return matrix.data;
+    let p = range(0, qubit_number);
+ 
+    let tmp = p[target[0]];
+    p[target[0]]=p[p.length - 1];
+    p[p.length - 1] = tmp;
+    
+    let matrix_p = permute(matrix,p);
+
+    return matrix_p.data;
 }
 
 
