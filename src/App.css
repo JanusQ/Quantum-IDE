@@ -20,6 +20,7 @@ img{
 	display: flex;
 	font-family: 'Ubuntu-R';
 	position: relative;
+	height: 1080px;
 }
 .App .expand_div{
 	width: 100%;

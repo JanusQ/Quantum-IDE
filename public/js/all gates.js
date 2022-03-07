@@ -37,7 +37,7 @@ qc.label('self defined')
 // 对于所有文档里面没有出现的门，都用self defined gate那个图标，涉及的比特用qc.getQubitsInvolved(operation)获得
 qc.apply('self defined gate', [0,1,2])
 
-qc.operations.forEach((op, i)=>{
-    const {operation, state_str, result} = op
-    console.log(op)
-})
+// qc.operations.forEach((op, i)=>{
+//     const {operation, state_str, result} = op
+//     console.log(op)
+// })

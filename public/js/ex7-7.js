@@ -30,16 +30,16 @@ signal.invQFT();
 
 
 
-// console.log(qc.name2index)
-// console.log(qc.labels)
-qc.operations.forEach((op, i)=>{
-    console.log(op);
-    // const {operation, state_str, result} = op
-    // console.log(operation)
-    // if(operation == 'read'){
-    //     console.log(result)
-    // }
-    // console.log(state_str)
-})
+// // console.log(qc.name2index)
+// // console.log(qc.labels)
+// qc.operations.forEach((op, i)=>{
+//     console.log(op);
+//     // const {operation, state_str, result} = op
+//     // console.log(operation)
+//     // if(operation == 'read'){
+//     //     console.log(result)
+//     // }
+//     // console.log(state_str)
+// })
 
 
