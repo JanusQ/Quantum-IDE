@@ -59,23 +59,28 @@ function App() {
 	}
 	// 运行
 	const runProgram = () => {
+		let noBug = false
+		let qc = new QCEngine()
+		const { qint } = qc
 		try {
-			let qc = new QCEngine()
-			const { qint } = qc
 			eval(editorValue)
-			exportSVG(qc)
 			// showInDebuggerArea(qc.circuit)
 
 			// siwei: 两个函数的案例
 			// range(0, qc.qubit_number).forEach((qubit) => {
-				// console.log(qubit, qc.getQubit2Variable(qubit))
+			// console.log(qubit, qc.getQubit2Variable(qubit))
 			// })
 			// qc.labels.forEach((label) => {
 			// 	console.log(label, qc.getLabelUpDown(label.id))
 			// })
 			consoleContent(true, qc.console_data)
+			noBug = true
 		} catch (error) {
 			consoleContent(false, error.message)
+			noBug = false
+		}
+		if (noBug) {
+			exportSVG(qc)
 		}
 	}
 	// 处理console
@@ -93,7 +98,12 @@ function App() {
 	return (
 		<div className='App'>
 			<div className='left-div'>
-				<Ace runProgram={runProgram} selectChange={selectChange} onChange={onChange} editorValue={editorValue}></Ace>
+				<Ace
+					runProgram={runProgram}
+					selectChange={selectChange}
+					onChange={onChange}
+					editorValue={editorValue}
+				></Ace>
 				<ConsoleComponent consoleValue={consoleValue}></ConsoleComponent>
 			</div>
 			<div className='right-div'>
