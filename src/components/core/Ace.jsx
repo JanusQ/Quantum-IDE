@@ -124,6 +124,14 @@ const Ace = (props) => {
 					{typeListChildren}
 				</ul>
 			</Modal>
+			<div id='self_definded'>
+				<div className='title'>
+					Self-defined Gate
+				</div>
+				<div id='self_definded_draw'>
+
+				</div>
+			</div>
 		</div>
 	)
 }
