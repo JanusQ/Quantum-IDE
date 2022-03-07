@@ -27,6 +27,7 @@
 	margin-right: 9px;
 	background: #fff;
 	padding: 10px;
+	overflow: auto;
 }
 #right_down_div .c_component {
 	width: 566px;
@@ -80,6 +81,7 @@
 	position: relative;
 	display: inline-block;
 	transition: all 0.3s;
+	overflow: auto;
 }
 .d_chart_div_full {
 	width: 1900px;
@@ -98,8 +100,6 @@
 }
 
 .d_chart_svg {
-	width: 100%;
-	height: calc(100% - 32px);
 	padding: 0 10px;
 	position: relative;
 }

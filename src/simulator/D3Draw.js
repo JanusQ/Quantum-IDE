@@ -68,7 +68,8 @@ export default class d3Draw {
 						this.svgItemHeight * (obj.up_qubit + 1),
 						this.svgItemWidth * lineCol,
 						this.svgItemHeight * (labelRow + 1),
-						data.labels[i].text
+						data.labels[i].text,
+						data.labels[i].id
 					)
 				}
 			}
@@ -98,9 +99,8 @@ export default class d3Draw {
 		// 框选
 		this.brushedFn(svg, brushG)
 		// 开发看
-	
-			this.drawDChart(data)
-		
+
+		this.drawDChart(data)
 	}
 	// 清空缓存的值
 	clear() {
@@ -231,8 +231,8 @@ export default class d3Draw {
 		svg.append('path').attr('d', context.toString()).attr('stroke', '#000').attr('stroke-width', 1).attr('fill', 'none').classed('operation_item', true)
 	}
 	// 绘制label
-	drawLabel(svg, x, y, width, height, labelText) {
-		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`)
+	drawLabel(svg, x, y, width, height, labelText, labelId) {
+		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`).classed(`${labelId}`, true)
 		parentG.append('rect').attr('width', width).attr('height', height).attr('fill', '#f2f2f2').attr('rx', 10).attr('opacity', '0.5')
 		const context = d3.path()
 		context.moveTo(0, 10)
@@ -1140,7 +1140,6 @@ export default class d3Draw {
 				a: [1],
 				b: [1],
 				c: [1],
-				
 			}
 			const self = this
 			const allKeys = [...Object.keys(data), ...Object.keys(data.var2value)].filter((item) => item !== 'var2value' && item !== 'range')
@@ -1153,7 +1152,7 @@ export default class d3Draw {
 					.attr(
 						'style',
 						`height:${32 * allKeys.length + 8}px;top:${showDataY ? showDataY + e.offsetY : e.offsetY + 36}px;left:${
-							showDataX ? showDataX + e.offsetX + 26: e.offsetX + 10
+							showDataX ? showDataX + e.offsetX + 26 : e.offsetX + 10
 						}px;border:1px solid black`
 					)
 
@@ -1190,7 +1189,7 @@ export default class d3Draw {
 			.attr('x1', 111)
 			.attr('x2', 111)
 			.attr('y1', 6)
-			// 32 * key.length - 6 * keys.length 
+			// 32 * key.length - 6 * keys.length
 			.attr('y2', 26 * keys.length)
 			.attr('stroke-width', 2)
 			.attr('stroke', '#000')
@@ -1307,7 +1306,7 @@ export default class d3Draw {
 	}
 
 	// 绘制基本结构
-	drawElement(labelName = '123') {
+	drawElement(labelName, labelId) {
 		let isShowMore = false
 		let isFull = false
 		//删除
@@ -1404,12 +1403,36 @@ export default class d3Draw {
 				  ]
 		).join('')
 	}
+	silkRibbonPathString(sx, sy, tx, ty, tension) {
+		var m0, m1
+		return (
+			tension == 1
+				? [
+						'M',
+						[sx, sy],
+						'L',
+						[tx, ty],
+						//"Z"
+				  ]
+				: [
+						'M',
+						[sx, sy],
+						'C',
+						[(m0 = tension * sx + (1 - tension) * tx), sy],
+						' ',
+						[(m1 = tension * tx + (1 - tension) * sx), ty],
+						' ',
+						[tx, ty],
+						//"Z"
+				  ]
+		).join('')
+	}
 	// 绘制sankey图
-	drawSankey(data) {
-		const { svg, chartDiv } = this.drawElement(data.labels[0].text)
-		const sankeyData = data.transferSankey(data.labels[0].id)
-		const inputStateData = data.get_input_state(data.labels[0].id)
-		const outStateData = data.get_output_state(data.labels[0].id)
+	drawSankey(qc, data) {
+		const { svg, chartDiv } = this.drawElement(data.text, data.id)
+		const sankeyData = qc.transferSankey(data.id)
+		const inputStateData = qc.get_input_state(data.id)
+		const outStateData = qc.get_output_state(data.id)
 		const inputBases = inputStateData.bases
 		const outBases = outStateData.bases
 		// 计算圆圈g X轴向右移动的距离
@@ -1420,6 +1443,10 @@ export default class d3Draw {
 		const outGTransformX = (inputStateData.vars.length + 7) * this.dLength + 14
 		// 计算out_input 浅色块X轴移动
 		const outRelatedGX = outGTransformX + (outStateData.vars.length + 1) * this.dLength
+		// 设置svg的宽高
+		const svgHeight = (inputStateData.bases.length + 1) * this.dLength
+		const svgWidth = outRelatedGX + this.dLength * 2 + 14
+		svg.attr('height', svgHeight).attr('width', svgWidth)
 		// 绘制圈
 		const circleG = svg.append('g').classed('circle_g', true).attr('transform', `translate(${circleGtransformX},${this.dLength})`)
 		for (let i = 0; i < sankeyData.length; i++) {
@@ -1512,16 +1539,16 @@ export default class d3Draw {
 			// 	outGTransformX,
 			// 	this.dLength * (sankeyData[i].to_id + 1) + this.dLength / 2
 			// )
-			const toD = this.ribbonPathString(
+			const toD = this.silkRibbonPathString(
 				circleGtransformX + this.dLength,
 				this.dLength * (i + 1) + this.dLength / 2,
-				3,
+
 				outGTransformX,
 				this.dLength * (sankeyData[i].to_id + 1) + this.dLength / 2,
-				3,
+
 				0.5
 			)
-			svg.append('path').attr('d', toD).attr('fill', 'rgb(246, 175, 31)')
+			svg.append('path').attr('d', toD).attr('fill', 'rgb(246, 175, 31)').attr('stroke-width', 2).attr('stroke', 'rgb(246, 175, 31)')
 			// this.drawLine(
 			// 	svg,
 			// 	circleGtransformX,
@@ -1529,25 +1556,25 @@ export default class d3Draw {
 			// 	inputGTransformX + this.dLength,
 			// 	this.dLength * (sankeyData[i].from_id + 1) + this.dLength / 2
 			// )
-			const fromD = this.ribbonPathString(
+			const fromD = this.silkRibbonPathString(
 				circleGtransformX,
 				this.dLength * (i + 1) + this.dLength / 2,
-				3,
+
 				inputGTransformX + this.dLength,
 				this.dLength * (sankeyData[i].from_id + 1) + this.dLength / 2,
-				3,
+
 				0.5
 			)
-			svg.append('path').attr('d', fromD).attr('fill', 'rgb(246, 175, 31)')
+			svg.append('path').attr('d', fromD).attr('fill', 'rgb(246, 175, 31)').attr('stroke-width', 2).attr('stroke', 'rgb(246, 175, 31)')
 		}
 	}
 
 	// 绘制普通完整表示
-	drawMatrix(data) {
-		const { svg, chartDiv } = this.drawElement(data.labels[0].text)
-		const inputStateData = data.get_input_state(data.labels[0].id)
+	drawMatrix(qc, data) {
+		const { svg, chartDiv } = this.drawElement(data.text)
+		const inputStateData = qc.get_input_state(data.id)
 
-		const outStateData = data.get_output_state(data.labels[0].id)
+		const outStateData = qc.get_output_state(data.id)
 		// 计算矩阵g Y轴向下移动的距离
 		const circleGtransformY = (inputStateData.vars.length + 2) * this.dLength + 14
 		// 计算输入input Y轴移动
@@ -1557,12 +1584,16 @@ export default class d3Draw {
 		// 计算out_input 浅色块X轴移动
 		const outRelatedGX = inputWidth + (outStateData.vars.length + 1) * this.dLength
 		// 绘制矩阵
-		const circleData = data.get_evo_matrix(data.labels[0].id)
+		// 设置svg的宽高
+		const svgHeight = circleGtransformY + outStateData.bases.length * this.dLength
+		const svgWidth = outRelatedGX + this.dLength * 2 + 14
+		svg.attr('height', svgHeight).attr('width', svgWidth)
+		const circleData = qc.get_evo_matrix(data.id)
 		const circleG = svg.append('g').classed('circle_g', true).attr('transform', `translate(0,${circleGtransformY})`)
 		for (let i = 0; i < circleData.length; i++) {
 			for (let j = 0; j < circleData[i].length; j++) {
-				const color = circleData[i][j].used ? 'rgb(246, 175, 31)' : 'rgb(142, 132, 112)'
-				const arcR = circleData[i][j].ratio * 10
+				const color = circleData[i][j].used ? 'rgb(246, 175, 31)' : 'rgba(142, 132, 112,0.5)'
+				const arcR = circleData[i][j].ratio
 				this.drawDCircle(circleG, this.dLength * i, this.dLength * j, color, arcR, circleData[i][j].phase, true)
 			}
 		}
@@ -1645,11 +1676,16 @@ export default class d3Draw {
 		}
 	}
 	drawDChart(data) {
+		const drawDiv = d3.select('#d_draw_div')
+		drawDiv.selectAll('*').remove()
 		// 判断绘制类型
-		if (true) {
-			this.drawSankey(data)
-		} else {
-			this.drawMatrix(data)
+		data.labels = data.labels.filter((item) => item.text !== '')
+		for (let i = 0; i < data.labels.length; i++) {
+			if (data.isSparse(data.labels[i].id)) {
+				this.drawSankey(data, data.labels[i])
+			} else {
+				this.drawMatrix(data, data.labels[i])
+			}
 		}
 	}
 }
