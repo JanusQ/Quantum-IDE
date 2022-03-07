@@ -1108,8 +1108,8 @@ export default class QCEngine {
 
     get_evo_matrix(label_id)
     {
-        console.log(this.labels);
-        console.log(this.operations);
+        //console.log(this.labels);
+        //console.log(this.operations);
         
         let gate_mats = [];
         let ops = [this.labels[label_id]['start_operation'],this.labels[label_id]['end_operation']];
@@ -1233,7 +1233,7 @@ export default class QCEngine {
         //         gate_mats[i][j]['used'] = true;
         //     }
         // }
-        console.log(gate_mats);
+        //console.log(gate_mats);
         return gate_mats;
 
     }
