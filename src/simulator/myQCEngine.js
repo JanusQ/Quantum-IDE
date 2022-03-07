@@ -319,33 +319,7 @@ export default class QCEngine {
         return false;
     }
 
-    // TODO: ccnot 还没有写
-    cnot(binary_control, binary_target) {
-        const { operations, circuit, now_column } = this
-        let control = this.parseBinaryQubits(binary_control)
-        let target = this.parseBinaryQubits(binary_target)
 
-        if(control.length != 1){
-            console.error(control, 'control qubit number is not one')
-            debugger
-            control = [control[0]]
-        }
-        if(target.length != 1){
-            console.error(target, 'target qubit number is not one')
-            debugger
-            target = [target[0]]
-        }
-
-        circuit.addGate("cx",  now_column, [...control, ...target], );
-
-        // TODO: 允许多个吗
-        this._addGate({
-            'control': control,
-            'target': target,
-            'operation': 'cnot',
-            'columns': this.nextColumn()
-        })
-    }
 
     // TODO: ncphase 之后直接整理到cphase里面
     cphase(rotation, binary_control, binary_target) {
@@ -410,6 +384,36 @@ export default class QCEngine {
         })
     }
 
+    // TODO: ccnot 还没有写
+    cnot(binary_control, binary_target) {
+        const { operations, circuit, now_column } = this
+        let control = this.parseBinaryQubits(binary_control)
+        let target = this.parseBinaryQubits(binary_target)
+
+        if(target.length != 1){
+            console.error(target, 'target qubit number is not one')
+            debugger
+            target = [target[0]]
+        }
+
+        if(control.length == 0){
+            console.error(control, 'control qubit number should be larger than zero')
+            debugger
+        }else if(control.length != 1){
+            this.ccnot(binary_control, binary_target)
+        }else{
+            circuit.addGate("cx",  now_column, [...control, ...target], );
+
+            // TODO: 允许多个吗
+            this._addGate({
+                'controls': [control],
+                'target': target,
+                'operation': 'ccnot',
+                'columns': this.nextColumn()
+            })            
+        }
+    }
+
     exchange(binary_qubits1, binary_qubits2){
         const { operations, circuit, now_column } = this
 
@@ -466,9 +470,12 @@ export default class QCEngine {
         let end_index = this.assigned_qubit_number
         let index = [start_index, end_index]
 
-        if (name)
-            this.name2index[name] = index
 
+        if (!name)
+            name = String(index)
+        this.name2index[name] = index
+
+        // TODO：需要保证name没有重复, 申请的不会超过
         return index
     }
 
@@ -839,8 +846,10 @@ export default class QCEngine {
             return pmi;
     }
 
+    // TODO: 能复用的数据可以存一下
     get_pmi_index(operation_index, threshold)
     {
+        debugger
         let ids = [];
         let i,j = 0;
         let var_index = this.name2index;
@@ -862,7 +871,7 @@ export default class QCEngine {
                                 select[key2] = [j];
                                 //console.log(select);
                                 let pmi = this._calc_pmi(operation_index,select);
-                                //console.log(pmi);
+                                console.log(select, pmi);
                                 if(pmi >= threshold){
                                     select[key] = select[key][0];
                                     select[key2] = select[key2][0];
@@ -876,7 +885,7 @@ export default class QCEngine {
             }
         }
             
-
+        // debugger
         return ids;
     }
 
