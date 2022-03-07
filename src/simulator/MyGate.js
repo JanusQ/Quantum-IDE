@@ -91,6 +91,25 @@ function getRawGateCCNOT(options)
     return matrix_p.data;
 }
 
+function getRawGateIdentity(options)
+{
+    const {qubit_number,} = options;
+
+    if(qubit_number < 1){
+        console.error("qubit_number < 1");
+        debugger
+    }
+
+    const state_num = pow2(qubit_number);
+    let matrix = new QObject(state_num, state_num);
+
+    range(0, state_num).forEach(i=>{
+        matrix.data[i][i] = complex(1,0); //getComplex({r:1, phi: -phi/2})
+    })
+
+    return matrix.data;
+
+}
 
 export { 
     write0, 
@@ -99,5 +118,6 @@ export {
 
     getRawGateNcphase,
     getRawGateCCNOT,
+    getRawGateIdentity,
     // write,
 }

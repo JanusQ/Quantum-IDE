@@ -423,6 +423,24 @@ export default class QCEngine {
         })
     }
 
+    id(binary_qubits = undefined){
+        const { circuit, operations, now_column } = this
+        const qubits = this.parseBinaryQubits(binary_qubits)
+
+        circuit.addGate('identity', now_column, qubits, {
+            params: {
+                qubit_number: qubits.length,
+            }
+        });
+
+        this._addGate({
+            'qubits':qubits,
+            'operation':'identity',
+            'columns': this.nextColumn(),            
+        })
+    }
+
+
     exchange(binary_qubits1, binary_qubits2){
         const { operations, circuit, now_column } = this
 
@@ -472,6 +490,8 @@ export default class QCEngine {
             'columns': undefined, //this.nextColumn()
         })
     }
+
+
 
     new(qubit_number, name = undefined) {
         let start_index = this.assigned_qubit_number
@@ -1088,7 +1108,8 @@ export default class QCEngine {
 
     get_evo_matrix(label_id)
     {
-        //console.log(this.operations);
+        console.log(label_id);
+        
         let gate_mats = [];
         let ops = [this.labels[label_id]['start_operation'],this.labels[label_id]['end_operation']];
         //console.log(ops);
@@ -1211,7 +1232,7 @@ export default class QCEngine {
         //         gate_mats[i][j]['used'] = true;
         //     }
         // }
-        
+        console.log(gate_mats);
         return gate_mats;
 
     }
