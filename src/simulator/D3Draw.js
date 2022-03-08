@@ -37,6 +37,8 @@ export default class d3Draw {
 		this.dLength = 26
 		// 控制是否全屏
 		this.isFull = false
+		// 框选的labels
+		this.labels = []
 	}
 	exportD3SVG(data) {
 		const svg = d3.select('#circuit_svg')
@@ -59,6 +61,7 @@ export default class d3Draw {
 		for (let i = 0; i < data.labels.length; i++) {
 			if (data.labels[i].text && data.labels[i].end_operation !== undefined) {
 				const obj = data.getLabelUpDown(data.labels[i].id)
+				console.log(obj)
 				if (obj.down_qubit !== Infinity && obj.up_qubit !== Infinity) {
 					const lineCol = data.labels[i].end_operation - data.labels[i].start_operation
 					const labelRow = obj.down_qubit - obj.up_qubit
@@ -121,7 +124,7 @@ export default class d3Draw {
 		this.drawOperations(drawG, operations, data)
 
 		// 框选
-		this.brushedFn(svg, brushG)
+		this.brushedFn(svg, brushG, labelG, data)
 		// 开发看
 
 		this.drawDChart(data)
@@ -356,7 +359,7 @@ export default class d3Draw {
 			.classed('operation_item', true)
 	}
 	// 绘制label
-	drawLabel(svg, x, y, width, height, labelText, labelId) {
+	drawLabel(svg, x, y, width, height, labelText, labelId, isBrushed) {
 		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`).classed(`label_${labelId}`, true)
 		parentG
 			.append('rect')
@@ -380,13 +383,33 @@ export default class d3Draw {
 			.attr('stroke', 'rgb(100, 159, 174)')
 			.attr('stroke-width', 1)
 			.attr('fill', 'none')
-		parentG
-			.append('text')
-			.attr('x', width / 2)
-			.attr('y', height + 15)
-			.attr('text-anchor', 'middle')
-			.text(labelText)
-			.classed('svgtext', true)
+		if (isBrushed) {
+			const textG = parentG.append('g').attr('transform', `translate(${width / 2},${height + 7}) scale(0.6)`)
+			textG
+				.append('circle')
+				.attr('cx', 0)
+				.attr('cy', 0)
+				.attr('r', 10)
+				.attr('fill', 'none')
+				.attr('stroke', 'rgb(100,159,174)')
+				.attr('stroke-width', 0.5)
+			textG
+				.append('text')
+				.attr('x', 0)
+				.attr('y', 5)
+				.attr('text-anchor', 'middle')
+				.text(labelText)
+				.classed('svgtext', true)
+				.attr('fill', 'rgb(100,159,174)')
+		} else {
+			parentG
+				.append('text')
+				.attr('x', width / 2)
+				.attr('y', height + 15)
+				.attr('text-anchor', 'middle')
+				.text(labelText)
+				.classed('svgtext', true)
+		}
 	}
 	// 绘制q
 	drawName(svg, x, y, name) {
@@ -514,7 +537,7 @@ export default class d3Draw {
 	}
 
 	// 刷取选中
-	brushedFn(svg, brushG) {
+	brushedFn(svg, brushG, labelG, qc) {
 		// Example: https://observablehq.com/@d3/double-click-brush-clear
 
 		let brushed_start = (event) => {
@@ -538,7 +561,7 @@ export default class d3Draw {
 		let brush_event = d3.brushX() //如果是用brush是const [[x0, y0], [x1, y1]] = selection;
 		brush_event.on('start', brushed_start)
 		// .on("brush", brushed)
-
+		const self = this
 		let brushed_end = (event) => {
 			const { selection, type } = event
 			if (selection) {
@@ -549,13 +572,53 @@ export default class d3Draw {
 					// console.log(x,  elm)
 					return x <= x1 && x > x0
 				})
-				console.log(operation_notations.data())
+
 				// 绘制label
-				const arr = []
+				const qubitsArr = []
+				const indexArr = []
 				for (let i = 0; i < operation_notations.data().length; i++) {
-					arr.push(...operation_notations.data()[i].columns)
+					// 可以按操作类型分 现在按字段名
+					if (operation_notations.data()[i].controls) {
+						qubitsArr.push(...operation_notations.data()[i].controls)
+						qubitsArr.push(...operation_notations.data()[i].target)
+					} else if (operation_notations.data()[i].qubits1) {
+						qubitsArr.push(...operation_notations.data()[i].qubits1)
+						qubitsArr.push(...operation_notations.data()[i].qubits2)
+					} else {
+						qubitsArr.push(...operation_notations.data()[i].qubits)
+					}
+
+					indexArr.push(operation_notations.data()[i].index)
 				}
-				console.log(arr)
+
+				const down_qubit = Math.max(...qubitsArr) //  down_qubit
+				const up_qubit = Math.min(...qubitsArr) // up_qubit
+				const start_operation = Math.min(...indexArr) // start_operation
+				const end_operation = Math.max(...indexArr) // end_operation
+				const lineCol = end_operation - start_operation + 1
+				const labelRow = down_qubit - up_qubit
+				const brushObj = {
+					start_operation: start_operation,
+					end_operation: end_operation + 1,
+					id: qc.labels.length > 0 ? qc.labels[qc.labels.length - 1].id + 1 : 0,
+					text: `${qc.labels.length + 1}`,
+				}
+				qc.labels.push(brushObj)
+				qc.label_count++
+				// const lineCol = data.labels[i].
+				// const labelRow = obj.down_qubit - obj.up_qubit
+				console.log(qc)
+				self.drawLabel(
+					labelG,
+					self.svgItemWidth * start_operation + self.labelTranslate,
+					self.svgItemHeight * (up_qubit + 1.5),
+					self.svgItemWidth * lineCol,
+					self.svgItemHeight * (labelRow + 1),
+					qc.labels[qc.labels.length - 1].id,
+					qc.labels[qc.labels.length - 1].id,
+					true
+				)
+				self.drawDChart(qc, { labels: [brushObj] })
 				brushG.call(brush_event.clear) // 如果当前有选择才需要清空
 			}
 		}
@@ -1395,7 +1458,7 @@ export default class d3Draw {
 			.append('rect')
 			.attr('width', 20)
 			.attr('height', 20)
-			.attr('fill', 'none')
+			.attr('fill', 'transparent')
 			.attr('stroke', '#000')
 			.attr('stroke-width', 1)
 		childG
@@ -1427,30 +1490,33 @@ export default class d3Draw {
 					.attr('class', 'show_data_div')
 					.attr(
 						'style',
-						`height:${32 * allKeys.length + 8}px;top:${
+						`height:${32 * allKeys.length}px;top:${
 							showDataY ? showDataY + e.offsetY : e.offsetY + 36
 						}px;left:${showDataX ? showDataX + e.offsetX + 26 : e.offsetX + 10}px;border:1px solid black`
 					)
 
-				showDataDiv
-					.append('div')
-					.classed('show_data_div_close', true)
-					.attr('style', 'width:100%;height:8px;line-height:8px;padding:2px;')
-					.append('img')
-					.attr('src', '/icon/delete_icon.svg')
-					.attr('width', 6)
-					.attr('height', 6)
-					.attr('style', 'float:right;cursor:pointer;')
-					.on('click', (e) => {
-						d3.select(e.target.parentNode.parentNode).remove()
-					})
+				// showDataDiv
+				// 	.append('div')
+				// 	.classed('show_data_div_close', true)
+				// 	.attr('style', 'width:100%;height:8px;line-height:8px;padding:2px;')
+				// 	.append('img')
+				// 	.attr('src', '/icon/delete_icon.svg')
+				// 	.attr('width', 6)
+				// 	.attr('height', 6)
+				// 	.attr('style', 'float:right;cursor:pointer;')
+				// 	.on('click', (e) => {
+				// 		d3.select(e.target.parentNode.parentNode).remove()
+				// 	})
 				const showDataSVG = showDataDiv
 					.append('svg')
 					.classed('relaed_svg', true)
 					.attr('width', '100%')
-					.attr('height', 'calc(100% - 8px)')
+					.attr('height', '100%')
 
 				self.drawShowData(showDataSVG, data)
+			})
+			childG.on('mouseleave', function (e) {
+				chartDiv.selectAll('.show_data_div').remove()
 			})
 		}
 		return parentG
@@ -1596,13 +1662,14 @@ export default class d3Draw {
 	}
 	// 绘制浅色块text
 	drawRelaedNum(svg, x, y, data, textX, chartDiv) {
+		data = data.slice(1, data.length - 1)
 		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`).classed('d_item', true)
 		parentG.append('rect').attr('width', this.dLength).attr('height', 14).attr('fill', 'none')
 		const self = this
 		const childG = parentG.append('g')
 		childG
 			.append('text')
-			.text(`${data.length - 1}+`)
+			.text(`${data.length}+`)
 			.attr('style', 'font-size:12px;')
 			.classed('svgtext', true)
 			.attr('transform', `translate(${textX}, ${13}) scale(0.6)`)
@@ -1654,7 +1721,7 @@ export default class d3Draw {
 	}
 
 	// 绘制基本结构
-	drawElement(labelName, labelId) {
+	drawElement(labelName, labelId, qc) {
 		const self = this
 		let isShowMore = false
 		let isFull = false
@@ -1663,6 +1730,11 @@ export default class d3Draw {
 			if (!obj.classList.contains('d_chart_div')) {
 				getParentNode(obj.parentNode)
 			} else {
+				qc.labels.splice(
+					qc.labels.findIndex((item) => item.id === labelId),
+					1
+				)
+				qc.label_count -- 
 				d3.select(`#circuit_svg #circuit_label .label_${labelId}`).remove()
 				d3.select(obj).remove()
 			}
@@ -1810,7 +1882,7 @@ export default class d3Draw {
 	}
 	// 绘制sankey图
 	drawSankey(qc, data) {
-		const { svg, chartDiv } = this.drawElement(data.text, data.id)
+		const { svg, chartDiv } = this.drawElement(data.text, data.id, qc)
 		const sankeyData = qc.transferSankey(data.id)
 		const inputStateData = qc.get_input_state(data.id)
 		const outStateData = qc.get_output_state(data.id)
@@ -1826,7 +1898,7 @@ export default class d3Draw {
 		const outRelatedGX = outGTransformX + (outStateData.vars.length + 1) * this.dLength
 		// 设置svg的宽高
 		const svgHeight = (inputStateData.bases.length + 1) * this.dLength
-		const svgWidth = outRelatedGX + this.dLength * 2 + 14
+		const svgWidth = outRelatedGX + this.dLength * 2 + 100
 		svg.attr('height', svgHeight).attr('width', svgWidth)
 		// 绘制圈
 		const circleG = svg
@@ -1872,7 +1944,7 @@ export default class d3Draw {
 			const number = 0
 			for (let k = 0; k < inputBases[j].related_bases.length; k++) {
 				if (k === 0) {
-					// 只绘一个 然后显示几个 开发时候是全传入了
+					// 只绘一个 然后显示几个
 					this.drawDInput(
 						inputRelatedG,
 						0,
@@ -1985,7 +2057,7 @@ export default class d3Draw {
 
 	// 绘制普通完整表示
 	drawMatrix(qc, data) {
-		const { svg, chartDiv } = this.drawElement(data.text, data.id)
+		const { svg, chartDiv } = this.drawElement(data.text, data.id, qc)
 		const inputStateData = qc.get_input_state(data.id)
 
 		const outStateData = qc.get_output_state(data.id)
@@ -2096,7 +2168,7 @@ export default class d3Draw {
 			if (inputStateData.bases[j].related_bases.length) {
 				for (let k = 0; k < inputStateData.bases[j].related_bases.length; k++) {
 					if (k === 0) {
-						// 只绘一个 然后显示几个 开发时候是全传入了
+						// 只绘一个 然后显示几个
 						this.drawDInput(
 							inputRelatedG,
 							this.dLength * j,
