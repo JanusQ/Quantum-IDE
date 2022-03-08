@@ -199,6 +199,7 @@ export default class QCEngine {
     // 给某一段打个标签, 是用于前端的
     // 给之后所有的打上标签
     // 如果传入空的就不会被话
+    //----------------WARNING: DO NOT USE THIS, USE STARTLABEL & ENDLABEL INSTEAD--------------
     label(label) {
         const {_now_label, labels, operations} = this
         let former_label = labels[labels.length - 1]
@@ -211,10 +212,53 @@ export default class QCEngine {
         labels.push({
             start_operation: operations.length,  //左闭
             text: label,
-            id: label_id
+            id: label_id,
         })
         this._now_label = label_id
     }
+
+    startlabel(labelname)
+    {
+        const {_now_label, labels, operations} = this
+        let label_id = this.genLabelId();
+        
+        labels.push({
+            start_operation: operations.length,  //左闭
+            text: labelname,
+            id: label_id,
+        })
+        
+        this._now_label = label_id
+    }
+
+    endlabel(labelname)
+    {
+        const {_now_label, labels, operations} = this
+        for(let key in labels)
+        {
+            if(labels[key]['text'] == labelname)
+            {
+                labels[key]['end_operation'] = operations.length;
+                return;
+            }
+        }
+        console.error("no start label found");
+        //debugger;
+    }
+
+    createlabel(labelname, op_start, op_end)
+    {
+        const {_now_label, labels, operations} = this;
+        let label_id = this.genLabelId();
+        labels.push({
+            start_operation: op_start,  //左闭
+            text: labelname,
+            id: label_id,
+            end_operation: op_end,
+        })
+    
+    }
+
 
     // Hadamard Operation
     had(binary_qubits = undefined) {
@@ -487,8 +531,8 @@ export default class QCEngine {
     // 啥事都不干，就空一格
     nop() {
         const { operations, circuit } = this
-        this._now_label = undefined
-        this.label('')
+        // this._now_label = undefined
+        // this.label('')
         this._addGate({
             'operation': 'noop',
             'columns': undefined, //this.nextColumn()

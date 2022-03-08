@@ -23,27 +23,30 @@ var a = qint.new(4, 'a');
 var b = qint.new(2, 'b');
 
 // prepare
-qc.label('prepare');
+qc.startlabel("start");
 // debugger
 a.write(1);
 a.hadamard(0x4);
 a.phase(45, 0x4);
+qc.startlabel("a1")
 b.write(1);
+qc.endlabel("start");
 b.hadamard(0x2);
 b.phase(90, 0x2);
+qc.endlabel("a1");
 qc.nop();
-qc.label('');
+
 qc.nop();
 
 // a += b
-qc.label('a += b');
+
 a.add(b);
-qc.label('');
+
 qc.nop();
 
-console.log("hello 2022");
+console.log("hello 2022"); 
 
 
-console.log(qc.can_show(0));
+console.log(qc.labels);
 //console.log(math.multiply(complex(1,2),0.5));
 console.log("end 2002");
