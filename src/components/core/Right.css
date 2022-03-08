@@ -17,14 +17,14 @@
 	overflow: auto;
 }
 #right_down_div {
-	height: 677px;
+	height: 695px;
 	display: flex;
-	margin-top: 15px;
+	margin-top: 8px;
 }
 #right_down_div .d_component {
 	width: 741px;
 	height: 100%;
-	margin-right: 9px;
+	margin-right: 8px;
 	background: #fff;
 	padding: 10px;
 	overflow: auto;
@@ -81,7 +81,7 @@
 	position: relative;
 	display: inline-block;
 	transition: all 0.3s;
-	overflow: auto;
+	/* overflow: auto; */
 }
 .d_chart_div_full {
 	width: 1900px;
@@ -99,7 +99,9 @@
 	padding: 0 5px;
 }
 .chart_svg_div{
-	width: auto;
+	width: 100%;
+	height: calc(100% - 32px);
+	overflow: auto;
 }
 .d_chart_svg {
 	padding: 0 10px;

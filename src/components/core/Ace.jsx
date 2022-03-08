@@ -25,7 +25,7 @@ const Ace = (props) => {
 
 	// 多个选择框
 	const { Option } = Select
-	const optionList = ['bell_state', 'all gates', 'adding two integers', 'ex7-7', 'ex7-1', 'about:black', ]  // case的列表，public\js中需要存对应的文件
+	const optionList = ['bell_state', 'all gates', 'adding two integers', 'ex7-7', 'ex7-1', 'about:black'] // case的列表，public\js中需要存对应的文件
 	const optionChildren = []
 	for (let i = 0; i < optionList.length; i++) {
 		optionChildren.push(
@@ -76,61 +76,59 @@ const Ace = (props) => {
 		props.selectChange(optionList[0])
 	}, [])
 	return (
-		<div className='ace_div'>
-			<div className='title'>QuCode</div>
-			{/* 操作按钮 */}
-			<div className='ace_operation'>
-				<Button type='primary' onClick={props.runProgram}>
-					Run Program
-				</Button>
-				<Select style={{ width: '30%', marginLeft: '10px' }} onChange={props.selectChange} defaultValue={optionList[0]}>
-					{optionChildren}
-				</Select>
-				<Button style={{ marginLeft: '10px' }} onClick={exportFile} className='export_btn'>
-					Export
-				</Button>
-				<ZoomInOutlined
-					style={{ marginLeft: '10%', cursor: 'pointer', fontSize: '18px' }}
-					onClick={() => {
-						controlFontSize('add')
+		<div>
+			<div className='ace_div'>
+				<div className='title'>QuCode</div>
+				{/* 操作按钮 */}
+				<div className='ace_operation'>
+					<Button type='primary' onClick={props.runProgram}>
+						Run Program
+					</Button>
+					<Select style={{ width: '30%', marginLeft: '10px' }} onChange={props.selectChange} defaultValue={optionList[0]}>
+						{optionChildren}
+					</Select>
+					<Button style={{ marginLeft: '10px' }} onClick={exportFile} className='export_btn'>
+						Export
+					</Button>
+					<ZoomInOutlined
+						style={{ marginLeft: '10%', cursor: 'pointer', fontSize: '18px' }}
+						onClick={() => {
+							controlFontSize('add')
+						}}
+					/>
+					<ZoomOutOutlined
+						style={{ marginLeft: '5px', cursor: 'pointer', fontSize: '18px' }}
+						onClick={() => {
+							controlFontSize('sub')
+						}}
+					/>
+				</div>
+				{/* ace编辑器 */}
+				<AceEditor
+					mode='javascript'
+					theme='github'
+					onChange={props.onChange}
+					name='ACE-EDITOR'
+					width='100%'
+					height='576px'
+					value={props.editorValue}
+					showGutter={false}
+					style={{ fontSize: fontSize + 'px' }}
+					highlightActiveLine={false}
+					setOptions={{
+						wrap: true,
 					}}
 				/>
-				<ZoomOutOutlined
-					style={{ marginLeft: '5px', cursor: 'pointer', fontSize: '18px' }}
-					onClick={() => {
-						controlFontSize('sub')
-					}}
-				/>
+				{/* 导出弹框 */}
+				<Modal title='Export' visible={isModalVisible} footer={null} onCancel={handleCancel}>
+					<ul className='export_type_ul' onClick={exportTypeClick}>
+						{typeListChildren}
+					</ul>
+				</Modal>
 			</div>
-			{/* ace编辑器 */}
-			<AceEditor
-				mode='javascript'
-				theme='github'
-				onChange={props.onChange}
-				name='ACE-EDITOR'
-				width='100%'
-				height='576px'
-				value={props.editorValue}
-				showGutter={false}
-				style={{ fontSize: fontSize + 'px' }}
-				highlightActiveLine={false}
-				setOptions={{
-					wrap: true,
-				}}
-			/>
-			{/* 导出弹框 */}
-			<Modal title='Export' visible={isModalVisible} footer={null} onCancel={handleCancel}>
-				<ul className='export_type_ul' onClick={exportTypeClick}>
-					{typeListChildren}
-				</ul>
-			</Modal>
 			<div id='self_definded'>
-				<div className='title'>
-					Self-defined Gate
-				</div>
-				<div id='self_definded_draw'>
-
-				</div>
+				<div className='title'>Self-defined Gate</div>
+				<div id='self_definded_draw'></div>
 			</div>
 		</div>
 	)
