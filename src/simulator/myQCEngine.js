@@ -1181,7 +1181,8 @@ export default class QCEngine {
 
     get_evo_matrix(label_id)
     {
-        //console.log(this.labels);
+        console.log(label_id);
+        console.log(this.labels);
         //console.log(this.operations);
         
         let gate_mats = [];
@@ -1256,7 +1257,7 @@ export default class QCEngine {
             all_gate =dot(all_gate, column_res);
             
         }
-        //console.log(all_gate);
+        console.log("all_gate",all_gate);
 
         
         let stru = this.get_input_state(label_id);
@@ -1291,7 +1292,7 @@ export default class QCEngine {
             }
         }
 
-        //console.log(gate_mats);
+        console.log("gate_mats", gate_mats);
         
 
         //fill fake data
@@ -1339,9 +1340,9 @@ export default class QCEngine {
         let matrix = this.get_evo_matrix(label_id);
         let sankey = [];
         let k = 0;
-        for(let i=0; i<matrix.length; i++)
+        for(let j=0; j<matrix.length; j++)
         {
-            for(let j=0; j<matrix.length; j++){
+            for(let i=0; i<matrix.length; i++){
                 if(Math.abs(matrix[i][j]['magnitude'] - 0) > precision){
                     sankey[k]= {};
                     sankey[k]['maganitude'] = matrix[i][j]['magnitude'];
