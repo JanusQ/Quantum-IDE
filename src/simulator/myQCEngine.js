@@ -1200,6 +1200,22 @@ export default class QCEngine {
 
     }
 
+    can_show(label_id)
+    {
+        // console.log(this.operations);
+        // console.log(this.labels);
+        let ops = [this.labels[label_id]['start_operation'],this.labels[label_id]['end_operation']];
+        for(let i=ops[0]; i<ops[1]; i++)
+        {
+            let opera = this.operations[i];
+            if(opera['operation'] == 'write' || opera['operation'] == 'measure')
+                return false;
+
+        }
+        return true;
+
+    }
+
     get_evo_matrix(label_id)
     {
         //console.log(label_id);
