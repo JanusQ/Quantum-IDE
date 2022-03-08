@@ -958,7 +958,7 @@ export default class QCEngine {
 
             }
         }
-        console.log(ids);
+        //console.log(ids);
         // debugger
         return ids;
     }
@@ -1019,7 +1019,7 @@ export default class QCEngine {
         let vars = [];
         let tmp_array = [];
 
-        for(let i=ops[0]+1; i<=ops[1]; i++)
+        for(let i=ops[0]; i<ops[1]; i++)
         {
             let opera = this.operations[i];
             let involved_qubits = this.getQubitsInvolved(opera);
@@ -1260,6 +1260,7 @@ export default class QCEngine {
 
         
         let stru = this.get_input_state(label_id);
+        //console.log(stru);
         
         let max = 0;
         for(let i=0; i<deep_length; i++)
@@ -1313,6 +1314,8 @@ export default class QCEngine {
     
     isSparse(label_id, threshold = 1.3, precision = 1e-5)
     {
+        //console.log("label_id", label_id);
+        //console.log(this.labels);
         let matrix = this.get_evo_matrix(label_id);
         let count = 0;
         for(let i=0; i<matrix.length; i++)
