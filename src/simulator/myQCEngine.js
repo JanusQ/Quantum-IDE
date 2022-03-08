@@ -885,6 +885,13 @@ export default class QCEngine {
         return ent/len;
     }
 
+    variable_purity(operation_index, variable)
+    {
+        let vec = this._get_fake_vector(variable, operation_index);
+        let ent = linear_entropy(vec);
+        return 1- ent;
+    }
+
     _calc_pmi(operation_index, select)
     {
         let index = this.get_index(operation_index, select);
