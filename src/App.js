@@ -31,7 +31,7 @@ import { range } from 'd3'
 // import './test/evomatrix_test'
 // import './test/variablefilter_test.js'
 // import './test/setstatetest.js'
-// import './test/can_show_test.js'
+import './test/can_show_test.js'
 
 function App() {
 	// 编辑器内容
