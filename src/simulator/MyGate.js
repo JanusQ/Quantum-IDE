@@ -1,9 +1,13 @@
 
 // let QuantumCircuit = require('../resource/js/quantum-circuit.min.js')
+
 import QuantumCircuit from './QuantumCircuit'
 import {QObject, permute, } from './MatrixOperation'
 import { pow2, getComplex, range, toPI } from './CommonFunction';
-import { complex } from 'mathjs';
+import { complex, matrix, create, all } from 'mathjs';
+
+const config = { };
+const math = create(all, config);
 
 // write0
 var write0 = new QuantumCircuit(1)
@@ -118,6 +122,39 @@ function getRawGateIdentity(options)
 
 }
 
+function getRawGateState(options)
+{
+    const {old_state, new_state} = options;
+    const state_num = old_state.length;
+    let matrix = new QObject(state_num, state_num);
+    let zero = complex(0,0);
+    let oldstate = [];
+    let newstate = [];
+    for(let i=0; i<state_num; i++)
+    {
+        oldstate[i]=complex(old_state[i]['re'],old_state[i]['im']);
+        newstate[i]=complex(new_state[i]['re'],new_state[i]['im']);
+    }
+
+    for(let i=0; i<state_num; i++)
+    {
+        for(let j=0; j<state_num; j++)
+        {
+            if(!zero.equals(oldstate[j])){
+                matrix.data[i][j] = math.divide(newstate[i], oldstate[j]);
+                break;
+            }
+            if(j == state_num -1)
+            {
+                console.error("no matrix can be constructed, old_state are all 0 + 0i ?")
+                debugger;
+            }
+        }
+    }
+
+    return matrix.data;
+}
+
 export { 
     write0, 
     write1,
@@ -126,5 +163,6 @@ export {
     getRawGateNcphase,
     getRawGateCCNOT,
     getRawGateIdentity,
+    getRawGateState,
     // write,
 }

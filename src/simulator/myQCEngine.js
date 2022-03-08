@@ -16,7 +16,7 @@ import { write0, write1 } from './MyGate';
 import QuantumCircuit from './QuantumCircuit'
 import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, alt_tensor, calibrate, getExp, linear_entropy, binary2int, average, spec} from './CommonFunction'
 import {
-    cos, sin, round, pi, complex, create, all, max,
+    cos, sin, round, pi, complex, create, all, max, sparse,
 } from 'mathjs'
 import { gateExpand1toN, QObject, tensor, identity, dot, controlledGate, permute} from './MatrixOperation';
 import * as deepcopy from 'deepcopy';
@@ -621,6 +621,40 @@ export default class QCEngine {
             up_qubit: up_varable? name2index[up_varable][0] : up_qubit,
             down_qubit: down_varable? name2index[down_varable][1] : down_qubit
         }
+    }
+
+    setState(newstate)//set initial state for test, invocate it before adding other gates
+    {
+        const { circuit, now_column } = this;
+        let opera = this.operations[0];
+        let sao = opera['state_after_opertaion'];
+        let oldstate= [];
+        
+        for(let i=0; i<sao.length; i++)
+        {
+            oldstate[i] = sao[i]['amplitude'];
+        }
+
+        let qubits = range(0, this.qubit_number); 
+        
+        if(newstate.length != Math.pow(2,this.qubit_number))
+        {
+            console.error("wrong new state");
+            debugger;
+        }
+        circuit.addGate('StateGate', now_column, qubits, {
+            params: {
+                old_state: oldstate,
+                new_state: newstate,
+            }
+        });
+
+        this._addGate({
+            'qubits':qubits,
+            'operation':'StateGate',
+            'columns': this.nextColumn(),            
+        })
+
     }
 
     get_varstate(operation_index, filter = undefined){
