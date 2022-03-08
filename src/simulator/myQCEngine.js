@@ -1145,6 +1145,20 @@ export default class QCEngine {
                 input_state['bases'][i]['related_bases'][k]['ratio'] = input_state['bases'][i]['related_bases'][k]['magnitude'] / input_state['bases'][i]['max_base_magn']; 
             }
 
+            //deleted all zero related bases
+            let d = 0;
+            while(d < input_state['bases'][i]['related_bases'].length)
+            {
+                if(input_state['bases'][i]['related_bases'][d]['magnitude'] == 0)
+                {
+                    input_state['bases'][i]['related_bases'].splice(d, 1);
+                }
+                else{
+                    d++;
+                }
+                 
+            }
+
         }
 
         for(let k=0; k<Math.pow(2,this.qubit_number-qubit_num); k++)
