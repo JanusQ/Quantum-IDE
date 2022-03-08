@@ -909,7 +909,7 @@ export default class QCEngine {
         }
 
         // console.log("p_xy",p_xy);
-        // console.log("div",div);
+        // console.log("px * py",div);
 
         let pmi = p_xy * Math.log(p_xy / div);
         

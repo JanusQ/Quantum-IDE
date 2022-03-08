@@ -133,7 +133,7 @@ function unique(list){
 
 function calibrate(phase)
 {
-    while(phase <= 0)
+    while(phase < 0)
     {
         phase += Math.PI*2;
     }

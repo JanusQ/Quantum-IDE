@@ -864,7 +864,7 @@ export default class d3Draw {
 			chart_svg.attr('width', allWidth + 50)
 			j += 1
 		}
-		const lineData = qc.get_pmi_index(index, 1)
+		const lineData = qc.get_pmi_index(index, 0.25)
 		this.drawCLine(chart_svg, lineData, lineXArr)
 	}
 	StackedBarChart(data, g, width, name, qc, config) {
