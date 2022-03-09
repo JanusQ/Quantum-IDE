@@ -160,7 +160,7 @@ function gateExpand1toN(U, N, target) {
 }
 
 
-//------------WARNING PERMUTE IS NOT RIGHT---------------
+//------------PERMUTE IS RIGHT---------------
 function permute(qobj, p) {
     // debugger
 

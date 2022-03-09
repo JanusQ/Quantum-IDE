@@ -1,13 +1,15 @@
 import { showInDebuggerArea } from '../simulator/CommonFunction';
 import QCEngine from '../simulator/MyQCEngine'
 import {
-    create, all,
+    create, all,complex,
 } from 'mathjs'
+import {range} from '../simulator/CommonFunction';
 const config = { };
 const math = create(all, config);
 
 var qc = new QCEngine()
 var {qint} = qc
+
 
 // Programming Quantum Computers
 //   by Eric Johnston, Nic Harrigan and Mercedes Gimeno-Segovia
@@ -15,18 +17,17 @@ var {qint} = qc
 
 // To run this online, go to http://oreilly-qc.github.io?p=7-7
 
-qc.reset(6);
-
-var a = qint.new(2, 'a');
-var b = qint.new(2, 'b');
-var c = qint.new(2, 'c');
-
-a.had()
-qc.cnot(0x3, 0x4)
-qc.cnot(0x3, 0x8)
+var num_qubits = 6;
+qc.reset(num_qubits);
+qc.write(0);
 
 
 console.log("hello 2022");
-console.log(qc._variable_filter(1,'a',{'a':[0,1]}));
+
+let new_state = [];
+range(0, 64).forEach(i=>{
+    new_state[i] = complex(1,1); //getComplex({r:1, phi: -phi/2})
+})
+qc.setState(new_state);
 //console.log(math.multiply(complex(1,2),0.5));
 console.log("end 2002");

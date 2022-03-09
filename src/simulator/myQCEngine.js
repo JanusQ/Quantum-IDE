@@ -16,9 +16,10 @@ import { write0, write1 } from './MyGate';
 import QuantumCircuit from './QuantumCircuit'
 import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, alt_tensor, calibrate, getExp, linear_entropy, binary2int, average, spec} from './CommonFunction'
 import {
-    cos, sin, round, pi, complex, create, all, max,
+    cos, sin, round, pi, complex, create, all, max, sparse,
 } from 'mathjs'
 import { gateExpand1toN, QObject, tensor, identity, dot, controlledGate, permute} from './MatrixOperation';
+import * as deepcopy from 'deepcopy';
 
 const config = { };
 const math = create(all, config);
@@ -198,6 +199,7 @@ export default class QCEngine {
     // 给某一段打个标签, 是用于前端的
     // 给之后所有的打上标签
     // 如果传入空的就不会被话
+    //----------------WARNING: DO NOT USE THIS, USE STARTLABEL & ENDLABEL INSTEAD--------------
     label(label) {
         const {_now_label, labels, operations} = this
         let former_label = labels[labels.length - 1]
@@ -210,10 +212,53 @@ export default class QCEngine {
         labels.push({
             start_operation: operations.length,  //左闭
             text: label,
-            id: label_id
+            id: label_id,
         })
         this._now_label = label_id
     }
+    //  ---------------WARNING: DO NOT USE THIS, USE STARTLABEL & ENDLABEL INSTEAD--------------
+    startlabel(labelname)
+    {
+        const {_now_label, labels, operations} = this
+        let label_id = this.genLabelId();
+        
+        labels.push({
+            start_operation: operations.length,  //左闭
+            text: labelname,
+            id: label_id,
+        })
+        
+        this._now_label = label_id
+    }
+
+    endlabel(labelname)
+    {
+        const {_now_label, labels, operations} = this
+        for(let key in labels)
+        {
+            if(labels[key]['text'] == labelname)
+            {
+                labels[key]['end_operation'] = operations.length;
+                return;
+            }
+        }
+        console.error("no start label found");
+        //debugger;
+    }
+
+    createlabel(labelname, op_start, op_end)
+    {
+        const {_now_label, labels, operations} = this;
+        let label_id = this.genLabelId();
+        labels.push({
+            start_operation: op_start,  //左闭
+            text: labelname,
+            id: label_id,
+            end_operation: op_end,
+        })
+    
+    }
+
 
     // Hadamard Operation
     had(binary_qubits = undefined) {
@@ -397,7 +442,7 @@ export default class QCEngine {
         })
     }
 
-    id(binary_qubits = undefined){
+    identity(binary_qubits = undefined){
         const { circuit, operations, now_column } = this
         const qubits = this.parseBinaryQubits(binary_qubits)
 
@@ -486,8 +531,8 @@ export default class QCEngine {
     // 啥事都不干，就空一格
     nop() {
         const { operations, circuit } = this
-        this._now_label = undefined
-        this.label('')
+        // this._now_label = undefined
+        // this.label('')
         this._addGate({
             'operation': 'noop',
             'columns': undefined, //this.nextColumn()
@@ -622,6 +667,40 @@ export default class QCEngine {
         }
     }
 
+    setState(newstate)//set initial state for test, invocate it before adding other gates
+    {
+        const { circuit, now_column } = this;
+        let opera = this.operations[0];
+        let sao = opera['state_after_opertaion'];
+        let oldstate= [];
+        
+        for(let i=0; i<sao.length; i++)
+        {
+            oldstate[i] = sao[i]['amplitude'];
+        }
+
+        let qubits = range(0, this.qubit_number); 
+        
+        if(newstate.length != Math.pow(2,this.qubit_number))
+        {
+            console.error("wrong new state");
+            debugger;
+        }
+        circuit.addGate('StateGate', now_column, qubits, {
+            params: {
+                old_state: oldstate,
+                new_state: newstate,
+            }
+        });
+
+        this._addGate({
+            'qubits':qubits,
+            'operation':'StateGate',
+            'columns': this.nextColumn(),            
+        })
+
+    }
+
     get_varstate(operation_index, filter = undefined){
         let res = {};
         let opera = this.operations[operation_index];
@@ -664,6 +743,22 @@ export default class QCEngine {
 
     get_wholestate(operation_index)
     {
+        if(operation_index < 0)
+        {
+            let res = {};
+            let len = Math.pow(2, this.qubit_number);
+            res['magns'] = [];
+            res['phases'] = [];
+            res['probs'] = [];
+            for(let i=0; i<len; i++)
+            {
+                res['magns'][i] = 0;
+                res['probs'][i]= 0;
+                res['phases'][i] = 0;
+            }
+            return res;
+        }
+
         let opera = this.operations[operation_index];
         let state = opera['state_after_opertaion'];
         let res = {};
@@ -679,7 +774,7 @@ export default class QCEngine {
             res['probs'][i]= res['magns'][i] * res['magns'][i];
             res['phases'][i] = calibrate(polar['phi']) * 180 / Math.PI;
         }
-        
+        // console.log("wholestate",res);
         return res;
     }
 
@@ -687,41 +782,43 @@ export default class QCEngine {
     {
         //let opera = this.operations[operation_index];
         //let state = opera['state_after_opertaion'];
-        //filter = {'a':[0,1,2,5,7,9],'b':[0,3]};
-        //console.log(filter);
+        //cp_filter = {'a':[0,1,2,5,7,9],'b':[0,3]};
+        //console.log(cp_filter);
+        let cp_filter = deepcopy(filter);
+        //console.log(cp_filter);
         let var_index = this.name2index;
         //console.log(var_index);
         let i = 0;
         let neo_sv = [];
         let com = [];
-        //console.log(filter);
+        //console.log(cp_filter);
         for(let key in var_index)
         {
-            if(filter[key] == undefined){
+            if(cp_filter[key] == undefined){
                 let tmp_ar = [];
                 let len = var_index[key][1]-var_index[key][0];
                 for(i=0;i<Math.pow(2,len);i++)
                 {
                     tmp_ar[i] = i;
                 }
-                filter[key] = tmp_ar;
+                cp_filter[key] = tmp_ar;
             }
         }
-        //console.log(filter);
-        for(let key in filter)
+        //console.log(cp_filter);
+        for(let key in cp_filter)
         {
             if(com.length == 0)
             {
-                for(i=0; i<filter[key].length; i++){
-                    com[i] = {};//{key:filter[key][i]};
-                    com[i][key] = filter[key][i];
+                for(i=0; i<cp_filter[key].length; i++){
+                    com[i] = {};//{key:cp_filter[key][i]};
+                    com[i][key] = cp_filter[key][i];
                     //console.log(com[i]);
-                    //com[i] = [filter[key][i]];
+                    //com[i] = [cp_filter[key][i]];
                 }
                 //console.log(com);
                 continue;
             }
-            com = alt_tensor(com,filter[key],key);
+            com = alt_tensor(com,cp_filter[key],key);
         }
         //console.log(com);
         let k = 0;
@@ -848,6 +945,13 @@ export default class QCEngine {
         return ent/len;
     }
 
+    variable_purity(operation_index, variable)
+    {
+        let vec = this._get_fake_vector(variable, operation_index);
+        let ent = linear_entropy(vec);
+        return 1- ent;
+    }
+
     _calc_pmi(operation_index, select)
     {
         let index = this.get_index(operation_index, select);
@@ -870,9 +974,13 @@ export default class QCEngine {
         {
             div *= var_state[key]['prob'][select[key][0]]; 
         }
+
+        // console.log("p_xy",p_xy);
+        // console.log("px * py",div);
+
         let pmi = p_xy * Math.log(p_xy / div);
         
-        if(div == 0)
+        if(p_xy ==0 || div == 0)
             return 0;
         else
             return pmi;
@@ -881,7 +989,6 @@ export default class QCEngine {
     // TODO: 能复用的数据可以存一下
     get_pmi_index(operation_index, threshold)
     {
-        debugger
         let ids = [];
         let i,j = 0;
         let var_index = this.name2index;
@@ -903,7 +1010,9 @@ export default class QCEngine {
                                 select[key2] = [j];
                                 //console.log(select);
                                 let pmi = this._calc_pmi(operation_index,select);
-                                console.log(select, pmi);
+                                // if(pmi != 0){
+                                //     console.log(select,pmi);
+                                // }
                                 if(pmi >= threshold){
                                     select[key] = select[key][0];
                                     select[key2] = select[key2][0];
@@ -916,28 +1025,27 @@ export default class QCEngine {
 
             }
         }
-            
+        //console.log(ids);
         // debugger
         return ids;
     }
 
     _variable_filter(operation_index, target, filter)
     {
-        
         let index = this.get_index(operation_index, filter);
         let whole = this.get_wholestate(operation_index);
         let var_index = this.name2index;
 
         let var_filtered = {};
-        var_filtered['magns'] = [];
-        var_filtered['probs'] = [];
+        var_filtered['magn'] = [];
+        var_filtered['prob'] = [];
 
         for(let i=0; i<Math.pow(2,var_index[target][1]-var_index[target][0]); i++)
         {
-            var_filtered['probs'][i] = 0;
-            var_filtered['magns'][i] = 0;
+            var_filtered['prob'][i] = 0;
+            var_filtered['magn'][i] = 0;
         }
-        //console.log(index);
+        // console.log(index);
         for(let i=0; i<index.length; i++)
         {
             let bin = binary(index[i],this.qubit_number);
@@ -945,12 +1053,13 @@ export default class QCEngine {
             let sel = bin.slice(var_index[target][0],var_index[target][1]);
             sel = sel.reverse();
             let dec = binary2int(sel);
-            var_filtered['probs'][dec] += whole['probs'][index[i]];
+            console.log(dec);
+            var_filtered['prob'][dec] += whole['probs'][index[i]];
         }
 
         for(let i=0; i<Math.pow(2,var_index[target][1]-var_index[target][0]); i++)
         {
-            var_filtered['magns'][i] = Math.sqrt(var_filtered['probs'][i]);
+            var_filtered['magn'][i] = Math.sqrt(var_filtered['prob'][i]);
         }
 
         return var_filtered;
@@ -959,13 +1068,16 @@ export default class QCEngine {
 
     _make_state(label_id, status)
     {
+        // console.log(this.labels);
+        // console.log(label_id);
+        // console.log(this.operations);
         let ops = [this.labels[label_id]['start_operation'],this.labels[label_id]['end_operation']];
         
         let op_index;
         if(status == 'start')
-            op_index = ops[0];
+            op_index = ops[0] - 1;
         else if (status == 'end')
-            op_index = ops[1];
+            op_index = ops[1] - 1;
 
         let whole = this.get_wholestate(op_index);
         
@@ -977,7 +1089,7 @@ export default class QCEngine {
         let vars = [];
         let tmp_array = [];
 
-        for(let i=ops[0]+1; i<=ops[1]; i++)
+        for(let i=ops[0]; i<ops[1]; i++)
         {
             let opera = this.operations[i];
             let involved_qubits = this.getQubitsInvolved(opera);
@@ -1100,17 +1212,35 @@ export default class QCEngine {
             }
             for(let k=0; k<Math.pow(2,this.qubit_number-qubit_num); k++)
             {
-                input_state['bases'][i]['related_bases'][k]['ratio'] = input_state['bases'][i]['related_bases'][k]['magnitude'] / input_state['bases'][i]['max_base_magn']; 
+                if(input_state['bases'][i]['max_base_magn'] == 0)
+                    input_state['bases'][i]['related_bases'][k]['ratio'] = 0;
+                else
+                    input_state['bases'][i]['related_bases'][k]['ratio'] = input_state['bases'][i]['related_bases'][k]['magnitude'] / input_state['bases'][i]['max_base_magn']; 
+            }
+
+            //deleted all zero related bases
+            let d = 0;
+            while(d < input_state['bases'][i]['related_bases'].length)
+            {
+                if(input_state['bases'][i]['related_bases'][d]['magnitude'] == 0)
+                {
+                    input_state['bases'][i]['related_bases'].splice(d, 1);
+                }
+                else{
+                    d++;
+                }
+                 
             }
 
         }
 
-        for(let k=0; k<Math.pow(2,this.qubit_number-qubit_num); k++)
+        for(let i=0; i<input_state['bases'].length; i++)
         {
-            input_state['bases'][i]['ratio'] = input_state['bases'][i]['magnitude'] / input_state['max_magn']; 
+            if(input_state['max_magn'] == 0)
+                input_state['bases'][i]['ratio'] = 0;
+            else
+                input_state['bases'][i]['ratio'] = input_state['bases'][i]['magnitude'] / input_state['max_magn']; 
         }
-
-
 
         return input_state;
 
@@ -1137,8 +1267,25 @@ export default class QCEngine {
 
     }
 
+    can_show(label_id)
+    {
+        // console.log(this.operations);
+        // console.log(this.labels);
+        let ops = [this.labels[label_id]['start_operation'],this.labels[label_id]['end_operation']];
+        for(let i=ops[0]; i<ops[1]; i++)
+        {
+            let opera = this.operations[i];
+            if(opera['operation'] == 'write' || opera['operation'] == 'measure')
+                return false;
+
+        }
+        return true;
+
+    }
+
     get_evo_matrix(label_id)
     {
+        //console.log(label_id);
         //console.log(this.labels);
         //console.log(this.operations);
         
@@ -1214,10 +1361,11 @@ export default class QCEngine {
             all_gate =dot(all_gate, column_res);
             
         }
-        //console.log(all_gate);
+        //console.log("all_gate",all_gate);
 
         
         let stru = this.get_input_state(label_id);
+        //console.log(stru);
         
         let max = 0;
         for(let i=0; i<deep_length; i++)
@@ -1244,11 +1392,15 @@ export default class QCEngine {
             for(let j=0; j< deep_length; j++)
             {
                 let polar = getExp(all_gate.data[i][j]);
-                gate_mats[i][j]['ratio'] = polar['r'] / max;
+                if(max == 0)
+                    gate_mats[i][j]['ratio'] = 0;
+                else
+                    gate_mats[i][j]['ratio'] = polar['r'] / max;
+
             }
         }
 
-        //console.log(gate_mats);
+        //console.log("gate_mats", gate_mats);
         
 
         //fill fake data
@@ -1271,6 +1423,8 @@ export default class QCEngine {
     
     isSparse(label_id, threshold = 1.3, precision = 1e-5)
     {
+        // console.log("label_id", label_id);
+        // console.log(this.labels);
         let matrix = this.get_evo_matrix(label_id);
         let count = 0;
         for(let i=0; i<matrix.length; i++)
@@ -1294,9 +1448,9 @@ export default class QCEngine {
         let matrix = this.get_evo_matrix(label_id);
         let sankey = [];
         let k = 0;
-        for(let i=0; i<matrix.length; i++)
+        for(let j=0; j<matrix.length; j++)
         {
-            for(let j=0; j<matrix.length; j++){
+            for(let i=0; i<matrix.length; i++){
                 if(Math.abs(matrix[i][j]['magnitude'] - 0) > precision){
                     sankey[k]= {};
                     sankey[k]['maganitude'] = matrix[i][j]['magnitude'];
