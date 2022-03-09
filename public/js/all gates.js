@@ -1,10 +1,4 @@
-// Programming Quantum Computers
-//   by Eric Johnston, Nic Harrigan and Mercedes Gimeno-Segovia
-//   O'Reilly Media
 
-// To run this online, go to http://oreilly-qc.github.io?p=5-2
-
-// Initialize
 var num_qubits = 6;
 qc.reset(num_qubits);
 var a = qint.new(6, 'a');
