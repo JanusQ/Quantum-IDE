@@ -774,7 +774,7 @@ export default class QCEngine {
             res['probs'][i]= res['magns'][i] * res['magns'][i];
             res['phases'][i] = calibrate(polar['phi']) * 180 / Math.PI;
         }
-        
+        // console.log("wholestate",res);
         return res;
     }
 
@@ -1231,7 +1231,7 @@ export default class QCEngine {
 
         }
 
-        for(let k=0; k<Math.pow(2,this.qubit_number-qubit_num); k++)
+        for(let i=0; i<input_state['bases'].length; i++)
         {
             input_state['bases'][i]['ratio'] = input_state['bases'][i]['magnitude'] / input_state['max_magn']; 
         }
