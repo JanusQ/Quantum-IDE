@@ -147,9 +147,13 @@
 .btn_group .operation_div img {
 	margin: 0 0;
 }
-.btn_group img {
-	margin-left: 8px;
+.btn_group .operation_img {
 	cursor: pointer;
+	
+	
+}
+.btn_group img{
+	margin-left: 8px;
 }
 .label_name {
 	color: rgb(100, 159, 174);

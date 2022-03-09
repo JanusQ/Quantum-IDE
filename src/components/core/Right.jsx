@@ -31,7 +31,7 @@ const Right = () => {
 								<span className='tip_text'>transformation</span>
 							</div>
 							<div className='pic_tip'>
-								<img src='/img/legends/gray_circle.png' />
+								<img src='/img/legends/idletransformation.png' />
 								<span className='tip_text'>idle transformation</span>
 							</div>
 						</div>
