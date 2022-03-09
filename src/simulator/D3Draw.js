@@ -387,55 +387,58 @@ export default class d3Draw {
 				let operation_notations = svg.selectAll('.operation_g').filter((elm) => {
 					const { x } = elm
 					// console.log(x,  elm)
+
 					return x <= x1 && x > x0
 				})
+				if (operation_notations.data().length) {
+					// 绘制label
+					const qubitsArr = []
+					const indexArr = []
+					for (let i = 0; i < operation_notations.data().length; i++) {
+						// 可以按操作类型分 现在按字段名
+						if (operation_notations.data()[i].controls) {
+							qubitsArr.push(...operation_notations.data()[i].controls)
+							qubitsArr.push(...operation_notations.data()[i].target)
+						} else if (operation_notations.data()[i].qubits1) {
+							qubitsArr.push(...operation_notations.data()[i].qubits1)
+							qubitsArr.push(...operation_notations.data()[i].qubits2)
+						} else {
+							qubitsArr.push(...operation_notations.data()[i].qubits)
+						}
 
-				// 绘制label
-				const qubitsArr = []
-				const indexArr = []
-				for (let i = 0; i < operation_notations.data().length; i++) {
-					// 可以按操作类型分 现在按字段名
-					if (operation_notations.data()[i].controls) {
-						qubitsArr.push(...operation_notations.data()[i].controls)
-						qubitsArr.push(...operation_notations.data()[i].target)
-					} else if (operation_notations.data()[i].qubits1) {
-						qubitsArr.push(...operation_notations.data()[i].qubits1)
-						qubitsArr.push(...operation_notations.data()[i].qubits2)
-					} else {
-						qubitsArr.push(...operation_notations.data()[i].qubits)
+						indexArr.push(operation_notations.data()[i].index)
 					}
 
-					indexArr.push(operation_notations.data()[i].index)
+					const down_qubit = Math.max(...qubitsArr) //  down_qubit
+					const up_qubit = Math.min(...qubitsArr) // up_qubit
+					const start_operation = Math.min(...indexArr) // start_operation
+					const end_operation = Math.max(...indexArr) // end_operation
+					const lineCol = end_operation - start_operation + 1
+					const labelRow = down_qubit - up_qubit
+					const brushObj = {
+						start_operation: start_operation,
+						end_operation: end_operation + 1,
+						id: qc.labels.length > 0 ? qc.labels[qc.labels.length - 1].id + 1 : 0,
+						text: `${qc.labels.length + 1}`,
+					}
+					qc.labels.push(brushObj)
+					qc.label_count++
+					// const lineCol = data.labels[i].
+					// const labelRow = obj.down_qubit - obj.up_qubit
+					console.log(qc)
+					self.drawLabel(
+						labelG,
+						self.svgItemWidth * start_operation + self.labelTranslate,
+						self.svgItemHeight * (up_qubit + 1.5),
+						self.svgItemWidth * lineCol,
+						self.svgItemHeight * (labelRow + 1),
+						qc.labels[qc.labels.length - 1].id,
+						qc.labels[qc.labels.length - 1].id,
+						true
+					)
+					self.drawDChart(qc, { labels: [brushObj] })
 				}
 
-				const down_qubit = Math.max(...qubitsArr) //  down_qubit
-				const up_qubit = Math.min(...qubitsArr) // up_qubit
-				const start_operation = Math.min(...indexArr) // start_operation
-				const end_operation = Math.max(...indexArr) // end_operation
-				const lineCol = end_operation - start_operation + 1
-				const labelRow = down_qubit - up_qubit
-				const brushObj = {
-					start_operation: start_operation,
-					end_operation: end_operation + 1,
-					id: qc.labels.length > 0 ? qc.labels[qc.labels.length - 1].id + 1 : 0,
-					text: `${qc.labels.length + 1}`,
-				}
-				qc.labels.push(brushObj)
-				qc.label_count++
-				// const lineCol = data.labels[i].
-				// const labelRow = obj.down_qubit - obj.up_qubit
-				console.log(qc)
-				self.drawLabel(
-					labelG,
-					self.svgItemWidth * start_operation + self.labelTranslate,
-					self.svgItemHeight * (up_qubit + 1.5),
-					self.svgItemWidth * lineCol,
-					self.svgItemHeight * (labelRow + 1),
-					qc.labels[qc.labels.length - 1].id,
-					qc.labels[qc.labels.length - 1].id,
-					true
-				)
-				self.drawDChart(qc, { labels: [brushObj] })
 				brushG.call(brush_event.clear) // 如果当前有选择才需要清空
 			}
 		}
@@ -1170,7 +1173,7 @@ export default class d3Draw {
 		}
 	}
 	// 绘制input
-	drawDInput(svg, x, y, inWidth, deg, color, isNeedShowData, data, chartDiv) {
+	drawDInput(svg, x, y, inWidth, deg, color, isNeedShowData, data, chartDiv, chartSvgDiv) {
 		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`).classed('d_item', true)
 		parentG.append('rect').attr('width', this.dLength).attr('height', this.dLength).attr('fill', 'none')
 		const childG = parentG.append('g').attr('transform', `translate(3,3)`)
@@ -1190,33 +1193,22 @@ export default class d3Draw {
 			childG.append('path').attr('d', context.toString()).attr('stroke', '#000').attr('stroke-width', 1)
 		}
 		// 浅色块鼠标事件 需要显示图
-	
+
 		if (isNeedShowData) {
 			const self = this
 			data.probability = Math.pow(data.magnitude.toFixed(1), 2)
 			const allKeys = [...Object.keys(data), ...Object.keys(data.var2value)].filter((item) => item !== 'var2value' && item !== 'range')
 			childG.on('mouseover', function (e) {
-				// 误差来自于触发事件的e来自于svg g元素
+				// console.log(scrollLeft)
+				const scrollLeft = chartSvgDiv._groups[0][0].scrollLeft
+				const scrollTop = chartSvgDiv._groups[0][0].scrollTop
 				chartDiv.selectAll('.show_data_div').remove()
 				const showDataDiv = chartDiv
 					.append('div')
 					.attr('class', 'show_data_div')
-					.attr('style', `height:${32 * allKeys.length}px;top:${e.offsetY + 36}px;left:${e.offsetX + 10}px;border:1px solid black`)
-
-				// showDataDiv
-				// 	.append('div')
-				// 	.classed('show_data_div_close', true)
-				// 	.attr('style', 'width:100%;height:8px;line-height:8px;padding:2px;')
-				// 	.append('img')
-				// 	.attr('src', '/icon/delete_icon.svg')
-				// 	.attr('width', 6)
-				// 	.attr('height', 6)
-				// 	.attr('style', 'float:right;cursor:pointer;')
-				// 	.on('click', (e) => {
-				// 		d3.select(e.target.parentNode.parentNode).remove()
-				// 	})
+					.attr('style', `height:${32 * allKeys.length}px;top:${e.offsetY - scrollTop + 36}px;left:${e.offsetX - scrollLeft + 10}px;border:1px solid black`)
 				const showDataSVG = showDataDiv.append('svg').classed('relaed_svg', true).attr('width', '100%').attr('height', '100%')
-
+				
 				self.drawShowData(showDataSVG, data)
 			})
 			childG.on('mouseleave', function (e) {
@@ -1342,7 +1334,7 @@ export default class d3Draw {
 		return parentG
 	}
 	// 绘制浅色块text
-	drawRelaedNum(svg, x, y, data, textX, chartDiv) {
+	drawRelaedNum(svg, x, y, data, textX, chartDiv, chartSvgDiv) {
 		data = data.slice(1, data.length - 1)
 		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`).classed('d_item', true)
 		parentG.append('rect').attr('width', this.dLength).attr('height', 14).attr('fill', 'none')
@@ -1355,12 +1347,16 @@ export default class d3Draw {
 			.classed('svgtext', true)
 			.attr('transform', `translate(${textX}, ${13}) scale(0.6)`)
 			.on('mouseover', function (e) {
-				// 误差来自于触发事件的e来自于svg g元素
+				const scrollLeft = chartSvgDiv._groups[0][0].scrollLeft
+				const scrollTop = chartSvgDiv._groups[0][0].scrollTop
 				chartDiv.selectAll('.relaed_div').remove()
 				const relaedDiv = chartDiv
 					.append('div')
 					.attr('class', 'relaed_div')
-					.attr('style', `top:${e.offsetY + 36}px;left:${e.offsetX + 10}px;height:${self.dLength * data.length + 10}px;width:${self.dLength + 8}px;border:1px solid black`)
+					.attr(
+						'style',
+						`top:${e.offsetY - scrollTop + 36}px;left:${e.offsetX - scrollLeft + 10}px;height:${self.dLength * data.length + 10}px;width:${self.dLength + 8}px;border:1px solid black`
+					)
 				relaedDiv
 					.append('div')
 					.classed('relaed_div_close', true)
@@ -1464,6 +1460,7 @@ export default class d3Draw {
 		return {
 			svg,
 			chartDiv,
+			chartSvgDiv,
 		}
 	}
 	// 保存
@@ -1542,7 +1539,7 @@ export default class d3Draw {
 	}
 	// 绘制sankey图
 	drawSankey(qc, data) {
-		const { svg, chartDiv } = this.drawElement(data.text, data.id, qc)
+		const { svg, chartDiv, chartSvgDiv } = this.drawElement(data.text, data.id, qc)
 		const sankeyData = qc.transferSankey(data.id)
 		const inputStateData = qc.get_input_state(data.id)
 		const outStateData = qc.get_output_state(data.id)
@@ -1595,12 +1592,13 @@ export default class d3Draw {
 						'rgb(137, 214, 220)',
 						true,
 						inputBases[j].related_bases[k],
-						chartDiv
+						chartDiv,
+						chartSvgDiv
 					)
 				}
 			}
 			if (inputBases[j].related_bases.length > 1) {
-				this.drawRelaedNum(drawInputRelaedNumG, 0, this.dLength * j, inputBases[j].related_bases, 0, chartDiv)
+				this.drawRelaedNum(drawInputRelaedNumG, 0, this.dLength * j, inputBases[j].related_bases, 0, chartDiv, chartSvgDiv)
 			}
 		}
 		// 绘制out_state
@@ -1634,12 +1632,13 @@ export default class d3Draw {
 						'rgb(137, 214, 220)',
 						true,
 						outBases[j].related_bases[k],
-						chartDiv
+						chartDiv,
+						chartSvgDiv
 					)
 				}
 			}
 			if (outBases[j].related_bases.length > 1) {
-				this.drawRelaedNum(drawOutRelaedNumG, 0, this.dLength * j, outBases[j].related_bases, 0, chartDiv)
+				this.drawRelaedNum(drawOutRelaedNumG, 0, this.dLength * j, outBases[j].related_bases, 0, chartDiv, chartSvgDiv)
 			}
 		}
 		// 绘制连线
@@ -1684,7 +1683,7 @@ export default class d3Draw {
 
 	// 绘制普通完整表示
 	drawMatrix(qc, data) {
-		const { svg, chartDiv } = this.drawElement(data.text, data.id, qc)
+		const { svg, chartDiv, chartSvgDiv } = this.drawElement(data.text, data.id, qc)
 		const inputStateData = qc.get_input_state(data.id)
 
 		const outStateData = qc.get_output_state(data.id)
@@ -1740,12 +1739,13 @@ export default class d3Draw {
 						'rgb(137, 214, 220)',
 						true,
 						outStateData.bases[j].related_bases[k],
-						chartDiv
+						chartDiv,
+						chartSvgDiv
 					)
 				}
 			}
 			if (outStateData.bases[j].related_bases.length > 1) {
-				this.drawRelaedNum(drawOutRelaedNumG, 0, this.dLength * j, outStateData.bases[j].related_bases, 0, chartDiv)
+				this.drawRelaedNum(drawOutRelaedNumG, 0, this.dLength * j, outStateData.bases[j].related_bases, 0, chartDiv, chartSvgDiv)
 			}
 		}
 		// 绘制input_state
@@ -1778,12 +1778,13 @@ export default class d3Draw {
 							'rgb(137, 214, 220)',
 							true,
 							inputStateData.bases[j].related_bases[k],
-							chartDiv
+							chartDiv,
+							chartSvgDiv
 						)
 					}
 				}
 				if (inputStateData.bases[j].related_bases.length > 1) {
-					this.drawRelaedNum(drawRelaedNumG, this.dLength * j, 0, inputStateData.bases[j].related_bases, 10, chartDiv)
+					this.drawRelaedNum(drawRelaedNumG, this.dLength * j, 0, inputStateData.bases[j].related_bases, 10, chartDiv, chartSvgDiv)
 				}
 			}
 		}

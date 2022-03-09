@@ -14,12 +14,13 @@ const Right = () => {
 				</svg>
 			</div>
 			<div id='right_down_div'>
-				<div className='d_component'>
-					<div className='title'>
-						<span className='title_name'>Evolution</span>
-					</div>
-					<div id='d_draw_div'>
-						{/* <div className='d_chart_div'>
+				<div className='scroll_div'>
+					<div className='d_component'>
+						<div className='title'>
+							<span className='title_name'>Evolution</span>
+						</div>
+						<div id='d_draw_div'>
+							{/* <div className='d_chart_div'>
 							<div className='d_chart_title'>
 								<span className='label_name'>abc</span>
 								<div className='btn_group'>
@@ -30,6 +31,7 @@ const Right = () => {
 							</div>
 							<svg className='d_chart_svg'></svg>
 						</div> */}
+						</div>
 					</div>
 				</div>
 				<div className='c_component'>

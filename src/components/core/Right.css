@@ -21,13 +21,18 @@
 	display: flex;
 	margin-top: 8px;
 }
-#right_down_div .d_component {
+#right_down_div .scroll_div {
 	width: 741px;
 	height: 100%;
 	margin-right: 8px;
 	background: #fff;
 	padding: 10px;
 	overflow: auto;
+}
+#right_down_div .d_component {
+	height: 100%;
+	/* overflow-x: visible; */
+	
 }
 #right_down_div .c_component {
 	width: 566px;
@@ -98,7 +103,7 @@
 	line-height: 32px;
 	padding: 0 5px;
 }
-.chart_svg_div{
+.chart_svg_div {
 	width: 100%;
 	height: calc(100% - 32px);
 	overflow: auto;
@@ -133,16 +138,15 @@
 .label_name {
 	color: rgb(100, 159, 174);
 }
-.relaed_div,.show_data_div {
+.relaed_div,
+.show_data_div {
 	position: absolute;
 	border-radius: 4px;
 	background: #fff;
 	z-index: 99;
 }
-.show_data_div{
+.show_data_div {
 	width: 150px;
 	/* height: 198px; */
 	padding: 10px;
-	
 }
-
