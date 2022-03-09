@@ -1022,13 +1022,13 @@ export default class QCEngine {
         let var_index = this.name2index;
 
         let var_filtered = {};
-        var_filtered['magns'] = [];
-        var_filtered['probs'] = [];
+        var_filtered['magn'] = [];
+        var_filtered['prob'] = [];
 
         for(let i=0; i<Math.pow(2,var_index[target][1]-var_index[target][0]); i++)
         {
-            var_filtered['probs'][i] = 0;
-            var_filtered['magns'][i] = 0;
+            var_filtered['prob'][i] = 0;
+            var_filtered['magn'][i] = 0;
         }
         //console.log(index);
         for(let i=0; i<index.length; i++)
@@ -1038,12 +1038,12 @@ export default class QCEngine {
             let sel = bin.slice(var_index[target][0],var_index[target][1]);
             sel = sel.reverse();
             let dec = binary2int(sel);
-            var_filtered['probs'][dec] += whole['probs'][index[i]];
+            var_filtered['prob'][dec] += whole['prob'][index[i]];
         }
 
         for(let i=0; i<Math.pow(2,var_index[target][1]-var_index[target][0]); i++)
         {
-            var_filtered['magns'][i] = Math.sqrt(var_filtered['probs'][i]);
+            var_filtered['magn'][i] = Math.sqrt(var_filtered['prob'][i]);
         }
 
         return var_filtered;
