@@ -122,6 +122,7 @@ export default class d3Draw {
 	}
 	// c视图restore
 	restore() {
+		this.filter = {}
 		const drawData = { magns: [], phases: [], probs: [] }
 		this.get_wholestate.forEach((item) => {
 			drawData.magns.push(item.magns)
@@ -797,7 +798,8 @@ export default class d3Draw {
 			// 	d3.select(this).attr('stroke', config.hoverColor).attr('stroke-width', 1)
 			// })
 		}
-
+		self.chartBrushFn(g, barWidth, config, index, qc, key, chart)
+		self.charts.push(chart)
 		// 总体绘制
 		chart.render = function () {
 			chart.renderAxis()
@@ -807,9 +809,6 @@ export default class d3Draw {
 		}
 
 		chart.renderChart()
-
-		self.chartBrushFn(g, barWidth, config, index, qc, key, chart)
-		self.charts.push(chart)
 	}
 	// 渲染C视图柱子
 	renderBar(chart, data) {
@@ -1493,11 +1492,7 @@ export default class d3Draw {
 			.on('click', function (e) {
 				showMoreOperation(operationDiv)
 			})
-		btnDiv
-			.append('img')
-			.attr('src', '/icon/more_icon.svg')
-			.attr('width', 15)
-			.attr('height', 15)
+		btnDiv.append('img').attr('src', '/icon/more_icon.svg').attr('width', 15).attr('height', 15)
 
 		operationDiv
 			.append('img')
@@ -1805,7 +1800,6 @@ export default class d3Draw {
 			}
 		}
 		// 绘制input_state
-		console.log(inputStateData)
 		for (let i = 0; i < inputStateData.vars.length; i++) {
 			const textG = svg
 				.append('g')
