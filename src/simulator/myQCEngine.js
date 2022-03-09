@@ -216,7 +216,7 @@ export default class QCEngine {
         })
         this._now_label = label_id
     }
-
+    //  ---------------WARNING: DO NOT USE THIS, USE STARTLABEL & ENDLABEL INSTEAD--------------
     startlabel(labelname)
     {
         const {_now_label, labels, operations} = this
