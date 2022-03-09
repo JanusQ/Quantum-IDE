@@ -1068,9 +1068,9 @@ export default class QCEngine {
 
     _make_state(label_id, status)
     {
-        console.log(this.labels);
-        console.log(label_id);
-        console.log(this.operations);
+        // console.log(this.labels);
+        // console.log(label_id);
+        // console.log(this.operations);
         let ops = [this.labels[label_id]['start_operation'],this.labels[label_id]['end_operation']];
         
         let op_index;
