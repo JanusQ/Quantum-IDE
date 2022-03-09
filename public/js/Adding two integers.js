@@ -11,7 +11,7 @@ var a = qint.new(4, 'a');
 var b = qint.new(2, 'b');
 
 // prepare
-qc.label('prepare');
+qc.startlabel('prepare');
 // debugger
 a.write(1);
 a.hadamard(0x4);
@@ -20,13 +20,13 @@ b.write(1);
 b.hadamard(0x2);
 b.phase(90, 0x2);
 qc.nop();
-qc.label('');
-qc.nop();
 
+qc.nop();
+qc.endlabel('prepare');
 // a += b
-qc.label('a += b');
+qc.startlabel('a += b');
 a.add(b);
-qc.label('');
+qc.endlabel('a += b');
 qc.nop();
 
 // qc.operations.forEach((op, i)=>{

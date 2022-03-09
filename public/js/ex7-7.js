@@ -11,23 +11,26 @@ var n = 4;
 // Prepare a complex sinuisoidal signal
 qc.reset(n);
 var freq = 2;
-qc.label('prep sinusoidal input signal');
+qc.startlabel('prep sinusoidal input signal');
 qc.write(freq);
 var signal = qint.new(n, 'signal');
 signal.invQFT();
+qc.endlabel('prep sinusoidal input signal');
 
 // Move to frequency space with QFT
-qc.label('QFT');
+qc.startlabel('QFT');
 signal.QFT();
+qc.endlabel('QFT');
 
 // Increase the frequency of signal
-qc.label('add one');
+qc.startlabel('add one');
 signal.add(1)
+qc.endlabel('add one');
 
 // Move back from frequency space
-qc.label('invQFT');
+qc.startlabel('invQFT');
 signal.invQFT();
-
+qc.endlabel('invQFT');
 
 
 // // console.log(qc.name2index)

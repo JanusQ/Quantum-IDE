@@ -10,32 +10,40 @@ qc.reset(num_qubits);
 var a = qint.new(6, 'a');
 console.log(a)
 // prepare
-qc.label('write');
+qc.startlabel('write');
 // debugger
 a.write(1);
+qc.endlabel('write')
 
-qc.label('hadamard')
+qc.startlabel('hadamard')
 a.hadamard(0x4);
+qc.endlabel('hadamard')
 
-qc.label('phase')
+qc.startlabel('phase')
 a.phase(45, 0x8);
+qc.endlabel('phase')
 
-qc.label('cnot')
+qc.startlabel('cnot')
 qc.cnot(0x4, 0x2);
+qc.endlabel('cnot')
 
-qc.label('nop')
+qc.startlabel('nop')
 a.nop();
+qc.endlabel('nop')
 
-qc.label('ccphase')  //就是ccphase
+qc.startlabel('ccphase')  //就是ccphase
 a.cphase(0x5, 0x2)
+qc.endlabel('ccphase')
 
-qc.label('swap')
+qc.startlabel('swap')
 qc.swap(0x4, 0x2)
+qc.endlabel('swap')
 
 
-qc.label('self defined')
+qc.startlabel('self defined')
 // 对于所有文档里面没有出现的门，都用self defined gate那个图标，涉及的比特用qc.getQubitsInvolved(operation)获得
 qc.apply('self defined gate', [0,1,2])
+qc.endlabel('self defined')
 
 // qc.operations.forEach((op, i)=>{
 //     const {operation, state_str, result} = op

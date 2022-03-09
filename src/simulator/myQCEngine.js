@@ -743,6 +743,22 @@ export default class QCEngine {
 
     get_wholestate(operation_index)
     {
+        if(operation_index < 0)
+        {
+            let res = {};
+            let len = Math.pow(2, this.qubit_number);
+            res['magns'] = [];
+            res['phases'] = [];
+            res['probs'] = [];
+            for(let i=0; i<len; i++)
+            {
+                res['magns'][i] = 0;
+                res['probs'][i]= 0;
+                res['phases'][i] = 0;
+            }
+            return res;
+        }
+
         let opera = this.operations[operation_index];
         let state = opera['state_after_opertaion'];
         let res = {};
@@ -1052,13 +1068,16 @@ export default class QCEngine {
 
     _make_state(label_id, status)
     {
+        console.log(this.labels);
+        console.log(label_id);
+        console.log(this.operations);
         let ops = [this.labels[label_id]['start_operation'],this.labels[label_id]['end_operation']];
         
         let op_index;
         if(status == 'start')
-            op_index = ops[0];
+            op_index = ops[0] - 1;
         else if (status == 'end')
-            op_index = ops[1];
+            op_index = ops[1] - 1;
 
         let whole = this.get_wholestate(op_index);
         
