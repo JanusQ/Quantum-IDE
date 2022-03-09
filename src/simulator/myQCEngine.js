@@ -1212,7 +1212,10 @@ export default class QCEngine {
             }
             for(let k=0; k<Math.pow(2,this.qubit_number-qubit_num); k++)
             {
-                input_state['bases'][i]['related_bases'][k]['ratio'] = input_state['bases'][i]['related_bases'][k]['magnitude'] / input_state['bases'][i]['max_base_magn']; 
+                if(input_state['bases'][i]['max_base_magn'] == 0)
+                    input_state['bases'][i]['related_bases'][k]['ratio'] = 0;
+                else
+                    input_state['bases'][i]['related_bases'][k]['ratio'] = input_state['bases'][i]['related_bases'][k]['magnitude'] / input_state['bases'][i]['max_base_magn']; 
             }
 
             //deleted all zero related bases
@@ -1233,10 +1236,11 @@ export default class QCEngine {
 
         for(let i=0; i<input_state['bases'].length; i++)
         {
-            input_state['bases'][i]['ratio'] = input_state['bases'][i]['magnitude'] / input_state['max_magn']; 
+            if(input_state['max_magn'] == 0)
+                input_state['bases'][i]['ratio'] = 0;
+            else
+                input_state['bases'][i]['ratio'] = input_state['bases'][i]['magnitude'] / input_state['max_magn']; 
         }
-
-
 
         return input_state;
 
@@ -1388,7 +1392,11 @@ export default class QCEngine {
             for(let j=0; j< deep_length; j++)
             {
                 let polar = getExp(all_gate.data[i][j]);
-                gate_mats[i][j]['ratio'] = polar['r'] / max;
+                if(max == 0)
+                    gate_mats[i][j]['ratio'] = 0;
+                else
+                    gate_mats[i][j]['ratio'] = polar['r'] / max;
+
             }
         }
 
