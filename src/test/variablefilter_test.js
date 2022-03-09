@@ -15,32 +15,18 @@ var {qint} = qc
 
 // To run this online, go to http://oreilly-qc.github.io?p=7-7
 
-var num_qubits = 6;
-qc.reset(num_qubits);
-var a = qint.new(4, 'a');
+qc.reset(6);
+
+var a = qint.new(2, 'a');
 var b = qint.new(2, 'b');
+var c = qint.new(2, 'c');
 
-// prepare
-qc.label('prepare');
-// debugger
-a.write(1);
-a.hadamard(0x4);
-a.phase(45, 0x4);
-b.write(1);
-b.hadamard(0x2);
-b.phase(90, 0x2);
-qc.nop();
-qc.label('');
-qc.nop();
-
-// a += b
-qc.label('a += b');
-a.add(b);
-qc.label('');
-qc.nop();
+a.had()
+qc.cnot(0x3, 0x4)
+qc.cnot(0x3, 0x8)
 
 
 console.log("hello 2022");
-console.log(qc.variable_filter(4,'a',{'a':[0],'b':[0]}));
+console.log(qc._variable_filter(1,'a',{'a':[0,1]}));
 //console.log(math.multiply(complex(1,2),0.5));
 console.log("end 2002");

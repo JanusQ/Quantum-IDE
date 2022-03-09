@@ -1032,7 +1032,6 @@ export default class QCEngine {
 
     _variable_filter(operation_index, target, filter)
     {
-        
         let index = this.get_index(operation_index, filter);
         let whole = this.get_wholestate(operation_index);
         let var_index = this.name2index;
@@ -1046,7 +1045,7 @@ export default class QCEngine {
             var_filtered['prob'][i] = 0;
             var_filtered['magn'][i] = 0;
         }
-        //console.log(index);
+        // console.log(index);
         for(let i=0; i<index.length; i++)
         {
             let bin = binary(index[i],this.qubit_number);
@@ -1054,7 +1053,8 @@ export default class QCEngine {
             let sel = bin.slice(var_index[target][0],var_index[target][1]);
             sel = sel.reverse();
             let dec = binary2int(sel);
-            var_filtered['prob'][dec] += whole['prob'][index[i]];
+            console.log(dec);
+            var_filtered['prob'][dec] += whole['probs'][index[i]];
         }
 
         for(let i=0; i<Math.pow(2,var_index[target][1]-var_index[target][0]); i++)
