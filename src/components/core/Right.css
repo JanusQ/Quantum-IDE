@@ -27,12 +27,11 @@
 	margin-right: 8px;
 	background: #fff;
 	padding: 10px;
-	overflow: auto;
+	/* overflow-y: auto; */
 }
 #right_down_div .d_component {
 	height: 100%;
-	/* overflow-x: visible; */
-	
+	overflow-x: visible;
 }
 #right_down_div .c_component {
 	width: 566px;
@@ -44,6 +43,23 @@
 #right_down_div .d_component .title {
 	height: 32px;
 	line-height: 32px;
+	
+}
+#right_down_div .d_component .title .title_name{
+	float: left;
+}
+#right_down_div .d_component .title .pic_tip {
+	margin-left: 10px;
+	height: 32px;
+	line-height: 32px;
+	float: left;
+	vertical-align: middle;
+}
+#right_down_div .d_component .title .pic_tip img {
+	vertical-align: middle;
+}
+#right_down_div .d_component .title .pic_tip .tip_text{
+	margin-left: 5px;
 }
 #right_down_div .c_component .c_up_draw {
 	width: 100%;

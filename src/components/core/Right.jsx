@@ -18,6 +18,22 @@ const Right = () => {
 					<div className='d_component'>
 						<div className='title'>
 							<span className='title_name'>Evolution</span>
+							<div className='pic_tip'>
+								<img src='/img/legends/subbase.png' />
+								<span className='tip_text'>subbase</span>
+							</div>
+							<div className='pic_tip'>
+								<img src='/img/legends/base.png' />
+								<span className='tip_text'>base</span>
+							</div>
+							<div className='pic_tip'>
+								<img src='/img/legends/transformation.png' />
+								<span className='tip_text'>transformation</span>
+							</div>
+							<div className='pic_tip'>
+								<img src='/img/legends/gray_circle.png' />
+								<span className='tip_text'>idle transformation</span>
+							</div>
 						</div>
 						<div id='d_draw_div'>
 							{/* <div className='d_chart_div'>
@@ -42,9 +58,7 @@ const Right = () => {
 						</Button>
 					</div>
 					<div className='c_up_draw'>
-						<svg id='chart_svg'>
-							
-						</svg>
+						<svg id='chart_svg'></svg>
 					</div>
 					<div className='title'>
 						<span className='title_name'>Whole State</span>

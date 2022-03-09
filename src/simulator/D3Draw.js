@@ -67,7 +67,6 @@ export default class d3Draw {
 		for (let i = 0; i < data.labels.length; i++) {
 			if (data.labels[i].text && data.labels[i].end_operation !== undefined) {
 				const obj = data.getLabelUpDown(data.labels[i].id)
-				console.log(obj)
 				if (obj.down_qubit !== Infinity && obj.up_qubit !== Infinity) {
 					const lineCol = data.labels[i].end_operation - data.labels[i].start_operation
 					const labelRow = obj.down_qubit - obj.up_qubit
@@ -370,7 +369,6 @@ export default class d3Draw {
 
 		let brushed_start = (event) => {
 			const { selection, type } = event
-			// console.log(event)
 			if (selection) {
 				// const [[x0, y0], [x1, y1]] = selection;
 				const [x0, x1] = selection
@@ -436,7 +434,6 @@ export default class d3Draw {
 					qc.label_count++
 					// const lineCol = data.labels[i].
 					// const labelRow = obj.down_qubit - obj.up_qubit
-					console.log(qc)
 					self.drawLabel(
 						labelG,
 						self.svgItemWidth * start_operation + self.labelTranslate,
@@ -1021,7 +1018,7 @@ export default class d3Draw {
 		function customYAxis(g) {
 			const yAxis = d3
 				.axisLeft(chart.scaleY)
-				.tickValues([0, d3.max(data, (d) => d.magns)])
+				.tickValues([0, d3.max(data, (d) => d.magns.toFixed(2))])
 				.tickFormat((d) => `${d}`)
 			g.call(yAxis)
 			g.select('.domain').remove()
@@ -1295,7 +1292,7 @@ export default class d3Draw {
 				.attr('height', 20)
 				.attr('x', 20)
 				.attr('y', 6)
-				.attr('fill', 'blue')
+				.attr('fill', 'rgb(137, 214, 220)')
 
 			childG
 				.append('text')
@@ -1323,23 +1320,34 @@ export default class d3Draw {
 		//   R 10
 		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`).classed('d_item', true)
 		const borderRect = parentG.append('rect').attr('width', this.dLength).attr('height', this.dLength).attr('fill', 'none')
-		if (isNeedBorder) {
-			borderRect.attr('stroke', 'rgb(142, 132, 112)').attr('stroke-width', 1)
-		}
 		const childG = parentG.append('g')
 		const circleR = this.dLength / 2
-		childG
-			.append('circle')
-			.attr('cx', circleR)
-			.attr('cy', circleR)
-			.attr('r', circleR - 2)
-			.attr('stroke-width', 1)
-			.attr('stroke', color)
-			.attr('fill', 'none')
-			.classed('d_item', true)
+		if (isNeedBorder) {
+			borderRect.attr('stroke', 'rgb(142, 132, 112)').attr('stroke-width', 1)
+			if (arcR) {
+				childG
+					.append('circle')
+					.attr('cx', circleR)
+					.attr('cy', circleR)
+					.attr('r', circleR - 2)
+					.attr('stroke-width', 1)
+					.attr('stroke', color)
+					.attr('fill', 'none')
+					.classed('d_item', true)
+			}
+		} else {
+			childG
+				.append('circle')
+				.attr('cx', circleR)
+				.attr('cy', circleR)
+				.attr('r', circleR - 2)
+				.attr('stroke-width', 1)
+				.attr('stroke', color)
+				.attr('fill', 'none')
+				.classed('d_item', true)
+		}
 		if (arcDeg) {
 			arcR = (arcR * this.dLength) / 2 - 2
-
 			const data = { startAngle: 0, endAngle: (Math.PI * arcDeg) / 180 }
 			const acrPath = d3.arc().innerRadius(0).outerRadius(arcR)
 			childG.append('path').attr('d', acrPath(data)).attr('fill', color).attr('transform', 'translate(13,13)')
@@ -1422,7 +1430,7 @@ export default class d3Draw {
 					})
 				const relaedSVG = relaedDiv.append('svg').classed('relaed_svg', true).attr('width', '100%').attr('height', 'calc(100% - 8px)')
 				for (let i = 0; i < data.length; i++) {
-					self.drawDInput(relaedSVG, 3, self.dLength * i, data[i].magnitude, data[i].phases, 'rgb(137, 214, 220)', true, data[i], chartDiv, e.offsetY + 36, e.offsetX + 10)
+					self.drawDInput(relaedSVG, 3, self.dLength * i, data[i].ratio, data[i].phases, 'rgb(137, 214, 220)', true, data[i], chartDiv, e.offsetY + 36, e.offsetX + 10)
 				}
 			})
 	}
@@ -1486,14 +1494,17 @@ export default class d3Draw {
 		const operationDiv = btnDiv.append('div').classed('operation_div', true).attr('style', 'display:none;')
 		btnDiv
 			.append('img')
+			.attr('src', '/img/legends/yellowCircle.png')
+			.attr('width', 15)
+			.attr('height', 15)
+		btnDiv
+			.append('img')
 			.attr('src', '/icon/more_icon.svg')
 			.attr('width', 15)
 			.attr('height', 15)
 			.on('click', function (e) {
 				showMoreOperation(operationDiv)
 			})
-		btnDiv.append('img').attr('src', '/icon/more_icon.svg').attr('width', 15).attr('height', 15)
-
 		operationDiv
 			.append('img')
 			.attr('src', '/icon/save_icon.svg')
@@ -1594,6 +1605,7 @@ export default class d3Draw {
 		const sankeyData = qc.transferSankey(data.id)
 		const inputStateData = qc.get_input_state(data.id)
 		const outStateData = qc.get_output_state(data.id)
+
 		const inputBases = inputStateData.bases
 		const outBases = outStateData.bases
 		// 计算圆圈g X轴向右移动的距离
@@ -1629,7 +1641,7 @@ export default class d3Draw {
 		const inputRelatedG = svg.append('g').classed('input_related_g', true).attr('transform', `translate(14,${this.dLength})`)
 		const drawInputRelaedNumG = svg.append('g').classed('input_related_num', true).attr('transform', `translate(0,${this.dLength})`)
 		for (let j = 0; j < inputBases.length; j++) {
-			this.drawDInput(inputG, 0, this.dLength * j, inputBases[j].magnitude, inputBases[j].phases, 'rgb(80, 128, 132)')
+			this.drawDInput(inputG, 0, this.dLength * j, inputBases[j].ratio, inputBases[j].phases, 'rgb(80, 128, 132)')
 			const number = 0
 			for (let k = 0; k < inputBases[j].related_bases.length; k++) {
 				if (k === 0) {
@@ -1638,7 +1650,7 @@ export default class d3Draw {
 						inputRelatedG,
 						0,
 						this.dLength * j,
-						inputBases[j].related_bases[k].magnitude,
+						inputBases[j].related_bases[k].ratio,
 						inputBases[j].related_bases[k].phases,
 						'rgb(137, 214, 220)',
 						true,
@@ -1670,7 +1682,7 @@ export default class d3Draw {
 			.classed('input_related_num', true)
 			.attr('transform', `translate(${outRelatedGX + this.dLength},${this.dLength})`)
 		for (let j = 0; j < outBases.length; j++) {
-			this.drawDInput(outG, 0, this.dLength * j, outBases[j].magnitude, outBases[j].phases, 'rgb(80, 128, 132)')
+			this.drawDInput(outG, 0, this.dLength * j, outBases[j].ratio, outBases[j].phases, 'rgb(80, 128, 132)')
 			for (let k = 0; k < outBases[j].related_bases.length; k++) {
 				if (k === 0) {
 					// 只绘一个 然后显示几个 开发时候是全传入了
@@ -1678,7 +1690,7 @@ export default class d3Draw {
 						outRelatedG,
 						0,
 						this.dLength * j,
-						outBases[j].related_bases[k].magnitude,
+						outBases[j].related_bases[k].ratio,
 						outBases[j].related_bases[k].phases,
 						'rgb(137, 214, 220)',
 						true,
@@ -1736,7 +1748,6 @@ export default class d3Draw {
 	drawMatrix(qc, data) {
 		const { svg, chartDiv, chartSvgDiv } = this.drawElement(data.text, data.id, qc)
 		const inputStateData = qc.get_input_state(data.id)
-
 		const outStateData = qc.get_output_state(data.id)
 		// 计算矩阵g Y轴向下移动的距离
 		const circleGtransformY = (inputStateData.vars.length + 2) * this.dLength + 14
@@ -1777,7 +1788,7 @@ export default class d3Draw {
 			.classed('input_related_num', true)
 			.attr('transform', `translate(${outRelatedGX + this.dLength},${circleGtransformY})`)
 		for (let j = 0; j < outStateData.bases.length; j++) {
-			this.drawDInput(outG, 0, this.dLength * j, outStateData.bases[j].magnitude, outStateData.bases[j].phases, 'rgb(80, 128, 132)')
+			this.drawDInput(outG, 0, this.dLength * j, outStateData.bases[j].ratio, outStateData.bases[j].phases, 'rgb(80, 128, 132)')
 			for (let k = 0; k < outStateData.bases[j].related_bases.length; k++) {
 				if (k === 0) {
 					// 只绘一个 然后显示几个 开发时候是全传入了
@@ -1785,7 +1796,7 @@ export default class d3Draw {
 						outRelatedG,
 						0,
 						this.dLength * j,
-						outStateData.bases[j].related_bases[k].magnitude,
+						outStateData.bases[j].related_bases[k].ratio,
 						outStateData.bases[j].related_bases[k].phases,
 						'rgb(137, 214, 220)',
 						true,
@@ -1814,7 +1825,7 @@ export default class d3Draw {
 		const inputRelatedG = svg.append('g').classed('input_related_g', true).attr('transform', `translate(0,14)`)
 		const drawRelaedNumG = svg.append('g').classed('input_related_num', true).attr('transform', `translate(0,0)`)
 		for (let j = 0; j < inputStateData.bases.length; j++) {
-			this.drawDInput(inputG, this.dLength * j, 0, inputStateData.bases[j].magnitude, inputStateData.bases[j].phases, 'rgb(80, 128, 132)')
+			this.drawDInput(inputG, this.dLength * j, 0, inputStateData.bases[j].ratio, inputStateData.bases[j].phases, 'rgb(80, 128, 132)')
 			// 绘制浅色块
 			if (inputStateData.bases[j].related_bases.length) {
 				for (let k = 0; k < inputStateData.bases[j].related_bases.length; k++) {
@@ -1824,7 +1835,7 @@ export default class d3Draw {
 							inputRelatedG,
 							this.dLength * j,
 							0,
-							inputStateData.bases[j].related_bases[k].magnitude,
+							inputStateData.bases[j].related_bases[k].ratio,
 							inputStateData.bases[j].related_bases[k].phases,
 							'rgb(137, 214, 220)',
 							true,
