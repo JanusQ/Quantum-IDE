@@ -1431,7 +1431,7 @@ export default class QCEngine {
         {
             for(let j=0; j<matrix.length; j++)
             {
-                if(Math.abs(matrix[i][j]['magnitude'] - 0) < precision)
+                if(Math.abs(matrix[i][j]['magnitude'] - 0) > precision)
                 {
                     count++;
                 }
