@@ -8,11 +8,12 @@ export default class Chart {
 		this._scaleX = null
 		this._scaleY = null
 		this._scaleY2 = null
-		this._colors = ['rgb(80, 128, 132)','rgb(220, 216, 216)']
+		this._colors = ['rgb(80, 128, 132)', 'rgb(220, 216, 216)']
 		this._box = null
 		this._svg = null
 		this._body = null
 		this._padding = { top: 20, left: 0, right: 170, bottom: 120 }
+		this._key = 'a'
 	}
 
 	width(w) {
@@ -38,7 +39,11 @@ export default class Chart {
 		this._data = d
 		return this
 	}
-
+	key(key) {
+		if (arguments.length === 0) return this._key
+		this._key = key
+		return this
+	}
 	scaleX(x) {
 		if (arguments.length === 0) return this._scaleX
 		this._scaleX = x
@@ -50,7 +55,7 @@ export default class Chart {
 		this._scaleY = y
 		return this
 	}
-	scaleY2(y){
+	scaleY2(y) {
 		if (arguments.length === 0) return this._scaleY2
 		this._scaleY2 = y
 		return this
@@ -119,7 +124,7 @@ export default class Chart {
 				.append('g')
 				.attr('class', 'body')
 				.attr('transform', 'translate(' + this.bodyX() + ',' + this.bodyY() + ')')
-				// .attr('clip-path', 'url(#clip)')
+			// .attr('clip-path', 'url(#clip)')
 		}
 
 		this.render()

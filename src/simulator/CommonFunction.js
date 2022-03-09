@@ -24,9 +24,6 @@ function showInDebuggerArea(circuit) {
 	container.innerHTML = svg
 }
 function exportSVG(qc) {
-	const options = {
-		data: qc,
-	}
     d3.clear()
 	d3.exportD3SVG(qc)
 }

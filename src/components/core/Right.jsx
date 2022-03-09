@@ -43,7 +43,7 @@ const Right = () => {
 					</div>
 					<div className='c_up_draw'>
 						<svg id='chart_svg'>
-							<g id='chart_up_brush' />
+							
 						</svg>
 					</div>
 					<div className='title'>
