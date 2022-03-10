@@ -1280,6 +1280,8 @@ export default class QCEngine {
         {
             gate = tensor(gate, identity(2));
         }
+        // console.log("here",gate);
+        // console.log("new_ar",new_ar);
         gate = permute(gate, new_ar);
         
         return gate;
@@ -1352,7 +1354,7 @@ export default class QCEngine {
         deep_length = Math.pow(2,qubit_num);
         
         let all_gate = identity(deep_length);
-        
+
         for(let i=ops[0]; i<ops[1]; i++)
         {
             let opera = this.operations[i];
@@ -1364,19 +1366,20 @@ export default class QCEngine {
                 continue;
 
             let gate_mat = new QObject(gate.length, gate.length, gate);
-            //console.log(gate_mat);
+            // console.log(gate_mat);
 
             let qubit_index = this.getQubitsInvolved(opera);
             let new_index = range(0, qubit_num);
             for(let j=0; j<qubit_index.length; j++)
             {
                 let new_ind = this._get_new_index(new_var_index, qubit_index[j]);
-                new_index[j] = new_ind;
-                new_index[new_ind] = j;
+                let indtmp = new_index[j];
+                new_index[j] = new_index[new_ind];
+                new_index[new_ind] = indtmp;
             }
             
             column_res = this._tensor_permute(gate_mat, new_index, qubit_num);
-
+            //console.log("column_res",column_res);
             all_gate =dot(all_gate, column_res);
             
         }
@@ -1419,7 +1422,7 @@ export default class QCEngine {
             }
         }
 
-        console.log("gate_mats", gate_mats);
+        // console.log("gate_mats", gate_mats);
         
 
         //fill fake data
