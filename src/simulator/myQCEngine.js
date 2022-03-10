@@ -700,7 +700,7 @@ export default class QCEngine {
 
         let qubits = range(0, this.qubit_number, true); 
         //console.log("qubits",qubits);
-        if(newstate.length != Math.pow(2,this.qubit_number))
+        if(state_vector.length != Math.pow(2,this.qubit_number))
         {
             console.error("wrong new state");
             debugger;
