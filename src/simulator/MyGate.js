@@ -136,6 +136,9 @@ function getRawGateState(options)
         newstate[i]=complex(new_state[i]['re'],new_state[i]['im']);
     }
 
+    // console.log("oldstate",oldstate);
+    // console.log("newstate",newstate);
+
     for(let i=0; i<state_num; i++)
     {
         for(let j=0; j<state_num; j++)
@@ -151,7 +154,7 @@ function getRawGateState(options)
             }
         }
     }
-
+    //console.log(matrix.data);
     return matrix.data;
 }
 
