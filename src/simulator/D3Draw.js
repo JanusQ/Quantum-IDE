@@ -54,6 +54,7 @@ export default class d3Draw {
 		// 移除已经添加过的
 		drawG.selectAll('*').remove()
 		labelG.selectAll('*').remove()
+
 		this.qc = data
 		const { operations, qubit_number } = data
 		// 列数
@@ -61,7 +62,7 @@ export default class d3Draw {
 		const col = qubit_number
 		// 设置SVG宽高 高度整体下移了一行
 		svg.attr('width', (row + this.scaleNum) * this.svgItemWidth)
-		svg.attr('height', (col + 6) * this.svgItemHeight + 40)
+		svg.attr('height', (col + 4) * this.svgItemHeight + 40)
 
 		// 加Label,先加载label label在最底层
 		for (let i = 0; i < data.labels.length; i++) {
@@ -109,7 +110,7 @@ export default class d3Draw {
 		// 绘制d模块
 		this.drawDChart(data)
 		// 加入折线图
-		// this.drawLineChart(svg, data, row)
+		this.drawLineChart(svg, data, row)
 	}
 	// 清空缓存的值
 	clear() {
@@ -426,7 +427,7 @@ export default class d3Draw {
 					const end_operation = Math.max(...indexArr) // end_operation
 					const lineCol = end_operation - start_operation + 1
 					const labelRow = down_qubit - up_qubit
-					
+
 					const labelObj = qc.createlabel(start_operation, end_operation)
 					// console.log(qc)
 					this.drawLabel(
@@ -571,8 +572,10 @@ export default class d3Draw {
 	}
 	// 绘制折线图
 	drawLineChart(svg, qc, row) {
-		const transformY = qc.qubit_number * (this.svgItemHeight + 4)
-		const lineChartG = svg.append('g').classed('line_chart', true).attr('transfrom', `translate(${this.firstX},${transformY})`)
+		const transformY = (qc.qubit_number + 1) * this.svgItemHeight
+		const lineChartG = svg.select('#lineChart_graph')
+		lineChartG.selectAll('*').remove()
+
 		const data = []
 		for (let i = 0; i < qc.operations.length; i++) {
 			const entropy = qc.get_entropy(qc.operations[i].index)
@@ -588,19 +591,37 @@ export default class d3Draw {
 		const scaleY = d3
 			.scaleLinear()
 			.domain([d3.min(data, (d) => d.entropy), d3.max(data, (d) => d.entropy)])
-			.range([transformY + this.svgItemHeight * 2, transformY])
+			.range([transformY + this.svgItemHeight * 4, transformY + this.svgItemHeight * 3])
 		// 渲染线条
-		// const line = d3
-		// 	.line()
-		// 	.defined((i) => data[i])
-		// 	.curve(d3.curveLinear)
-		// 	.x((i) => scaleX(X[i]))
-		// 	.y((i) => scaleY(Y[i]))
-		// const renderLines = () => {
-		// 	let lines = lineChartG.selectAll('.line').data(data)
-		// 	lines.enter().append('path').classed('line', true).merge(lines).attr('fill', 'none').attr('stroke', 'red').attr('stroke-width', 1).transition().duration(10).attrTween('d', lineTween)
-		// 	lines.exit().remove()
-		// }
+		const X = d3.map(data, (d) => d.index)
+		const Y = d3.map(data, (d) => d.entropy)
+		const I = d3.range(X.length)
+		lineChartG
+			.append('rect')
+			.attr('width', (row + 3) * this.svgItemWidth - this.firstX)
+			.attr('height', this.svgItemHeight)
+			.attr('fill', 'rgba(185, 215, 195,0.1)')
+			.attr('x', this.firstX)
+			.attr('y', transformY + this.svgItemHeight * 3)
+		lineChartG
+			.append('path')
+			.attr(
+				'd',
+				'M702.3 364c-41.2 0-79.4 18.8-113.1 41.9-26.3 18.1-52.3 40.6-77.2 63.1-24.9-22.6-50.9-45.1-77.2-63.1-33.7-23.2-71.9-41.9-113.1-41.9-81 0-148 67.1-148 148s67.1 148 148 148c41.2 0 79.4-18.8 113.1-41.9 26.3-18.1 52.3-40.6 77.2-63.1 24.9 22.6 50.9 45.1 77.2 63.1 33.7 23.2 71.9 41.9 113.1 41.9 81 0 148-67.1 148-148s-67-148-148-148zM398.9 565.8c-29.7 20.4-55 30.8-77.2 30.8-45.9 0-84.6-38.7-84.6-84.6s38.7-84.6 84.6-84.6c22.2 0 47.4 10.3 77.2 30.8 21.5 14.8 43.3 33.4 66 53.8-22.7 20.4-44.5 39-66 53.8z m303.4 30.8c-22.2 0-47.4-10.3-77.2-30.8-21.5-14.8-43.3-33.4-66-53.8 22.7-20.4 44.5-39 66-53.8 29.7-20.4 55-30.8 77.2-30.8 45.9 0 84.6 38.7 84.6 84.6s-38.7 84.6-84.6 84.6z'
+			)
+			.attr('fill','rgb(84, 84, 84)')
+			.attr('transform',`translate(${this.firstX - this.svgItemWidth - 5},${transformY + this.svgItemHeight * 3}) scale(0.03)`)
+		// .attr('x',this.firstX - this.svgItemWidth)
+		// .attr('y',transformY + this.svgItemHeight * 3 + this.svgItemHeight / 2)
+		// .attr('style','font-size:18px;')
+		// .text('∞')
+		const line = d3
+			.line()
+			.defined((i) => data[i])
+			.curve(d3.curveLinear)
+			.x((i) => scaleX(X[i]))
+			.y((i) => scaleY(Y[i]))
+		lineChartG.append('path').attr('fill', 'none').attr('stroke', 'rgb(4, 136, 192)').attr('stroke-width', 1).attr('d', line(I))
 	}
 	// 绘制C的连线
 	drawCLine(svg, lineData, lineXArr) {

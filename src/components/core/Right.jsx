@@ -10,6 +10,7 @@ const Right = () => {
 					<g id='circuit_label' />
 					<g id='circuit_brush' />
 					<g id='circuit_graph' />
+					<g id='lineChart_graph' />
 					{/* 下面的在前面 */}
 				</svg>
 			</div>
