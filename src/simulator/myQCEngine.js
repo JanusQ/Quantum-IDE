@@ -1460,7 +1460,6 @@ export default class QCEngine {
                 }
             }
         }
-        return false;
         if(count > threshold * matrix.length)
             return false;
         else
