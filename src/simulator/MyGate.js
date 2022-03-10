@@ -94,8 +94,9 @@ function getRawGateCCNOT(options)
     }
     
     let tmp = p[index];
-    p[index]=p[p.length - 1];
-    p[p.length - 1] = tmp;
+    p[index]=p[0];
+    p[0] = tmp;
+    // console.log(p);
     // console.log("matrix", matrix.data);
     let matrix_p = permute(matrix,p);
     // console.log("matrix_p",matrix_p.data);
