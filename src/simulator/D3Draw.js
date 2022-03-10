@@ -428,7 +428,7 @@ export default class d3Draw {
 					const lineCol = end_operation - start_operation + 1
 					const labelRow = down_qubit - up_qubit
 
-					const labelObj = qc.createlabel(start_operation, end_operation)
+					const labelObj = qc.createlabel(start_operation, end_operation + 1)
 					// console.log(qc)
 					this.drawLabel(
 						labelG,

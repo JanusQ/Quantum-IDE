@@ -1313,7 +1313,7 @@ export default class QCEngine {
         //console.log(ops);
         let vars = [];
         let tmp_array = [];
-        
+        //console.log(ops);
         for(let i=ops[0]; i<ops[1]; i++)
         {
             let opera = this.operations[i];
@@ -1334,7 +1334,7 @@ export default class QCEngine {
             if (tmp_array.includes(key))
                 vars.push(key);
         }
-        
+
         let deep_length = 1;
         let qubit_num = 0;
         let new_var_index = {};
@@ -1419,7 +1419,7 @@ export default class QCEngine {
             }
         }
 
-        //console.log("gate_mats", gate_mats);
+        console.log("gate_mats", gate_mats);
         
 
         //fill fake data
@@ -1457,6 +1457,7 @@ export default class QCEngine {
                 }
             }
         }
+        return false;
         if(count > threshold * matrix.length)
             return false;
         else
