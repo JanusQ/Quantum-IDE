@@ -7,7 +7,11 @@ import axios from 'axios'
 import React, { useState, useRef } from 'react'
 import { exportSVG } from './simulator/CommonFunction'
 import QCEngine from './simulator/MyQCEngine'
-import { range } from 'd3'
+import {
+    cos, sin, round, pi, complex, create, all, max, sparse,
+} from 'mathjs'
+import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, alt_tensor, calibrate, getExp, linear_entropy, binary2int, average, spec} from './simulator/CommonFunction'
+
 
 // import QCEngine from './simulator/MyQCEngine'
 // import './test/meausre'
@@ -64,6 +68,10 @@ function App() {
 		let noBug = false
 		let qc = new QCEngine()
 		const { qint } = qc
+		// TODO: 这些也要写在文档里面
+		const {cos, sin, round, pi, complex, create, all, max, sparse} =  require('mathjs')
+		const { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, alt_tensor, calibrate, getExp, linear_entropy, binary2int, average, spec} = require('./simulator/CommonFunction')
+
 		try {
 			eval(editorValue)
 			// showInDebuggerArea(qc.circuit)
@@ -80,6 +88,7 @@ function App() {
 		} catch (error) {
 			consoleContent(false, error.message)
 			noBug = false
+			console.error(error)
 		}
 		if (noBug) {
 			exportSVG(qc)

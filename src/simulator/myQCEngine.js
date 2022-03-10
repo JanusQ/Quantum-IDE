@@ -215,7 +215,9 @@ export default class QCEngine {
             id: label_id,
         })
         this._now_label = label_id
+        console.warn('label() will be abandoned in the future' )
     }
+
     //  ---------------WARNING: DO NOT USE THIS, USE STARTLABEL & ENDLABEL INSTEAD--------------
     startlabel(labelname)
     {
@@ -279,6 +281,9 @@ export default class QCEngine {
         })
     }
 
+    hadamard(binary_qubits = undefined){
+        this.had(binary_qubits)
+    }
 
     // measure
     read(binary_qubits = undefined) {
@@ -314,8 +319,8 @@ export default class QCEngine {
 
     // phase门
     phase(rotation, binary_qubits = undefined) {
-        const { operations, circuit, now_column } = this
-        const qubits = binary2qubit1(binary_qubits)
+        const { circuit, operations, now_column } = this
+        const qubits = this.parseBinaryQubits(binary_qubits)
 
         qubits.forEach(qubit=>{
             circuit.addGate("rz",  now_column, qubit, {
@@ -334,8 +339,8 @@ export default class QCEngine {
     }
 
     not(binary_qubits = undefined) {
-        const { operations, circuit, now_column } = this
-        const qubits = binary2qubit1(binary_qubits)
+        const { circuit, operations, now_column } = this
+        const qubits = this.parseBinaryQubits(binary_qubits)
         qubits.forEach(qubit=>{
             circuit.addGate("x",  now_column, qubit);
         })
@@ -345,6 +350,7 @@ export default class QCEngine {
             'operation': 'not',
             'columns': this.nextColumn()
         })
+        // debugger
     }
 
     print(){
@@ -415,6 +421,11 @@ export default class QCEngine {
         let controls = this.parseBinaryQubits(binary_control);
         let target = this.parseBinaryQubits(binary_target);
         let qubits = unique([...controls, ...target]);
+
+        if(controls.length == 0){
+            this.not(binary_target)
+            return
+        }
 
         if(qubits.length === 0){
             console.error('ccnot\'s qubits number is zero')
@@ -667,30 +678,37 @@ export default class QCEngine {
             down_qubit: down_varable? name2index[down_varable][1] : down_qubit
         }
     }
-
-    setState(newstate)//set initial state for test, invocate it before adding other gates
+    // TODO: 统一驼峰还是下划线命名
+    setState(state_vector)//set initial state for test, invocate it before adding other gates
     {
-        const { circuit, now_column } = this;
-        let opera = this.operations[0];
-        let sao = opera['state_after_opertaion'];
-        let oldstate= [];
-        
-        for(let i=0; i<sao.length; i++)
-        {
-            oldstate[i] = sao[i]['amplitude'];
-        }
+        const { circuit, now_column, qubit_number } = this;
 
-        let qubits = range(0, this.qubit_number); 
+        let opera = this.operations[0];
+        let old_state= [];
+        if(opera){
+            let sao = opera['state_after_opertaion'];
+            for(let i=0; i<sao.length; i++)
+            {
+                old_state[i] = sao[i]['amplitude'];
+            }
+        }else{
+            // TODO用不了现在
+            old_state = range(0, Math.pow(2, qubit_number)).map(base=> complex(0, 0))
+            old_state[0] = complex(1, 0)
+        }
         
-        if(newstate.length != Math.pow(2,this.qubit_number))
+
+        let qubits = range(0, qubit_number); 
+        
+        if(state_vector.length != Math.pow(2, qubit_number))
         {
             console.error("wrong new state");
             debugger;
         }
         circuit.addGate('StateGate', now_column, qubits, {
             params: {
-                old_state: oldstate,
-                new_state: newstate,
+                old_state: old_state,
+                new_state: state_vector,
             }
         });
 
@@ -1424,6 +1442,7 @@ export default class QCEngine {
     
     isSparse(label_id, threshold = 1.3, precision = 1e-5)
     {
+        // return false;
         // console.log("label_id", label_id);
         // console.log(this.labels);
         let matrix = this.get_evo_matrix(label_id);
@@ -1499,7 +1518,7 @@ class QInt {
         this.qc = qc  //上一级的必须是一个qcengine
         this.name = name
         this.index = index  //起始到结束的qubit的序号，左闭右开
-        this.binary_qubits = qubit12binary(range(...index))
+        this.binary_qubits = qubit12binary(range(...index))  // 相对于整个电路的
         // range(...index).reduce((sum, val) => sum | pow2(val), 0)  //TODO:check一下对不对
         // debugger
         // 0 0x1
@@ -1556,8 +1575,14 @@ class QInt {
     // TODO: 还没有检查过
     // condition类似qint.bits(0x4)
     add(value, condition = undefined) {
-        const {qc, binary_qubits } = this
+        // condition 用的是绝对的位置
         
+        const {qc, binary_qubits } = this
+        const v_start_qubit = this.index[0], v_end_qubit = this.index[this.index.length - 1]
+
+        const condition_qubits = condition? qc.parseBinaryQubits(condition) : []
+
+        // debugger
         if(typeof(value) === 'number') {
             if(Math.round(value) !== value) {
                 console.error(value, 'should be integer')
@@ -1565,18 +1590,19 @@ class QInt {
                 return
             }
 
-            let qubits_start = qc.parseBinaryQubits(value)
-            let qubits = this.parseBinaryQubits(binary_qubits)  // 从大到小
+            let qubits_start = qc.parseBinaryQubits(value)  // 从大到小, 相对于变量的  //我怎么觉得应该是this
+            qubits_start.reverse()
+            let qubits = qc.parseBinaryQubits(binary_qubits, )  // 从大到小
+            qubits.reverse() 
+            // debugger
             qubits_start.forEach((qubit_start, index) => {
+                let qc_qubit_start = qubits[qubit_start]
+                let ranges = range(qc_qubit_start, v_end_qubit)
+                ranges.reverse()
                 
-                // debugger
-                qubits.forEach((qubit, index) => {
-                    if(index === qubits.length-1) {
-                        return
-                    }
-                    let controls = qubit12binary(range(this.index[qubit_start], qubit))
+                ranges.forEach((qubit, index) => {
+                    let controls = qubit12binary([...condition_qubits, ...range(qc_qubit_start, qubit)])
                     let target = qubit12binary([qubit])
-                    // debugger
                     qc.ccnot(controls, target)
                 })
             })
@@ -1610,6 +1636,33 @@ class QInt {
 
     // TODO:
     subtract(value, condition = undefined){
+        const {qc, binary_qubits } = this
+        
+        const v_start_qubit = this.index[0], v_end_qubit = this.index[this.index.length - 1]  // TODO: 封装成属性
+
+        if(typeof(value) === 'number') {
+            if(Math.round(value) !== value) {
+                console.error(value, 'should be integer')
+                debugger
+                return
+            }
+
+            let qubits_start = qc.parseBinaryQubits(value)  // 从大到小 [1, 0]， 相对于变量的
+            let qubits = qc.parseBinaryQubits(binary_qubits, )  // 从大到小
+            qubits.reverse() 
+            // debugger
+            qubits_start.forEach((qubit_start, index) => {
+                let qc_qubit_start = qubits[qubit_start]
+                range(qc_qubit_start, v_end_qubit).forEach((qubit, index) => {
+                    let controls = qubit12binary(range(qc_qubit_start, qubit))
+                    let target = qubit12binary([qubit])
+                    qc.ccnot(controls, target)
+                })
+            })
+
+        }else if(value instanceof QInt) {
+            console.error('substract has not been implemented now')
+        }
     }
 
     // value: qint

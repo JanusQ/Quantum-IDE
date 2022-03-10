@@ -92,6 +92,7 @@ function binary2qubit1(state_value) {
 
 // 转成qcengine的格式
 function qubit12binary(qubits) {
+    qubits = unique(qubits)
 	return qubits.reduce((sum, val) => sum | pow2(val), 0)
 }
 
