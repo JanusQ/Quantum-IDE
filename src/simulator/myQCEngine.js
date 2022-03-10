@@ -246,17 +246,18 @@ export default class QCEngine {
         //debugger;
     }
 
-    createlabel(labelname, op_start, op_end)
+    createlabel(op_start, op_end,labelname)
     {
         const {_now_label, labels, operations} = this;
         let label_id = this.genLabelId();
-        labels.push({
+        const labelObj = {
             start_operation: op_start,  //左闭
-            text: labelname,
-            id: label_id,
+            text: labelname || label_id,
+            id: label_id, 
             end_operation: op_end,
-        })
-    
+        }
+        labels.push(labelObj)   
+        return labelObj
     }
 
 
