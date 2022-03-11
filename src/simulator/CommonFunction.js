@@ -241,6 +241,28 @@ function sum(state_vector, num, range, total)
     return res;
 }
 
+function average_sum(state_vector, num, range, total)
+{
+    let i = 0;
+    let res = 0;
+    let std = binary(num, range[1]-range[0]);
+    std = std.reverse();
+    let count = 0;
+    for(i=0; i<state_vector.length; i++)
+    {
+        let tmp = binary(i, total);
+        tmp = tmp.reverse();
+        
+        if(not_equal(std, tmp, range)){
+            continue;
+        }
+        res += state_vector[i];
+        count++;
+    }
+    
+    return res / count;
+}
+
 function alt_tensor(l1,l2,key)
 {   
 	let res = [];
@@ -360,5 +382,6 @@ export {
     average,
     spec,
     conj_tran,
-    restore
+    restore,
+    average_sum,
 }

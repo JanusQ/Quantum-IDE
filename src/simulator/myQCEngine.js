@@ -14,7 +14,7 @@
 // let QuantumCircuit = require('../resource/js/quantum-circuit.min.js')
 import { write0, write1 } from './MyGate';
 import QuantumCircuit from './QuantumCircuit'
-import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, alt_tensor, calibrate, getExp, linear_entropy, binary2int, average, spec} from './CommonFunction'
+import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, alt_tensor, calibrate, getExp, linear_entropy, binary2int, average, spec, average_sum} from './CommonFunction'
 import {
     cos, sin, round, pi, complex, create, all, max, sparse,
 } from 'mathjs'
@@ -729,10 +729,15 @@ export default class QCEngine {
         let opera = operations[operation_index];
         let state = opera['state_after_opertaion'];
         let magnitudes = [];
-        
+        let amplitudes = [];
+        let phases = [];
+        console.log(state);
         for(let i=0; i<state.length; i++)
         {
             magnitudes[i] = state[i]['magnitude'];
+            amplitudes[i] = state[i]['amplitude'];
+            let polar = getExp(amplitudes[i]);
+            phases[i] = calibrate(polar['phi']) * 180 / Math.PI;
         }
         
         let var_index = this.name2index;
@@ -742,15 +747,18 @@ export default class QCEngine {
             res[key] = {};
             res[key]['prob'] = [];
             res[key]['magn'] = [];
+            res[key]['phase'] = [];
             let i = 0;
             let bits = var_index[key][1] - var_index[key][0];
             let prob = 0;
-            
+            let phi = 0;
             for(i=0; i<Math.pow(2,bits); i++)
             {
                 prob = sum(magnitudes, i, var_index[key], qubit_number);
+                phi = average_sum(phases, i, var_index[key], qubit_number);
                 res[key]['prob'][i] = prob;
                 res[key]['magn'][i] = Math.sqrt(prob);
+                res[key]['phase'][i] = phi;
             }        
         }
 
@@ -980,6 +988,13 @@ export default class QCEngine {
         let vec = this._get_fake_vector(variable, operation_index);
         let ent = linear_entropy(vec);
         return 1- ent;
+    }
+
+    variable_entropy(operation_index, variable)
+    {
+        let vec = this._get_fake_vector(variable, operation_index);
+        let ent = linear_entropy(vec);
+        return ent;
     }
 
     _calc_pmi(operation_index, select)
