@@ -1305,7 +1305,7 @@ export default class QCEngine {
 
     _tensorPermute(rawgate, new_ar, bits, options = undefined)
     {
-        console.log(new_ar);
+        //console.log(new_ar);
         const{qubits, controls, target} = options;
         let gate = rawgate.copy();
         if(qubits)
@@ -1434,7 +1434,7 @@ export default class QCEngine {
             let qubit_index = this.getQubitsInvolved(opera);
             let new_index = range(0, qubit_num);
             let targetIndex = undefined;
-            console.log("qubit_index",[...qubit_index]);
+            //console.log("qubit_index",[...qubit_index]);
             //let new_index = [];
             for(let j=0; j<qubit_index.length; j++)
             {
@@ -1459,9 +1459,6 @@ export default class QCEngine {
                 // console.log(new_index);
                 //new_index.push(new_ind);
             }
-
-            console.log("before",[...new_index]);
-            console.log("target",targetIndex);
             if(type == 0){
                 for(let j=0; j<qubit_index.length; j++){
                     if(new_index[j] == targetIndex){
