@@ -16,7 +16,7 @@ a.write(1);
 qc.startlabel('a = (1, 5)');
 a.hadamard(0x4);
 qc.endlabel('a = (1, 5)');
-debugger
+// debugger
 
 
 qc.nop();

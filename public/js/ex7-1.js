@@ -39,6 +39,11 @@ signal.QFT();
 qc.endlabel('QFT');
 qc.nop();
 
+qc.startlabel('invQFT');
+signal.invQFT();
+qc.endlabel('invQFT');
+qc.nop();
+
 
 // showInDebuggerArea(qc.circuit)
 

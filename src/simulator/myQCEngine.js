@@ -1536,7 +1536,7 @@ export default class QCEngine {
     
     isSparse(label_id, threshold = 1.3, precision = 1e-5)
     {
-        return false;
+        // return false;
         // console.log("label_id", label_id);
         // console.log(this.labels);
         let matrix = this.getEvoMatrix(label_id);
