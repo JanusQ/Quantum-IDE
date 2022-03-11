@@ -14,7 +14,7 @@ img{
 	display: inline-block;
 }
 .App {
-	width: 1903px;
+	width: 1920px;
 	padding: 8px;
 	background: #f5f5f5;
 	display: flex;
@@ -39,7 +39,7 @@ img{
 	flex-shrink: 0;
 }
 .App .left-div {
-	width: 568px;
+	width: 580px;
 	margin-right: 8px;
 	flex-shrink: 0;
 }
