@@ -93,14 +93,14 @@ function getRawGateCCNOT(options)
             index++;
     }
     
-    let tmp = p[index];
-    p[index]=p[0];
-    p[0] = tmp;
-    // console.log(p);
-    // console.log("matrix", matrix.data);
-    let matrix_p = permute(matrix,p);
-    // console.log("matrix_p",matrix_p.data);
-    return matrix_p.data;
+    // let tmp = p[index];
+    // p[index]=p[0];
+    // p[0] = tmp;
+    // // console.log(p);
+    // // console.log("matrix", matrix.data);
+    // let matrix_p = permute(matrix,p);
+    // // console.log("matrix_p",matrix_p.data);
+    return matrix.data;
 }
 
 function getRawGateIdentity(options)
