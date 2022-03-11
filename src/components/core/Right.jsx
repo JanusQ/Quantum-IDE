@@ -6,6 +6,7 @@ const Right = () => {
 	return (
 		<div id='right_div_box'>
 			<div id='circuit_view'>
+				<div className='title'>Circuit</div>
 				<svg id='circuit_svg'>
 					<g id='circuit_label' />
 					<g id='circuit_brush' />

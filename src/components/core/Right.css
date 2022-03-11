@@ -6,6 +6,11 @@
 	overflow: auto;
 	cursor: auto;
 }
+#circuit_view .title{
+	font-size: 18px;
+	padding: 10px;
+	padding-bottom: 0;
+}
 .svgtext {
 	user-select: none;
 }
@@ -138,7 +143,7 @@
 	position: absolute;
 	border: 1px solid #cccc;
 	padding: 0 8px;
-	left: -2px;
+	right: -8px;
 	top: 32px;
 	z-index: 999;
 	background: #fff;
@@ -146,6 +151,7 @@
 }
 .btn_group .operation_div img {
 	margin: 0 0;
+	cursor: pointer;
 }
 .btn_group .operation_img {
 	cursor: pointer;
