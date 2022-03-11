@@ -969,7 +969,7 @@ export default class QCEngine {
             vec = this._get_fake_vector(key, operation_index);
             //console.log(vec);
             ent += linear_entropy(vec);
-            console.log(key, vec, ent);
+            //console.log(key, vec, ent);
             len++;
         }
         return ent/len;
@@ -1286,15 +1286,36 @@ export default class QCEngine {
         return tar;
     }
 
-    _tensor_permute(rawgate, new_ar, bits)
+    _tensor_permute(rawgate, new_ar, bits, options = undefined)
     {
+        const{qubits, controls, target} = options;
         let gate = rawgate.copy();
-        while(gate.data.length < Math.pow(2,bits))
+        if(options['qubits'])
         {
-            gate = tensor(gate, identity(2));
+            let i = 1;
+            console.log("bits",bits);
+            while(i < bits)
+            {
+                if(i < options['qubits'].length)
+                {
+                    gate = tensor(gate, rawgate.copy());
+                }
+                else{
+                    gate = tensor(gate, identity(2));
+                }
+                i++;
+            }
+            console.log(gate);
+        }
+        else{
+            while(gate.data.length < Math.pow(2,bits))
+            {
+                gate = tensor(gate, identity(2));
+            }
         }
         // console.log("here",gate);
-        // console.log("new_ar",new_ar);
+        new_ar = new_ar.reverse();
+        console.log("new_ar",new_ar);
         gate = permute(gate, new_ar);
         
         return gate;
@@ -1373,26 +1394,39 @@ export default class QCEngine {
             let opera = this.operations[i];
             let gate = opera['rawgate'];
             let column_res;
+            let options={};
+            console.log("opera",opera);
+            if(opera['controls'])
+            {
+                options['controls']=[];
+                options['target']=[];
+            }
+            else
+            {
+                options['qubits']=[];
+
+            }
             //console.log(gate);
             
             if(gate == undefined)
                 continue;
 
             let gate_mat = new QObject(gate.length, gate.length, gate);
-            // console.log(gate_mat);
+            //console.log("gate",gate_mat);
 
             let qubit_index = this.getQubitsInvolved(opera);
             let new_index = range(0, qubit_num);
             for(let j=0; j<qubit_index.length; j++)
             {
                 let new_ind = this._get_new_index(new_var_index, qubit_index[j]);
+                options['qubits'].push(new_ind);
                 let indtmp = new_index[j];
                 new_index[j] = new_index[new_ind];
                 new_index[new_ind] = indtmp;
             }
-            
-            column_res = this._tensor_permute(gate_mat, new_index, qubit_num);
-            //console.log("column_res",column_res);
+
+            column_res = this._tensor_permute(gate_mat, new_index, qubit_num, options);
+            console.log("column_res",column_res);
             all_gate =dot(all_gate, column_res);
             
         }
@@ -1431,7 +1465,7 @@ export default class QCEngine {
                     gate_mats[i][j]['ratio'] = 0;
                 else
                     gate_mats[i][j]['ratio'] = polar['r'] / max;
-
+                gate_mats[i][j]['max'] = max;
             }
         }
 
