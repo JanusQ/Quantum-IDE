@@ -178,9 +178,11 @@ function permute(qobj, p) {
     for(let state = 0; state < state_num; state++) {
         let binary_state = binary(state, qubit_num)
         // console.log(state, binary_state.join(''))
-
+        binary_state = binary_state.reverse();
         // binary_state.reverse()  //低位在后
         let new_binary_state = p.map(value=>binary_state[value])
+        //console.log(binary_state,new_binary_state);
+        new_binary_state = new_binary_state.reverse();
         let new_state = binary2int(new_binary_state)
         
         // binary_state.reverse()
@@ -188,7 +190,7 @@ function permute(qobj, p) {
         // console.log(state, new_state, binary_state, new_binary_state, p)
 
     }
-
+    //console.log(state2new_state);
     // console.log(state2new_state)
     // let state_mask = new QObject(qobj.rows, qobj.cols).data
 

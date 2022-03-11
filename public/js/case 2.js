@@ -11,8 +11,9 @@ a.write(0);
 // qc.not()
 
 // prepare
-qc.startlabel('a = (1, 5)');
+
 a.write(1);
+qc.startlabel('a = (1, 5)');
 a.hadamard(0x4);
 qc.endlabel('a = (1, 5)');
 debugger
@@ -20,8 +21,9 @@ debugger
 
 qc.nop();
 
-qc.startlabel('b = (1, 3)');
+
 b.write(1);
+qc.startlabel('b = (1, 3)');
 b.hadamard(0x2);
 b.phase(45, 0x2);
 qc.endlabel('b = (1, 3)');

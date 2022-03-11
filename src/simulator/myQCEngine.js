@@ -1290,32 +1290,38 @@ export default class QCEngine {
     {
         const{qubits, controls, target} = options;
         let gate = rawgate.copy();
-        if(options['qubits'])
+        if(qubits)
         {
-            let i = 1;
-            console.log("bits",bits);
-            while(i < bits)
+            let size = Math.log2(gate.data.length);
+            while(size < bits)
             {
-                if(i < options['qubits'].length)
+                if(size < qubits.length)
                 {
                     gate = tensor(gate, rawgate.copy());
                 }
                 else{
-                    gate = tensor(gate, identity(2));
+                    gate = tensor(identity(2), gate);
                 }
-                i++;
+                size = Math.log2(gate.data.length);
             }
-            console.log(gate);
+            //new_ar = new_ar.reverse();
         }
-        else{
+        else if(target){
+            //p=p.reverse();
+            //gate = permute(gate,p);
+            // console.log("matrix_p",matrix_p.data);
             while(gate.data.length < Math.pow(2,bits))
             {
-                gate = tensor(gate, identity(2));
+                gate = tensor(identity(2),gate);
+                //gate = tensor(gate,identity(2))
             }
+            //new_ar = new_ar.reverse();
+
         }
         // console.log("here",gate);
-        new_ar = new_ar.reverse();
-        console.log("new_ar",new_ar);
+        //new_ar = new_ar.reverse();
+        //console.log("new_ar",new_ar);
+        //cosnole.log("gate",gate);
         gate = permute(gate, new_ar);
         
         return gate;
@@ -1395,16 +1401,18 @@ export default class QCEngine {
             let gate = opera['rawgate'];
             let column_res;
             let options={};
-            console.log("opera",opera);
+            //console.log("opera",opera);
+            let type;
             if(opera['controls'])
             {
                 options['controls']=[];
                 options['target']=[];
+                type = 0;
             }
             else
             {
                 options['qubits']=[];
-
+                type = 1;
             }
             //console.log(gate);
             
@@ -1416,17 +1424,38 @@ export default class QCEngine {
 
             let qubit_index = this.getQubitsInvolved(opera);
             let new_index = range(0, qubit_num);
+            let target_index;
             for(let j=0; j<qubit_index.length; j++)
             {
                 let new_ind = this._get_new_index(new_var_index, qubit_index[j]);
-                options['qubits'].push(new_ind);
+                if(type == 1){
+                    options['qubits'].push(new_ind);
+                }
+                else if(type == 0)
+                {
+                    if(qubit_index[j]==opera['target']){
+                        options['target'].push(new_ind);
+                        target_index=new_ind;
+                    }
+                    else{
+                        options['controls'].push(new_ind);
+                    }
+                }
                 let indtmp = new_index[j];
                 new_index[j] = new_index[new_ind];
                 new_index[new_ind] = indtmp;
             }
+            for(let j=0; j<qubit_index.length; j++){
+                if(new_index[j] == target_index){
+                    let indtmp =new_index[0];
+                    new_index[0] = new_index[j]; 
+                    new_index[j]=indtmp;
+                }
+            }
+            
 
             column_res = this._tensor_permute(gate_mat, new_index, qubit_num, options);
-            console.log("column_res",column_res);
+            //console.log("column_res",column_res);
             all_gate =dot(all_gate, column_res);
             
         }
