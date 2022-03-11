@@ -271,9 +271,10 @@ function density(fake_vector) // input is an array
 
 function linear_entropy(fake_vector)
 {
+    //console.log(fake_vector);
     let mat = density(fake_vector);
     
-    mat = math.multiply(mat, mat);
+    //mat = math.multiply(mat, mat);
     
     let trace = complex(0,0);
     let i = 0;

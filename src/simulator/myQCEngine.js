@@ -724,8 +724,9 @@ export default class QCEngine {
     }
 
     get_varstate(operation_index, filter = undefined){
+        const{operations, qubit_number} = this;
         let res = {};
-        let opera = this.operations[operation_index];
+        let opera = operations[operation_index];
         let state = opera['state_after_opertaion'];
         let magnitudes = [];
         
@@ -747,7 +748,7 @@ export default class QCEngine {
             
             for(i=0; i<Math.pow(2,bits); i++)
             {
-                prob = sum(magnitudes, i, var_index[key], this.qubit_number);
+                prob = sum(magnitudes, i, var_index[key], qubit_number);
                 res[key]['prob'][i] = prob;
                 res[key]['magn'][i] = Math.sqrt(prob);
             }        
@@ -765,10 +766,11 @@ export default class QCEngine {
 
     get_wholestate(operation_index)
     {
+        const{qubit_number, operations}=this;
         if(operation_index < 0)
         {
             let res = {};
-            let len = Math.pow(2, this.qubit_number);
+            let len = Math.pow(2, qubit_number);
             res['magns'] = [];
             res['phases'] = [];
             res['probs'] = [];
@@ -781,7 +783,7 @@ export default class QCEngine {
             return res;
         }
 
-        let opera = this.operations[operation_index];
+        let opera = operations[operation_index];
         let state = opera['state_after_opertaion'];
         let res = {};
         res['magns'] = [];
@@ -806,9 +808,10 @@ export default class QCEngine {
         //let state = opera['state_after_opertaion'];
         //cp_filter = {'a':[0,1,2,5,7,9],'b':[0,3]};
         //console.log(cp_filter);
+        const{name2index}=this;
         let cp_filter = deepcopy(filter);
         //console.log(cp_filter);
-        let var_index = this.name2index;
+        let var_index = name2index;
         //console.log(var_index);
         let i = 0;
         let neo_sv = [];
@@ -919,6 +922,7 @@ export default class QCEngine {
     {
         let opera = this.operations[operation_index];
         let state = opera['state_after_opertaion'];
+        //console.log("state",state);
         let var_index = this.name2index;
         let bits = var_index[name][1] - var_index[name][0];
         let whole_state = this.get_wholestate(operation_index);
@@ -931,13 +935,16 @@ export default class QCEngine {
         for(now_num=0; now_num<Math.pow(2, this.qubit_number-bits); now_num++)
         {
             let ids = this._selected_state(now_num, var_index[name]);
+            //console.log("ids",ids);
             let prob = 0;
             let vecs = [];
             
             for(let i=0; i<ids.length; i++){
-                prob += whole_state['magns'][ids[i]];
-                vecs[i] = state[ids[i]]['amplitude'];
+                prob += whole_state['probs'][ids[i]];
+                vecs[i] = complex(state[ids[i]]['amplitude'].re, state[ids[i]]['amplitude'].im);
             }
+            //console.log("prob",prob);
+            //console.log("vec[i]",vecs);
             
             for(let i=0; i<vecs.length; i++)
             {
@@ -962,6 +969,7 @@ export default class QCEngine {
             vec = this._get_fake_vector(key, operation_index);
             //console.log(vec);
             ent += linear_entropy(vec);
+            console.log(key, vec, ent);
             len++;
         }
         return ent/len;
@@ -1011,9 +1019,10 @@ export default class QCEngine {
     // TODO: 能复用的数据可以存一下
     get_pmi_index(operation_index, threshold)
     {
+        const{name2index}=this;
         let ids = [];
         let i,j = 0;
-        let var_index = this.name2index;
+        let var_index = name2index;
         
         let k = 0;
         let done = [];
@@ -1054,9 +1063,10 @@ export default class QCEngine {
 
     _variable_filter(operation_index, target, filter)
     {
+        const{name2index}=this;
         let index = this.get_index(operation_index, filter);
         let whole = this.get_wholestate(operation_index);
-        let var_index = this.name2index;
+        let var_index = name2index;
 
         let var_filtered = {};
         var_filtered['magn'] = [];
@@ -1075,7 +1085,7 @@ export default class QCEngine {
             let sel = bin.slice(var_index[target][0],var_index[target][1]);
             sel = sel.reverse();
             let dec = binary2int(sel);
-            console.log(dec);
+            //console.log(dec);
             var_filtered['prob'][dec] += whole['probs'][index[i]];
         }
 
