@@ -99,6 +99,7 @@ export default class QCEngine {
         //     inital_value.push(0)
         // }
 
+        // debugger
         let qubits = this.parseBinaryQubits(binary_qubits)
         let qubit_value = binary(value, qubits.length)
 
@@ -115,7 +116,7 @@ export default class QCEngine {
             if (value == 0) {
                 this.circuit.addGate('write0', now_column, [qubit])
             } else {
-                this.circuit.addGate('write0', now_column, [qubit])
+                this.circuit.addGate('write1', now_column, [qubit])
             }
         })
         this._addGate({
@@ -477,6 +478,7 @@ export default class QCEngine {
         let control = this.parseBinaryQubits(binary_control)
         let target = this.parseBinaryQubits(binary_target)
 
+        debugger
         if(target.length != 1){
             console.error(target, 'target qubit number is not one')
             debugger
@@ -491,6 +493,7 @@ export default class QCEngine {
             this.ccnot(binary_control, binary_target)
         }else{
             circuit.addGate("cx",  now_column, [...control, ...target], );
+            // debugger
             // TODO: 允许多个吗
             this._addGate({
                 'controls': control,
@@ -1455,7 +1458,7 @@ export default class QCEngine {
     
     isSparse(label_id, threshold = 1.3, precision = 1e-5)
     {
-        // return false;
+        return false;
         // console.log("label_id", label_id);
         // console.log(this.labels);
         let matrix = this.get_evo_matrix(label_id);
