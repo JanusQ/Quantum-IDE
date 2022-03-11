@@ -41,6 +41,6 @@ qc.nop();
 
 
 console.log("hello 2022");
-console.log(qc.get_evo_matrix(0));
+console.log(qc.getEvoMatrix(0));
 //console.log(math.multiply(complex(1,2),0.5));
 console.log("end 2002");

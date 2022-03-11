@@ -42,6 +42,6 @@ qc.nop();
 
 
 console.log("hello 2022");
-console.log(qc.get_entropy(3));
+console.log(qc.getEntropy(3));
 //console.log(math.multiply(complex(1,2),0.5));
 console.log("end 2002");

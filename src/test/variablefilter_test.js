@@ -27,6 +27,6 @@ qc.cnot(0x3, 0x8)
 
 
 console.log("hello 2022");
-console.log(qc._variable_filter(1,'a',{'a':[0,1]}));
+console.log(qc._variableFilter(1,'a',{'a':[0,1]}));
 //console.log(math.multiply(complex(1,2),0.5));
 console.log("end 2002");

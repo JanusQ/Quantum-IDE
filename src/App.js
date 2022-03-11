@@ -35,7 +35,7 @@ import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, a
 // import './test/evomatrix_test'
 // import './test/variablefilter_test.js'
 // import './test/setstatetest.js'
-// import './test/can_show_test.js'
+// import './test/canShow_test.js'
 
 function App() {
 	// 编辑器内容

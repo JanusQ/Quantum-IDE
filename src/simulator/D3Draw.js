@@ -29,8 +29,8 @@ export default class d3Draw {
 		this.scaleNum = this.firstX / this.svgItemWidth
 		// label位置的偏移 x - 图形的宽
 		this.labelTranslate = this.firstX - this.svgItemWidth / 2
-		// 存get_wholestate
-		this.get_wholestate = []
+		// 存getWholeState
+		this.getWholeState = []
 		// 存 c filter过滤条件
 		this.filter = {}
 		// 设置D模块的长度
@@ -133,7 +133,7 @@ export default class d3Draw {
 	}
 	// 清空缓存的值
 	clear() {
-		this.get_wholestate = []
+		this.getWholeState = []
 		this.filter = {}
 		this.labels = []
 		this.charts = []
@@ -145,7 +145,7 @@ export default class d3Draw {
 	restore() {
 		this.filter = {}
 		const drawData = { magns: [], phases: [], probs: [] }
-		this.get_wholestate.forEach((item) => {
+		this.getWholeState.forEach((item) => {
 			drawData.magns.push(item.magns)
 			drawData.phases.push(item.phases)
 			drawData.probs.push(item.probs)
@@ -798,7 +798,7 @@ export default class d3Draw {
 
 		const data = []
 		for (let i = 0; i < qc.operations.length; i++) {
-			const entropy = qc.get_entropy(qc.operations[i].index)
+			const entropy = qc.getEntropy(qc.operations[i].index)
 			data.push({
 				index: qc.operations[i].index,
 				entropy: entropy,
@@ -886,10 +886,10 @@ export default class d3Draw {
 	// 绘制C视图上半
 	drawCFn(index, qc) {
 		let j = 0
-		const barData = qc.get_varstate(index, undefined)
+		const barData = qc.getVarState(index, undefined)
 		this.varstatesIndex = index
 		this.drawStackedBar(barData, j, qc, index)
-		this.drawCdownStackedBar(qc.get_wholestate(index), qc)
+		this.drawCdownStackedBar(qc.getWholeState(index), qc)
 	}
 	drawStackedBar(data, j, qc, index) {
 		const config = {
@@ -932,7 +932,7 @@ export default class d3Draw {
 			chart_svg.attr('width', allWidth + 50)
 			j += 1
 		}
-		const lineData = qc.get_pmi_index(index, 0.25)
+		const lineData = qc.getPmiIndex(index, 0.25)
 		this.drawCLine(chart_svg, lineData, lineXArr)
 	}
 
@@ -1238,8 +1238,8 @@ export default class d3Draw {
 					const allKeys = Object.keys(qc.name2index)
 					const filterKeys = Object.keys(self.filter)
 					// if (allKeys.length === filterKeys.length) {
-					const filterResult = qc.get_index(index, JSON.parse(JSON.stringify(self.filter)))
-					const filterData = self.get_wholestate.filter((item) => {
+					const filterResult = qc.getIndex(index, JSON.parse(JSON.stringify(self.filter)))
+					const filterData = self.getWholeState.filter((item) => {
 						return filterResult.includes(item.index)
 					})
 					const drawData = { magns: [], phases: [], probs: [] }
@@ -1250,7 +1250,7 @@ export default class d3Draw {
 					})
 					self.drawCdownStackedBar(drawData)
 					// 更新C视图上半
-					const barData = qc.get_varstate(index, JSON.parse(JSON.stringify(self.filter)))
+					const barData = qc.getVarState(index, JSON.parse(JSON.stringify(self.filter)))
 
 					for (const key in barData) {
 						const dataArr = []
@@ -1288,8 +1288,8 @@ export default class d3Draw {
 		for (let i = 0; i < data.magns.length; i++) {
 			dataArr.push({ magns: data.magns[i], phases: data.phases[i], probs: data.probs[i], index: i })
 		}
-		if (!this.get_wholestate.length) {
-			this.get_wholestate = dataArr
+		if (!this.getWholeState.length) {
+			this.getWholeState = dataArr
 		}
 		// const width = barWidth * data.magns.length
 		this.cDownStackedBarChart(dataArr, chart_down_svg)
@@ -2005,8 +2005,8 @@ export default class d3Draw {
 	drawSankey(qc, data) {
 		const { svg, chartDiv, chartSvgDiv } = this.drawElement(data.text, data.id, qc)
 		const sankeyData = qc.transferSankey(data.id)
-		const inputStateData = qc.get_input_state(data.id)
-		const outStateData = qc.get_output_state(data.id)
+		const inputStateData = qc.getInputState(data.id)
+		const outStateData = qc.getOutputState(data.id)
 
 		const inputBases = inputStateData.bases
 		const outBases = outStateData.bases
@@ -2182,8 +2182,8 @@ export default class d3Draw {
 	// 绘制普通完整表示
 	drawMatrix(qc, data) {
 		const { svg, chartDiv, chartSvgDiv } = this.drawElement(data.text, data.id, qc)
-		const inputStateData = qc.get_input_state(data.id)
-		const outStateData = qc.get_output_state(data.id)
+		const inputStateData = qc.getInputState(data.id)
+		const outStateData = qc.getOutputState(data.id)
 		// 计算矩阵g Y轴向下移动的距离
 		const circleGtransformY = (inputStateData.vars.length + 2) * this.dLength + 14
 
@@ -2198,7 +2198,7 @@ export default class d3Draw {
 		const svgHeight = circleGtransformY + outStateData.bases.length * this.dLength
 		const svgWidth = outRelatedGX + this.dLength * 2 + 14
 		svg.attr('height', svgHeight).attr('width', svgWidth)
-		const circleData = qc.get_evo_matrix(data.id)
+		const circleData = qc.getEvoMatrix(data.id)
 		const circleG = svg.append('g').classed('circle_g', true).attr('transform', `translate(0,${circleGtransformY})`)
 		for (let i = 0; i < circleData.length; i++) {
 			for (let j = 0; j < circleData[i].length; j++) {

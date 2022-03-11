@@ -40,5 +40,5 @@ qc.nop();
 console.log("hello 2022");
 let filt = {'a':[0,1,2],'b':[0,1]};
 console.log(filt);
-console.log(qc.get_index(3,filt));
+console.log(qc.getIndex(3,filt));
 console.log("end 2002");
