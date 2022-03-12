@@ -11,7 +11,7 @@ qc.write(0x0)
 
 
 qc.startlabel('had')
-qc.hadamard()
+b.hadamard()
 qc.endlabel('had')
 // var state_vector = range(0, pow2(6)).map(elm=>complex(0, 0))
 // state_vector[1] = complex(1, 0)
