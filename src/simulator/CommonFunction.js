@@ -372,6 +372,26 @@ function spec(total, num, remain, maps, values)
     return res;
 }
 
+function normalize(vector, precision = 1e-5)
+{
+    let i;
+    let cof = 0;
+    for(i=0; i<vector.length; i++)
+    {
+        cof += (vector[i].re * vector[i].re + vector[i].im * vector[i].im);
+    }
+    console.log("before",cof);
+    cof = Math.sqrt(cof);
+    console.log("aftercof",cof);
+    if(Math.abs(cof - 0) > precision){
+        for(i=0; i<vector.length; i++)
+        {
+            vector[i] = math.divide(vector[i], cof);
+        }
+    }
+    console.log([...vector]);
+    return vector;
+}
 
 export {
 	pow2,
@@ -399,4 +419,5 @@ export {
     conj_tran,
     restore,
     average_sum,
+    normalize,
 }
