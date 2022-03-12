@@ -309,14 +309,29 @@ function linear_entropy(fake_vector)
     return 1 - trace.re;
 }
 
-function average(list,index)
+function average(list, index, probs, type = undefined)
 {
     let res = 0;
-    for(let i=0; i<index.length; i++)
+    if(type == 'magns')
     {
-        res += list[index[i]];
+        for(let i=0; i<index.length; i++)
+        {
+            res += list[index[i]];
+        }
+        res = Math.sqrt(res);
     }
-    return res/index.length;
+    else{
+        let totalprob = 0;
+        for(let i=0; i<index.length; i++)
+        {
+            totalprob += probs[index[i]];
+        }
+        for(let i=0; i<index.length; i++)
+        {
+            res += list[index[i]] * probs[index[i]] / totalprob;
+        }
+    }
+    return res;
 }
 
 function spec(total, num, remain, maps, values)

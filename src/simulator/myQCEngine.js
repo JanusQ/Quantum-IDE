@@ -321,7 +321,7 @@ export default class QCEngine {
         qubits.forEach(qubit => {
             circuit.addGate("rz", now_column, qubit, {
                 params: {
-                    phi: "pi/" + (rotation / 180)
+                    phi: "pi/" + (180 / rotation)
                 }
             });
         })
@@ -1164,8 +1164,8 @@ export default class QCEngine {
             //console.log(input_index);
             let tmp_index = this.getIndex(op_index, input_index);
             //console.log(tmp_index);
-            input_state['bases'][i]['magnitude'] = average(whole['magns'], tmp_index);
-            input_state['bases'][i]['phases'] = average(whole['phases'], tmp_index);
+            input_state['bases'][i]['magnitude'] = average(whole['probs'], tmp_index, whole['probs'],'magns');
+            input_state['bases'][i]['phases'] = average(whole['phases'], tmp_index, whole['probs'],'probs');
 
             if (input_state['max_magn'] < input_state['bases'][i]['magnitude'])
                 input_state['max_magn'] = input_state['bases'][i]['magnitude'];
@@ -1237,7 +1237,7 @@ export default class QCEngine {
             else
                 input_state['bases'][i]['ratio'] = input_state['bases'][i]['magnitude'] / input_state['max_magn'];
         }
-
+        console.log("state",input_state);
         return input_state;
 
     }
@@ -1355,8 +1355,7 @@ export default class QCEngine {
                 type = 1;
             }
             //console.log("gaste",gate);
-
-            if (gate == undefined)
+            if(gate == undefined)
                 continue;
 
             let gate_mat = new QObject(gate.length, gate.length, gate);
