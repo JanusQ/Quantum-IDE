@@ -326,7 +326,7 @@ export default class QCEngine {
         qubits.forEach(qubit=>{
             circuit.addGate("rz",  now_column, qubit, {
                 params: {
-                    phi: "pi/" + (180/rotation)
+                    phi: "pi/" + (rotation / 180)
                 }
             });
         })
@@ -733,7 +733,7 @@ export default class QCEngine {
         let magnitudes = [];
         let amplitudes = [];
         let phases = [];
-        console.log(state);
+        //console.log(state);
         for(let i=0; i<state.length; i++)
         {
             magnitudes[i] = state[i]['magnitude'];
@@ -784,11 +784,13 @@ export default class QCEngine {
             res['magns'] = [];
             res['phases'] = [];
             res['probs'] = [];
+            res['base'] = [];
             for(let i=0; i<len; i++)
             {
                 res['magns'][i] = 0;
                 res['probs'][i]= 0;
                 res['phases'][i] = 0;
+                res['base'][i] = binary(i ,qubit_number);
             }
             return res;
         }
@@ -799,6 +801,7 @@ export default class QCEngine {
         res['magns'] = [];
         res['phases'] = [];
         res['probs'] = [];
+        res['base'] = [];
         
         for(let i=0; i<state.length; i++)
         {
@@ -807,6 +810,7 @@ export default class QCEngine {
             res['magns'][i] = polar['r'];
             res['probs'][i]= res['magns'][i] * res['magns'][i];
             res['phases'][i] = calibrate(polar['phi']) * 180 / Math.PI;
+            res['base'][i] = binary(i, qubit_number);
         }
         // console.log("wholestate",res);
         return res;
@@ -1357,8 +1361,8 @@ export default class QCEngine {
     {
         //console.log(label_id);
         //console.log(this.labels);
-        //console.log(this.operations);
-        
+        console.log(this.operations);
+        console.log(getExp(complex(6.123233995736766e-17,-1)))
         let gate_mats = [];
         let ops = [this.labels[label_id]['start_operation'],this.labels[label_id]['end_operation']];
         //console.log(ops);
@@ -1423,7 +1427,7 @@ export default class QCEngine {
                 options['qubits']=[];
                 type = 1;
             }
-            //console.log(gate);
+            //console.log("gaste",gate);
             
             if(gate == undefined)
                 continue;
@@ -1539,6 +1543,7 @@ export default class QCEngine {
         //         gate_mats[i][j]['used'] = true;
         //     }
         // }
+        //console.log(gate_mats);
         //console.log(gate_mats);
         return gate_mats;
 
