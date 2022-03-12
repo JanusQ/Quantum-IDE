@@ -601,9 +601,9 @@ export default class QCEngine {
     getQubitsInvolved(operation){
         let qubits_involved = []
         const {controls, qubits, qubit, target, targets, qubits1, qubits2, qubit1, qubit2} = operation
-        if(target){
-            qubits_involved.push(target)
-        }
+        // if(target){
+        //     qubits_involved.push(target)
+        // }
         if(qubit){
             qubits_involved.push(qubit)
         }
@@ -613,11 +613,13 @@ export default class QCEngine {
         if(qubit2){
             qubits_involved.push(qubit2)
         }
+        qubits_involved = [...qubits_involved, ...(target || [])]
         qubits_involved = [...qubits_involved, ...(qubits1 || [])]
         qubits_involved = [...qubits_involved, ...(qubits2 || [])]
         qubits_involved = [...qubits_involved, ...(controls || [])]
         qubits_involved = [...qubits_involved, ...(qubits || [])]
         qubits_involved = [...qubits_involved, ...(targets || [])]
+        
 
         let qubits_involved_set  = [...new Set(qubits_involved)]
         if(qubits_involved_set.length !== qubits_involved.length){
@@ -1303,6 +1305,7 @@ export default class QCEngine {
 
     _tensorPermute(rawgate, new_ar, bits, options = undefined)
     {
+        console.log(new_ar);
         const{qubits, controls, target} = options;
         let gate = rawgate.copy();
         if(qubits)
@@ -1319,24 +1322,15 @@ export default class QCEngine {
                 }
                 size = Math.log2(gate.data.length);
             }
-            //new_ar = new_ar.reverse();
         }
         else if(target){
-            //p=p.reverse();
-            //gate = permute(gate,p);
-            // console.log("matrix_p",matrix_p.data);
+
             while(gate.data.length < Math.pow(2,bits))
             {
                 gate = tensor(identity(2),gate);
-                //gate = tensor(gate,identity(2))
             }
-            //new_ar = new_ar.reverse();
-
         }
-        // console.log("here",gate);
-        //new_ar = new_ar.reverse();
-        //console.log("new_ar",new_ar);
-        //cosnole.log("gate",gate);
+        //new_ar = [2,1,0];
         gate = permute(gate, new_ar);
         
         return gate;
@@ -1439,10 +1433,13 @@ export default class QCEngine {
 
             let qubit_index = this.getQubitsInvolved(opera);
             let new_index = range(0, qubit_num);
-            let targetIndex;
+            let targetIndex = undefined;
+            console.log("qubit_index",[...qubit_index]);
+            //let new_index = [];
             for(let j=0; j<qubit_index.length; j++)
             {
                 let new_ind = this._getNewIndex(new_var_index, qubit_index[j]);
+                console.log("new_ind",new_ind);
                 if(type == 1){
                     options['qubits'].push(new_ind);
                 }
@@ -1459,15 +1456,21 @@ export default class QCEngine {
                 let indtmp = new_index[j];
                 new_index[j] = new_index[new_ind];
                 new_index[new_ind] = indtmp;
+                // console.log(new_index);
+                //new_index.push(new_ind);
             }
-            for(let j=0; j<qubit_index.length; j++){
-                if(new_index[j] == targetIndex){
-                    let indtmp =new_index[0];
-                    new_index[0] = new_index[j]; 
-                    new_index[j]=indtmp;
+
+            console.log("before",[...new_index]);
+            console.log("target",targetIndex);
+            if(type == 0){
+                for(let j=0; j<qubit_index.length; j++){
+                    if(new_index[j] == targetIndex){
+                        let indtmp =new_index[0];
+                        new_index[0] = new_index[j]; 
+                        new_index[j]=indtmp;
+                    }
                 }
             }
-            
 
             column_res = this._tensorPermute(gate_mat, new_index, qubit_num, options);
             //console.log("column_res",column_res);
@@ -1536,7 +1539,6 @@ export default class QCEngine {
     
     isSparse(label_id, threshold = 1.3, precision = 1e-5)
     {
-        // return false;
         // console.log("label_id", label_id);
         // console.log(this.labels);
         let matrix = this.getEvoMatrix(label_id);
@@ -1570,8 +1572,8 @@ export default class QCEngine {
                     sankey[k]['maganitude'] = matrix[i][j]['magnitude'];
                     sankey[k]['phase'] = matrix[i][j]['phase'];
                     sankey[k]['used'] = matrix[i][j]['used'];
-                    sankey[k]['from_id'] = j;
-                    sankey[k]['to_id'] = i;
+                    sankey[k]['from_id'] = i;
+                    sankey[k]['to_id'] = j;
                     sankey[k]['y_index'] = k;
                     sankey[k]['ratio'] = matrix[i][j]['ratio'];
                     k++;
