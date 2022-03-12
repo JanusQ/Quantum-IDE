@@ -8,16 +8,12 @@ var a = qint.new(3, 'a');
 var b = qint.new(3, 'b');
 
 a.write(0);
-// qc.not()
 
-// prepare
 
-a.write(1);
-qc.startlabel('a = (1, 5)');
+a.write(0x2);
+qc.startlabel('a = (2, 6)');
 a.hadamard(0x4);
-qc.endlabel('a = (1, 5)');
-debugger
-
+qc.endlabel('a = (2, 6)');
 
 qc.nop();
 
@@ -34,7 +30,7 @@ qc.nop();
 
 // if a < 3 then b += 1
 qc.startlabel('a -= 3');
-a.subtract(3);  //原先的里面-6和加3是一样的
+a.subtract(2);  //原先的里面-6和加3是一样的
 qc.endlabel('a -= 3');
 
 qc.nop();
