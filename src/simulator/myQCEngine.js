@@ -326,7 +326,7 @@ export default class QCEngine {
         qubits.forEach(qubit=>{
             circuit.addGate("rz",  now_column, qubit, {
                 params: {
-                    phi: "pi/" + (180/rotation)
+                    phi: "pi/" + (rotation / 180)
                 }
             });
         })
@@ -478,7 +478,7 @@ export default class QCEngine {
         let control = this.parseBinaryQubits(binary_control)
         let target = this.parseBinaryQubits(binary_target)
 
-        debugger
+        //debugger
         if(target.length != 1){
             console.error(target, 'target qubit number is not one')
             debugger
@@ -733,7 +733,7 @@ export default class QCEngine {
         let magnitudes = [];
         let amplitudes = [];
         let phases = [];
-        console.log(state);
+        //console.log(state);
         for(let i=0; i<state.length; i++)
         {
             magnitudes[i] = state[i]['magnitude'];
@@ -784,11 +784,13 @@ export default class QCEngine {
             res['magns'] = [];
             res['phases'] = [];
             res['probs'] = [];
+            res['base'] = [];
             for(let i=0; i<len; i++)
             {
                 res['magns'][i] = 0;
                 res['probs'][i]= 0;
                 res['phases'][i] = 0;
+                res['base'][i] = binary(i ,qubit_number);
             }
             return res;
         }
@@ -799,6 +801,7 @@ export default class QCEngine {
         res['magns'] = [];
         res['phases'] = [];
         res['probs'] = [];
+        res['base'] = [];
         
         for(let i=0; i<state.length; i++)
         {
@@ -807,6 +810,7 @@ export default class QCEngine {
             res['magns'][i] = polar['r'];
             res['probs'][i]= res['magns'][i] * res['magns'][i];
             res['phases'][i] = calibrate(polar['phi']) * 180 / Math.PI;
+            res['base'][i] = binary(i, qubit_number);
         }
         // console.log("wholestate",res);
         return res;
@@ -1305,7 +1309,7 @@ export default class QCEngine {
 
     _tensorPermute(rawgate, new_ar, bits, options = undefined)
     {
-        console.log(new_ar);
+        // console.log(new_ar);
         const{qubits, controls, target} = options;
         let gate = rawgate.copy();
         if(qubits)
@@ -1330,7 +1334,7 @@ export default class QCEngine {
                 gate = tensor(identity(2),gate);
             }
         }
-        //new_ar = [2,1,0];
+        //new_ar = [2,0,1];
         gate = permute(gate, new_ar);
         
         return gate;
@@ -1358,7 +1362,6 @@ export default class QCEngine {
         //console.log(label_id);
         //console.log(this.labels);
         //console.log(this.operations);
-        
         let gate_mats = [];
         let ops = [this.labels[label_id]['start_operation'],this.labels[label_id]['end_operation']];
         //console.log(ops);
@@ -1423,7 +1426,7 @@ export default class QCEngine {
                 options['qubits']=[];
                 type = 1;
             }
-            //console.log(gate);
+            //console.log("gaste",gate);
             
             if(gate == undefined)
                 continue;
@@ -1434,12 +1437,12 @@ export default class QCEngine {
             let qubit_index = this.getQubitsInvolved(opera);
             let new_index = range(0, qubit_num);
             let targetIndex = undefined;
-            console.log("qubit_index",[...qubit_index]);
+            //console.log("qubit_index",[...qubit_index]);
             //let new_index = [];
             for(let j=0; j<qubit_index.length; j++)
             {
                 let new_ind = this._getNewIndex(new_var_index, qubit_index[j]);
-                console.log("new_ind",new_ind);
+                //console.log("new_ind",new_ind);
                 if(type == 1){
                     options['qubits'].push(new_ind);
                 }
@@ -1453,15 +1456,22 @@ export default class QCEngine {
                         options['controls'].push(new_ind);
                     }
                 }
-                let indtmp = new_index[j];
-                new_index[j] = new_index[new_ind];
-                new_index[new_ind] = indtmp;
+                for(let k = 0; k< new_index.length; k++)
+                {
+                    if(new_index[k]!=new_ind)
+                    {
+                        continue;
+                    }
+                    new_index[k] = new_index[j];
+                    new_index[j] = new_ind;
+                    break;
+                }
+                
+                // new_index[j] = new_index[new_ind];
+                // new_index[new_ind] = indtmp;
                 // console.log(new_index);
                 //new_index.push(new_ind);
             }
-
-            console.log("before",[...new_index]);
-            console.log("target",targetIndex);
             if(type == 0){
                 for(let j=0; j<qubit_index.length; j++){
                     if(new_index[j] == targetIndex){
@@ -1533,6 +1543,7 @@ export default class QCEngine {
         //     }
         // }
         //console.log(gate_mats);
+        //console.log(gate_mats);
         return gate_mats;
 
     }
@@ -1541,6 +1552,7 @@ export default class QCEngine {
     {
         // console.log("label_id", label_id);
         // console.log(this.labels);
+        return false;
         let matrix = this.getEvoMatrix(label_id);
         let count = 0;
         for(let i=0; i<matrix.length; i++)
