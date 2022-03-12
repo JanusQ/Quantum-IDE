@@ -1361,8 +1361,7 @@ export default class QCEngine {
     {
         //console.log(label_id);
         //console.log(this.labels);
-        console.log(this.operations);
-        console.log(getExp(complex(6.123233995736766e-17,-1)))
+        //console.log(this.operations);
         let gate_mats = [];
         let ops = [this.labels[label_id]['start_operation'],this.labels[label_id]['end_operation']];
         //console.log(ops);
