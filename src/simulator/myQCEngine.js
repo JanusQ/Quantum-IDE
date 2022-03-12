@@ -326,7 +326,7 @@ export default class QCEngine {
         qubits.forEach(qubit=>{
             circuit.addGate("rz",  now_column, qubit, {
                 params: {
-                    phi: "pi/" + (rotation / 180)
+                    phi: "pi/" + (180 / rotation)
                 }
             });
         })
@@ -1426,8 +1426,8 @@ export default class QCEngine {
                 options['qubits']=[];
                 type = 1;
             }
-            //console.log("gaste",gate);
-            
+            console.log("gaste",gate);
+            console.log(getExp(complex(1,2.4492935982947064e-16)));
             if(gate == undefined)
                 continue;
 
