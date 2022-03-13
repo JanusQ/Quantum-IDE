@@ -142,7 +142,6 @@ function calibrate(phase)
     return phase;
 }
 
-// TODO: 判断这几个比特组成的状态是不是纯态
 function isPure(state, precision = 1e-5) {// state: state vector of a grouped qubits  
     let mat = density(state);
     let trace = math.trace(mat);

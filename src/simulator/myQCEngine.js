@@ -219,8 +219,8 @@ export default class QCEngine {
         this._now_label = label_id
         console.warn('label() will be abandoned in the future')
     }
-
     //  ---------------WARNING: DO NOT USE THIS, USE STARTLABEL & ENDLABEL INSTEAD--------------
+    
     startlabel(labelname) {
         const { _now_label, labels, operations } = this
         let label_id = this.genLabelId();
@@ -911,20 +911,16 @@ export default class QCEngine {
     _getPartialTrace(name, operation_index) {
         let opera = this.operations[operation_index];
         let state = opera['state_after_opertaion'];
-        //console.log("state",state);
+
         let var_index = this.name2index;
         let bits = var_index[name][1] - var_index[name][0];
         let whole_state = this.getWholeState(operation_index);
         let now_num = 0;
         let fin_den = undefined;
 
-        // for (let i = 0; i < Math.pow(2, bits); i++)
-        //     fin_vec[i] = complex(0, 0);
-
         for (now_num = 0; now_num < Math.pow(2, this.qubit_number - bits); now_num++) {
             let ids = this._selectedState(now_num, var_index[name]);
-            //console.log(now_num,ids);
-            //console.log("ids",ids);
+
             let prob = 0;
             let vecs = [];
 
@@ -932,20 +928,15 @@ export default class QCEngine {
                 prob += whole_state['probs'][ids[i]];
                 vecs[i] = complex(state[ids[i]]['amplitude'].re, state[ids[i]]['amplitude'].im);
             }
-            //console.log("prob",prob);
-            // console.log("vec[i]",[...vecs]);
             
             vecs = normalize(vecs)
             let den = density(vecs);
-
-            //console.log(prob, den);
             
             if(fin_den == undefined)
                 fin_den = math.multiply(den, prob);
             else
                 fin_den = math.add(fin_den, math.multiply(den,prob));
             
-            //console.log("fin_den", fin_den);
         }
 
 
@@ -961,7 +952,6 @@ export default class QCEngine {
 
         for (let key in var_index) {
             let den = this._getPartialTrace(key, operation_index);
-            //console.log(vec);
             ent += linear_entropy(den);
             //console.log(key, den, ent);
             len++;
@@ -969,7 +959,7 @@ export default class QCEngine {
         
         if(Math.abs(ent - 0) < precision)
             ent = 0;
-        console.log("entropy",ent);
+        //console.log("entropy",ent);
         return ent/len;
     }
 
