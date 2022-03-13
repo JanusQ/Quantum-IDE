@@ -2,7 +2,7 @@ import { data } from 'browserslist'
 import * as d3 from 'd3'
 import { color, group } from 'd3'
 import { event as currentEvent } from 'd3-selection'
-import { number } from 'mathjs'
+import { im, number } from 'mathjs'
 import { ConsoleErrorListener, toDocs } from '../resource/js/quantum-circuit.min'
 import Chart from './Chart'
 export default class d3Draw {
@@ -138,17 +138,19 @@ export default class d3Draw {
 		this.labels = []
 		this.charts = []
 		d3.selectAll('#chart_svg *').remove()
+		d3.selectAll('#chart_down_svg *').remove()
 		this.qc = null
 		this.varstatesIndex = 0
 	}
 	// c视图restore
 	restore() {
 		this.filter = {}
-		const drawData = { magns: [], phases: [], probs: [] }
+		const drawData = { magns: [], phases: [], probs: [], base: [] }
 		this.getWholeState.forEach((item) => {
 			drawData.magns.push(item.magns)
 			drawData.phases.push(item.phases)
 			drawData.probs.push(item.probs)
+			drawData.probs.push(item.base)
 		})
 		this.drawCdownStackedBar(drawData)
 		this.charts = []
@@ -749,12 +751,15 @@ export default class d3Draw {
 				case 'ccphase':
 					const ccphaseG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
 					ccphaseG.datum(operation) //绑定数据到dom节点
+
+					const qubitMax = Math.max(...operations[i].qubits)
+					const qubitMin = Math.min(...operations[i].qubits)
 					this.drawLine(
 						ccphaseG,
 						x,
-						this.svgItemHeight * (operations[i].qubits[0] + 2),
+						this.svgItemHeight * (qubitMin + 2),
 						x,
-						this.svgItemHeight * (operations[i].qubits[operations[i].qubits.length - 1] + 2)
+						this.svgItemHeight * (qubitMax + 2)
 					)
 					for (let j = 0; j < operations[i].qubits.length; j++) {
 						this.drawCCPhase(ccphaseG, x, this.svgItemHeight * (operations[i].qubits[j] + 2))
@@ -802,13 +807,14 @@ export default class d3Draw {
 						this.drawLine(
 							defaultG,
 							x,
-							this.svgItemHeight * (qubits[0] + 2),
+							this.svgItemHeight * (defaultMinQ + 2),
 							x,
-							this.svgItemHeight * (qubits[qubits.length - 1] + 2)
+							this.svgItemHeight * (defaultMaxQ + 2)
 						)
+						for(let i =0;i<qubits.length;i++){
 
-						this.drawSelfDefinedGate(defaultG, x, this.svgItemHeight * (defaultMinQ + 2))
-						this.drawSelfDefinedGate(defaultG, x, this.svgItemHeight * (defaultMaxQ + 2))
+							this.drawSelfDefinedGate(defaultG, x, this.svgItemHeight * (qubits[i] + 2))
+						}
 					}
 
 					break
@@ -877,8 +883,7 @@ export default class d3Draw {
 			.attr('d', line(I))
 	}
 	// 绘制C的连线
-	drawCLine(svg, lineData, lineXArr,heightStep) {
-		
+	drawCLine(svg, lineData, lineXArr, heightStep) {
 		const initY = lineData.length * heightStep
 
 		svg.attr('height', 267 + lineData.length * heightStep)
@@ -967,7 +972,7 @@ export default class d3Draw {
 			j += 1
 		}
 
-		this.drawCLine(chart_svg, lineData, lineXArr,heightStep)
+		this.drawCLine(chart_svg, lineData, lineXArr, heightStep)
 	}
 
 	StackedBarChart(data, g, width, name, qc, config, barWidth, index, key) {
@@ -1341,13 +1346,16 @@ export default class d3Draw {
 					const filterData = self.getWholeState.filter((item) => {
 						return filterResult.includes(item.index)
 					})
-					const drawData = { magns: [], phases: [], probs: [] }
+
+					const drawData = { magns: [], phases: [], probs: [], base: [] }
 					filterData.forEach((item) => {
 						drawData.magns.push(item.magns)
 						drawData.phases.push(item.phases)
 						drawData.probs.push(item.probs)
+						drawData.base.push(item.base)
 					})
 					self.drawCdownStackedBar(drawData)
+
 					// 更新C视图上半
 					const barData = qc.getVarState(index, JSON.parse(JSON.stringify(self.filter)))
 
@@ -1386,7 +1394,13 @@ export default class d3Draw {
 		const dataArr = []
 		// const barWidth = 20
 		for (let i = 0; i < data.magns.length; i++) {
-			dataArr.push({ magns: data.magns[i], phases: data.phases[i], probs: data.probs[i], index: i })
+			dataArr.push({
+				magns: data.magns[i],
+				phases: data.phases[i],
+				probs: data.probs[i],
+				index: i,
+				base: data.base[i],
+			})
 		}
 		if (!this.getWholeState.length) {
 			this.getWholeState = dataArr
@@ -1551,37 +1565,92 @@ export default class d3Draw {
 		}
 		// 绑定事件
 		chart.addMouseOn = function () {
-			chart
-				.svg()
-				.selectAll('.bar')
+			g.selectAll('.magns_bar')
 				.on('mouseover', function (e, d) {
 					const position = d3.pointer(e)
-					const text = g
-						.append('text')
+					const tipG = g
+						.append('g')
 						.classed('tip', true)
-						.attr('x', position[0] + 100)
-						.attr('y', position[1])
+						.attr('transform', `translate(${position[0] + 85},${position[1] - 5})`)
+					tipG.append('rect')
+						.attr('stroke', 'gray')
+						.attr('stroke-width', 1)
+						.attr('height', 26)
+						.attr('width', 110)
+						.attr('fill', '#fff')
+						.attr('rx', 2)
+					const text = tipG
+						.append('text')
 						.attr('fill', chart.textColor)
-					text.append('tspan').text('magns:' + d.data['magns'])
-					text.append('tspan')
-						.attr('x', position[0] + 100)
-						.attr('dy', '1em')
-						.text('phases:' + d.data['phases'])
+						.classed('svgtext', true)
+						.attr('x', 4)
+						.attr('y', 16)
+					text.append('tspan').text('Base:' + d.base)
 				})
 				.on('mouseleave', function (e, d) {
-					chart.svg().select('.tip').remove()
+					g.select('.tip').remove()
 				})
 				.on('mousemove', function (e) {
 					const position = d3.pointer(e)
-					chart
-						.svg()
-						.select('.tip')
-						.attr('x', position[0] + 100)
-						.attr('y', position[1] + 20)
-					chart
-						.svg()
-						.selectAll('.tip tspan')
-						.attr('x', position[0] + 100)
+					g.select('.tip').attr('transform', `translate(${position[0] + 55},${position[1] - 5})`)
+				})
+			g.selectAll('.probs_bar')
+				.on('mouseover', function (e, d) {
+					const position = d3.pointer(e)
+					const tipG = g
+						.append('g')
+						.classed('tip', true)
+						.attr('transform', `translate(${position[0] + 55},${position[1] - 5})`)
+					tipG.append('rect')
+						.attr('stroke', 'gray')
+						.attr('stroke-width', 1)
+						.attr('height', 26)
+						.attr('width', 110)
+						.attr('fill', '#fff')
+						.attr('rx', 2)
+					const text = tipG
+						.append('text')
+						.attr('fill', chart.textColor)
+						.classed('svgtext', true)
+						.attr('x', 4)
+						.attr('y', 16)
+					text.append('tspan').text('Base:' + d.base)
+				})
+				.on('mouseleave', function (e, d) {
+					g.select('.tip').remove()
+				})
+				.on('mousemove', function (e) {
+					const position = d3.pointer(e)
+					g.select('.tip').attr('transform', `translate(${position[0] + 55},${position[1] - 5})`)
+				})
+			g.selectAll('.phases_bar')
+				.on('mouseover', function (e, d) {
+					const position = d3.pointer(e)
+					const tipG = g
+						.append('g')
+						.classed('tip', true)
+						.attr('transform', `translate(${position[0] + 55},${position[1] - 5})`)
+					tipG.append('rect')
+						.attr('stroke', 'gray')
+						.attr('stroke-width', 1)
+						.attr('height', 26)
+						.attr('width', 110)
+						.attr('fill', '#fff')
+						.attr('rx', 2)
+					const text = tipG
+						.append('text')
+						.attr('fill', chart.textColor)
+						.classed('svgtext', true)
+						.attr('x', 4)
+						.attr('y', 16)
+					text.append('tspan').text('Base:' + d.base)
+				})
+				.on('mouseleave', function (e, d) {
+					g.select('.tip').remove()
+				})
+				.on('mousemove', function (e) {
+					const position = d3.pointer(e)
+					g.select('.tip').attr('transform', `translate(${position[0] + 55},${position[1] - 5})`)
 				})
 		}
 		// 缩放
@@ -1790,8 +1859,18 @@ export default class d3Draw {
 					.attr('cy', circleR)
 					.attr('r', circleR - 2)
 					.attr('stroke-width', 1)
+					.attr('fill', color)
+					.attr('opacity', 0.1)
+					.classed('d_item', true)
+				childG
+					.append('circle')
+					.attr('cx', circleR)
+					.attr('cy', circleR)
+					.attr('r', circleR - 2)
+					.attr('stroke-width', 1)
 					.attr('stroke', color)
-					.attr('fill', 'none')
+					.attr('fill', color)
+					.attr('opacity', 0.2)
 					.classed('d_item', true)
 			}
 		} else {
@@ -1804,11 +1883,22 @@ export default class d3Draw {
 				.attr('stroke', color)
 				.attr('fill', 'none')
 				.classed('d_item', true)
+			childG
+				.append('circle')
+				.attr('cx', circleR)
+				.attr('cy', circleR)
+				.attr('r', circleR - 2)
+				.attr('stroke-width', 1)
+				.attr('stroke', color)
+				.attr('fill', 'none')
+				.attr('opacity', 0.5)
+				.classed('d_item', true)
 		}
 		if (arcDeg) {
 			arcR = (arcR * this.dLength) / 2 - 2
 			const data = { startAngle: 0, endAngle: (Math.PI * arcDeg) / 180 }
 			const acrPath = d3.arc().innerRadius(0).outerRadius(arcR)
+
 			childG.append('path').attr('d', acrPath(data)).attr('fill', color).attr('transform', 'translate(13,13)')
 		} else if (!arcDeg && arcR) {
 			arcR = (arcR * this.dLength) / 2 - 2
