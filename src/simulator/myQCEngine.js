@@ -1307,8 +1307,8 @@ export default class QCEngine {
         let ops = [this.labels[label_id]['start_operation'], this.labels[label_id]['end_operation']];
         //console.log(ops);
         let vars = [];
+        
         let tmp_array = [];
-        //console.log(ops);
         for (let i = ops[0]; i < ops[1]; i++) {
             let opera = this.operations[i];
             let involved_qubits = this.getQubitsInvolved(opera);
@@ -1320,7 +1320,6 @@ export default class QCEngine {
 
         }
         //vars = [...new Set(tmp_array)];
-        vars = [];
         let var_index = this.name2index;
 
         for (let key in var_index) {
@@ -1372,7 +1371,6 @@ export default class QCEngine {
             let new_index = range(0, qubit_num);
             let targetIndex = undefined;
             //console.log("qubit_index",[...qubit_index]);
-            //let new_index = [];
             for (let j = 0; j < qubit_index.length; j++) {
                 let new_ind = this._getNewIndex(new_var_index, qubit_index[j]);
                 //console.log("new_ind",new_ind);
@@ -1415,7 +1413,6 @@ export default class QCEngine {
             column_res = this._tensorPermute(gate_mat, new_index, qubit_num, options);
             //console.log("column_res",column_res);
             all_gate = dot(all_gate, column_res);
-
         }
         //console.log("all_gate",all_gate);
 
@@ -1754,6 +1751,7 @@ class QInt {
             qc.had(pow2(qubits1))
             qubits.slice(index1 + 1).forEach((qubits2, index2) => {
                 let phi = - 90 / pow2(index2)
+                console.log(phi);
                 qc.cphase(phi, pow2(qubits1), pow2(qubits2))
             })
         })
