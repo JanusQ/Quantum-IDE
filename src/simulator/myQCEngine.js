@@ -14,7 +14,7 @@
 // let QuantumCircuit = require('../resource/js/quantum-circuit.min.js')
 import { write0, write1 } from './MyGate';
 import QuantumCircuit from './QuantumCircuit'
-import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, alt_tensor, calibrate, getExp, linear_entropy, binary2int, average, spec, average_sum, normalize} from './CommonFunction'
+import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, alt_tensor, calibrate, getExp, linear_entropy, binary2int, average, spec, average_sum, normalize, density} from './CommonFunction'
 
 import {
     cos, sin, round, pi, complex, create, all, max, sparse,
@@ -908,7 +908,7 @@ export default class QCEngine {
 
     }
 
-    _getFakeVector(name, operation_index) {
+    _getPartialTrace(name, operation_index) {
         let opera = this.operations[operation_index];
         let state = opera['state_after_opertaion'];
         //console.log("state",state);
@@ -916,14 +916,14 @@ export default class QCEngine {
         let bits = var_index[name][1] - var_index[name][0];
         let whole_state = this.getWholeState(operation_index);
         let now_num = 0;
-        let fin_vec = [];
+        let fin_den = undefined;
 
-        for (let i = 0; i < Math.pow(2, bits); i++)
-            fin_vec[i] = complex(0, 0);
+        // for (let i = 0; i < Math.pow(2, bits); i++)
+        //     fin_vec[i] = complex(0, 0);
 
         for (now_num = 0; now_num < Math.pow(2, this.qubit_number - bits); now_num++) {
             let ids = this._selectedState(now_num, var_index[name]);
-            console.log(now_num,ids);
+            //console.log(now_num,ids);
             //console.log("ids",ids);
             let prob = 0;
             let vecs = [];
@@ -932,22 +932,25 @@ export default class QCEngine {
                 prob += whole_state['probs'][ids[i]];
                 vecs[i] = complex(state[ids[i]]['amplitude'].re, state[ids[i]]['amplitude'].im);
             }
-            console.log("prob",prob);
-            console.log("vec[i]",[...vecs]);
+            //console.log("prob",prob);
+            // console.log("vec[i]",[...vecs]);
             
             vecs = normalize(vecs)
+            let den = density(vecs);
 
-            for(let i=0; i<vecs.length; i++)
-            {
-                vecs[i] = math.multiply(vecs[i],prob);
-                
-                fin_vec[i] = math.add(fin_vec[i],vecs[i]);
-            }          
+            //console.log(prob, den);
+            
+            if(fin_den == undefined)
+                fin_den = math.multiply(den, prob);
+            else
+                fin_den = math.add(fin_den, math.multiply(den,prob));
+            
+            //console.log("fin_den", fin_den);
         }
 
 
-        //console.log(fin_vec);
-        return fin_vec;
+        
+        return fin_den;
     }
 
     getEntropy(operation_index, precision = 1e-5)
@@ -955,29 +958,29 @@ export default class QCEngine {
         let len = 0;
         let ent = 0;
         let var_index = this.name2index;
-        let vec = [];
 
         for (let key in var_index) {
-            //console.log("abd");
-            vec = this._getFakeVector(key, operation_index);
+            let den = this._getPartialTrace(key, operation_index);
             //console.log(vec);
-            ent += linear_entropy(vec);
-            console.log(key, [...vec], ent);
+            ent += linear_entropy(den);
+            //console.log(key, den, ent);
             len++;
         }
+        
         if(Math.abs(ent - 0) < precision)
             ent = 0;
+        console.log("entropy",ent);
         return ent/len;
     }
 
     variablePurity(operation_index, variable) {
-        let vec = this._getFakeVector(variable, operation_index);
+        let vec = this._getPartialTrace(variable, operation_index);
         let ent = linear_entropy(vec);
         return 1 - ent;
     }
 
     variableEntropy(operation_index, variable) {
-        let vec = this._getFakeVector(variable, operation_index);
+        let vec = this._getPartialTrace(variable, operation_index);
         let ent = linear_entropy(vec);
         return ent;
     }
