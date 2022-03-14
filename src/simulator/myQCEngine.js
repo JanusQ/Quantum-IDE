@@ -812,7 +812,7 @@ export default class QCEngine {
             let phi = 0;
             for (i = 0; i < Math.pow(2, bits); i++) {
                 prob = sum(magnitudes, i, var_index[key], qubit_number);
-                phi = average_sum(phases, i, var_index[key], qubit_number);
+                phi = average_sum(phases, i, var_index[key], qubit_number, magnitudes);
                 res[key]['prob'][i] = prob;
                 res[key]['magn'][i] = Math.sqrt(prob);
                 res[key]['phase'][i] = phi;

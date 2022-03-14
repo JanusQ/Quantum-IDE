@@ -240,7 +240,7 @@ function sum(state_vector, num, range, total)
     return res;
 }
 
-function average_sum(state_vector, num, range, total)
+function average_sum(state_vector, num, range, total, probs)
 {
     let i = 0;
     let res = 0;
@@ -255,11 +255,11 @@ function average_sum(state_vector, num, range, total)
         if(not_equal(std, tmp, range)){
             continue;
         }
-        res += state_vector[i];
-        count++;
+        res += state_vector[i] * probs[i];
+        //count++;
     }
     
-    return res / count;
+    return res;
 }
 
 function alt_tensor(l1,l2,key)
