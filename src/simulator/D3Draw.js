@@ -1412,7 +1412,6 @@ export default class d3Draw {
 						}px;border:1px solid black`
 					)
 				const showDataSVG = showDataDiv.append('svg').classed('relaed_svg', true).attr('width', '100%').attr('height', '100%')
-
 				self.drawShowData(showDataSVG, data)
 			})
 			childG.on('mouseleave', function (e) {
@@ -1619,7 +1618,6 @@ export default class d3Draw {
 			.attr('dominant-baseline', 'middle')
 			.attr('x', 0)
 			.attr('y', this.dLength / 2)
-			.attr('transform', 'rotate(345)')
 	}
 	// 绘制基本结构
 	drawElement(labelName, labelId, qc, circleNum, inputStateNumber) {
