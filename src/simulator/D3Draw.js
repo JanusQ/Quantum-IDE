@@ -139,6 +139,8 @@ export default class d3Draw {
 		this.charts = []
 		d3.selectAll('#chart_svg *').remove()
 		d3.selectAll('#chart_down_svg *').remove()
+		const drawDiv = d3.select('#d_draw_div')
+		drawDiv.selectAll('*').remove()
 		this.qc = null
 		this.varstatesIndex = 0
 	}
@@ -645,6 +647,7 @@ export default class d3Draw {
 						labelObj.id,
 						true
 					)
+
 					self.drawDChart(qc, { labels: [labelObj] })
 				}
 
@@ -1315,9 +1318,9 @@ export default class d3Draw {
 						.attr(
 							'width',
 							bars.data()[bars.data().length - 1].x -
-								bars.data()[0].x +
-								barWidth -
-								barWidth * config.barPadding
+							bars.data()[0].x +
+							barWidth -
+							barWidth * config.barPadding
 						)
 						.attr('x', bars.data()[0].x - config.margins.left - barWidth / 2 + barWidth * config.barPadding)
 						.attr('y', 1)
@@ -1766,10 +1769,8 @@ export default class d3Draw {
 					.attr('class', 'show_data_div')
 					.attr(
 						'style',
-						`height:${32 * allKeys.length}px;top:${
-							offsetY ? offsetY - scrollTop + 40 : e.offsetY - scrollTop + 36
-						}px;left:${
-							offsetX ? offsetX + 50 - scrollLeft : e.offsetX - scrollLeft + 10
+						`height:${32 * allKeys.length}px;top:${offsetY ? offsetY - scrollTop + 40 : e.offsetY - scrollTop + 36
+						}px;left:${offsetX ? offsetX + 50 - scrollLeft : e.offsetX - scrollLeft + 10
 						}px;border:1px solid black`
 					)
 				const showDataSVG = showDataDiv
@@ -1978,8 +1979,7 @@ export default class d3Draw {
 					.attr('class', 'relaed_div')
 					.attr(
 						'style',
-						`top:${e.offsetY - scrollTop + 36}px;left:${e.offsetX - scrollLeft + 10}px;height:${
-							self.dLength * data.length + 10
+						`top:${e.offsetY - scrollTop + 36}px;left:${e.offsetX - scrollLeft + 10}px;height:${self.dLength * data.length + 10
 						}px;width:${self.dLength + 8}px;border:1px solid black`
 					)
 				relaedDiv
@@ -2145,24 +2145,24 @@ export default class d3Draw {
 			tension === 1
 				? ['M', [sx, sy], 'L', [tx, ty], 'V', ty + tdy, 'L', [sx, sy + sdy], 'Z']
 				: [
-						'M',
-						[sx, sy],
-						'C',
-						[(m0 = tension * sx + (1 - tension) * tx), sy],
-						' ',
-						[(m1 = tension * tx + (1 - tension) * sx), ty],
-						' ',
-						[tx, ty],
-						'V',
-						ty + tdy,
-						'C',
-						[m1, ty + tdy],
-						' ',
-						[m0, sy + sdy],
-						' ',
-						[sx, sy + sdy],
-						'Z',
-				  ]
+					'M',
+					[sx, sy],
+					'C',
+					[(m0 = tension * sx + (1 - tension) * tx), sy],
+					' ',
+					[(m1 = tension * tx + (1 - tension) * sx), ty],
+					' ',
+					[tx, ty],
+					'V',
+					ty + tdy,
+					'C',
+					[m1, ty + tdy],
+					' ',
+					[m0, sy + sdy],
+					' ',
+					[sx, sy + sdy],
+					'Z',
+				]
 		).join('')
 	}
 	silkRibbonPathString(sx, sy, tx, ty, tension) {
@@ -2170,23 +2170,23 @@ export default class d3Draw {
 		return (
 			tension == 1
 				? [
-						'M',
-						[sx, sy],
-						'L',
-						[tx, ty],
-						//"Z"
-				  ]
+					'M',
+					[sx, sy],
+					'L',
+					[tx, ty],
+					//"Z"
+				]
 				: [
-						'M',
-						[sx, sy],
-						'C',
-						[(m0 = tension * sx + (1 - tension) * tx), sy],
-						' ',
-						[(m1 = tension * tx + (1 - tension) * sx), ty],
-						' ',
-						[tx, ty],
-						//"Z"
-				  ]
+					'M',
+					[sx, sy],
+					'C',
+					[(m0 = tension * sx + (1 - tension) * tx), sy],
+					' ',
+					[(m1 = tension * tx + (1 - tension) * sx), ty],
+					' ',
+					[tx, ty],
+					//"Z"
+				]
 		).join('')
 	}
 	// 绘制sankey图
@@ -2544,16 +2544,21 @@ export default class d3Draw {
 			}
 		}
 	}
-	drawDChart(data) {
-		const drawDiv = d3.select('#d_draw_div')
-		drawDiv.selectAll('*').remove()
+	drawDChart(data, drawData) {
+		
 		// 判断绘制类型
-		data.labels = data.labels.filter((item) => item.text !== '')
-		for (let i = 0; i < data.labels.length; i++) {
-			if (data.isSparse(data.labels[i].id)) {
-				this.drawSankey(data, data.labels[i])
+		let labels = []
+		if (drawData) {
+			labels = drawData.labels.filter((item) => item.text !== '')
+		} else {
+
+			labels = data.labels.filter((item) => item.text !== '')
+		}
+		for (let i = 0; i < labels.length; i++) {
+			if (data.isSparse(labels[i].id)) {
+				this.drawSankey(data, labels[i])
 			} else {
-				this.drawMatrix(data, data.labels[i])
+				this.drawMatrix(data, labels[i])
 			}
 		}
 	}
