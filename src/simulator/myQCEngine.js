@@ -1278,16 +1278,18 @@ export default class QCEngine {
                 input_state['bases'][i]['related_bases'][k]['magnitude'] = whole['magns'][order];
                 input_state['bases'][i]['related_bases'][k]['phases'] = whole['phases'][order];
 
-                if (input_state['bases'][i]['max_base_magn'] < whole['magns'][order])
+                if(input_state['bases'][i]['max_base_magn'] < whole['magns'][order])
                     input_state['bases'][i]['max_base_magn'] = whole['magns'][order];
+                if(input_state['max_magn'] < whole['magns'][order])
+                    input_state['max_magn'] = whole['magns'][order];
 
             }
-            for (let k = 0; k < Math.pow(2, this.qubit_number - qubit_num); k++) {
-                if (input_state['bases'][i]['max_base_magn'] == 0)
-                    input_state['bases'][i]['related_bases'][k]['ratio'] = 0;
-                else
-                    input_state['bases'][i]['related_bases'][k]['ratio'] = input_state['bases'][i]['related_bases'][k]['magnitude'] / input_state['bases'][i]['max_base_magn'];
-            }
+            // for (let k = 0; k < Math.pow(2, this.qubit_number - qubit_num); k++) {
+            //     if (input_state['bases'][i]['max_base_magn'] == 0)
+            //         input_state['bases'][i]['related_bases'][k]['ratio'] = 0;
+            //     else
+            //         input_state['bases'][i]['related_bases'][k]['ratio'] = input_state['bases'][i]['related_bases'][k]['magnitude'] / input_state['bases'][i]['max_base_magn'];
+            // }
 
             //deleted all zero related bases
             let d = 0;
@@ -1303,11 +1305,22 @@ export default class QCEngine {
 
         }
 
+        // process ratio
         for (let i = 0; i < input_state['bases'].length; i++) {
-            if (input_state['max_magn'] == 0)
+            if (input_state['max_magn'] == 0){
+                for(let j = 0; j< input_state['bases'][i]['related_bases'].length; j++)
+                {
+                    input_state['bases'][i]['related_bases'][j]['ratio'] = 0;
+                }
                 input_state['bases'][i]['ratio'] = 0;
-            else
+            }
+            else{
+                for(let j = 0; j< input_state['bases'][i]['related_bases'].length; j++)
+                {
+                    input_state['bases'][i]['related_bases'][j]['ratio'] = input_state['bases'][i]['related_bases'][j]['magnitude'] / input_state['max_magn'];
+                }
                 input_state['bases'][i]['ratio'] = input_state['bases'][i]['magnitude'] / input_state['max_magn'];
+            }
         }
         //console.log("state",input_state);
         return input_state;
