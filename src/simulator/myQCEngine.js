@@ -349,6 +349,31 @@ export default class QCEngine {
         // debugger
     }
 
+    ry(rotation, binary_qubits = undefined) {
+        const { circuit, operations, now_column } = this
+        const qubits = this.parseBinaryQubits(binary_qubits)
+
+        let phi = 0
+        if(rotation!==0){
+            phi = rotation > 0?  "pi/" + (180/rotation) : "-pi/" + (180/-rotation)
+        }
+
+
+        qubits.forEach(qubit => {
+            circuit.addGate("ry", now_column, qubit, {
+                params: {
+                    theta: phi
+                }
+            });
+        })
+
+        this._addGate({
+            'qubits': qubits,
+            'operation': 'ry',
+            'columns': this.nextColumn()
+        })
+    }
+
     print() {
         console.log('qc_console', arguments)
         // debugger
@@ -395,6 +420,7 @@ export default class QCEngine {
         //     }
         // });
 
+        console.log(control, target)
         circuit.addGate("ncphase", now_column, qubits, {
             params: {
                 qubit_number: qubits.length,
@@ -406,6 +432,42 @@ export default class QCEngine {
         this._addGate({
             'qubits': [...control, ...target],
             'operation': 'ccphase',
+            'columns': this.nextColumn()
+        })
+    }
+
+
+
+    cry(rotation, binary_control, binary_target) {
+        const { operations, circuit, now_column } = this
+        let control = binary_control ? this.parseBinaryQubits(binary_control) : []
+        let target = binary_target ? this.parseBinaryQubits(binary_target) : []
+
+        if(control.length != 1){
+            console.error(control, 'control qubit number of cry is not one')
+            debugger
+        }
+        if(target.length != 1){
+            console.error(target, 'target qubit number of cry is not one')
+            debugger
+        }
+
+        let phi = 0
+        if(rotation!==0){
+            phi = rotation > 0?  "pi/" + (180/rotation) : "-pi/" + (180/-rotation)
+        }
+
+        circuit.addGate("cry", now_column, [...control, ...target], {
+            params: {
+                theta: phi
+            }
+        });
+
+        // TODO: 允许多个控制或者多个被控吗
+        this._addGate({
+            control,
+            target,
+            'operation': 'cry',
             'columns': this.nextColumn()
         })
     }
@@ -511,7 +573,7 @@ export default class QCEngine {
 
         qubits1.forEach((qubit1, index) => {
             const qubit2 = qubits2[index]
-            this.swap(qubit12binary[qubit1], qubit12binary[qubit2])
+            this.swap(qubit12binary([qubit1]), qubit12binary([qubit2]))
         })
 
     }
@@ -594,7 +656,7 @@ export default class QCEngine {
 
     getQubitsInvolved(operation) {
         let qubits_involved = []
-        const { controls, qubits, qubit, target, targets, qubits1, qubits2, qubit1, qubit2 } = operation
+        const { control, controls, qubits, qubit, target, targets, qubits1, qubits2, qubit1, qubit2 } = operation
         // if(target){
         //     qubits_involved.push(target)
         // }
@@ -607,12 +669,15 @@ export default class QCEngine {
         if (qubit2) {
             qubits_involved.push(qubit2)
         }
+
+        // TODO: control和target还是统一成单比特的
         qubits_involved = [...qubits_involved, ...(target || [])]
         qubits_involved = [...qubits_involved, ...(qubits1 || [])]
         qubits_involved = [...qubits_involved, ...(qubits2 || [])]
         qubits_involved = [...qubits_involved, ...(controls || [])]
         qubits_involved = [...qubits_involved, ...(qubits || [])]
         qubits_involved = [...qubits_involved, ...(targets || [])]
+        qubits_involved = [...qubits_involved, ...(control || [])]
 
 
         let qubits_involved_set = [...new Set(qubits_involved)]
@@ -1470,7 +1535,7 @@ export default class QCEngine {
     isSparse(label_id, threshold = 1.3, precision = 1e-5) {
         // console.log("label_id", label_id);
         // console.log(this.labels);
-        return false;
+        // return false;
         let matrix = this.getEvoMatrix(label_id);
         let count = 0;
         for (let i = 0; i < matrix.length; i++) {
@@ -1589,6 +1654,11 @@ class QInt {
         qc.had(binary_qubits)
     }
 
+    ry(rotation, binary_qubits) {
+        const { qc } = this
+        binary_qubits = this.bits(binary_qubits)
+        qc.ry(rotation, binary_qubits)
+    }
 
     // TODO: console要换成throw
     // TODO: 还没有检查过
@@ -1642,7 +1712,7 @@ class QInt {
                 // debugger
                 self_qubits_involved.forEach((self_qubit, self_index) => {
                     let target = qubit12binary([self_qubit])
-                    let controls = [...self_qubits_involved.filter(elm => elm !== self_qubit), value_qubit]
+                    let controls = [...self_qubits_involved.filter(elm => elm < self_qubit), value_qubit]
                     controls = qubit12binary(controls)
                     qc.ccnot(controls, target)
                 })
