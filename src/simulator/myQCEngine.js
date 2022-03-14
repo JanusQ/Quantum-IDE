@@ -1429,7 +1429,7 @@ export default class QCEngine {
             let options = {};
             //console.log("opera",opera);
             let type;
-            if (opera['controls']) {
+            if (opera['controls'] || opera['control']) {
                 options['controls'] = [];
                 options['target'] = [];
                 type = 0;
