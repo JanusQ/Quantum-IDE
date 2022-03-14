@@ -129,7 +129,7 @@ function unique(list){
 }
 
 
-function calibrate(phase)
+function calibrate(phase, ZERO = false)
 {
     while(phase < 0)
     {
@@ -138,6 +138,11 @@ function calibrate(phase)
     while(phase > 2*Math.PI)
     {
         phase -= Math.PI*2;
+    }
+    if(ZERO == true)
+    {
+        if(Math.abs(phase - Math.PI*2) < 1e-5)
+            phase -= Math.PI*2;
     }
     return phase;
 }

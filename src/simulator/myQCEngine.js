@@ -796,7 +796,7 @@ export default class QCEngine {
             magnitudes[i] = state[i]['magnitude'];
             amplitudes[i] = state[i]['amplitude'];
             let polar = getExp(amplitudes[i]);
-            phases[i] = calibrate(polar['phi']) * 180 / Math.PI;
+            phases[i] = calibrate(polar['phi'], true) * 180 / Math.PI;
         }
 
         let var_index = this.name2index;
@@ -859,7 +859,7 @@ export default class QCEngine {
             let polar = getExp(comp);
             res['magns'][i] = polar['r'];
             res['probs'][i] = res['magns'][i] * res['magns'][i];
-            res['phases'][i] = calibrate(polar['phi']) * 180 / Math.PI;
+            res['phases'][i] = calibrate(polar['phi'], true) * 180 / Math.PI;
             res['base'][i] = binary(i, qubit_number);
         }
         // console.log("wholestate",res);
@@ -1589,6 +1589,35 @@ export default class QCEngine {
         }
 
         return sankey;
+    }
+
+    _postProcess(state)
+    {
+        let max_magn = state['input_state']['max_magn'] > state['output_state']['max_magn'] ? state['input_state']['max_magn'] : state['output_state']['max_magn'];
+
+        for(let key in state){
+            for (let i = 0; i < state[key]['bases'].length; i++){
+                if(max_magn != 0)
+                {
+                    for(let j = 0; j< state[key]['bases'][i]['related_bases'].length; j++)
+                    {
+                        state[key]['bases'][i]['related_bases'][j]['ratio'] = state[key]['bases'][i]['related_bases'][j]['magnitude'] / max_magn;
+                    }
+                    state[key]['bases'][i]['ratio'] = state[key]['bases'][i]['magnitude'] / max_magn;
+                }
+            }
+        }
+
+        return state;
+    }
+
+    getState(label_id)
+    {
+        let state = {};
+        state['input_state'] = this._makeState(label_id, 'start');
+        state['output_state'] = this._makeState(label_id, 'end');
+        state = this._postProcess(state);
+        return state;
     }
 
     getInputState(label_id) {
