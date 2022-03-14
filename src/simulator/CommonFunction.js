@@ -142,7 +142,6 @@ function calibrate(phase)
     return phase;
 }
 
-// TODO: 判断这几个比特组成的状态是不是纯态
 function isPure(state, precision = 1e-5) {// state: state vector of a grouped qubits  
     let mat = density(state);
     let trace = math.trace(mat);
@@ -291,17 +290,21 @@ function density(fake_vector) // input is an array
     return den;
 }
 
-function linear_entropy(fake_vector)
+function linear_entropy(density_matrix, type = undefined)
 {
     //console.log(fake_vector);
-    let mat = density(fake_vector);
+    let mat;
+    if(type == 'vec')
+        mat = density(density_matrix);
+    else
+        mat = density_matrix;
     
-    //mat = math.multiply(mat, mat);
+    mat = math.multiply(mat, mat);
     
     let trace = complex(0,0);
     let i = 0;
     
-    for(i=0; i<fake_vector.length; i++)
+    for(i=0; i<mat.size()[0]; i++)
     {
         trace = math.add(trace, mat.get([i,i]));
     }
@@ -372,6 +375,26 @@ function spec(total, num, remain, maps, values)
     return res;
 }
 
+function normalize(vector, precision = 1e-5)
+{
+    let i;
+    let cof = 0;
+    for(i=0; i<vector.length; i++)
+    {
+        cof += (vector[i].re * vector[i].re + vector[i].im * vector[i].im);
+    }
+    //console.log("before",cof);
+    cof = Math.sqrt(cof);
+    //console.log("aftercof",cof);
+    if(Math.abs(cof - 0) > precision){
+        for(i=0; i<vector.length; i++)
+        {
+            vector[i] = math.divide(vector[i], cof);
+        }
+    }
+    //console.log([...vector]);
+    return vector;
+}
 
 export {
 	pow2,
@@ -399,4 +422,6 @@ export {
     conj_tran,
     restore,
     average_sum,
+    normalize,
+    density,
 }

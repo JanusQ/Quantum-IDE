@@ -2,7 +2,7 @@ import { data } from 'browserslist'
 import * as d3 from 'd3'
 import { color, group } from 'd3'
 import { event as currentEvent } from 'd3-selection'
-import { number } from 'mathjs'
+import { im, number } from 'mathjs'
 import { ConsoleErrorListener, toDocs } from '../resource/js/quantum-circuit.min'
 import Chart from './Chart'
 export default class d3Draw {
@@ -119,17 +119,19 @@ export default class d3Draw {
 		this.labels = []
 		this.charts = []
 		d3.selectAll('#chart_svg *').remove()
+		d3.selectAll('#chart_down_svg *').remove()
 		this.qc = null
 		this.varstatesIndex = 0
 	}
 	// c视图restore
 	restore() {
 		this.filter = {}
-		const drawData = { magns: [], phases: [], probs: [] }
+		const drawData = { magns: [], phases: [], probs: [], base: [] }
 		this.getWholeState.forEach((item) => {
 			drawData.magns.push(item.magns)
 			drawData.phases.push(item.phases)
 			drawData.probs.push(item.probs)
+			drawData.probs.push(item.base)
 		})
 		this.drawCdownStackedBar(drawData)
 		this.charts = []
@@ -364,7 +366,6 @@ export default class d3Draw {
 				d3.selectAll('.select_rect').attr('stroke', 'transparent').attr('fill', 'transparent').classed('no_click', true)
 				d3.select(this).select('.select_path').attr('stroke', 'rgb(149, 143, 143)').attr('fill', 'rgb(149, 143, 143)').attr('class', 'select_path')
 				d3.select(this).select('.select_rect').attr('fill', 'rgb(149, 143, 143)').attr('class', 'select_rect')
-				console.log(e.target.attributes)
 				self.drawCFn(e.target.attributes.operationIndex.value, data)
 			})
 			.on('mouseover', function (e) {
@@ -526,7 +527,10 @@ export default class d3Draw {
 				case 'ccphase':
 					const ccphaseG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
 					ccphaseG.datum(operation) //绑定数据到dom节点
-					this.drawLine(ccphaseG, x, this.svgItemHeight * (operations[i].qubits[0] + 2), x, this.svgItemHeight * (operations[i].qubits[operations[i].qubits.length - 1] + 2))
+
+					const qubitMax = Math.max(...operations[i].qubits)
+					const qubitMin = Math.min(...operations[i].qubits)
+					this.drawLine(ccphaseG, x, this.svgItemHeight * (qubitMin + 2), x, this.svgItemHeight * (qubitMax + 2))
 					for (let j = 0; j < operations[i].qubits.length; j++) {
 						this.drawCCPhase(ccphaseG, x, this.svgItemHeight * (operations[i].qubits[j] + 2))
 					}
@@ -570,10 +574,10 @@ export default class d3Draw {
 					const defaultMinQ = Math.min(...qubits)
 					const defaultMaxQ = Math.max(...qubits)
 					if (qubits.length) {
-						this.drawLine(defaultG, x, this.svgItemHeight * (qubits[0] + 2), x, this.svgItemHeight * (qubits[qubits.length - 1] + 2))
-
-						this.drawSelfDefinedGate(defaultG, x, this.svgItemHeight * (defaultMinQ + 2))
-						this.drawSelfDefinedGate(defaultG, x, this.svgItemHeight * (defaultMaxQ + 2))
+						this.drawLine(defaultG, x, this.svgItemHeight * (defaultMinQ + 2), x, this.svgItemHeight * (defaultMaxQ + 2))
+						for (let i = 0; i < qubits.length; i++) {
+							this.drawSelfDefinedGate(defaultG, x, this.svgItemHeight * (qubits[i] + 2))
+						}
 					}
 
 					break
@@ -634,7 +638,10 @@ export default class d3Draw {
 		lineChartG.append('path').attr('fill', 'none').attr('stroke', 'rgb(229,143,130)').attr('stroke-width', 1).attr('d', line(I))
 	}
 	// 绘制C的连线
-	drawCLine(svg, lineData, lineXArr) {
+	drawCLine(svg, lineData, lineXArr, heightStep) {
+		const initY = lineData.length * heightStep
+
+		svg.attr('height', 267 + lineData.length * heightStep)
 		if (!lineData.length) {
 			return
 		}
@@ -648,14 +655,13 @@ export default class d3Draw {
 		const getX = (obj, i) => {
 			return lineXArr[getKey(obj, i)][getValue(obj, i)]
 		}
-		const initY = 210
-		const heightSetp = 5
+
 		for (let i = 0; i < lineData.length; i++) {
 			const lineG = svg.append('g').classed('threshold_line', true)
 			const context = d3.path()
 			context.moveTo(getX(lineData[i], 0), initY)
-			context.lineTo(getX(lineData[i], 0), initY + heightSetp * (i + 1))
-			context.lineTo(getX(lineData[i], 1), initY + heightSetp * (i + 1))
+			context.lineTo(getX(lineData[i], 0), initY - heightStep * (i + 1))
+			context.lineTo(getX(lineData[i], 1), initY - heightStep * (i + 1))
 			context.lineTo(getX(lineData[i], 1), initY)
 			lineG.append('path').attr('d', context.toString()).attr('stroke', '#E58F82').attr('stroke-width', 1).attr('fill', 'none')
 		}
@@ -669,6 +675,9 @@ export default class d3Draw {
 		this.drawCdownStackedBar(qc.getWholeState(index), qc)
 	}
 	drawStackedBar(data, j, qc, index) {
+		// 连线的数据 放在这个方法里 计算图标Y轴整体向下移动的距离
+		const heightStep = 5
+		const lineData = qc.getPmiIndex(index, 0.25)
 		const config = {
 			barPadding: 0.1,
 			margins: { top: 20, left: 80, bottom: 100, right: 40 },
@@ -696,6 +705,7 @@ export default class d3Draw {
 					magn: data[key].magn[i],
 					prob: data[key].prob[i],
 					index: i,
+					phase: data[key].phase[i],
 					x: barWidth * i + barWidth / 2 + config.margins.left,
 				})
 				lineXArr[key].push(barWidth * i + barWidth / 2 + config.margins.left + (j ? widthArr[j - 1] : 0))
@@ -703,18 +713,17 @@ export default class d3Draw {
 
 			const width = barWidth * dataArr.length + config.margins.left + config.margins.right
 			widthArr.push(width + (j ? widthArr[j - 1] : 0))
-			const g = chart_svg.append('g').attr('transform', `translate(${j ? widthArr[j - 1] : 0},0)`)
+			const g = chart_svg.append('g').attr('transform', `translate(${j ? widthArr[j - 1] : 0},${lineData.length * heightStep})`)
 			this.StackedBarChart(dataArr, g, width, key, qc, config, barWidth, index, key)
 			allWidth += width
 			chart_svg.attr('width', allWidth + 50)
 			j += 1
 		}
-		const lineData = qc.getPmiIndex(index, 0.25)
-		this.drawCLine(chart_svg, lineData, lineXArr)
+
+		this.drawCLine(chart_svg, lineData, lineXArr, heightStep)
 	}
 
 	StackedBarChart(data, g, width, name, qc, config, barWidth, index, key) {
-		const brush_g = g.append('g').classed('brush_g', true)
 		const chart = new Chart()
 		const self = this
 		chart.width(width)
@@ -731,7 +740,12 @@ export default class d3Draw {
 		chart.scaleY = d3
 			.scaleLinear()
 			.domain([0, d3.max([...data.map((d) => d.magn), ...data.map((d) => d.prob)])])
-			.range([chart.getBodyHeight(), 0])
+			.range([chart.getBodyHeight() / 2, 0])
+
+		chart.scalePhaseY = d3
+			.scaleLinear()
+			.domain([0, d3.max(data, (d) => d.phase) || 1])
+			.range([0, chart.getBodyHeight() / 2])
 		// 处理x轴样式
 		function customXAxis(g) {
 			const xAxis = d3.axisBottom(chart.scaleX)
@@ -759,9 +773,17 @@ export default class d3Draw {
 				.classed('svgtext', true)
 			g.append('rect').attr('width', chart.getBodyWidth()).attr('height', 5).attr('fill', 'rgb(220, 216, 216)').classed('x_rect', true).classed('svgtext', true).attr('rx', 5).attr('ry', 5)
 		}
-		// 处理Y轴样式
+		// 处理上边Y轴样式
 		function customYAxis(g) {
 			const yAxis = d3.axisLeft(chart.scaleY)
+			g.call(yAxis)
+			g.select('.domain').remove()
+			g.selectAll('.tick line').remove()
+			g.selectAll('.tick text').remove()
+		}
+		// 绘制phase的Y轴
+		function customPhaseY(g) {
+			const yAxis = d3.axisLeft(chart.scalePhaseY)
 			g.call(yAxis)
 			g.select('.domain').remove()
 			g.selectAll('.tick line').remove()
@@ -772,7 +794,7 @@ export default class d3Draw {
 			chart
 				.svg()
 				.insert('g', '.body')
-				.attr('transform', 'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight()) + ')')
+				.attr('transform', 'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2) + ')')
 				.attr('class', 'xAxis')
 				.call(customXAxis)
 		}
@@ -785,10 +807,19 @@ export default class d3Draw {
 				.attr('class', 'yAxis')
 				.call(customYAxis)
 		}
+		chart.renderPhaseY = function () {
+			chart
+				.svg()
+				.insert('g', '.body')
+				.attr('transform', 'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2 + 22) + ')')
+				.attr('class', 'phaseYaxis')
+				.call(customPhaseY)
+		}
 		// 绘制坐标轴
 		chart.renderAxis = function () {
 			chart.renderX()
 			chart.renderY()
+			chart.renderPhaseY()
 		}
 		// 绘制名称
 		chart.renderText = function () {
@@ -797,7 +828,7 @@ export default class d3Draw {
 				.append('text')
 				.attr('class', 'axisText')
 				.attr('x', -10)
-				.attr('y', chart.getBodyHeight())
+				.attr('y', chart.getBodyHeight() / 2)
 				.attr('fill', config.textColor)
 				.attr('text-anchor', 'end')
 				.attr('style', 'font-size:18px')
@@ -824,11 +855,6 @@ export default class d3Draw {
 					const position = d3.pointer(e)
 					g.select('.tip').attr('transform', `translate(${position[0] + 85},${position[1] - 5})`)
 				})
-			// .on('click', function (e, d) {
-			// 	d3.selectAll('.magn_bar').attr('stroke', config.hoverColor).attr('stroke-width', 0)
-			// 	d3.selectAll('.prob_bar').attr('stroke', config.hoverColor).attr('stroke-width', 0)
-			// 	d3.select(this).attr('stroke', config.hoverColor).attr('stroke-width', 1)
-			// })
 			g.selectAll('.prob_bar')
 				.on('mouseover', function (e, d) {
 					const position = d3.pointer(e)
@@ -848,11 +874,24 @@ export default class d3Draw {
 					const position = d3.pointer(e)
 					g.select('.tip').attr('transform', `translate(${position[0] + 85},${position[1] - 5})`)
 				})
-			// .on('click', function (e, d) {
-			// 	d3.selectAll('.magn_bar').attr('stroke', config.hoverColor).attr('stroke-width', 0)
-			// 	d3.selectAll('.prob_bar').attr('stroke', config.hoverColor).attr('stroke-width', 0)
-			// 	d3.select(this).attr('stroke', config.hoverColor).attr('stroke-width', 1)
-			// })
+			g.selectAll('.phase_bar')
+				.on('mouseover', function (e, d) {
+					const position = d3.pointer(e)
+					const tipG = g
+						.append('g')
+						.classed('tip', true)
+						.attr('transform', `translate(${position[0] + 85},${position[1] - 5})`)
+					tipG.append('rect').attr('stroke', 'gray').attr('stroke-width', 1).attr('height', 26).attr('width', 110).attr('fill', '#fff').attr('rx', 2)
+					const text = tipG.append('text').attr('fill', chart.textColor).classed('svgtext', true).attr('x', 4).attr('y', 16)
+					text.append('tspan').text('phase:' + d.phase.toFixed(2))
+				})
+				.on('mouseleave', function (e, d) {
+					g.select('.tip').remove()
+				})
+				.on('mousemove', function (e) {
+					const position = d3.pointer(e)
+					g.select('.tip').attr('transform', `translate(${position[0] + 85},${position[1] - 5})`)
+				})
 		}
 		self.chartBrushFn(g, barWidth, config, index, qc, key, chart)
 		self.charts.push(chart)
@@ -878,10 +917,11 @@ export default class d3Draw {
 			.merge(magnBars)
 			.attr('x', (d) => chart.scaleX(d.index))
 			.attr('y', (d) => chart.scaleY(d.magn))
-			.attr('width', chart.scaleX.bandwidth())
-			.attr('height', (d) => chart.getBodyHeight() - chart.scaleY(d.magn))
-			.attr('fill', chart._colors[1])
-
+			.attr('width', chart.scaleX.bandwidth() - 1)
+			.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.magn))
+			.attr('fill', '#fff')
+			.attr('stroke', '#000')
+			.attr('stroke-width', 1)
 		magnBars.exit().remove()
 
 		// 绘制Prob bar
@@ -896,10 +936,28 @@ export default class d3Draw {
 			.attr('x', (d) => chart.scaleX(d.index))
 			.attr('y', (d) => chart.scaleY(d.prob))
 			.attr('width', chart.scaleX.bandwidth())
-			.attr('height', (d) => chart.getBodyHeight() - chart.scaleY(d.prob))
+			.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.prob))
 			.attr('fill', chart._colors[0])
+			.attr('stroke', chart._colors[0])
+			.attr('stroke-width', 1)
 
 		probBars.exit().remove()
+		// 绘制phase bar
+
+		let phaseBars = chart.body().selectAll('.phase_bar').data(data)
+
+		phaseBars
+			.enter()
+			.append('rect')
+			.attr('class', 'phase_bar')
+			.merge(phaseBars)
+			.attr('x', (d) => chart.scaleX(d.index))
+			.attr('y', (d) => chart.getBodyHeight() / 2 + 22)
+			.attr('width', chart.scaleX.bandwidth())
+			.attr('height', (d) => chart.scalePhaseY(d.phase))
+			.attr('fill', chart._colors[1])
+
+		phaseBars.exit().remove()
 		// 绘制最高的值
 		const maxNumber = d3.max([...data.map((d) => d.magn), ...data.map((d) => d.prob)])
 		let textIndex = 0
@@ -978,13 +1036,16 @@ export default class d3Draw {
 					const filterData = self.getWholeState.filter((item) => {
 						return filterResult.includes(item.index)
 					})
-					const drawData = { magns: [], phases: [], probs: [] }
+
+					const drawData = { magns: [], phases: [], probs: [], base: [] }
 					filterData.forEach((item) => {
 						drawData.magns.push(item.magns)
 						drawData.phases.push(item.phases)
 						drawData.probs.push(item.probs)
+						drawData.base.push(item.base)
 					})
 					self.drawCdownStackedBar(drawData)
+
 					// 更新C视图上半
 					const barData = qc.getVarState(index, JSON.parse(JSON.stringify(self.filter)))
 
@@ -996,6 +1057,7 @@ export default class d3Draw {
 								name: key,
 								magn: barData[key].magn[i],
 								prob: barData[key].prob[i],
+								phase: barData[key].phase ? barData[key].phase[i] : 0,
 								index: i,
 								x: barWidth * i + barWidth / 2 + config.margins.left,
 							})
@@ -1022,7 +1084,13 @@ export default class d3Draw {
 		const dataArr = []
 		// const barWidth = 20
 		for (let i = 0; i < data.magns.length; i++) {
-			dataArr.push({ magns: data.magns[i], phases: data.phases[i], probs: data.probs[i], index: i })
+			dataArr.push({
+				magns: data.magns[i],
+				phases: data.phases[i],
+				probs: data.probs[i],
+				index: i,
+				base: data.base[i],
+			})
 		}
 		if (!this.getWholeState.length) {
 			this.getWholeState = dataArr
@@ -1178,37 +1246,59 @@ export default class d3Draw {
 		}
 		// 绑定事件
 		chart.addMouseOn = function () {
-			chart
-				.svg()
-				.selectAll('.bar')
+			g.selectAll('.magns_bar')
 				.on('mouseover', function (e, d) {
 					const position = d3.pointer(e)
-					const text = g
-						.append('text')
+					const tipG = g
+						.append('g')
 						.classed('tip', true)
-						.attr('x', position[0] + 100)
-						.attr('y', position[1])
-						.attr('fill', chart.textColor)
-					text.append('tspan').text('magns:' + d.data['magns'])
-					text.append('tspan')
-						.attr('x', position[0] + 100)
-						.attr('dy', '1em')
-						.text('phases:' + d.data['phases'])
+						.attr('transform', `translate(${position[0] + 85},${position[1] - 5})`)
+					tipG.append('rect').attr('stroke', 'gray').attr('stroke-width', 1).attr('height', 26).attr('width', 110).attr('fill', '#fff').attr('rx', 2)
+					const text = tipG.append('text').attr('fill', chart.textColor).classed('svgtext', true).attr('x', 4).attr('y', 16)
+					text.append('tspan').text('Base:' + d.base)
 				})
 				.on('mouseleave', function (e, d) {
-					chart.svg().select('.tip').remove()
+					g.select('.tip').remove()
 				})
 				.on('mousemove', function (e) {
 					const position = d3.pointer(e)
-					chart
-						.svg()
-						.select('.tip')
-						.attr('x', position[0] + 100)
-						.attr('y', position[1] + 20)
-					chart
-						.svg()
-						.selectAll('.tip tspan')
-						.attr('x', position[0] + 100)
+					g.select('.tip').attr('transform', `translate(${position[0] + 55},${position[1] - 5})`)
+				})
+			g.selectAll('.probs_bar')
+				.on('mouseover', function (e, d) {
+					const position = d3.pointer(e)
+					const tipG = g
+						.append('g')
+						.classed('tip', true)
+						.attr('transform', `translate(${position[0] + 55},${position[1] - 5})`)
+					tipG.append('rect').attr('stroke', 'gray').attr('stroke-width', 1).attr('height', 26).attr('width', 110).attr('fill', '#fff').attr('rx', 2)
+					const text = tipG.append('text').attr('fill', chart.textColor).classed('svgtext', true).attr('x', 4).attr('y', 16)
+					text.append('tspan').text('Base:' + d.base)
+				})
+				.on('mouseleave', function (e, d) {
+					g.select('.tip').remove()
+				})
+				.on('mousemove', function (e) {
+					const position = d3.pointer(e)
+					g.select('.tip').attr('transform', `translate(${position[0] + 55},${position[1] - 5})`)
+				})
+			g.selectAll('.phases_bar')
+				.on('mouseover', function (e, d) {
+					const position = d3.pointer(e)
+					const tipG = g
+						.append('g')
+						.classed('tip', true)
+						.attr('transform', `translate(${position[0] + 55},${position[1] - 5})`)
+					tipG.append('rect').attr('stroke', 'gray').attr('stroke-width', 1).attr('height', 26).attr('width', 110).attr('fill', '#fff').attr('rx', 2)
+					const text = tipG.append('text').attr('fill', chart.textColor).classed('svgtext', true).attr('x', 4).attr('y', 16)
+					text.append('tspan').text('Base:' + d.base)
+				})
+				.on('mouseleave', function (e, d) {
+					g.select('.tip').remove()
+				})
+				.on('mousemove', function (e) {
+					const position = d3.pointer(e)
+					g.select('.tip').attr('transform', `translate(${position[0] + 55},${position[1] - 5})`)
 				})
 		}
 		// 缩放
@@ -1253,6 +1343,7 @@ export default class d3Draw {
 	}
 	/**************************绘制D模块***********************************/
 	// 计算input的角度对应的X,Y 有个3px的差值 input的绘制
+
 	getPhaseXY(deg, length) {
 		let phaseX = 0
 		let phaseY = 0
@@ -1260,8 +1351,10 @@ export default class d3Draw {
 			phaseY = 0
 		} else if (deg >= 135 && deg <= 225) {
 			phaseY = length
+		} else if (deg > 45 && deg < 135) {
+			phaseY = length * (Math.abs(deg - 45) / 90)
 		} else {
-			phaseY = length * (Math.abs(deg - 180) / 180)
+			phaseY = length * (Math.abs(deg - 225) / 90)
 		}
 		if (deg <= 45) {
 			phaseX = length / 2 + (deg / 45) * (length / 2)
@@ -1280,7 +1373,7 @@ export default class d3Draw {
 		}
 	}
 	// 绘制input
-	drawDInput(svg, x, y, inWidth, deg, color, isNeedShowData, data, chartDiv, chartSvgDiv) {
+	drawDInput(svg, x, y, inWidth, deg, color, isNeedShowData, data, chartDiv, chartSvgDiv, offsetX, offsetY) {
 		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`).classed('d_item', true)
 		parentG.append('rect').attr('width', this.dLength).attr('height', this.dLength).attr('fill', 'none')
 		const childG = parentG.append('g').attr('transform', `translate(3,3)`)
@@ -1306,16 +1399,19 @@ export default class d3Draw {
 			data.probability = Math.pow(data.magnitude.toFixed(1), 2)
 			const allKeys = [...Object.keys(data), ...Object.keys(data.var2value)].filter((item) => item !== 'var2value' && item !== 'range')
 			childG.on('mouseover', function (e) {
-				// console.log(scrollLeft)
 				const scrollLeft = chartSvgDiv._groups[0][0].scrollLeft
 				const scrollTop = chartSvgDiv._groups[0][0].scrollTop
 				chartDiv.selectAll('.show_data_div').remove()
 				const showDataDiv = chartDiv
 					.append('div')
 					.attr('class', 'show_data_div')
-					.attr('style', `height:${32 * allKeys.length}px;top:${e.offsetY - scrollTop + 36}px;left:${e.offsetX - scrollLeft + 10}px;border:1px solid black`)
+					.attr(
+						'style',
+						`height:${32 * allKeys.length}px;top:${offsetY ? offsetY - scrollTop + 40 : e.offsetY - scrollTop + 36}px;left:${
+							offsetX ? offsetX + 50 - scrollLeft : e.offsetX - scrollLeft + 10
+						}px;border:1px solid black`
+					)
 				const showDataSVG = showDataDiv.append('svg').classed('relaed_svg', true).attr('width', '100%').attr('height', '100%')
-
 				self.drawShowData(showDataSVG, data)
 			})
 			childG.on('mouseleave', function (e) {
@@ -1390,8 +1486,18 @@ export default class d3Draw {
 					.attr('cy', circleR)
 					.attr('r', circleR - 2)
 					.attr('stroke-width', 1)
+					.attr('fill', color)
+					.attr('opacity', 0.1)
+					.classed('d_item', true)
+				childG
+					.append('circle')
+					.attr('cx', circleR)
+					.attr('cy', circleR)
+					.attr('r', circleR - 2)
+					.attr('stroke-width', 1)
 					.attr('stroke', color)
-					.attr('fill', 'none')
+					.attr('fill', color)
+					.attr('opacity', 0.2)
 					.classed('d_item', true)
 			}
 		} else {
@@ -1404,11 +1510,22 @@ export default class d3Draw {
 				.attr('stroke', color)
 				.attr('fill', 'none')
 				.classed('d_item', true)
+			childG
+				.append('circle')
+				.attr('cx', circleR)
+				.attr('cy', circleR)
+				.attr('r', circleR - 2)
+				.attr('stroke-width', 1)
+				.attr('stroke', color)
+				.attr('fill', 'none')
+				.attr('opacity', 0.5)
+				.classed('d_item', true)
 		}
 		if (arcDeg) {
 			arcR = (arcR * this.dLength) / 2 - 2
 			const data = { startAngle: 0, endAngle: (Math.PI * arcDeg) / 180 }
 			const acrPath = d3.arc().innerRadius(0).outerRadius(arcR)
+
 			childG.append('path').attr('d', acrPath(data)).attr('fill', color).attr('transform', 'translate(13,13)')
 		} else if (!arcDeg && arcR) {
 			arcR = (arcR * this.dLength) / 2 - 2
@@ -1489,7 +1606,7 @@ export default class d3Draw {
 					})
 				const relaedSVG = relaedDiv.append('svg').classed('relaed_svg', true).attr('width', '100%').attr('height', 'calc(100% - 8px)')
 				for (let i = 0; i < data.length; i++) {
-					self.drawDInput(relaedSVG, 3, self.dLength * i, data[i].ratio, data[i].phases, 'rgb(137, 214, 220)', true, data[i], chartDiv, e.offsetY + 36, e.offsetX + 10)
+					self.drawDInput(relaedSVG, 3, self.dLength * i, data[i].ratio, data[i].phases, 'rgb(137, 214, 220)', true, data[i], chartDiv, chartSvgDiv, e.offsetX, e.offsetY)
 				}
 			})
 	}
@@ -1501,7 +1618,6 @@ export default class d3Draw {
 			.attr('dominant-baseline', 'middle')
 			.attr('x', 0)
 			.attr('y', this.dLength / 2)
-			.attr('transform', 'rotate(345)')
 	}
 	// 绘制基本结构
 	drawElement(labelName, labelId, qc, circleNum, inputStateNumber) {
@@ -1940,6 +2056,8 @@ export default class d3Draw {
 		}
 	}
 	drawDChart(data) {
+		const { phaseX, phaseY } = this.getPhaseXY(112.5, 90)
+		console.log(phaseX, phaseY)
 		const drawDiv = d3.select('#d_draw_div')
 		drawDiv.selectAll('*').remove()
 		// 判断绘制类型
