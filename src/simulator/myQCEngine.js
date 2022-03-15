@@ -56,6 +56,8 @@ export default class QCEngine {
 
         this.operation_index2whole_state = {}
         this.operation_index2var_state = {}
+        
+        this.draw_evo = true;
     }
 
 
@@ -792,20 +794,9 @@ export default class QCEngine {
         if(filter === undefined && operation_index2var_state[operation_index])
             return operation_index2var_state[operation_index]
 
-
         let res = {};
-        let opera = operations[operation_index];
-        let state = opera['state_after_opertaion'];
-        let magnitudes = [];
-        let amplitudes = [];
-        let phases = [];
-        //console.log(state);
-        for (let i = 0; i < state.length; i++) {
-            magnitudes[i] = state[i]['magnitude'];
-            amplitudes[i] = state[i]['amplitude'];
-            let polar = getExp(amplitudes[i]);
-            phases[i] = calibrate(polar['phi'], true) * 180 / Math.PI;
-        }
+
+        let whole = this.getWholeState(operation_index);
 
         let var_index = this.name2index;
 
@@ -814,16 +805,17 @@ export default class QCEngine {
             res[key]['prob'] = [];
             res[key]['magn'] = [];
             res[key]['phase'] = [];
-            let i = 0;
-            let bits = var_index[key][1] - var_index[key][0];
-            let prob = 0;
-            let phi = 0;
-            for (i = 0; i < Math.pow(2, bits); i++) {
-                prob = sum(magnitudes, i, var_index[key], qubit_number);
-                phi = average_sum(phases, i, var_index[key], qubit_number, magnitudes);
-                res[key]['prob'][i] = prob;
-                res[key]['magn'][i] = Math.sqrt(prob);
-                res[key]['phase'][i] = phi;
+
+            let bits = var_index[key][1] - var_index[key][0];        
+
+            for (let i = 0; i < Math.pow(2, bits); i++) {
+                let input_index ={}
+                input_index[key] = [i];
+                let tmp_index = this.getIndex(operation_index, input_index);
+
+                res[key]['prob'][i] = average(whole['probs'], tmp_index, whole['probs'], 'probs');
+                res[key]['magn'][i] = average(whole['probs'], tmp_index, whole['probs'], 'magns');
+                res[key]['phase'][i] = average(whole['phases'], tmp_index, whole['probs'], 'phases');
             }
         }
 
@@ -1256,7 +1248,7 @@ export default class QCEngine {
             let tmp_index = this.getIndex(op_index, input_index);
             //console.log(tmp_index);
             input_state['bases'][i]['magnitude'] = average(whole['probs'], tmp_index, whole['probs'], 'magns');
-            input_state['bases'][i]['phases'] = average(whole['phases'], tmp_index, whole['probs'], 'probs');
+            input_state['bases'][i]['phases'] = average(whole['phases'], tmp_index, whole['probs'], 'phases');
 
             if (input_state['max_magn'] < input_state['bases'][i]['magnitude'])
                 input_state['max_magn'] = input_state['bases'][i]['magnitude'];
@@ -1382,13 +1374,23 @@ export default class QCEngine {
 
     }
 
+    disableEvolutionview()
+    {
+        this.draw_evo = false;
+    }
+    
+    enableEvolutionview()
+    {
+        this.draw_evo = true;
+    }
+
     canShow(label_id) {
         // console.log(this.operations);
         // console.log(this.labels);
         let ops = [this.labels[label_id]['start_operation'], this.labels[label_id]['end_operation']];
         for (let i = ops[0]; i < ops[1]; i++) {
             let opera = this.operations[i];
-            if (opera['operation'] == 'write' || opera['operation'] == 'measure')
+            if (opera['operation'] == 'write' || opera['operation'] == 'measure' || this.draw_evo == false)
                 return false;
 
         }

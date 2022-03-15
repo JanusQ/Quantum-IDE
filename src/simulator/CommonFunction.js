@@ -328,6 +328,14 @@ function average(list, index, probs, type = undefined)
         }
         res = Math.sqrt(res);
     }
+    else if(type == 'probs')
+    {
+        for(let i=0; i<index.length; i++)
+        {
+            res += list[index[i]];
+        }
+        res = res;
+    }
     else{
         let totalprob = 0;
         for(let i=0; i<index.length; i++)
