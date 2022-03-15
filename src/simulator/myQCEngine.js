@@ -56,6 +56,8 @@ export default class QCEngine {
 
         this.operation_index2whole_state = {}
         this.operation_index2var_state = {}
+        
+        this.draw_evo = true;
     }
 
 
@@ -1382,13 +1384,23 @@ export default class QCEngine {
 
     }
 
+    disable()
+    {
+        this.draw_evo = false;
+    }
+    
+    enable()
+    {
+        this.draw_evo = true;
+    }
+
     canShow(label_id) {
         // console.log(this.operations);
         // console.log(this.labels);
         let ops = [this.labels[label_id]['start_operation'], this.labels[label_id]['end_operation']];
         for (let i = ops[0]; i < ops[1]; i++) {
             let opera = this.operations[i];
-            if (opera['operation'] == 'write' || opera['operation'] == 'measure')
+            if (opera['operation'] == 'write' || opera['operation'] == 'measure' || this.draw_evo == false)
                 return false;
 
         }
