@@ -831,7 +831,7 @@ export default class QCEngine {
     }
 
     getWholeState(operation_index) {
-        const { qubit_number, operations,operation_index2whole_state} = this;
+        const { qubit_number, operations,operation_index2whole_state, name2index} = this;
 
         if(operation_index2whole_state[operation_index]){
             return operation_index2whole_state[operation_index]
@@ -867,7 +867,18 @@ export default class QCEngine {
             res['magns'][i] = polar['r'];
             res['probs'][i] = res['magns'][i] * res['magns'][i];
             res['phases'][i] = calibrate(polar['phi'], true) * 180 / Math.PI;
-            res['base'][i] = binary(i, qubit_number);
+            
+            let all_bits = binary(i, qubit_number);
+            all_bits = all_bits.reverse();
+            let value = [];
+            for(let key in name2index)
+            {
+                let bin = all_bits.slice(name2index[key][0],name2index[key][1]);
+                bin = bin.reverse();
+                let val = binary2int(bin);
+                value.push(val);
+            }
+            res['base'][i] = value;
         }
         // console.log("wholestate",res);
 
