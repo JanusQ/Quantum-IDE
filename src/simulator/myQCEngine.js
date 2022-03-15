@@ -446,11 +446,11 @@ export default class QCEngine {
 
     cry(rotation, binary_control, binary_target) {
         const { operations, circuit, now_column } = this
-        let control = binary_control ? this.parseBinaryQubits(binary_control) : []
+        let controls = binary_control ? this.parseBinaryQubits(binary_control) : []
         let target = binary_target ? this.parseBinaryQubits(binary_target) : []
 
-        if(control.length != 1){
-            console.error(control, 'control qubit number of cry is not one')
+        if(controls.length != 1){
+            console.error(controls, 'control qubit number of cry is not one')
             debugger
         }
         if(target.length != 1){
@@ -463,7 +463,7 @@ export default class QCEngine {
             phi = rotation > 0?  "pi/" + (180/rotation) : "-pi/" + (180/-rotation)
         }
 
-        circuit.addGate("cry", now_column, [...control, ...target], {
+        circuit.addGate("cry", now_column, [...controls, ...target], {
             params: {
                 theta: phi
             }
@@ -471,7 +471,7 @@ export default class QCEngine {
 
         // TODO: 允许多个控制或者多个被控吗
         this._addGate({
-            control,
+            controls,
             target,
             'operation': 'cry',
             'columns': this.nextColumn()
@@ -1378,6 +1378,7 @@ export default class QCEngine {
                 gate = tensor(identity(2), gate);
             }
         }
+        //console.log("gate",gate.copy());
         //new_ar = [2,0,1];
         gate = permute(gate, new_ar);
 
@@ -1471,7 +1472,7 @@ export default class QCEngine {
                 options['qubits'] = [];
                 type = 1;
             }
-            //console.log("gaste",gate);
+            console.log("gaste",gate);
             if (gate == undefined)
                 continue;
 
@@ -1520,7 +1521,7 @@ export default class QCEngine {
                     }
                 }
             }
-
+            //console.log(new_index);
             column_res = this._tensorPermute(gate_mat, new_index, qubit_num, options);
             //console.log("column_res",column_res);
             all_gate = dot(all_gate, column_res);
@@ -1580,6 +1581,7 @@ export default class QCEngine {
         //console.log(gate_mats);
         //console.log(gate_mats);
         console.log(this.labels, gate_mats);
+        //gate_mats[1][3]['phase'] = 270;
         return gate_mats;
 
     }
