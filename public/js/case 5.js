@@ -5,15 +5,15 @@
 // Initialize
 var num_qubits = 6;
 qc.reset(num_qubits);
-var a = qint.new(1, 'a');
+var ancillary = qint.new(1, 'a');
 var b = qint.new(3, 'b');
 var c = qint.new(2, 'c');
 
 
-a.write(0x1);
+ancillary.write(0x1);
 b.write(0x1);
 // a.hadamard();
-a.ry(60)
+ancillary.ry(60)
 b.ry(30, 0x2);
 b.phase(45, 0x2);
 
@@ -23,7 +23,7 @@ qc.nop();
 qc.nop();
 
 qc.startlabel('if (a == 1) then b+=3');
-b.add(3, a.bits(0x1));
+b.add(3, ancillary.bits(0x1));
 qc.endlabel('if (a == 1) then b+=3');
 
 qc.nop();

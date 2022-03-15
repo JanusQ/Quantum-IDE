@@ -424,7 +424,7 @@ export default class QCEngine {
         //     }
         // });
 
-        console.log(control, target)
+        // console.log(control, target)
         circuit.addGate("ncphase", now_column, qubits, {
             params: {
                 qubit_number: qubits.length,
@@ -1397,7 +1397,7 @@ export default class QCEngine {
     }
 
     getEvoMatrix(label_id) {
-        debugger
+        // debugger
         //console.log(label_id);
         //console.log(this.labels);
         //console.log(this.operations);
@@ -1859,10 +1859,14 @@ class QInt {
 
     // https://oreilly-qc.github.io/?p=7-8#
     invQFT() {
-        let { qc } = this
-        let qubits = range(...this.index)
-
-        qc.swap(pow2(qubits[0]), pow2(qubits[qubits.length - 1]))
+        let { qc, index } = this
+        let qubits = range(...index)
+        
+        for(let start = index[0], end = index[1]-1; start < end; start++, end--){
+            // debugger
+            qc.swap(pow2(start), pow2(end))
+        }
+        
         qubits.forEach((qubits1, index1) => {
             qc.had(pow2(qubits1))
             qubits.slice(index1 + 1).forEach((qubits2, index2) => {
@@ -1875,20 +1879,24 @@ class QInt {
 
     // TODO: 不应该用二进制的，应该改掉
     QFT() {
-        let { qc } = this
-        let qubits = range(...this.index)
+        let { qc, index } = this
+        let qubits = range(...index)
         qubits.reverse()
 
         qubits.forEach((qubits1, index1) => {
             qc.had(pow2(qubits1))
             qubits.slice(index1 + 1).forEach((qubits2, index2) => {
                 let phi = - 90 / pow2(index2)
-                console.log(phi);
+                // console.log(phi);
                 qc.cphase(phi, pow2(qubits1), pow2(qubits2))
             })
         })
 
-        qc.swap(pow2(qubits[0]), pow2(qubits[qubits.length - 1]))
+        for(let start = index[0], end = index[1]-1; start < end; start++, end--){
+            qc.swap(pow2(start), pow2(end))
+        }
+
+        // qc.swap(pow2(qubits[0]), pow2(qubits[qubits.length - 1]))
     }
 
 }

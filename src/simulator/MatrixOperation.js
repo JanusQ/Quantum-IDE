@@ -81,6 +81,22 @@ function mt_dot(m1,m2)
     return res;
 }
 
+function tensorState(){
+    let i;
+    let tmp = arguments[0];
+    let res;
+
+    for (i = 1; i < arguments.length; i++) {
+        tmp = innerTensor(tmp, arguments[i]);
+    }
+
+
+
+    return tmp.data.map(elm=> elm[0]); 
+}
+
+
+// 这个是用来tensor operator 的
 function tensor() {
     let i;
     let tmp = arguments[0];
@@ -102,7 +118,33 @@ function tensor() {
 
 }
 
+function toQbject(obj){
+    if (obj instanceof Array) {
+        let new_obj = new Array(obj.length);
+        let row = obj.length;
+        let column = undefined
+        obj.forEach(((elm, index) => {
+            if (!(elm instanceof Array)) {
+                elm = [elm]
+            }
+
+            if(column !== undefined && column !== elm.length){
+                console.error(obj, 'does not have same column')
+                debugger
+            }
+            column = elm.length
+            new_obj[index] = elm
+        }))
+        return new QObject(row, column, new_obj)
+    }
+    return obj
+}
+
 function innerTensor(t1, t2) {
+    t1 = toQbject(t1)
+    t2 = toQbject(t2)
+
+    // debugger
     let row = t1.rows * t2.rows;
     let col = t1.cols * t2.cols;
     let result = new QObject(row, col);
@@ -301,6 +343,22 @@ function controlledGate(U, N = 2, control = 0, target = 1, control_value = 1) {
 }
 
 
+function groundState(qubit_number, excited_bases = undefined){
+    let base_number = pow2(qubit_number)
+    let state = range(0, base_number).map(elm => complex(0, 0))
+
+    // debugger
+    if(excited_bases == undefined){
+        state[0] = complex(1, 0)
+    }else{
+        let excited_number = excited_bases.length
+        let amplitude = math.sqrt(1/excited_number)
+        excited_bases.forEach(elm => state[elm] = complex(amplitude, 0))
+    }
+    
+    return state
+}
+
 // -------test------------
 // target = 1;
 // N = 3;
@@ -322,4 +380,6 @@ export {
     exchange,
     controlledGate,
     dot,
+    groundState,
+    tensorState,
 }

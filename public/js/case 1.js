@@ -2,7 +2,7 @@
 // 两个变量相加的case
 var num_qubits = 6;
 qc.reset(num_qubits);
-var a = qint.new(3, 'a');
+var ancillary = qint.new(3, 'a');
 var b = qint.new(2, 'b');
 var c = qint.new(1, 'c');
 
@@ -21,6 +21,6 @@ qc.endlabel('had')
 qc.nop()
 
 qc.startlabel('a += b')
-a.add(b)
+ancillary.add(b)
 qc.endlabel('a += b')
 

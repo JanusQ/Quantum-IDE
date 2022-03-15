@@ -1,7 +1,6 @@
 {
   "name": "quantum-ide",
   "version": "0.1.0",
-  "homepage": "https://1011497938.github.io/quantum-vis",
   "private": true,
   "dependencies": {
     "@babel/core": "^7.16.0",

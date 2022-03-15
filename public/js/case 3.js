@@ -15,6 +15,10 @@ let label = 'set freq'
 qc.startlabel(label)
 provider.ry(135, 0x8)
 provider.ry(135, 0x4)
+
+// TODO: 反着了
+// let initial_state = tensorState(groundState(5), groundState(4, [7, 9]), )
+// qc.setState(initial_state)
 qc.endlabel(label)
 
 
@@ -49,7 +53,7 @@ qc.nop()
 // qc.nop()
 // qc.nop()
 
-label = 'increase freq >= 8'
+label = 'increase freq >= 1/2'
 qc.startlabel(label)
 qc.cnot(receiver.bits(0x8), ancillary.bits(0x1))
 receiver.add(1, ancillary.bits(0x1))
