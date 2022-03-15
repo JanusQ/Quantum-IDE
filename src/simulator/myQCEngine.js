@@ -831,7 +831,7 @@ export default class QCEngine {
     }
 
     getWholeState(operation_index) {
-        const { qubit_number, operations,operation_index2whole_state} = this;
+        const { qubit_number, operations,operation_index2whole_state, name2index} = this;
 
         if(operation_index2whole_state[operation_index]){
             return operation_index2whole_state[operation_index]
@@ -867,7 +867,18 @@ export default class QCEngine {
             res['magns'][i] = polar['r'];
             res['probs'][i] = res['magns'][i] * res['magns'][i];
             res['phases'][i] = calibrate(polar['phi'], true) * 180 / Math.PI;
-            res['base'][i] = binary(i, qubit_number);
+            
+            let all_bits = binary(i, qubit_number);
+            all_bits = all_bits.reverse();
+            let value = [];
+            for(let key in name2index)
+            {
+                let bin = all_bits.slice(name2index[key][0],name2index[key][1]);
+                bin = bin.reverse();
+                let val = binary2int(bin);
+                value.push(val);
+            }
+            res['base'][i] = value;
         }
         // console.log("wholestate",res);
 
@@ -1528,6 +1539,7 @@ export default class QCEngine {
                 if (max < polar['r'])
                     max = polar['r'];
                 gate_mats[i][j] = {};
+                gate_mats[i][j]['amplitude'] = all_gate.data[i][j];
                 gate_mats[i][j]['magnitude'] = polar['r'];
                 gate_mats[i][j]['phase'] = calibrate(polar['phi']) * 180 / Math.PI;
 
@@ -1595,12 +1607,13 @@ export default class QCEngine {
         let matrix = this.getEvoMatrix(label_id);
         let sankey = [];
         let k = 0;
-        for (let j = 0; j < matrix.length; j++) {
-            for (let i = 0; i < matrix.length; i++) {
+        for (let j=0; j<matrix.length; j++) {
+            for (let i=0; i<matrix.length; i++) {
                 if (Math.abs(matrix[i][j]['magnitude'] - 0) > precision) {
                     sankey[k] = {};
                     sankey[k]['maganitude'] = matrix[i][j]['magnitude'];
                     sankey[k]['phase'] = matrix[i][j]['phase'];
+                    sankey[k]['amplitude'] = matrix[i][j]['amplitude'];
                     sankey[k]['used'] = matrix[i][j]['used'];
                     sankey[k]['from_id'] = i;
                     sankey[k]['to_id'] = j;
@@ -1612,6 +1625,35 @@ export default class QCEngine {
         }
 
         return sankey;
+    }
+
+    transferSankeyOrdered(label_id, precision = 1e-5)
+    {
+        let res= {};
+        let matrix = this.getEvoMatrix(label_id);
+        let sankey = [];
+        let k = 0;
+        let parray = [];
+        for (let i=0; i<matrix.length; i++) {
+            for (let j=0; j<matrix.length; j++) {
+                if (Math.abs(matrix[i][j]['magnitude'] - 0) > precision) {
+                    sankey[k] = {};
+                    sankey[k]['maganitude'] = matrix[i][j]['magnitude'];
+                    sankey[k]['phase'] = matrix[i][j]['phase'];
+                    sankey[k]['amplitude'] = matrix[i][j]['amplitude'];
+                    sankey[k]['used'] = matrix[i][j]['used'];
+                    sankey[k]['from_id'] = i;
+                    sankey[k]['to_id'] = j;
+                    sankey[k]['y_index'] = k;
+                    sankey[k]['ratio'] = matrix[i][j]['ratio'];
+                    k++;
+                    parray.push(j);
+                }
+            }
+        }
+        res['permute'] = parray;
+        res['sankey'] = sankey;
+        return res;
     }
 
     _postProcess(state)
