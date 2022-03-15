@@ -1567,6 +1567,7 @@ export default class QCEngine {
         // }
         //console.log(gate_mats);
         //console.log(gate_mats);
+        console.log(this.labels, gate_mats);
         return gate_mats;
 
     }

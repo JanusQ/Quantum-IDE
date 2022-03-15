@@ -71,12 +71,13 @@ function App() {
 		let qc = new QCEngine()
 		const { qint } = qc
 		// TODO: 这些也要写在文档里面
-		const {cos, sin, round, pi, complex, create, all, max, sparse} =  require('mathjs')
+		const {cos, sin, round, pi, complex, create, all, max, sparse, acos, asin, sqrt} =  require('mathjs')
 		const { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, alt_tensor, calibrate, getExp, linear_entropy, binary2int, average, spec} = require('./simulator/CommonFunction')
 		const {tensor, groundState, tensorState} = require('./simulator/MatrixOperation')
 
 		// console.log(groundState(4, [7, 8]))
 		// console.log()
+
 
 		try {
 			eval(editorValue)

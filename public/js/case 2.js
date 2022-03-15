@@ -4,15 +4,15 @@
 // Initialize
 var num_qubits = 6;
 qc.reset(num_qubits);
-var a = qint.new(3, 'a');
+var ancillary = qint.new(3, 'a');
 var b = qint.new(3, 'b');
 
-a.write(0);
+ancillary.write(0);
 
 
-a.write(0x2);
+ancillary.write(0x2);
 qc.startlabel('a = (2, 6)');
-a.hadamard(0x4);
+ancillary.hadamard(0x4);
 qc.endlabel('a = (2, 6)');
 
 qc.nop();
@@ -30,18 +30,18 @@ qc.nop();
 
 // if a < 3 then b += 1
 qc.startlabel('a -= 3');
-a.subtract(2);  //原先的里面-6和加3是一样的
+ancillary.subtract(2);  //原先的里面-6和加3是一样的
 qc.endlabel('a -= 3');
 
 qc.nop();
 
 // debugger
 qc.startlabel('if (a > 4) then b++');
-b.add(1, a.bits(0x4));
+b.add(1, ancillary.bits(0x4));
 qc.endlabel('if (a > 4) then b++');
 
 qc.nop();
 
 qc.startlabel('a += 3');
-a.add(3);
+ancillary.add(3);
 qc.endlabel('a += 3');
