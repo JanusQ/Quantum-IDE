@@ -1539,6 +1539,7 @@ export default class QCEngine {
                 if (max < polar['r'])
                     max = polar['r'];
                 gate_mats[i][j] = {};
+                gate_mats[i][j]['amplitude'] = all_gate.data[i][j];
                 gate_mats[i][j]['magnitude'] = polar['r'];
                 gate_mats[i][j]['phase'] = calibrate(polar['phi']) * 180 / Math.PI;
 
@@ -1611,6 +1612,7 @@ export default class QCEngine {
                     sankey[k] = {};
                     sankey[k]['maganitude'] = matrix[i][j]['magnitude'];
                     sankey[k]['phase'] = matrix[i][j]['phase'];
+                    sankey[k]['amplitude'] = matrix[i][j]['amplitude'];
                     sankey[k]['used'] = matrix[i][j]['used'];
                     sankey[k]['from_id'] = i;
                     sankey[k]['to_id'] = j;
@@ -1637,6 +1639,7 @@ export default class QCEngine {
                     sankey[k] = {};
                     sankey[k]['maganitude'] = matrix[i][j]['magnitude'];
                     sankey[k]['phase'] = matrix[i][j]['phase'];
+                    sankey[k]['amplitude'] = matrix[i][j]['amplitude'];
                     sankey[k]['used'] = matrix[i][j]['used'];
                     sankey[k]['from_id'] = i;
                     sankey[k]['to_id'] = j;
