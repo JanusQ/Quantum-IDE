@@ -1384,12 +1384,12 @@ export default class QCEngine {
 
     }
 
-    disable()
+    disableEvolutionview()
     {
         this.draw_evo = false;
     }
     
-    enable()
+    enableEvolutionview()
     {
         this.draw_evo = true;
     }
