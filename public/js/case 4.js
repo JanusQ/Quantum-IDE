@@ -1,12 +1,12 @@
 // 马科夫序列
 qc.reset(2);
 var a = qint.new(1, 'a')
-var b = qint.new(1, 'a')
+var b = qint.new(1, 'b')
 a.write(1)
 b.write(0)
 
 qc.startlabel('preprae')
-qc.cry(30, a.bits(0x1), b.bits(0x1));
+qc.cry(90, a.bits(0x1), b.bits(0x1));
 qc.endlabel('preprae')
 
 
