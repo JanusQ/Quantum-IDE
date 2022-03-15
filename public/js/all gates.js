@@ -9,6 +9,25 @@ qc.startlabel('write');
 a.write(1);
 qc.endlabel('write')
 
+
+qc.startlabel('not')
+qc.not(0x5);
+qc.endlabel('not')
+qc.nop()
+
+qc.startlabel('cry')
+qc.cry(45, 0x4, 0x1);
+qc.endlabel('cry')
+qc.nop()
+
+qc.startlabel('ry')
+qc.ry(45, 0x5);
+qc.endlabel('ry')
+qc.nop()
+
+
+
+
 qc.startlabel('hadamard')
 a.hadamard(0x4);
 qc.endlabel('hadamard')
@@ -16,6 +35,7 @@ qc.endlabel('hadamard')
 qc.startlabel('phase')
 a.phase(45, 0x8);
 qc.endlabel('phase')
+
 
 qc.startlabel('cnot')
 qc.cnot(0x4, 0x2);

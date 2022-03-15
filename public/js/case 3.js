@@ -3,18 +3,18 @@
 
 // QFT 的case
 
-var num_qubits = 8;
-qc.reset(num_qubits);
+qc.reset(9);
 
-var signal_1 = qint.new(num_qubits/2, 'S1')
-var signal_2 = qint.new(num_qubits/2, 'S2')
+var provider = qint.new(4, 'S')
+var receiver = qint.new(4, 'R')
+var ancillary = qint.new(1, 'A')
 
 qc.write(0x0)
 
 let label = 'set freq'
 qc.startlabel(label)
-signal_1.not(0x4)
-signal_1.ry(30, 0x1)
+provider.ry(135, 0x8)
+provider.ry(135, 0x4)
 qc.endlabel(label)
 
 
@@ -22,19 +22,35 @@ qc.nop()
 
 label = 'invQFT'
 qc.startlabel(label)
-signal_1.invQFT()
+provider.invQFT()
+qc.endlabel(label)
+
+qc.nop()
+// label = 'send'
+// qc.startlabel(label)
+provider.exchange(receiver)
+// qc.endlabel(label)
+qc.nop()
+
+// 加一个conditional ry
+
+label = 'QFT'
+qc.startlabel(label)
+receiver.QFT()
 qc.endlabel(label)
 
 qc.nop()
 
-// label = 'send'
+// label = 'entangle'
 // qc.startlabel(label)
-signal_1.exchange(signal_2)
+// qc.cnot(receiver.bits(0x4), ancillary.bits(0x1))
 // qc.endlabel(label)
 
-qc.nop()
+// qc.nop()
+// qc.nop()
 
-label = 'QFT'
+label = 'increase freq >= 8'
 qc.startlabel(label)
-signal_2.invQFT()
+qc.cnot(receiver.bits(0x8), ancillary.bits(0x1))
+receiver.add(1, ancillary.bits(0x1))
 qc.endlabel(label)

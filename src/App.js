@@ -11,7 +11,8 @@ import {
     cos, sin, round, pi, complex, create, all, max, sparse,
 } from 'mathjs'
 import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, alt_tensor, calibrate, getExp, linear_entropy, binary2int, average, spec} from './simulator/CommonFunction'
-
+// import MathJax from 'mathJax'
+import {getDirac} from './components/Mathjax'
 
 // import QCEngine from './simulator/MyQCEngine'
 // import './test/meausre'
@@ -38,6 +39,7 @@ import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, a
 // import './test/canShow_test.js'
 
 function App() {
+
 	// 编辑器内容
 	const [editorValue, setEditorValue] = useState('')
 	// console的内容
@@ -71,7 +73,7 @@ function App() {
 		// TODO: 这些也要写在文档里面
 		const {cos, sin, round, pi, complex, create, all, max, sparse} =  require('mathjs')
 		const { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, alt_tensor, calibrate, getExp, linear_entropy, binary2int, average, spec} = require('./simulator/CommonFunction')
-
+		
 		try {
 			eval(editorValue)
 			// showInDebuggerArea(qc.circuit)
@@ -106,6 +108,10 @@ function App() {
 			setConsoleValue(<div className='error_content'>{message}</div>)
 		}
 	}
+
+
+	// console.log(getDirac(1))
+	
 	return (
 		<div className='App'>
 			<div className='left-div'>

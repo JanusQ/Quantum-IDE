@@ -53,6 +53,9 @@ export default class QCEngine {
 
         this.now_state = undefined
         this.console_data = []
+
+        this.operation_index2whole_state = {}
+        this.operation_index2var_state = {}
     }
 
 
@@ -784,7 +787,12 @@ export default class QCEngine {
     }
 
     getVarState(operation_index, filter = undefined) {
-        const { operations, qubit_number } = this;
+        const { operations, qubit_number, operation_index2var_state } = this;
+
+        if(filter === undefined && operation_index2var_state[operation_index])
+            return operation_index2var_state[operation_index]
+
+
         let res = {};
         let opera = operations[operation_index];
         let state = opera['state_after_opertaion'];
@@ -822,6 +830,8 @@ export default class QCEngine {
         if (filter != undefined) {
             for (let key in var_index)
                 res[key] = this._variableFilter(operation_index, key, filter);
+        }else{
+            operation_index2var_state[operation_index] = res
         }
 
 
@@ -829,7 +839,12 @@ export default class QCEngine {
     }
 
     getWholeState(operation_index) {
-        const { qubit_number, operations } = this;
+        const { qubit_number, operations,operation_index2whole_state} = this;
+
+        if(operation_index2whole_state[operation_index]){
+            return operation_index2whole_state[operation_index]
+        }
+
         if (operation_index < 0) {
             let res = {};
             let len = Math.pow(2, qubit_number);
@@ -863,6 +878,8 @@ export default class QCEngine {
             res['base'][i] = binary(i, qubit_number);
         }
         // console.log("wholestate",res);
+
+        operation_index2whole_state[operation_index] = res
         return res;
     }
 
@@ -1053,11 +1070,16 @@ export default class QCEngine {
             p_xy += magn * magn;
         }
 
+        if(p_xy === 0)
+            return 0
+
         let var_state = this.getVarState(operation_index);
         let div = 1;
 
         for (let key in select) {
             div *= var_state[key]['prob'][select[key][0]];
+            if(div === 0)
+                return 0
         }
 
         // console.log("p_xy",p_xy);
@@ -1065,10 +1087,7 @@ export default class QCEngine {
 
         let pmi = p_xy * Math.log(p_xy / div);
 
-        if (p_xy == 0 || div == 0)
-            return 0;
-        else
-            return pmi;
+        return pmi;
     }
 
     // TODO: 能复用的数据可以存一下
@@ -1365,6 +1384,7 @@ export default class QCEngine {
     }
 
     getEvoMatrix(label_id) {
+        debugger
         //console.log(label_id);
         //console.log(this.labels);
         //console.log(this.operations);
