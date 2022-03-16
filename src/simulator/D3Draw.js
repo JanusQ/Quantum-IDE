@@ -853,7 +853,7 @@ export default class d3Draw {
 				case 'cry':
 					const cryG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
 					cryG.datum(operation) //绑定数据到dom节点
-					operations[i].target = [0, 4, 5]
+					//operations[i].target = [0, 4, 5]
 					const cryQubits = data.getQubitsInvolved(operations[i])
 					const cryMinQ = Math.min(...cryQubits)
 					const cryMaxQ = Math.max(...cryQubits)

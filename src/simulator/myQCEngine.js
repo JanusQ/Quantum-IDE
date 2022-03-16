@@ -472,7 +472,7 @@ export default class QCEngine {
                 theta: phi
             }
         });
-
+        //console.log("controls",controls,"target",target);
         // TODO: 允许多个控制或者多个被控吗
         this._addGate({
             controls,
