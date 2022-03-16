@@ -41,7 +41,7 @@ let setConditional = (probability, control, target, from_zero) => {
     }else{
         theta = theta1to1(probability)
     }
-    console.log(theta)
+    // console.log(theta)
     qc.cry(theta, control.bits(0x1), target.bits(0x1))
 }
 
