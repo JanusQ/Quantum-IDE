@@ -2,7 +2,7 @@ import { data } from 'browserslist'
 import * as d3 from 'd3'
 import { color, group } from 'd3'
 import { event as currentEvent } from 'd3-selection'
-import { im, number } from 'mathjs'
+import { im, number, re } from 'mathjs'
 import { ConsoleErrorListener, toDocs } from '../resource/js/quantum-circuit.min'
 import Chart from './Chart'
 export default class d3Draw {
@@ -2490,13 +2490,15 @@ export default class d3Draw {
 			}
 		}
 		// 绘制连线
+
 		for (let i = 0; i < sankeyData.length; i++) {
+			console.log(this.findToDy(outBases, sankeyData[i].to_id))
 			const color = sankeyData[i].used ? 'rgb(246, 175, 31)' : 'rgba(142, 132, 112,0.5)'
 			const toD = this.silkRibbonPathString(
 				circleGtransformX + this.dLength,
 				this.dLength * (i + 1) + this.dLength / 2,
 				outGTransformX,
-				this.dLength * (sankeyData[i].to_id + 1) + this.dLength / 2,
+				this.findToDy(outBases, sankeyData[i].to_id),
 				0.5
 			)
 			svg.append('path').attr('d', toD).attr('fill', 'none').attr('stroke-width', 2).attr('stroke', color)
@@ -2511,6 +2513,17 @@ export default class d3Draw {
 			)
 			svg.append('path').attr('d', fromD).attr('fill', 'none').attr('stroke-width', 2).attr('stroke', color)
 		}
+	}
+	// 查to_d连线的Y值
+	findToDy(outBases, id) {
+		let y = 0
+		for (let i = 0; i < outBases.length; i++) {
+			if (outBases[i].id === id) {
+				y = this.dLength * (i + 1) + this.dLength / 2
+				break
+			}
+		}
+		return y
 	}
 	// 排序方法
 	sortFunc(propName, referArr) {
