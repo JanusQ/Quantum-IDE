@@ -2246,7 +2246,6 @@ export default class d3Draw {
 			this.drawDCircle(circleG, 0, this.dLength * i, color, arcR, sankeyData[i].phase, false)
 		}
 		// 绘制input_state
-		inputStateData.vars.reverse()
 		for (let i = 0; i < inputStateData.vars.length; i++) {
 			const textG = svg
 				.append('g')
@@ -2258,7 +2257,7 @@ export default class d3Draw {
 				.classed('q_name_g', true)
 				.attr('transform', `translate(${qNameX + 5},0)`)
 			this.drawDqName(qNameG, inputStateData.vars[i])
-
+			console.log(inputStateData)
 			for (let j = 0; j < inputBases.length; j++) {
 				this.drawText(textG, 0, this.dLength * j, inputBases[j].var2value[inputStateData.vars[i]])
 			}
@@ -2435,7 +2434,7 @@ export default class d3Draw {
 			for (let j = 0; j < circleData[i].length; j++) {
 				const color = circleData[i][j].used ? 'rgb(246, 175, 31)' : 'rgba(142, 132, 112,0.5)'
 				const arcR = circleData[i][j].ratio
-				this.drawDCircle(circleG, this.dLength * i, this.dLength * j, color, arcR, circleData[i][j].phase, true)
+				this.drawDCircle(circleG, this.dLength * j, this.dLength * i, color, arcR, circleData[i][j].phase, true)
 			}
 		}
 		// 绘制out_state
