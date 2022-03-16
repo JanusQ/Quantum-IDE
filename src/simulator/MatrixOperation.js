@@ -240,19 +240,19 @@ function permute(qobj, p) {
         // console.log(state, new_state, binary_state, new_binary_state, p)
 
     }
-    //console.log(state2new_state);
-    // console.log(state2new_state)
+    // console.log("state2new",state2new_state);
     // let state_mask = new QObject(qobj.rows, qobj.cols).data
 
     // debugger
     // 先换行
+    //console.log("qobj",qobj.copy())
     for(let state1 = 0; state1 < state_num; state1++) {
         for(let state2 = 0; state2 < state_num; state2++) {
 
             let new_state1 = state2new_state[state1]
             let new_state2 = state2new_state[state2] 
-            
-            new_qobj.data[new_state1][new_state2] = qobj.data[state1][state2]
+            console.log(state1,state2,new_state1,new_state2)
+            new_qobj.data[new_state1][new_state2] = complex(qobj.data[state1][state2].re,qobj.data[state1][state2].im)
         }
 
     }
