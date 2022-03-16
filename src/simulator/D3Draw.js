@@ -624,10 +624,11 @@ export default class d3Draw {
 						} else {
 							qubitsArr.push(...operation_notations.data()[i].qubits)
 						}
-
 						indexArr.push(operation_notations.data()[i].index)
+						// let operation = operation_notations.data()[i]
+						// qubitsArr.push(...operation.qc.getQubitsInvolved(operation))
 					}
-
+					// debugger
 					const down_qubit = Math.max(...qubitsArr) //  down_qubit
 					const up_qubit = Math.min(...qubitsArr) // up_qubit
 					const start_operation = Math.min(...indexArr) // start_operation

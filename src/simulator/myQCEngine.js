@@ -171,6 +171,7 @@ export default class QCEngine {
             'state_str': circuit.stateAsString(),
             'label_id': _now_label,
             'rawgate': rawgate,
+            'qc': this,
         })
 
         this.now_state = state
