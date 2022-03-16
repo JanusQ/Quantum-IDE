@@ -171,6 +171,7 @@ export default class QCEngine {
             'state_str': circuit.stateAsString(),
             'label_id': _now_label,
             'rawgate': rawgate,
+            'qc': this,
         })
 
         this.now_state = state
@@ -376,6 +377,7 @@ export default class QCEngine {
         this._addGate({
             'qubits': qubits,
             'operation': 'ry',
+            rotation,
             'columns': this.nextColumn()
         })
     }
@@ -473,6 +475,7 @@ export default class QCEngine {
         this._addGate({
             controls,
             target,
+            rotation,
             'operation': 'cry',
             'columns': this.nextColumn()
         })

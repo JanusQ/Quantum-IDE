@@ -624,10 +624,11 @@ export default class d3Draw {
 						} else {
 							qubitsArr.push(...operation_notations.data()[i].qubits)
 						}
-
 						indexArr.push(operation_notations.data()[i].index)
+						// let operation = operation_notations.data()[i]
+						// qubitsArr.push(...operation.qc.getQubitsInvolved(operation))
 					}
-
+					// debugger
 					const down_qubit = Math.max(...qubitsArr) //  down_qubit
 					const up_qubit = Math.min(...qubitsArr) // up_qubit
 					const start_operation = Math.min(...indexArr) // start_operation
@@ -799,6 +800,15 @@ export default class d3Draw {
 
 					break
 				case 'noop':
+					break
+				case 'not':
+					const notG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
+					notG.datum(operation) //绑定数据到dom节点
+					for (let j = 0; j < operations[i].qubits.length; j++) {
+						this.drawCcnot(notG, x, this.svgItemHeight * (operations[i].qubits[j] + 2))
+					}
+					break
+				case 'ry':
 					break
 				default:
 					const defaultG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
@@ -1318,9 +1328,9 @@ export default class d3Draw {
 						.attr(
 							'width',
 							bars.data()[bars.data().length - 1].x -
-							bars.data()[0].x +
-							barWidth -
-							barWidth * config.barPadding
+								bars.data()[0].x +
+								barWidth -
+								barWidth * config.barPadding
 						)
 						.attr('x', bars.data()[0].x - config.margins.left - barWidth / 2 + barWidth * config.barPadding)
 						.attr('y', 1)
@@ -1769,8 +1779,10 @@ export default class d3Draw {
 					.attr('class', 'show_data_div')
 					.attr(
 						'style',
-						`height:${32 * allKeys.length}px;top:${offsetY ? offsetY - scrollTop + 40 : e.offsetY - scrollTop + 36
-						}px;left:${offsetX ? offsetX + 50 - scrollLeft : e.offsetX - scrollLeft + 10
+						`height:${32 * allKeys.length}px;top:${
+							offsetY ? offsetY - scrollTop + 40 : e.offsetY - scrollTop + 36
+						}px;left:${
+							offsetX ? offsetX + 50 - scrollLeft : e.offsetX - scrollLeft + 10
 						}px;border:1px solid black`
 					)
 				const showDataSVG = showDataDiv
@@ -1979,7 +1991,8 @@ export default class d3Draw {
 					.attr('class', 'relaed_div')
 					.attr(
 						'style',
-						`top:${e.offsetY - scrollTop + 36}px;left:${e.offsetX - scrollLeft + 10}px;height:${self.dLength * data.length + 10
+						`top:${e.offsetY - scrollTop + 36}px;left:${e.offsetX - scrollLeft + 10}px;height:${
+							self.dLength * data.length + 10
 						}px;width:${self.dLength + 8}px;border:1px solid black`
 					)
 				relaedDiv
@@ -2145,24 +2158,24 @@ export default class d3Draw {
 			tension === 1
 				? ['M', [sx, sy], 'L', [tx, ty], 'V', ty + tdy, 'L', [sx, sy + sdy], 'Z']
 				: [
-					'M',
-					[sx, sy],
-					'C',
-					[(m0 = tension * sx + (1 - tension) * tx), sy],
-					' ',
-					[(m1 = tension * tx + (1 - tension) * sx), ty],
-					' ',
-					[tx, ty],
-					'V',
-					ty + tdy,
-					'C',
-					[m1, ty + tdy],
-					' ',
-					[m0, sy + sdy],
-					' ',
-					[sx, sy + sdy],
-					'Z',
-				]
+						'M',
+						[sx, sy],
+						'C',
+						[(m0 = tension * sx + (1 - tension) * tx), sy],
+						' ',
+						[(m1 = tension * tx + (1 - tension) * sx), ty],
+						' ',
+						[tx, ty],
+						'V',
+						ty + tdy,
+						'C',
+						[m1, ty + tdy],
+						' ',
+						[m0, sy + sdy],
+						' ',
+						[sx, sy + sdy],
+						'Z',
+				  ]
 		).join('')
 	}
 	silkRibbonPathString(sx, sy, tx, ty, tension) {
@@ -2170,23 +2183,23 @@ export default class d3Draw {
 		return (
 			tension == 1
 				? [
-					'M',
-					[sx, sy],
-					'L',
-					[tx, ty],
-					//"Z"
-				]
+						'M',
+						[sx, sy],
+						'L',
+						[tx, ty],
+						//"Z"
+				  ]
 				: [
-					'M',
-					[sx, sy],
-					'C',
-					[(m0 = tension * sx + (1 - tension) * tx), sy],
-					' ',
-					[(m1 = tension * tx + (1 - tension) * sx), ty],
-					' ',
-					[tx, ty],
-					//"Z"
-				]
+						'M',
+						[sx, sy],
+						'C',
+						[(m0 = tension * sx + (1 - tension) * tx), sy],
+						' ',
+						[(m1 = tension * tx + (1 - tension) * sx), ty],
+						' ',
+						[tx, ty],
+						//"Z"
+				  ]
 		).join('')
 	}
 	// 绘制sankey图
@@ -2196,9 +2209,8 @@ export default class d3Draw {
 		if (circleData.length && circleData[0].length) {
 			circleDataNum = circleData[0][0]['max'].toFixed(2)
 		}
-		const sankeyData = qc.transferSankey(data.id)
-		const inputStateData = qc.getInputState(data.id)
-		const outStateData = qc.getOutputState(data.id)
+		const { sankey: sankeyData, permute } = qc.transferSankeyOrdered(data.id)
+		const { input_state: inputStateData, output_state: outStateData } = qc.getState(data.id)
 		const { svg, chartDiv, chartSvgDiv } = this.drawElement(
 			data.text,
 			data.id,
@@ -2208,6 +2220,8 @@ export default class d3Draw {
 		)
 		const inputBases = inputStateData.bases
 		const outBases = outStateData.bases
+		// outBases根据permute排序
+		outBases.sort(this.sortFunc('id', permute))
 		// 计算圆圈g X轴向右移动的距离
 		const circleGtransformX = (inputStateData.vars.length + 4) * this.dLength + 14
 		// 计算输入input X轴移动
@@ -2228,10 +2242,10 @@ export default class d3Draw {
 		for (let i = 0; i < sankeyData.length; i++) {
 			const color = sankeyData[i].used ? 'rgb(246, 175, 31)' : 'rgba(142, 132, 112,0.5)'
 			const arcR = sankeyData[i].ratio
+
 			this.drawDCircle(circleG, 0, this.dLength * i, color, arcR, sankeyData[i].phase, false)
 		}
 		// 绘制input_state
-		inputStateData.vars.reverse()
 		for (let i = 0; i < inputStateData.vars.length; i++) {
 			const textG = svg
 				.append('g')
@@ -2243,7 +2257,7 @@ export default class d3Draw {
 				.classed('q_name_g', true)
 				.attr('transform', `translate(${qNameX + 5},0)`)
 			this.drawDqName(qNameG, inputStateData.vars[i])
-
+			console.log(inputStateData)
 			for (let j = 0; j < inputBases.length; j++) {
 				this.drawText(textG, 0, this.dLength * j, inputBases[j].var2value[inputStateData.vars[i]])
 			}
@@ -2376,11 +2390,18 @@ export default class d3Draw {
 			svg.append('path').attr('d', fromD).attr('fill', 'none').attr('stroke-width', 2).attr('stroke', color)
 		}
 	}
+	// 排序方法
+	sortFunc(propName, referArr) {
+		return (prev, next) => {
+			return referArr.indexOf(prev[propName]) - referArr.indexOf(next[propName])
+		}
+	}
 
 	// 绘制普通完整表示
 	drawMatrix(qc, data) {
-		const inputStateData = qc.getInputState(data.id)
-		const outStateData = qc.getOutputState(data.id)
+		// const inputStateData = qc.getInputState(data.id)
+		// const outStateData = qc.getOutputState(data.id)
+		const { input_state: inputStateData, output_state: outStateData } = qc.getState(data.id)
 		const circleData = qc.getEvoMatrix(data.id)
 		let circleDataNum = 0
 		if (circleData.length && circleData[0].length) {
@@ -2413,7 +2434,7 @@ export default class d3Draw {
 			for (let j = 0; j < circleData[i].length; j++) {
 				const color = circleData[i][j].used ? 'rgb(246, 175, 31)' : 'rgba(142, 132, 112,0.5)'
 				const arcR = circleData[i][j].ratio
-				this.drawDCircle(circleG, this.dLength * i, this.dLength * j, color, arcR, circleData[i][j].phase, true)
+				this.drawDCircle(circleG, this.dLength * j, this.dLength * i, color, arcR, circleData[i][j].phase, true)
 			}
 		}
 		// 绘制out_state
@@ -2545,13 +2566,11 @@ export default class d3Draw {
 		}
 	}
 	drawDChart(data, drawData) {
-		
 		// 判断绘制类型
 		let labels = []
 		if (drawData) {
 			labels = drawData.labels.filter((item) => item.text !== '')
 		} else {
-
 			labels = data.labels.filter((item) => item.text !== '')
 		}
 		for (let i = 0; i < labels.length; i++) {
