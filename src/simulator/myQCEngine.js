@@ -377,6 +377,7 @@ export default class QCEngine {
         this._addGate({
             'qubits': qubits,
             'operation': 'ry',
+            rotation,
             'columns': this.nextColumn()
         })
     }
@@ -474,6 +475,7 @@ export default class QCEngine {
         this._addGate({
             controls,
             target,
+            rotation,
             'operation': 'cry',
             'columns': this.nextColumn()
         })
