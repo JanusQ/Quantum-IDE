@@ -1858,8 +1858,8 @@ export default class d3Draw {
 		const childG = parentG.append('g').attr('transform', `translate(3,3)`)
 		childG
 			.append('rect')
-			.attr('width', 20)
-			.attr('height', 20)
+			.attr('width', this.dLength - 6)
+			.attr('height', this.dLength - 6)
 			.attr('fill', 'transparent')
 			.attr('stroke', '#000')
 			.attr('stroke-width', 1)
@@ -2215,6 +2215,7 @@ export default class d3Draw {
 		titleDiv.append('span').classed('label_name', true).text(`${labelName}`)
 		const btnDiv = titleDiv.append('div').classed('btn_group', true)
 		const chartSvgDiv = chartDiv.append('div').classed('chart_svg_div', true)
+		// const svg = chartSvgDiv.append('svg').classed('d_chart_svg', true).attr('viewbox', '0,0,600,520').attr('width', '300').attr('height', '260')
 		const svg = chartSvgDiv.append('svg').classed('d_chart_svg', true)
 		const operationDiv = btnDiv.append('div').classed('operation_div', true).attr('style', 'display:none;')
 		btnDiv.append('img').attr('src', '/img/legends/yellowCircle.png').attr('width', 15).attr('height', 15)
@@ -2354,8 +2355,13 @@ export default class d3Draw {
 		// 设置svg的宽高
 		const svgHeight = (inputStateData.bases.length + 1) * this.dLength
 		const svgWidth = outRelatedGX + this.dLength * 2 + 100
+		// const scaleX = 300 / svgWidth
+		// const scaleY = 200 / svgHeight
+		// const transformX = (svgWidth * (scaleX - 1)) / 2
+		// const transformY = (svgHeight * (scaleX - 1)) / 2
+		svg.append('width', svgWidth)
+		svg.append('height', svgHeight)
 
-		svg.attr('height', svgHeight).attr('width', svgWidth)
 		// 绘制圈
 		const circleG = svg
 			.append('g')
