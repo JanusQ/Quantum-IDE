@@ -296,6 +296,24 @@ export default class d3Draw {
 			.classed('operation_item', true)
 		return parentG
 	}
+	// ry
+	drawRy(svg, x, y) {
+		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
+		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', '#fff').classed('operation_item', true)
+		const childG = parentG.append('g')
+		childG
+			.append('circle')
+			.attr('cx', 10)
+			.attr('cy', 10)
+			.attr('r', 10)
+			.attr('fill', '#fff')
+			.attr('stroke', '#000')
+			.attr('stroke-width', 1)
+			.classed('operation_item', true)
+
+		childG.append('text').attr('x', 4).attr('y', 13).text('ry').classed('svgtext', true)
+		return parentG
+	}
 	// 叉号 x
 	drawSwap(svg, x, y) {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
@@ -773,14 +791,20 @@ export default class d3Draw {
 					const phaseG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
 					phaseG.datum(operation) //绑定数据到dom节点
 					for (let j = 0; j < operations[i].qubits.length; j++) {
-						this.drawCCPhase(phaseG, x, this.svgItemHeight * (operations[i].qubits[j] + 2))
-						phaseG
+						const phaseParentG = this.drawCCPhase(
+							phaseG,
+							x,
+							this.svgItemHeight * (operations[i].qubits[j] + 2)
+						)
+						phaseParentG
 							.append('text')
-							.attr('x', x - 6)
-							.attr('y', this.svgItemHeight * (operations[i].qubits[j] + 2) - 15)
+							.attr('x', 12)
+							.attr('y', -2)
 							.classed('svgtext', true)
 							.append('tspan')
-							.text(operations[i].rotation + '°')
+							.attr('text-anchor', 'middle')
+							.attr('style', 'font-size:12px;')
+							.text(Math.floor(operations[i].rotation) + '°')
 					}
 					// const phaseMinQ = Math.min(...operations[i].qubits)
 					// const phaseMaxQ = Math.max(...operations[i].qubits)
@@ -809,6 +833,60 @@ export default class d3Draw {
 					}
 					break
 				case 'ry':
+					const ryG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
+					ryG.datum(operation) //绑定数据到dom节点
+					for (let j = 0; j < operations[i].qubits.length; j++) {
+						const ryParentG = this.drawRy(ryG, x, this.svgItemHeight * (operations[i].qubits[j] + 2))
+						ryParentG
+							.append('text')
+							.attr('x', 12)
+							.attr('y', -2)
+							.classed('svgtext', true)
+							.append('tspan')
+							.attr('text-anchor', 'middle')
+							.attr('style', 'font-size:12px;')
+							.text(Math.floor(operations[i].rotation) + '°')
+					}
+
+					break
+				case 'cry':
+					const cryG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
+					cryG.datum(operation) //绑定数据到dom节点
+					operations[i].target = [0, 4, 5]
+					const cryQubits = data.getQubitsInvolved(operations[i])
+					const cryMinQ = Math.min(...cryQubits)
+					const cryMaxQ = Math.max(...cryQubits)
+					cryG.append('rect')
+						.attr('height', this.svgItemHeight * (cryMaxQ - cryMinQ + 1))
+						.attr('width', 20)
+						.attr('fill', 'transparent')
+						.attr('x', x - 10)
+						.attr('y', this.svgItemHeight * (cryMinQ + 2) - this.svgItemHeight / 2)
+					if (cryQubits.length) {
+						this.drawLine(
+							cryG,
+							x,
+							this.svgItemHeight * (cryMinQ + 2),
+							x,
+							this.svgItemHeight * (cryMaxQ + 2)
+						)
+					}
+					for (let j = 0; j < operations[i].target.length; j++) {
+						this.drawRy(cryG, x, this.svgItemHeight * (operations[i].target[j] + 2))
+					}
+					for (let j = 0; j < operations[i].controls.length; j++) {
+						this.drawCircle(cryG, x, this.svgItemHeight * (operations[i].controls[j] + 2))
+					}
+
+					// console.log(data.getQubitsInvolved(operations[i]))
+					cryG.append('text')
+						.attr('x', x + 2)
+						.attr('y', this.svgItemHeight * (cryMinQ + 2) - this.svgItemHeight / 2 + 3)
+						.classed('svgtext', true)
+						.append('tspan')
+						.attr('text-anchor', 'middle')
+						.attr('style', 'font-size:12px;')
+						.text(Math.floor(operations[i].rotation) + '°')
 					break
 				default:
 					const defaultG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
