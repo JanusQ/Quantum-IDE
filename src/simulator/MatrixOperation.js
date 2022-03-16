@@ -251,7 +251,7 @@ function permute(qobj, p) {
 
             let new_state1 = state2new_state[state1]
             let new_state2 = state2new_state[state2] 
-            console.log(state1,state2,new_state1,new_state2)
+            //console.log(state1,state2,new_state1,new_state2)
             new_qobj.data[new_state1][new_state2] = complex(qobj.data[state1][state2].re,qobj.data[state1][state2].im)
         }
 
