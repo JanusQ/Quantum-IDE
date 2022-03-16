@@ -60,7 +60,7 @@ var estimation =  qint.new(1, 'ρ')
 
 qc.startlabel('init')
 qc.write(0b0101010)  //现在不write第一个是空的
-qc.startlabel('init')
+qc.endlabel('init')
 
 // qc.startlabel('preprae')
 // qc.endlabel('preprae')

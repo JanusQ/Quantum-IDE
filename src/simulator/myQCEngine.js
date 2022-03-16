@@ -25,6 +25,8 @@ import * as deepcopy from 'deepcopy';
 const config = {};
 const math = create(all, config);
 
+var name2gate = {}
+
 // 统一规定高位在后
 
 // 描述和计算可以分开
@@ -470,7 +472,7 @@ export default class QCEngine {
                 theta: phi
             }
         });
-
+        //console.log("controls",controls,"target",target);
         // TODO: 允许多个控制或者多个被控吗
         this._addGate({
             controls,
@@ -637,22 +639,31 @@ export default class QCEngine {
     }
 
     // 保存为一个自定义门
-    loadGate(gate_name, gate) {
+    saveGate(gate_name, gate) {
         // // export circuit to variable
         // var obj = someCircuit.save();
         // // register it as a gate in another circuit
         // anotherCircuit.registerGate("my_gate", obj);
 
+        if (typeof (gate) === '')// 如果是矩阵
+        { 
 
-        if (typeof (gate) === '') { // 如果是矩阵
-
-        } else if (typeof (gate) === '') {  // 如果是operations
-
+        }
+        else if (typeof (gate) === '')// 如果是operations
+        {  
+            name2gate[gate_name] = gate;
         }
 
     }
 
     apply(gate_name, qubits) {
+        let gate = name2gate[gate_name];
+        if(gate == undefined)
+        {
+            console.error("no gate exists:", gate_name);
+            debugger
+        }
+
         this._addGate({
             'qubits': qubits,
             'operation': gate_name,

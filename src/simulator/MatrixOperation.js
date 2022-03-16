@@ -43,7 +43,7 @@ function dot()
 {
     let tmp = arguments[0];
     let res;
-
+    //console.log("arg",arguments);
     if (tmp instanceof Array) {
         res = tmp[0].copy();
         for (let i = 1; i < tmp.length; i++) {
