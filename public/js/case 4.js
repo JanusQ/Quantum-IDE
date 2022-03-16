@@ -61,15 +61,26 @@ var estimation =  qint.new(1, 'ρ')
 qc.startlabel('init')
 qc.write(0b0101010)  //现在不write第一个是空的
 qc.endlabel('init')
+qc.nop()
 
 // qc.startlabel('preprae')
 // qc.endlabel('preprae')
 
 qc.startlabel('Calculate probability')
-qc.ry(theta1to1(0.6), 0x1,)
-flip(step_1, not_step_1)
 
+
+qc.startlabel('ry 101°')
+qc.ry(theta1to1(0.6), 0x1,)
+qc.endlabel('ry 101°')
+
+qc.startlabel('cnot')
+flip(step_1, not_step_1)
+qc.endlabel('cnot')
+
+qc.startlabel('cry 66°')
 setConditional(0.3, step_1, step_2, false)
+qc.endlabel('cry 66°')
+
 setConditional(0.4, not_step_1, step_2, true) 
 flip(step_2, not_step_2)
 
@@ -98,14 +109,14 @@ let estimation_bit = estimation.bits(0x1)
 // qc.cphase(200, step_3.bits(0x1), estimation_bit)
 // qc.cphase(10, not_step_3.bits(0x1), estimation_bit)
 
-qc.startlabel('Calculate estimation')
+qc.startlabel('Sum')
 setConditional(0.1, step_1, estimation, false) //0.34 * 0.8
 // setConditional(0.02, not_step_1, estimation, false) //0.34 * 0.8
 setConditional(0.1, step_2, estimation, false) //0.34 * 0.8
 // setConditional(0.04, not_step_2, estimation, false) //0.34 * 0.8
 setConditional(0.6, step_3, estimation, false) //0.34 * 0.8
 // setConditional(0.03, not_step_3, estimation, false) //0.34 * 0.8
-qc.endlabel('Calculate estimation')
+qc.endlabel('Sum')
 
 // TODO：还是不要用二进制了，太难受了
 // qc.cphase(10, 0x1, 0x38)
