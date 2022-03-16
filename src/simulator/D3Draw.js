@@ -2161,7 +2161,7 @@ export default class d3Draw {
 			.attr('y', this.dLength / 2)
 	}
 	// 绘制基本结构
-	drawElement(labelName, labelId, qc, circleNum, inputStateNumber) {
+	drawElement(labelName, labelId, qc, circleNum, inputStateNumber,svgHeight,svgWidth) {
 		const self = this
 		let isShowMore = false
 		let isFull = false
@@ -2199,8 +2199,14 @@ export default class d3Draw {
 				chartDiv.attr('class', null).classed('d_chart_div', true)
 				operationDiv.attr('style', 'display:none')
 				isShowMore = false
+				svg.attr('width','320')
+				svg.attr('height','280')
+				svg.attr('viewBox',`0,0,${svgWidth},${svgHeight}`)
 				isFull = !isFull
 			} else {
+				svg.attr('width','100%')
+				svg.attr('height','100%')
+				svg.attr('viewBox',null)
 				chartDiv.classed('d_chart_div_full', true)
 				operationDiv.attr('style', 'display:none')
 				isShowMore = false
@@ -2215,8 +2221,8 @@ export default class d3Draw {
 		titleDiv.append('span').classed('label_name', true).text(`${labelName}`)
 		const btnDiv = titleDiv.append('div').classed('btn_group', true)
 		const chartSvgDiv = chartDiv.append('div').classed('chart_svg_div', true)
-		// const svg = chartSvgDiv.append('svg').classed('d_chart_svg', true).attr('viewbox', '0,0,600,520').attr('width', '300').attr('height', '260')
-		const svg = chartSvgDiv.append('svg').classed('d_chart_svg', true)
+		const svg = chartSvgDiv.append('svg').classed('d_chart_svg', true).attr('width', '320').attr('height', '280')
+		// const svg = chartSvgDiv.append('svg').classed('d_chart_svg', true)
 		const operationDiv = btnDiv.append('div').classed('operation_div', true).attr('style', 'display:none;')
 		btnDiv.append('img').attr('src', '/img/legends/yellowCircle.png').attr('width', 15).attr('height', 15)
 		btnDiv.append('span').text(`${circleNum}`).attr('style', 'font-size:12px;margin-left:5px;')
@@ -2241,7 +2247,7 @@ export default class d3Draw {
 			.append('img')
 			.attr('src', '/icon/expand_icon.svg')
 			.on('click', function () {
-				expandFn(chartDiv, operationDiv)
+				expandFn(chartDiv, operationDiv,svg)
 			})
 		operationDiv.append('img').attr('src', '/icon/delete_icon.svg').on('click', close)
 		return {
@@ -2333,13 +2339,7 @@ export default class d3Draw {
 		}
 		const { sankey: sankeyData, permute } = qc.transferSankeyOrdered(data.id)
 		const { input_state: inputStateData, output_state: outStateData } = qc.getState(data.id)
-		const { svg, chartDiv, chartSvgDiv } = this.drawElement(
-			data.text,
-			data.id,
-			qc,
-			circleDataNum,
-			inputStateData['max_magn'].toFixed(2)
-		)
+	
 		const inputBases = inputStateData.bases
 		const outBases = outStateData.bases
 		// outBases根据permute排序
@@ -2355,12 +2355,17 @@ export default class d3Draw {
 		// 设置svg的宽高
 		const svgHeight = (inputStateData.bases.length + 1) * this.dLength
 		const svgWidth = outRelatedGX + this.dLength * 2 + 100
-		// const scaleX = 300 / svgWidth
-		// const scaleY = 200 / svgHeight
-		// const transformX = (svgWidth * (scaleX - 1)) / 2
-		// const transformY = (svgHeight * (scaleX - 1)) / 2
-		svg.append('width', svgWidth)
-		svg.append('height', svgHeight)
+		const { svg, chartDiv, chartSvgDiv } = this.drawElement(
+			data.text,
+			data.id,
+			qc,
+			circleDataNum,
+			inputStateData['max_magn'].toFixed(2),
+			svgWidth,
+			svgHeight
+			
+		)
+		svg.attr('viewBox',`0,0,${svgWidth},${svgHeight}`)
 
 		// 绘制圈
 		const circleG = svg
@@ -2496,9 +2501,7 @@ export default class d3Draw {
 			}
 		}
 		// 绘制连线
-
 		for (let i = 0; i < sankeyData.length; i++) {
-			console.log(this.findToDy(outBases, sankeyData[i].to_id))
 			const color = sankeyData[i].used ? 'rgb(246, 175, 31)' : 'rgba(142, 132, 112,0.5)'
 			const toD = this.silkRibbonPathString(
 				circleGtransformX + this.dLength,
@@ -2548,13 +2551,7 @@ export default class d3Draw {
 		if (circleData.length && circleData[0].length) {
 			circleDataNum = circleData[0][0]['max'].toFixed(2)
 		}
-		const { svg, chartDiv, chartSvgDiv } = this.drawElement(
-			data.text,
-			data.id,
-			qc,
-			circleDataNum,
-			inputStateData['max_magn'].toFixed(2)
-		)
+		
 		// 计算矩阵g Y轴向下移动的距离
 		const circleGtransformY = (inputStateData.vars.length + 2) * this.dLength + 14
 
@@ -2568,8 +2565,17 @@ export default class d3Draw {
 		// 设置svg的宽高
 		const svgHeight = circleGtransformY + outStateData.bases.length * this.dLength
 		const svgWidth = outRelatedGX + this.dLength * 2 + 14
-		svg.attr('height', svgHeight).attr('width', svgWidth)
-
+		const { svg, chartDiv, chartSvgDiv } = this.drawElement(
+			data.text,
+			data.id,
+			qc,
+			circleDataNum,
+			inputStateData['max_magn'].toFixed(2),
+			svgWidth,
+			svgHeight
+		)
+		// svg.attr('height', svgHeight).attr('width', svgWidth)
+		svg.attr('viewBox',`0,0,${svgWidth},${svgHeight}`)
 		const circleG = svg.append('g').classed('circle_g', true).attr('transform', `translate(0,${circleGtransformY})`)
 		for (let i = 0; i < circleData.length; i++) {
 			for (let j = 0; j < circleData[i].length; j++) {
