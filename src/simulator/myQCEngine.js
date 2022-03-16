@@ -1458,6 +1458,7 @@ export default class QCEngine {
         deep_length = Math.pow(2, qubit_num);
 
         let all_gate = identity(deep_length);
+        let all_gates = [];
 
         for (let i = ops[0]; i < ops[1]; i++) {
             let opera = this.operations[i];
@@ -1475,7 +1476,7 @@ export default class QCEngine {
                 options['qubits'] = [];
                 type = 1;
             }
-            console.log("gaste",gate);
+            // console.log("gaste",gate);
             if (gate == undefined)
                 continue;
 
@@ -1527,9 +1528,13 @@ export default class QCEngine {
             //console.log(new_index);
             column_res = this._tensorPermute(gate_mat, new_index, qubit_num, options);
             //console.log("column_res",column_res);
-            all_gate = dot(all_gate, column_res);
+            //all_gate = dot(all_gate, column_res);
+            all_gates.push(column_res.copy());
         }
         //console.log("all_gate",all_gate);
+        all_gates = all_gates.reverse();
+        //console.log(all_gates);
+        all_gate = dot(all_gates);
 
 
         let stru = this.getInputState(label_id);
@@ -1547,7 +1552,7 @@ export default class QCEngine {
                 gate_mats[i][j]['magnitude'] = polar['r'];
                 gate_mats[i][j]['phase'] = calibrate(polar['phi']) * 180 / Math.PI;
 
-                if (stru['bases'][i]['magnitude'] != 0)
+                if (stru['bases'][j]['magnitude'] != 0)
                     gate_mats[i][j]['used'] = true;
                 else
                     gate_mats[i][j]['used'] = false;
@@ -1583,7 +1588,7 @@ export default class QCEngine {
         // }
         //console.log(gate_mats);
         //console.log(gate_mats);
-        console.log(this.labels, gate_mats);
+        //console.log(this.labels, gate_mats);
         //gate_mats[1][3]['phase'] = 270;
         return gate_mats;
 
@@ -1639,23 +1644,25 @@ export default class QCEngine {
         let sankey = [];
         let k = 0;
         let parray = [];
-        for (let i=0; i<matrix.length; i++) {
-            for (let j=0; j<matrix.length; j++) {
+        for (let j=0; j<matrix.length; j++) {
+            for (let i=0; i<matrix.length; i++) {
                 if (Math.abs(matrix[i][j]['magnitude'] - 0) > precision) {
                     sankey[k] = {};
                     sankey[k]['maganitude'] = matrix[i][j]['magnitude'];
                     sankey[k]['phase'] = matrix[i][j]['phase'];
                     sankey[k]['amplitude'] = matrix[i][j]['amplitude'];
                     sankey[k]['used'] = matrix[i][j]['used'];
-                    sankey[k]['from_id'] = i;
-                    sankey[k]['to_id'] = j;
+                    sankey[k]['from_id'] = j;
+                    sankey[k]['to_id'] = i;
                     sankey[k]['y_index'] = k;
                     sankey[k]['ratio'] = matrix[i][j]['ratio'];
+                    parray.push(i);
                     k++;
-                    parray.push(j);
+                    
                 }
             }
         }
+        //console.log('parray',parray);
         res['permute'] = parray;
         res['sankey'] = sankey;
         return res;
@@ -1664,7 +1671,8 @@ export default class QCEngine {
     _postProcess(state)
     {
         let max_magn = state['input_state']['max_magn'] > state['output_state']['max_magn'] ? state['input_state']['max_magn'] : state['output_state']['max_magn'];
-
+        state['input_state']['max_magn'] = max_magn;
+        state['output_state']['max_magn'] = max_magn;
         for(let key in state){
             for (let i = 0; i < state[key]['bases'].length; i++){
                 if(max_magn != 0)

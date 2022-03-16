@@ -41,11 +41,19 @@ class QObject {
 
 function dot()
 {
-    if(arguments.length == 1)
-        return arguments[0];  
+    let tmp = arguments[0];
+    let res;
+
+    if (tmp instanceof Array) {
+        res = tmp[0].copy();
+        for (let i = 1; i < tmp.length; i++) {
+            res = mt_dot(res, tmp[i]);
+        }
+        return res;
+    }
     
     let i = 1;
-    let result = arguments[0];
+    let result = arguments[0].copy();
    
     while (i<arguments.length){
         result = mt_dot(result,arguments[i]);
@@ -251,7 +259,7 @@ function permute(qobj, p) {
 
             let new_state1 = state2new_state[state1]
             let new_state2 = state2new_state[state2] 
-            console.log(state1,state2,new_state1,new_state2)
+            //console.log(state1,state2,new_state1,new_state2)
             new_qobj.data[new_state1][new_state2] = complex(qobj.data[state1][state2].re,qobj.data[state1][state2].im)
         }
 
