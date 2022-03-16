@@ -41,11 +41,19 @@ class QObject {
 
 function dot()
 {
-    if(arguments.length == 1)
-        return arguments[0];  
+    let tmp = arguments[0];
+    let res;
+
+    if (tmp instanceof Array) {
+        res = tmp[0].copy();
+        for (let i = 1; i < tmp.length; i++) {
+            res = mt_dot(res, tmp[i]);
+        }
+        return res;
+    }
     
     let i = 1;
-    let result = arguments[0];
+    let result = arguments[0].copy();
    
     while (i<arguments.length){
         result = mt_dot(result,arguments[i]);

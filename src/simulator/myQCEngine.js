@@ -1458,6 +1458,7 @@ export default class QCEngine {
         deep_length = Math.pow(2, qubit_num);
 
         let all_gate = identity(deep_length);
+        let all_gates = [];
 
         for (let i = ops[0]; i < ops[1]; i++) {
             let opera = this.operations[i];
@@ -1475,7 +1476,7 @@ export default class QCEngine {
                 options['qubits'] = [];
                 type = 1;
             }
-            console.log("gaste",gate);
+            // console.log("gaste",gate);
             if (gate == undefined)
                 continue;
 
@@ -1527,9 +1528,13 @@ export default class QCEngine {
             //console.log(new_index);
             column_res = this._tensorPermute(gate_mat, new_index, qubit_num, options);
             //console.log("column_res",column_res);
-            all_gate = dot(all_gate, column_res);
+            //all_gate = dot(all_gate, column_res);
+            all_gates.push(column_res.copy());
         }
         //console.log("all_gate",all_gate);
+        all_gates = all_gates.reverse();
+        //console.log(all_gates);
+        all_gate = dot(all_gates);
 
 
         let stru = this.getInputState(label_id);
@@ -1547,7 +1552,7 @@ export default class QCEngine {
                 gate_mats[i][j]['magnitude'] = polar['r'];
                 gate_mats[i][j]['phase'] = calibrate(polar['phi']) * 180 / Math.PI;
 
-                if (stru['bases'][i]['magnitude'] != 0)
+                if (stru['bases'][j]['magnitude'] != 0)
                     gate_mats[i][j]['used'] = true;
                 else
                     gate_mats[i][j]['used'] = false;
@@ -1583,7 +1588,7 @@ export default class QCEngine {
         // }
         //console.log(gate_mats);
         //console.log(gate_mats);
-        console.log(this.labels, gate_mats);
+        //console.log(this.labels, gate_mats);
         //gate_mats[1][3]['phase'] = 270;
         return gate_mats;
 
@@ -1592,7 +1597,7 @@ export default class QCEngine {
     isSparse(label_id, threshold = 1.3, precision = 1e-5) {
         // console.log("label_id", label_id);
         // console.log(this.labels);
-        //return false;
+        return false;
         let matrix = this.getEvoMatrix(label_id);
         let count = 0;
         for (let i = 0; i < matrix.length; i++) {
