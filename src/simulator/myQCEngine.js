@@ -1662,7 +1662,7 @@ export default class QCEngine {
                 }
             }
         }
-        console.log('parray',parray);
+        //console.log('parray',parray);
         res['permute'] = parray;
         res['sankey'] = sankey;
         return res;
@@ -1671,7 +1671,8 @@ export default class QCEngine {
     _postProcess(state)
     {
         let max_magn = state['input_state']['max_magn'] > state['output_state']['max_magn'] ? state['input_state']['max_magn'] : state['output_state']['max_magn'];
-
+        state['input_state']['max_magn'] = max_magn;
+        state['output_state']['max_magn'] = max_magn;
         for(let key in state){
             for (let i = 0; i < state[key]['bases'].length; i++){
                 if(max_magn != 0)
