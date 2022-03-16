@@ -60,10 +60,11 @@ export default class d3Draw {
 		// 列数
 		const row = operations.length
 		const col = qubit_number
+		const svgWidth =
+			(row + this.scaleNum) * this.svgItemWidth > 1299 ? (row + this.scaleNum) * this.svgItemWidth : 1299
 		// 设置SVG宽高 高度整体下移了一行
-		svg.attr('width', (row + this.scaleNum) * this.svgItemWidth)
+		svg.attr('width', svgWidth)
 		svg.attr('height', (col + 4) * this.svgItemHeight + 40)
-
 		// 加Label,先加载label label在最底层
 		for (let i = 0; i < data.labels.length; i++) {
 			if (data.labels[i].text && data.labels[i].end_operation !== undefined) {
@@ -894,6 +895,13 @@ export default class d3Draw {
 					const qubits = data.getQubitsInvolved(operations[i])
 					const defaultMinQ = Math.min(...qubits)
 					const defaultMaxQ = Math.max(...qubits)
+					defaultG
+						.append('rect')
+						.attr('height', this.svgItemHeight * (defaultMaxQ - defaultMinQ + 1))
+						.attr('width', 20)
+						.attr('fill', 'transparent')
+						.attr('x', x - 10)
+						.attr('y', this.svgItemHeight * (defaultMinQ + 2) - this.svgItemHeight / 2)
 					if (qubits.length) {
 						this.drawLine(
 							defaultG,
@@ -907,6 +915,15 @@ export default class d3Draw {
 						}
 					}
 
+					defaultG
+						.append('text')
+						.attr('x', x + 2)
+						.attr('y', this.svgItemHeight * (defaultMinQ + 2) - this.svgItemHeight / 2 + 3)
+						.classed('svgtext', true)
+						.append('tspan')
+						.attr('text-anchor', 'middle')
+						.attr('style', 'font-size:12px;')
+						.text('self-define')
 					break
 			}
 		}
@@ -972,9 +989,9 @@ export default class d3Draw {
 			.attr('stroke-width', 1)
 			.attr('d', line(I))
 	}
-	// 绘制C的连线
+	// 绘制C视图连线
 	drawCLine(svg, lineData, lineXArr, heightStep) {
-		const initY = lineData.length * heightStep
+		const initY = (lineData.length + 1) * heightStep
 
 		svg.attr('height', 267 + lineData.length * heightStep)
 		if (!lineData.length) {
@@ -1018,6 +1035,10 @@ export default class d3Draw {
 		// 连线的数据 放在这个方法里 计算图标Y轴整体向下移动的距离
 		const heightStep = 5
 		const lineData = qc.getPmiIndex(index, 0.25)
+		// const lineData = [
+		// 	{ a: 0, b: 0 },
+		// 	{ a: 1, b: 1 },
+		// ]
 		const config = {
 			barPadding: 0.1,
 			margins: { top: 20, left: 80, bottom: 100, right: 40 },
@@ -1055,8 +1076,8 @@ export default class d3Draw {
 			widthArr.push(width + (j ? widthArr[j - 1] : 0))
 			const g = chart_svg
 				.append('g')
-				.attr('transform', `translate(${j ? widthArr[j - 1] : 0},${lineData.length * heightStep})`)
-			this.StackedBarChart(dataArr, g, width, key, qc, config, barWidth, index, key)
+				.attr('transform', `translate(${j ? widthArr[j - 1] : 0},${(lineData.length + 1) * heightStep})`)
+			this.StackedBarChart(dataArr, g, width, key, qc, config, barWidth, index)
 			allWidth += width
 			chart_svg.attr('width', allWidth + 50)
 			j += 1
@@ -1065,11 +1086,11 @@ export default class d3Draw {
 		this.drawCLine(chart_svg, lineData, lineXArr, heightStep)
 	}
 
-	StackedBarChart(data, g, width, name, qc, config, barWidth, index, key) {
+	StackedBarChart(data, g, width, name, qc, config, barWidth, index) {
 		const chart = new Chart()
 		const self = this
 		chart.width(width)
-		chart.key(key)
+		chart.key(name)
 		chart.box(d3.select('.c_up_draw'))
 		chart.svg(g)
 		chart.margins(config.margins)
@@ -1127,16 +1148,14 @@ export default class d3Draw {
 			const yAxis = d3.axisLeft(chart.scaleY)
 			g.call(yAxis)
 			g.select('.domain').remove()
-			g.selectAll('.tick line').remove()
-			g.selectAll('.tick text').remove()
+			g.selectAll('.tick').remove()
 		}
 		// 绘制phase的Y轴
 		function customPhaseY(g) {
 			const yAxis = d3.axisLeft(chart.scalePhaseY)
 			g.call(yAxis)
 			g.select('.domain').remove()
-			g.selectAll('.tick line').remove()
-			g.selectAll('.tick text').remove()
+			g.selectAll('.tick').remove()
 		}
 
 		chart.renderX = function () {
@@ -1178,23 +1197,41 @@ export default class d3Draw {
 		}
 		// 绘制名称
 		chart.renderText = function () {
-			g.select('.xAxis')
-				.append('text')
-				.attr('class', 'axisText')
-				.attr('x', chart.getBodyWidth())
-				.attr('y', 0)
-				.attr('fill', config.textColor)
-				.attr('dy', 30)
 			g.select('.yAxis')
 				.append('text')
 				.attr('class', 'axisText')
-				.attr('x', -10)
-				.attr('y', chart.getBodyHeight() / 2)
+				.attr('x', -20)
+				.attr('y', chart.getBodyHeight() / 2 - 30)
 				.attr('fill', config.textColor)
-				.attr('text-anchor', 'end')
+				.attr('text-anchor', 'middle')
 				.attr('style', 'font-size:18px')
 				.text(`${name}`)
 				.classed('svgtext', true)
+		}
+		// 绘制粉色方块
+		chart.renderPinkRect = function () {
+			const parentRectHeight = 30
+
+			const childRectPercent = qc.variableEntropy(index, name)
+			// 减去了stroke的2
+			const childRectHeight = (parentRectHeight - 2) * childRectPercent
+			g.select('.yAxis')
+				.append('rect')
+				.attr('height', parentRectHeight)
+				.attr('width', 20)
+				.attr('x', -30)
+				.attr('y', chart.getBodyHeight() / 2 - parentRectHeight + 6)
+				.attr('fill', 'transparent')
+				.attr('stroke', '#000')
+				.attr('stroke-width', 1)
+
+			g.select('.yAxis')
+				.append('rect')
+				.attr('height', childRectHeight)
+				.attr('width', 18)
+				.attr('x', -29)
+				.attr('y', chart.getBodyHeight() / 2 - childRectHeight + 5)
+				.attr('fill', 'pink')
 		}
 		// 绑定事件
 		chart.addMouseOn = function () {
@@ -1287,7 +1324,7 @@ export default class d3Draw {
 					g.select('.tip').attr('transform', `translate(${position[0] + 85},${position[1] - 5})`)
 				})
 		}
-		self.chartBrushFn(g, barWidth, config, index, qc, key, chart)
+		self.chartBrushFn(g, barWidth, config, index, qc, name, chart)
 		self.charts.push(chart)
 		// 总体绘制
 		chart.render = function () {
@@ -1295,6 +1332,7 @@ export default class d3Draw {
 			chart.renderText()
 			self.renderBar(chart, data)
 			chart.addMouseOn()
+			chart.renderPinkRect()
 		}
 
 		chart.renderChart()
@@ -1317,7 +1355,6 @@ export default class d3Draw {
 			.attr('stroke', '#000')
 			.attr('stroke-width', 1)
 		magnBars.exit().remove()
-
 		// 绘制Prob bar
 
 		let probBars = chart.body().selectAll('.prob_bar').data(data)
@@ -1952,18 +1989,8 @@ export default class d3Draw {
 					.attr('cy', circleR)
 					.attr('r', circleR - 2)
 					.attr('stroke-width', 1)
-					.attr('fill', color)
-					.attr('opacity', 0.1)
-					.classed('d_item', true)
-				childG
-					.append('circle')
-					.attr('cx', circleR)
-					.attr('cy', circleR)
-					.attr('r', circleR - 2)
-					.attr('stroke-width', 1)
 					.attr('stroke', color)
-					.attr('fill', color)
-					.attr('opacity', 0.2)
+					.attr('fill', 'none')
 					.classed('d_item', true)
 			}
 		} else {
@@ -1991,14 +2018,30 @@ export default class d3Draw {
 			arcR = (arcR * this.dLength) / 2 - 2
 			const data = { startAngle: 0, endAngle: (Math.PI * arcDeg) / 180 }
 			const acrPath = d3.arc().innerRadius(0).outerRadius(arcR)
-
 			childG.append('path').attr('d', acrPath(data)).attr('fill', color).attr('transform', 'translate(13,13)')
+			// 用浅色圆填充剩余的部分
+			const opacityCircleR = { startAngle: (Math.PI * arcDeg) / 180, endAngle: (Math.PI * 360) / 180 }
+			const circlePath = d3.arc().innerRadius(0).outerRadius(arcR)
+			childG
+				.append('path')
+				.attr('d', circlePath(opacityCircleR))
+				.attr('fill', color)
+				.attr('transform', 'translate(13,13)')
+				.attr('opacity', 0.3)
 		} else if (!arcDeg && arcR) {
 			arcR = (arcR * this.dLength) / 2 - 2
 			const context = d3.path()
 			context.moveTo(circleR, circleR)
 			context.lineTo(circleR, circleR - arcR)
 			childG.append('path').attr('d', context.toString()).attr('stroke', color).attr('stroke-width', 1)
+			const opacityCircleR = { startAngle: 0, endAngle: (Math.PI * 360) / 180 }
+			const circlePath = d3.arc().innerRadius(0).outerRadius(arcR)
+			childG
+				.append('path')
+				.attr('d', circlePath(opacityCircleR))
+				.attr('fill', color)
+				.attr('transform', 'translate(13,13)')
+				.attr('opacity', 0.3)
 		}
 
 		return parentG
@@ -2311,6 +2354,7 @@ export default class d3Draw {
 		// 设置svg的宽高
 		const svgHeight = (inputStateData.bases.length + 1) * this.dLength
 		const svgWidth = outRelatedGX + this.dLength * 2 + 100
+
 		svg.attr('height', svgHeight).attr('width', svgWidth)
 		// 绘制圈
 		const circleG = svg
@@ -2643,19 +2687,21 @@ export default class d3Draw {
 			}
 		}
 	}
-	drawDChart(data, drawData) {
+	drawDChart(qc, drawData) {
 		// 判断绘制类型
 		let labels = []
 		if (drawData) {
 			labels = drawData.labels.filter((item) => item.text !== '')
 		} else {
-			labels = data.labels.filter((item) => item.text !== '')
+			labels = qc.labels.filter((item) => item.text !== '')
 		}
 		for (let i = 0; i < labels.length; i++) {
-			if (data.isSparse(labels[i].id)) {
-				this.drawSankey(data, labels[i])
-			} else {
-				this.drawMatrix(data, labels[i])
+			if (qc.canShow(labels[i].id)) {
+				if (qc.isSparse(labels[i].id)) {
+					this.drawSankey(qc, labels[i])
+				} else {
+					this.drawMatrix(qc, labels[i])
+				}
 			}
 		}
 	}
