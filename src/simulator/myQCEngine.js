@@ -17,7 +17,7 @@ import QuantumCircuit from './QuantumCircuit'
 import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, alt_tensor, calibrate, getExp, linear_entropy, binary2int, average, spec, average_sum, normalize, density} from './CommonFunction'
 
 import {
-    cos, sin, round, pi, complex, create, all, max, sparse,
+    cos, sin, round, pi, complex, create, all, max, sparse, map,
 } from 'mathjs'
 import { gateExpand1toN, QObject, tensor, identity, dot, controlledGate, permute } from './MatrixOperation';
 import * as deepcopy from 'deepcopy';
@@ -639,36 +639,53 @@ export default class QCEngine {
     }
 
     // 保存为一个自定义门
-    saveGate(gate_name, gate) {
+    saveGate(gate_name, operations) {
         // // export circuit to variable
         // var obj = someCircuit.save();
         // // register it as a gate in another circuit
         // anotherCircuit.registerGate("my_gate", obj);
-
-        if (typeof (gate) === '')// 如果是矩阵
-        { 
-
-        }
-        else if (typeof (gate) === '')// 如果是operations
-        {  
-            name2gate[gate_name] = gate;
-        }
+        name2gate[gate_name] = operations;
 
     }
 
     apply(gate_name, qubits) {
-        let gate = name2gate[gate_name];
-        if(gate == undefined)
+        let ops = name2gate[gate_name];
+        if(ops == undefined)
         {
-            console.error("no gate exists:", gate_name);
+            console.error("gatename is not saved:", gate_name);
             debugger
         }
+        for(let i=0; i<ops.length; i++)
+        {
+            let opera= ops[i];
+            let op_name = opera['operation']
+            let inv_qubit;
+            if(op_name == 'h')
+            {
+                //remap(qubits)
+                this.had(qubits)
+            }
+            else if(op_name == 'phase')
+            {
 
-        this._addGate({
-            'qubits': qubits,
-            'operation': gate_name,
-            'columns': this.nextColumn()
-        })
+            }
+            else if(op_name == 'not')
+            {
+
+            }
+            else if(op_name == '')
+
+            
+            this._addGate({
+                'qubits': qubits,
+                'operation': gate_name,
+                'columns': this.nextColumn()
+            })
+
+        }
+        
+
+
     }
 
 
@@ -1416,7 +1433,7 @@ export default class QCEngine {
         let ops = [this.labels[label_id]['start_operation'], this.labels[label_id]['end_operation']];
         for (let i = ops[0]; i < ops[1]; i++) {
             let opera = this.operations[i];
-            if (opera['operation'] == 'write' || opera['operation'] == 'measure' || this.draw_evo == false)
+            if (opera['operation'] == 'write' || opera['operation'] == 'read' || this.draw_evo == false)
                 return false;
 
         }
@@ -1428,7 +1445,7 @@ export default class QCEngine {
         // debugger
         //console.log(label_id);
         //console.log(this.labels);
-        //console.log(this.operations);
+        console.log(this.operations);
         let gate_mats = [];
         let ops = [this.labels[label_id]['start_operation'], this.labels[label_id]['end_operation']];
         //console.log(ops);
