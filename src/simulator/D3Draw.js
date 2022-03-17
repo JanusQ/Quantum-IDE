@@ -54,6 +54,9 @@ export default class d3Draw {
 		this.charts = []
 		// 存储QC
 		this.qc = null
+		// D viewBox 和svg宽的比
+		this.viewBoxWidth = 1.6
+		this.viewBoxHeight = 2
 	}
 	exportD3SVG(data) {
 		const svg = d3.select('#circuit_svg')
@@ -1557,6 +1560,11 @@ export default class d3Draw {
 			.domain(data.map((d) => d.index))
 			.range([0, chart.getBodyWidth()])
 			.padding(config.barPadding)
+		chart.scaleX2 = d3
+			.scaleBand()
+			.domain(data.map((d) => d.index))
+			.range([0, chart.getBodyWidth()])
+			.padding(config.barPadding)
 		// magnsY 轴
 		chart.scaleY = d3
 			.scaleLinear()
@@ -1579,6 +1587,19 @@ export default class d3Draw {
 			context.moveTo(chart.scaleX(0), 0)
 			context.lineTo(chart.scaleX(data.length - 1), 0)
 			g.select('.domain').attr('d', context.toString()).attr('stroke', '#000').attr('stroke-width', 1)
+		}
+		// 处理x2轴样式
+		function customXAxis2(g) {
+			const xAxis = d3.axisBottom(chart.scaleX)
+			g.call(xAxis)
+			// g.select('.domain').remove()
+			g.selectAll('.tick line').remove()
+			g.selectAll('.tick text').remove()
+			const context = d3.path()
+			// 自定义X轴线
+			context.moveTo(chart.scaleX(0), 0)
+			context.lineTo(chart.scaleX(data.length - 1), 0)
+			g.select('.domain').attr('d', context.toString()).attr('stroke', 'none').attr('stroke-width', 1)
 		}
 		// 处理mangns Y轴样式
 		function customYAxis(g) {
@@ -1664,8 +1685,21 @@ export default class d3Draw {
 				.classed('svgtext', true)
 				.call(customXAxis)
 		}
-
+		chart.renderX2 = function () {
+			chart.svg().select('.xAxis2').remove()
+			chart
+				.svg()
+				.insert('g', '.body')
+				.attr(
+					'transform',
+					'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2) + ')'
+				)
+				.attr('class', 'xAxis2')
+				.classed('svgtext', true)
+				.call(customXAxis2)
+		}
 		chart.renderMagnsY = function () {
+			chart.svg().select('.magnYAxis').remove()
 			chart
 				.svg()
 				.insert('g', '.body')
@@ -1675,6 +1709,7 @@ export default class d3Draw {
 				.call(customYAxis)
 		}
 		chart.renderPhasesY = function () {
+			chart.svg().select('.phaseYAxis').remove()
 			chart
 				.svg()
 				.insert('g', '.body')
@@ -1691,6 +1726,7 @@ export default class d3Draw {
 			chart.renderMagnsY()
 			chart.renderPhasesY()
 			chart.renderX()
+			chart.renderX2()
 		}
 		// 绑定事件
 		chart.addMouseOn = function () {
@@ -1791,11 +1827,14 @@ export default class d3Draw {
 			chart.svg().call(d3.zoom().scaleExtent([1, 8]).translateExtent(extent).extent(extent).on('zoom', zoomed))
 			function zoomed(event) {
 				chart.scaleX.range([0, chart.getBodyWidth()].map((d) => event.transform.applyX(d)))
+				chart.scaleX2.range([0, chart.getBodyWidth()].map((d) => event.transform.applyX(d)))
+			
 				chart
 					.svg()
 					.selectAll('.magns_bar')
 					.attr('x', (d) => chart.scaleX(d.index))
 					.attr('width', chart.scaleX.bandwidth())
+
 				chart
 					.svg()
 					.selectAll('.probs_bar')
@@ -1807,6 +1846,73 @@ export default class d3Draw {
 					.attr('x', (d) => chart.scaleX(d.index))
 					.attr('width', chart.scaleX.bandwidth())
 				chart.svg().selectAll('.xAxis').call(chart.renderX)
+				chart.svg().selectAll('.xAxis2').call(chart.renderX2)
+				// 5.28 目前试的大概显示24个柱子
+				// if (event.transform.k > 5.28) {
+				// // magnsY 轴
+				// chart.scaleY.range([chart.getBodyHeight() / 2 - 15, 0])
+				// // phases Y轴
+				// chart.scaleY2.range([0, chart.getBodyHeight() / 2 - 15])
+				// chart.svg().selectAll('.magnYAxis').call(chart.renderMagnsY)
+				// chart.svg().selectAll('.phaseYAxis').call(chart.renderPhasesY)
+				// 	// chart
+				// 	// 	.svg()
+				// 	// 	.select('.xAxis')
+				// 	// 	.attr(
+				// 	// 		'transform',
+				// 	// 		'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2 + 15) + ')'
+				// 	// 	)
+				// 	// chart
+				// 	// 	.svg()
+				// 	// 	.select('.xAxis2')
+				// 	// 	.attr(
+				// 	// 		'transform',
+				// 	// 		'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2 - 15) + ')'
+				// 	// 	)
+				// 	// chart.svg().select('.xAxis2 .domain').attr('stroke', '#000')
+				// 	// chart
+				// 	// 	.svg()
+				// 	// 	.selectAll('.magns_bar')
+				// 	// 	.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.magns) - 15)
+				// 	// chart
+				// 	// 	.svg()
+				// 	// 	.selectAll('.probs_bar')
+				// 	// 	.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.probs) - 15)
+				// 	// chart
+				// 	// 	.svg()
+				// 	// 	.selectAll('.phases_bar')
+				// 	// 	.attr('y', (d) => chart.getBodyHeight() / 2 + 16)
+				// 	// 	.attr('height', (d) => chart.scaleY2(d.phases) - 15)
+				// } else {
+				// 	// chart
+				// 	// 	.svg()
+				// 	// 	.selectAll('.magns_bar')
+				// 	// 	.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.magns))
+				// 	// chart
+				// 	// 	.svg()
+				// 	// 	.selectAll('.probs_bar')
+				// 	// 	.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.probs))
+				// 	// chart
+				// 	// 	.svg()
+				// 	// 	.selectAll('.phases_bar')
+				// 	// 	.attr('y', (d) => chart.getBodyHeight() / 2 + 1)
+				// 	// 	.attr('height', (d) => chart.scaleY2(d.phases))
+				// 	// chart
+				// 	// 	.svg()
+				// 	// 	.select('.xAxis')
+				// 	// 	.attr(
+				// 	// 		'transform',
+				// 	// 		'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2) + ')'
+				// 	// 	)
+				// 	// chart
+				// 	// 	.svg()
+				// 	// 	.select('.xAxis2')
+				// 	// 	.attr(
+				// 	// 		'transform',
+				// 	// 		'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2) + ')'
+				// 	// 	)
+				// 	// chart.svg().select('.xAxis2 .domain').attr('stroke', 'none')
+				// }
 			}
 		}
 		// 总体绘制
@@ -2163,7 +2269,7 @@ export default class d3Draw {
 			.attr('y', this.dLength / 2)
 	}
 	// 绘制基本结构
-	drawElement(labelName, labelId, qc, circleNum, inputStateNumber, svgHeight, svgWidth) {
+	drawElement(labelName, labelId, qc, circleNum, inputStateNumber, svgWidth,svgHeight) {
 		const self = this
 		let isShowMore = false
 		let isFull = false
@@ -2201,9 +2307,9 @@ export default class d3Draw {
 				chartDiv.attr('class', null).classed('d_chart_div', true)
 				operationDiv.attr('style', 'display:none')
 				isShowMore = false
-				svg.attr('width', '320')
-				svg.attr('height', '280')
-				svg.attr('viewBox', `0,0,${svgWidth / 3.5},${svgHeight / 3.8}`)
+				svg.attr('width', svgWidth / this.viewBoxWidth)
+				svg.attr('height', svgHeight / this.viewBoxHeight)
+				svg.attr('viewBox', `0,0,${svgWidth },${svgHeight}`)
 				isFull = !isFull
 			} else {
 				svg.attr('width', '100%')
@@ -2368,8 +2474,8 @@ export default class d3Draw {
 		)
 
 		svg.attr('viewBox', `0,0,${svgWidth},${svgHeight}`)
-		svg.attr('width', svgWidth / 3.5)
-		svg.attr('height', svgHeight / 3.8)
+		svg.attr('width', svgWidth / this.viewBoxWidth)
+		svg.attr('height', svgHeight / this.viewBoxHeight)
 		// svg.attr('width',)
 
 		// 绘制圈
@@ -2581,8 +2687,8 @@ export default class d3Draw {
 		)
 		// svg.attr('height', svgHeight).attr('width', svgWidth)
 		svg.attr('viewBox', `0,0,${svgWidth},${svgHeight}`)
-		svg.attr('width', svgWidth / 3.5)
-		svg.attr('height', svgHeight / 3.8)
+		svg.attr('width', svgWidth / this.viewBoxWidth)
+		svg.attr('height', svgHeight / this.viewBoxHeight)
 		const circleG = svg.append('g').classed('circle_g', true).attr('transform', `translate(0,${circleGtransformY})`)
 		for (let i = 0; i < circleData.length; i++) {
 			for (let j = 0; j < circleData[i].length; j++) {

@@ -100,7 +100,7 @@
 	overflow: auto;
 }
 .d_chart_div {
-	width: 48%;
+	/* width: 48%; */
 	/* height: 49%; */
 	float: left;
 	margin-right: 2%;
