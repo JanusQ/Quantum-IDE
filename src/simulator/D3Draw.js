@@ -54,6 +54,9 @@ export default class d3Draw {
 		this.charts = []
 		// 存储QC
 		this.qc = null
+		// D viewBox 和svg宽的比
+		this.viewBoxWidth = 1.6
+		this.viewBoxHeight = 2
 	}
 	exportD3SVG(data) {
 		const svg = d3.select('#circuit_svg')
@@ -1524,9 +1527,9 @@ export default class d3Draw {
 		// const barWidth = 20
 		for (let i = 0; i < data.magns.length; i++) {
 			dataArr.push({
-				magns: 1,
-				phases: 250,
-				probs: 1,
+				magns: data.magns[i],
+				phases: data.phases[i],
+				probs: data.probs[i],
 				index: i,
 				base: data.base[i],
 			})
@@ -1845,71 +1848,71 @@ export default class d3Draw {
 				chart.svg().selectAll('.xAxis').call(chart.renderX)
 				chart.svg().selectAll('.xAxis2').call(chart.renderX2)
 				// 5.28 目前试的大概显示24个柱子
-				if (event.transform.k > 5.28) {
-				// magnsY 轴
-				chart.scaleY.range([chart.getBodyHeight() / 2 - 15, 0])
-				// phases Y轴
-				chart.scaleY2.range([0, chart.getBodyHeight() / 2 - 15])
-				chart.svg().selectAll('.magnYAxis').call(chart.renderMagnsY)
-				chart.svg().selectAll('.phaseYAxis').call(chart.renderPhasesY)
-					// chart
-					// 	.svg()
-					// 	.select('.xAxis')
-					// 	.attr(
-					// 		'transform',
-					// 		'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2 + 15) + ')'
-					// 	)
-					// chart
-					// 	.svg()
-					// 	.select('.xAxis2')
-					// 	.attr(
-					// 		'transform',
-					// 		'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2 - 15) + ')'
-					// 	)
-					// chart.svg().select('.xAxis2 .domain').attr('stroke', '#000')
-					// chart
-					// 	.svg()
-					// 	.selectAll('.magns_bar')
-					// 	.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.magns) - 15)
-					// chart
-					// 	.svg()
-					// 	.selectAll('.probs_bar')
-					// 	.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.probs) - 15)
-					// chart
-					// 	.svg()
-					// 	.selectAll('.phases_bar')
-					// 	.attr('y', (d) => chart.getBodyHeight() / 2 + 16)
-					// 	.attr('height', (d) => chart.scaleY2(d.phases) - 15)
-				} else {
-					// chart
-					// 	.svg()
-					// 	.selectAll('.magns_bar')
-					// 	.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.magns))
-					// chart
-					// 	.svg()
-					// 	.selectAll('.probs_bar')
-					// 	.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.probs))
-					// chart
-					// 	.svg()
-					// 	.selectAll('.phases_bar')
-					// 	.attr('y', (d) => chart.getBodyHeight() / 2 + 1)
-					// 	.attr('height', (d) => chart.scaleY2(d.phases))
-					// chart
-					// 	.svg()
-					// 	.select('.xAxis')
-					// 	.attr(
-					// 		'transform',
-					// 		'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2) + ')'
-					// 	)
-					// chart
-					// 	.svg()
-					// 	.select('.xAxis2')
-					// 	.attr(
-					// 		'transform',
-					// 		'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2) + ')'
-					// 	)
-					// chart.svg().select('.xAxis2 .domain').attr('stroke', 'none')
-				}
+				// if (event.transform.k > 5.28) {
+				// // magnsY 轴
+				// chart.scaleY.range([chart.getBodyHeight() / 2 - 15, 0])
+				// // phases Y轴
+				// chart.scaleY2.range([0, chart.getBodyHeight() / 2 - 15])
+				// chart.svg().selectAll('.magnYAxis').call(chart.renderMagnsY)
+				// chart.svg().selectAll('.phaseYAxis').call(chart.renderPhasesY)
+				// 	// chart
+				// 	// 	.svg()
+				// 	// 	.select('.xAxis')
+				// 	// 	.attr(
+				// 	// 		'transform',
+				// 	// 		'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2 + 15) + ')'
+				// 	// 	)
+				// 	// chart
+				// 	// 	.svg()
+				// 	// 	.select('.xAxis2')
+				// 	// 	.attr(
+				// 	// 		'transform',
+				// 	// 		'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2 - 15) + ')'
+				// 	// 	)
+				// 	// chart.svg().select('.xAxis2 .domain').attr('stroke', '#000')
+				// 	// chart
+				// 	// 	.svg()
+				// 	// 	.selectAll('.magns_bar')
+				// 	// 	.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.magns) - 15)
+				// 	// chart
+				// 	// 	.svg()
+				// 	// 	.selectAll('.probs_bar')
+				// 	// 	.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.probs) - 15)
+				// 	// chart
+				// 	// 	.svg()
+				// 	// 	.selectAll('.phases_bar')
+				// 	// 	.attr('y', (d) => chart.getBodyHeight() / 2 + 16)
+				// 	// 	.attr('height', (d) => chart.scaleY2(d.phases) - 15)
+				// } else {
+				// 	// chart
+				// 	// 	.svg()
+				// 	// 	.selectAll('.magns_bar')
+				// 	// 	.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.magns))
+				// 	// chart
+				// 	// 	.svg()
+				// 	// 	.selectAll('.probs_bar')
+				// 	// 	.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.probs))
+				// 	// chart
+				// 	// 	.svg()
+				// 	// 	.selectAll('.phases_bar')
+				// 	// 	.attr('y', (d) => chart.getBodyHeight() / 2 + 1)
+				// 	// 	.attr('height', (d) => chart.scaleY2(d.phases))
+				// 	// chart
+				// 	// 	.svg()
+				// 	// 	.select('.xAxis')
+				// 	// 	.attr(
+				// 	// 		'transform',
+				// 	// 		'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2) + ')'
+				// 	// 	)
+				// 	// chart
+				// 	// 	.svg()
+				// 	// 	.select('.xAxis2')
+				// 	// 	.attr(
+				// 	// 		'transform',
+				// 	// 		'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2) + ')'
+				// 	// 	)
+				// 	// chart.svg().select('.xAxis2 .domain').attr('stroke', 'none')
+				// }
 			}
 		}
 		// 总体绘制
@@ -2266,7 +2269,7 @@ export default class d3Draw {
 			.attr('y', this.dLength / 2)
 	}
 	// 绘制基本结构
-	drawElement(labelName, labelId, qc, circleNum, inputStateNumber, svgHeight, svgWidth) {
+	drawElement(labelName, labelId, qc, circleNum, inputStateNumber, svgWidth,svgHeight) {
 		const self = this
 		let isShowMore = false
 		let isFull = false
@@ -2304,9 +2307,9 @@ export default class d3Draw {
 				chartDiv.attr('class', null).classed('d_chart_div', true)
 				operationDiv.attr('style', 'display:none')
 				isShowMore = false
-				svg.attr('width', '320')
-				svg.attr('height', '280')
-				svg.attr('viewBox', `0,0,${svgWidth / 3.5},${svgHeight / 3.8}`)
+				svg.attr('width', svgWidth / this.viewBoxWidth)
+				svg.attr('height', svgHeight / this.viewBoxHeight)
+				svg.attr('viewBox', `0,0,${svgWidth },${svgHeight}`)
 				isFull = !isFull
 			} else {
 				svg.attr('width', '100%')
@@ -2471,8 +2474,8 @@ export default class d3Draw {
 		)
 
 		svg.attr('viewBox', `0,0,${svgWidth},${svgHeight}`)
-		svg.attr('width', svgWidth / 3.5)
-		svg.attr('height', svgHeight / 3.8)
+		svg.attr('width', svgWidth / this.viewBoxWidth)
+		svg.attr('height', svgHeight / this.viewBoxHeight)
 		// svg.attr('width',)
 
 		// 绘制圈
@@ -2684,8 +2687,8 @@ export default class d3Draw {
 		)
 		// svg.attr('height', svgHeight).attr('width', svgWidth)
 		svg.attr('viewBox', `0,0,${svgWidth},${svgHeight}`)
-		svg.attr('width', svgWidth / 3.5)
-		svg.attr('height', svgHeight / 3.8)
+		svg.attr('width', svgWidth / this.viewBoxWidth)
+		svg.attr('height', svgHeight / this.viewBoxHeight)
 		const circleG = svg.append('g').classed('circle_g', true).attr('transform', `translate(0,${circleGtransformY})`)
 		for (let i = 0; i < circleData.length; i++) {
 			for (let j = 0; j < circleData[i].length; j++) {
