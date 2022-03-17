@@ -162,7 +162,7 @@ export default class d3Draw {
 			drawData.magns.push(item.magns)
 			drawData.phases.push(item.phases)
 			drawData.probs.push(item.probs)
-			drawData.probs.push(item.base)
+			drawData.base.push(item.base)
 		})
 		this.drawCdownStackedBar(drawData)
 		this.charts = []
@@ -1044,10 +1044,6 @@ export default class d3Draw {
 		// 连线的数据 放在这个方法里 计算图标Y轴整体向下移动的距离
 		const heightStep = 5
 		const lineData = qc.getPmiIndex(index, 0.25)
-		// const lineData = [
-		// 	{ a: 0, b: 0 },
-		// 	{ a: 1, b: 1 },
-		// ]
 		const config = {
 			barPadding: 0.1,
 			margins: { top: 20, left: 80, bottom: 100, right: 40 },
@@ -1083,9 +1079,7 @@ export default class d3Draw {
 
 			const width = barWidth * dataArr.length + config.margins.left + config.margins.right
 			widthArr.push(width + (j ? widthArr[j - 1] : 0))
-			const g = chart_svg
-				.append('g')
-				.attr('transform', `translate(${j ? widthArr[j - 1] : 0},${(lineData.length + 1) * heightStep})`)
+			const g = chart_svg.append('g').attr('transform', `translate(${j ? widthArr[j - 1] : 0},${6 * heightStep})`)
 			this.StackedBarChart(dataArr, g, width, key, qc, config, barWidth, index)
 			allWidth += width
 			chart_svg.attr('width', allWidth + 50)
@@ -1210,7 +1204,7 @@ export default class d3Draw {
 				.append('text')
 				.attr('class', 'axisText')
 				.attr('x', -20)
-				.attr('y', chart.getBodyHeight() / 2 - 30)
+				.attr('y', chart.getBodyHeight() / 2 - 20)
 				.attr('fill', config.textColor)
 				.attr('text-anchor', 'middle')
 				.attr('style', 'font-size:18px')
@@ -1219,8 +1213,7 @@ export default class d3Draw {
 		}
 		// 绘制粉色方块
 		chart.renderPinkRect = function () {
-			const parentRectHeight = 30
-
+			const parentRectHeight = 20
 			const childRectPercent = qc.variableEntropy(index, name)
 			// 减去了stroke的2
 			const childRectHeight = (parentRectHeight - 2) * childRectPercent
@@ -1567,7 +1560,7 @@ export default class d3Draw {
 		// magnsY 轴
 		chart.scaleY = d3
 			.scaleLinear()
-			.domain([0, d3.max(data, (d) => d.magns)])
+			.domain([0, d3.max([...data.map((d) => d.magns), ...data.map((d) => d.probs)])])
 			.range([chart.getBodyHeight() / 2, 0])
 		// phases Y轴
 		chart.scaleY2 = d3
@@ -2210,7 +2203,7 @@ export default class d3Draw {
 				isShowMore = false
 				svg.attr('width', '320')
 				svg.attr('height', '280')
-				svg.attr('viewBox', `0,0,${svgWidth},${svgHeight}`)
+				svg.attr('viewBox', `0,0,${svgWidth / 3.5},${svgHeight / 3.8}`)
 				isFull = !isFull
 			} else {
 				svg.attr('width', '100%')
@@ -2373,7 +2366,11 @@ export default class d3Draw {
 			svgWidth,
 			svgHeight
 		)
+
 		svg.attr('viewBox', `0,0,${svgWidth},${svgHeight}`)
+		svg.attr('width', svgWidth / 3.5)
+		svg.attr('height', svgHeight / 3.8)
+		// svg.attr('width',)
 
 		// 绘制圈
 		const circleG = svg
@@ -2584,6 +2581,8 @@ export default class d3Draw {
 		)
 		// svg.attr('height', svgHeight).attr('width', svgWidth)
 		svg.attr('viewBox', `0,0,${svgWidth},${svgHeight}`)
+		svg.attr('width', svgWidth / 3.5)
+		svg.attr('height', svgHeight / 3.8)
 		const circleG = svg.append('g').classed('circle_g', true).attr('transform', `translate(0,${circleGtransformY})`)
 		for (let i = 0; i < circleData.length; i++) {
 			for (let j = 0; j < circleData[i].length; j++) {
