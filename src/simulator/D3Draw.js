@@ -19,6 +19,15 @@ export default class d3Draw {
 		this.write0FontColor = options.write0FontColor || '#000'
 		// had字体颜色
 		this.hadFontColor = options.hadFontColor || '#000'
+		// 存储d模块圆形颜色
+		this.dCircleUsedColor = options.dCircleUsedColor || 'rgb(246, 175, 31)'
+		this.dCircleColor = options.dCircleColor || 'rgba(142, 132, 112,0.5)'
+		// 互补的圆形透明度
+		this.dCircleColorOpacity = options.dCircleColorOpacity || 0.3
+		// d模块浅色块颜色
+		this.dLightRectColor = options.dLightRectColor || 'rgb(137, 214, 220)'
+		// 浅色块条形图的颜色
+		this.dBarColor = options.dBarColor || 'rgb(137, 214, 220)'
 		// 设置空白和间距
 		this.firstX = 90
 		this.svgItemWidth = 30
@@ -153,7 +162,7 @@ export default class d3Draw {
 			drawData.magns.push(item.magns)
 			drawData.phases.push(item.phases)
 			drawData.probs.push(item.probs)
-			drawData.probs.push(item.base)
+			drawData.base.push(item.base)
 		})
 		this.drawCdownStackedBar(drawData)
 		this.charts = []
@@ -1035,10 +1044,6 @@ export default class d3Draw {
 		// 连线的数据 放在这个方法里 计算图标Y轴整体向下移动的距离
 		const heightStep = 5
 		const lineData = qc.getPmiIndex(index, 0.25)
-		// const lineData = [
-		// 	{ a: 0, b: 0 },
-		// 	{ a: 1, b: 1 },
-		// ]
 		const config = {
 			barPadding: 0.1,
 			margins: { top: 20, left: 80, bottom: 100, right: 40 },
@@ -1074,9 +1079,7 @@ export default class d3Draw {
 
 			const width = barWidth * dataArr.length + config.margins.left + config.margins.right
 			widthArr.push(width + (j ? widthArr[j - 1] : 0))
-			const g = chart_svg
-				.append('g')
-				.attr('transform', `translate(${j ? widthArr[j - 1] : 0},${(lineData.length + 1) * heightStep})`)
+			const g = chart_svg.append('g').attr('transform', `translate(${j ? widthArr[j - 1] : 0},${6 * heightStep})`)
 			this.StackedBarChart(dataArr, g, width, key, qc, config, barWidth, index)
 			allWidth += width
 			chart_svg.attr('width', allWidth + 50)
@@ -1201,7 +1204,7 @@ export default class d3Draw {
 				.append('text')
 				.attr('class', 'axisText')
 				.attr('x', -20)
-				.attr('y', chart.getBodyHeight() / 2 - 30)
+				.attr('y', chart.getBodyHeight() / 2 - 20)
 				.attr('fill', config.textColor)
 				.attr('text-anchor', 'middle')
 				.attr('style', 'font-size:18px')
@@ -1210,8 +1213,7 @@ export default class d3Draw {
 		}
 		// 绘制粉色方块
 		chart.renderPinkRect = function () {
-			const parentRectHeight = 30
-
+			const parentRectHeight = 20
 			const childRectPercent = qc.variableEntropy(index, name)
 			// 减去了stroke的2
 			const childRectHeight = (parentRectHeight - 2) * childRectPercent
@@ -1558,7 +1560,7 @@ export default class d3Draw {
 		// magnsY 轴
 		chart.scaleY = d3
 			.scaleLinear()
-			.domain([0, d3.max(data, (d) => d.magns)])
+			.domain([0, d3.max([...data.map((d) => d.magns), ...data.map((d) => d.probs)])])
 			.range([chart.getBodyHeight() / 2, 0])
 		// phases Y轴
 		chart.scaleY2 = d3
@@ -1852,7 +1854,7 @@ export default class d3Draw {
 		}
 	}
 	// 绘制input
-	drawDInput(svg, x, y, inWidth, deg, color, isNeedShowData, data, chartDiv, chartSvgDiv, offsetX, offsetY) {
+	drawDinput(svg, x, y, inWidth, deg, color, isNeedShowData, data, chartDiv, chartSvgDiv, offsetX, offsetY) {
 		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`).classed('d_item', true)
 		parentG.append('rect').attr('width', this.dLength).attr('height', this.dLength).attr('fill', 'none')
 		const childG = parentG.append('g').attr('transform', `translate(3,3)`)
@@ -1946,7 +1948,7 @@ export default class d3Draw {
 				.attr('height', 20)
 				.attr('x', 20)
 				.attr('y', 6)
-				.attr('fill', 'rgb(137, 214, 220)')
+				.attr('fill', this.dBarColor)
 
 			childG
 				.append('text')
@@ -2003,16 +2005,16 @@ export default class d3Draw {
 				.attr('stroke', color)
 				.attr('fill', 'none')
 				.classed('d_item', true)
-			childG
-				.append('circle')
-				.attr('cx', circleR)
-				.attr('cy', circleR)
-				.attr('r', circleR - 2)
-				.attr('stroke-width', 1)
-				.attr('stroke', color)
-				.attr('fill', 'none')
-				.attr('opacity', 0.5)
-				.classed('d_item', true)
+			// childG
+			// 	.append('circle')
+			// 	.attr('cx', circleR)
+			// 	.attr('cy', circleR)
+			// 	.attr('r', circleR - 2)
+			// 	.attr('stroke-width', 1)
+			// 	.attr('stroke', color)
+			// 	.attr('fill', 'none')
+			// 	.attr('opacity', 0.5)
+			// 	.classed('d_item', true)
 		}
 		if (arcDeg) {
 			arcR = (arcR * this.dLength) / 2 - 2
@@ -2027,7 +2029,7 @@ export default class d3Draw {
 				.attr('d', circlePath(opacityCircleR))
 				.attr('fill', color)
 				.attr('transform', 'translate(13,13)')
-				.attr('opacity', 0.3)
+				.attr('opacity', this.dCircleColorOpacity)
 		} else if (!arcDeg && arcR) {
 			arcR = (arcR * this.dLength) / 2 - 2
 			const context = d3.path()
@@ -2041,7 +2043,7 @@ export default class d3Draw {
 				.attr('d', circlePath(opacityCircleR))
 				.attr('fill', color)
 				.attr('transform', 'translate(13,13)')
-				.attr('opacity', 0.3)
+				.attr('opacity', this.dCircleColorOpacity)
 		}
 
 		return parentG
@@ -2134,13 +2136,13 @@ export default class d3Draw {
 					.attr('width', '100%')
 					.attr('height', 'calc(100% - 8px)')
 				for (let i = 0; i < data.length; i++) {
-					self.drawDInput(
+					self.drawDinput(
 						relaedSVG,
 						3,
 						self.dLength * i,
 						data[i].ratio,
 						data[i].phases,
-						'rgb(137, 214, 220)',
+						self.dLightRectColor,
 						true,
 						data[i],
 						chartDiv,
@@ -2161,7 +2163,7 @@ export default class d3Draw {
 			.attr('y', this.dLength / 2)
 	}
 	// 绘制基本结构
-	drawElement(labelName, labelId, qc, circleNum, inputStateNumber) {
+	drawElement(labelName, labelId, qc, circleNum, inputStateNumber, svgHeight, svgWidth) {
 		const self = this
 		let isShowMore = false
 		let isFull = false
@@ -2199,8 +2201,14 @@ export default class d3Draw {
 				chartDiv.attr('class', null).classed('d_chart_div', true)
 				operationDiv.attr('style', 'display:none')
 				isShowMore = false
+				svg.attr('width', '320')
+				svg.attr('height', '280')
+				svg.attr('viewBox', `0,0,${svgWidth / 3.5},${svgHeight / 3.8}`)
 				isFull = !isFull
 			} else {
+				svg.attr('width', '100%')
+				svg.attr('height', '100%')
+				svg.attr('viewBox', null)
 				chartDiv.classed('d_chart_div_full', true)
 				operationDiv.attr('style', 'display:none')
 				isShowMore = false
@@ -2215,8 +2223,8 @@ export default class d3Draw {
 		titleDiv.append('span').classed('label_name', true).text(`${labelName}`)
 		const btnDiv = titleDiv.append('div').classed('btn_group', true)
 		const chartSvgDiv = chartDiv.append('div').classed('chart_svg_div', true)
-		// const svg = chartSvgDiv.append('svg').classed('d_chart_svg', true).attr('viewbox', '0,0,600,520').attr('width', '300').attr('height', '260')
-		const svg = chartSvgDiv.append('svg').classed('d_chart_svg', true)
+		const svg = chartSvgDiv.append('svg').classed('d_chart_svg', true).attr('width', '320').attr('height', '280')
+		// const svg = chartSvgDiv.append('svg').classed('d_chart_svg', true)
 		const operationDiv = btnDiv.append('div').classed('operation_div', true).attr('style', 'display:none;')
 		btnDiv.append('img').attr('src', '/img/legends/yellowCircle.png').attr('width', 15).attr('height', 15)
 		btnDiv.append('span').text(`${circleNum}`).attr('style', 'font-size:12px;margin-left:5px;')
@@ -2241,7 +2249,7 @@ export default class d3Draw {
 			.append('img')
 			.attr('src', '/icon/expand_icon.svg')
 			.on('click', function () {
-				expandFn(chartDiv, operationDiv)
+				expandFn(chartDiv, operationDiv, svg)
 			})
 		operationDiv.append('img').attr('src', '/icon/delete_icon.svg').on('click', close)
 		return {
@@ -2333,13 +2341,7 @@ export default class d3Draw {
 		}
 		const { sankey: sankeyData, permute } = qc.transferSankeyOrdered(data.id)
 		const { input_state: inputStateData, output_state: outStateData } = qc.getState(data.id)
-		const { svg, chartDiv, chartSvgDiv } = this.drawElement(
-			data.text,
-			data.id,
-			qc,
-			circleDataNum,
-			inputStateData['max_magn'].toFixed(2)
-		)
+
 		const inputBases = inputStateData.bases
 		const outBases = outStateData.bases
 		// outBases根据permute排序
@@ -2355,12 +2357,20 @@ export default class d3Draw {
 		// 设置svg的宽高
 		const svgHeight = (inputStateData.bases.length + 1) * this.dLength
 		const svgWidth = outRelatedGX + this.dLength * 2 + 100
-		// const scaleX = 300 / svgWidth
-		// const scaleY = 200 / svgHeight
-		// const transformX = (svgWidth * (scaleX - 1)) / 2
-		// const transformY = (svgHeight * (scaleX - 1)) / 2
-		svg.append('width', svgWidth)
-		svg.append('height', svgHeight)
+		const { svg, chartDiv, chartSvgDiv } = this.drawElement(
+			data.text,
+			data.id,
+			qc,
+			circleDataNum,
+			inputStateData['max_magn'].toFixed(2),
+			svgWidth,
+			svgHeight
+		)
+
+		svg.attr('viewBox', `0,0,${svgWidth},${svgHeight}`)
+		svg.attr('width', svgWidth / 3.5)
+		svg.attr('height', svgHeight / 3.8)
+		// svg.attr('width',)
 
 		// 绘制圈
 		const circleG = svg
@@ -2368,7 +2378,7 @@ export default class d3Draw {
 			.classed('circle_g', true)
 			.attr('transform', `translate(${circleGtransformX},${this.dLength})`)
 		for (let i = 0; i < sankeyData.length; i++) {
-			const color = sankeyData[i].used ? 'rgb(246, 175, 31)' : 'rgba(142, 132, 112,0.5)'
+			const color = sankeyData[i].used ? this.dCircleUsedColor : this.dCircleColor
 			const arcR = sankeyData[i].ratio
 
 			this.drawDCircle(circleG, 0, this.dLength * i, color, arcR, sankeyData[i].phase, false)
@@ -2403,18 +2413,18 @@ export default class d3Draw {
 			.classed('input_related_num', true)
 			.attr('transform', `translate(0,${this.dLength})`)
 		for (let j = 0; j < inputBases.length; j++) {
-			this.drawDInput(inputG, 0, this.dLength * j, inputBases[j].ratio, inputBases[j].phases, 'rgb(80, 128, 132)')
+			this.drawDinput(inputG, 0, this.dLength * j, inputBases[j].ratio, inputBases[j].phases, 'rgb(80, 128, 132)')
 			const number = 0
 			for (let k = 0; k < inputBases[j].related_bases.length; k++) {
 				if (k === 0) {
 					// 只绘一个 然后显示几个
-					this.drawDInput(
+					this.drawDinput(
 						inputRelatedG,
 						0,
 						this.dLength * j,
 						inputBases[j].related_bases[k].ratio,
 						inputBases[j].related_bases[k].phases,
-						'rgb(137, 214, 220)',
+						this.dLightRectColor,
 						true,
 						inputBases[j].related_bases[k],
 						chartDiv,
@@ -2465,17 +2475,17 @@ export default class d3Draw {
 			.classed('input_related_num', true)
 			.attr('transform', `translate(${outRelatedGX + this.dLength},${this.dLength})`)
 		for (let j = 0; j < outBases.length; j++) {
-			this.drawDInput(outG, 0, this.dLength * j, outBases[j].ratio, outBases[j].phases, 'rgb(80, 128, 132)')
+			this.drawDinput(outG, 0, this.dLength * j, outBases[j].ratio, outBases[j].phases, 'rgb(80, 128, 132)')
 			for (let k = 0; k < outBases[j].related_bases.length; k++) {
 				if (k === 0) {
 					// 只绘一个 然后显示几个 开发时候是全传入了
-					this.drawDInput(
+					this.drawDinput(
 						outRelatedG,
 						0,
 						this.dLength * j,
 						outBases[j].related_bases[k].ratio,
 						outBases[j].related_bases[k].phases,
-						'rgb(137, 214, 220)',
+						this.dLightRectColor,
 						true,
 						outBases[j].related_bases[k],
 						chartDiv,
@@ -2496,10 +2506,8 @@ export default class d3Draw {
 			}
 		}
 		// 绘制连线
-
 		for (let i = 0; i < sankeyData.length; i++) {
-			console.log(this.findToDy(outBases, sankeyData[i].to_id))
-			const color = sankeyData[i].used ? 'rgb(246, 175, 31)' : 'rgba(142, 132, 112,0.5)'
+			const color = sankeyData[i].used ? this.dCircleUsedColor : this.dCircleColor
 			const toD = this.silkRibbonPathString(
 				circleGtransformX + this.dLength,
 				this.dLength * (i + 1) + this.dLength / 2,
@@ -2548,13 +2556,7 @@ export default class d3Draw {
 		if (circleData.length && circleData[0].length) {
 			circleDataNum = circleData[0][0]['max'].toFixed(2)
 		}
-		const { svg, chartDiv, chartSvgDiv } = this.drawElement(
-			data.text,
-			data.id,
-			qc,
-			circleDataNum,
-			inputStateData['max_magn'].toFixed(2)
-		)
+
 		// 计算矩阵g Y轴向下移动的距离
 		const circleGtransformY = (inputStateData.vars.length + 2) * this.dLength + 14
 
@@ -2568,12 +2570,23 @@ export default class d3Draw {
 		// 设置svg的宽高
 		const svgHeight = circleGtransformY + outStateData.bases.length * this.dLength
 		const svgWidth = outRelatedGX + this.dLength * 2 + 14
-		svg.attr('height', svgHeight).attr('width', svgWidth)
-
+		const { svg, chartDiv, chartSvgDiv } = this.drawElement(
+			data.text,
+			data.id,
+			qc,
+			circleDataNum,
+			inputStateData['max_magn'].toFixed(2),
+			svgWidth,
+			svgHeight
+		)
+		// svg.attr('height', svgHeight).attr('width', svgWidth)
+		svg.attr('viewBox', `0,0,${svgWidth},${svgHeight}`)
+		svg.attr('width', svgWidth / 3.5)
+		svg.attr('height', svgHeight / 3.8)
 		const circleG = svg.append('g').classed('circle_g', true).attr('transform', `translate(0,${circleGtransformY})`)
 		for (let i = 0; i < circleData.length; i++) {
 			for (let j = 0; j < circleData[i].length; j++) {
-				const color = circleData[i][j].used ? 'rgb(246, 175, 31)' : 'rgba(142, 132, 112,0.5)'
+				const color = circleData[i][j].used ? this.dCircleUsedColor : this.dCircleColor
 				const arcR = circleData[i][j].ratio
 				this.drawDCircle(circleG, this.dLength * j, this.dLength * i, color, arcR, circleData[i][j].phase, true)
 			}
@@ -2602,7 +2615,7 @@ export default class d3Draw {
 			.classed('input_related_num', true)
 			.attr('transform', `translate(${outRelatedGX + this.dLength},${circleGtransformY})`)
 		for (let j = 0; j < outStateData.bases.length; j++) {
-			this.drawDInput(
+			this.drawDinput(
 				outG,
 				0,
 				this.dLength * j,
@@ -2613,13 +2626,13 @@ export default class d3Draw {
 			for (let k = 0; k < outStateData.bases[j].related_bases.length; k++) {
 				if (k === 0) {
 					// 只绘一个 然后显示几个 开发时候是全传入了
-					this.drawDInput(
+					this.drawDinput(
 						outRelatedG,
 						0,
 						this.dLength * j,
 						outStateData.bases[j].related_bases[k].ratio,
 						outStateData.bases[j].related_bases[k].phases,
-						'rgb(137, 214, 220)',
+						this.dLightRectColor,
 						true,
 						outStateData.bases[j].related_bases[k],
 						chartDiv,
@@ -2665,7 +2678,7 @@ export default class d3Draw {
 		const inputRelatedG = svg.append('g').classed('input_related_g', true).attr('transform', `translate(0,14)`)
 		const drawRelaedNumG = svg.append('g').classed('input_related_num', true).attr('transform', `translate(0,0)`)
 		for (let j = 0; j < inputStateData.bases.length; j++) {
-			this.drawDInput(
+			this.drawDinput(
 				inputG,
 				this.dLength * j,
 				0,
@@ -2678,13 +2691,13 @@ export default class d3Draw {
 				for (let k = 0; k < inputStateData.bases[j].related_bases.length; k++) {
 					if (k === 0) {
 						// 只绘一个 然后显示几个
-						this.drawDInput(
+						this.drawDinput(
 							inputRelatedG,
 							this.dLength * j,
 							0,
 							inputStateData.bases[j].related_bases[k].ratio,
 							inputStateData.bases[j].related_bases[k].phases,
-							'rgb(137, 214, 220)',
+							this.dLightRectColor,
 							true,
 							inputStateData.bases[j].related_bases[k],
 							chartDiv,

@@ -68,15 +68,16 @@
 }
 #right_down_div .c_component .c_up_draw {
 	width: 100%;
-	height: 290px;
-	overflow: auto;
+	height: 303px;
+	overflow-y: hidden;
+	overflow-x: auto;
 }
 #right_down_div .c_component #chart_svg {
 	/* height: 100%; */
 }
 #right_down_div .c_component .c_down_draw {
 	width: 100%;
-	height: 303px;
+	height: 290px;
 }
 #right_down_div .c_component .c_down_draw #chart_down_svg {
 	width: 100%;
@@ -96,15 +97,18 @@
 #d_draw_div {
 	width: 100%;
 	height: calc(100% - 32px);
+	overflow: auto;
 }
 .d_chart_div {
 	width: 48%;
-	height: 50%;
+	/* height: 49%; */
+	float: left;
 	margin-right: 2%;
 	border: 1px solid #c4c4c4;
 	border-radius: 4px;
 	position: relative;
-	display: inline-block;
+	/* display: inline-block; */
+	margin-top: 10px;
 	transition: all 0.3s;
 	/* overflow: auto; */
 }
