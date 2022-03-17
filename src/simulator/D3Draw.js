@@ -1448,9 +1448,9 @@ export default class d3Draw {
 						.attr(
 							'width',
 							bars.data()[bars.data().length - 1].x -
-								bars.data()[0].x +
-								barWidth -
-								barWidth * config.barPadding
+							bars.data()[0].x +
+							barWidth -
+							barWidth * config.barPadding
 						)
 						.attr('x', bars.data()[0].x - config.margins.left - barWidth / 2 + barWidth * config.barPadding)
 						.attr('y', 1)
@@ -1609,8 +1609,8 @@ export default class d3Draw {
 				.tickFormat((d) => `${d}`)
 			g.call(yAxis)
 			g.select('.domain').remove()
-			g.selectAll('.tick line').remove()
-			g.selectAll('.tick')
+			// g.selectAll('.tick line').remove()
+			// g.selectAll('.tick')
 			g.select('.magnYAxis .tick:nth-of-type(1)').attr(
 				'transform',
 				`translate(-4,${chart.getBodyHeight() / 2 - 5})`
@@ -1625,13 +1625,12 @@ export default class d3Draw {
 				.tickFormat((d) => `${d}°`)
 			g.call(yAxis)
 			g.select('.domain').remove()
-			g.selectAll('.tick line').remove()
+			// g.selectAll('.tick line').remove()
 			g.select('.phaseYAxis .tick:nth-of-type(1)').attr('transform', 'translate(0,5)')
 		}
 		// 绘制bar
 		chart.renderMagnsBars = function () {
 			let bars = chart.body().selectAll('.magns_bar').data(data)
-
 			bars.enter()
 				.append('rect')
 				.attr('class', 'magns_bar')
@@ -1828,13 +1827,11 @@ export default class d3Draw {
 			function zoomed(event) {
 				chart.scaleX.range([0, chart.getBodyWidth()].map((d) => event.transform.applyX(d)))
 				chart.scaleX2.range([0, chart.getBodyWidth()].map((d) => event.transform.applyX(d)))
-			
 				chart
 					.svg()
 					.selectAll('.magns_bar')
 					.attr('x', (d) => chart.scaleX(d.index))
 					.attr('width', chart.scaleX.bandwidth())
-
 				chart
 					.svg()
 					.selectAll('.probs_bar')
@@ -1848,71 +1845,93 @@ export default class d3Draw {
 				chart.svg().selectAll('.xAxis').call(chart.renderX)
 				chart.svg().selectAll('.xAxis2').call(chart.renderX2)
 				// 5.28 目前试的大概显示24个柱子
-				// if (event.transform.k > 5.28) {
-				// // magnsY 轴
-				// chart.scaleY.range([chart.getBodyHeight() / 2 - 15, 0])
-				// // phases Y轴
-				// chart.scaleY2.range([0, chart.getBodyHeight() / 2 - 15])
-				// chart.svg().selectAll('.magnYAxis').call(chart.renderMagnsY)
-				// chart.svg().selectAll('.phaseYAxis').call(chart.renderPhasesY)
-				// 	// chart
-				// 	// 	.svg()
-				// 	// 	.select('.xAxis')
-				// 	// 	.attr(
-				// 	// 		'transform',
-				// 	// 		'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2 + 15) + ')'
-				// 	// 	)
-				// 	// chart
-				// 	// 	.svg()
-				// 	// 	.select('.xAxis2')
-				// 	// 	.attr(
-				// 	// 		'transform',
-				// 	// 		'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2 - 15) + ')'
-				// 	// 	)
-				// 	// chart.svg().select('.xAxis2 .domain').attr('stroke', '#000')
-				// 	// chart
-				// 	// 	.svg()
-				// 	// 	.selectAll('.magns_bar')
-				// 	// 	.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.magns) - 15)
-				// 	// chart
-				// 	// 	.svg()
-				// 	// 	.selectAll('.probs_bar')
-				// 	// 	.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.probs) - 15)
-				// 	// chart
-				// 	// 	.svg()
-				// 	// 	.selectAll('.phases_bar')
-				// 	// 	.attr('y', (d) => chart.getBodyHeight() / 2 + 16)
-				// 	// 	.attr('height', (d) => chart.scaleY2(d.phases) - 15)
-				// } else {
-				// 	// chart
-				// 	// 	.svg()
-				// 	// 	.selectAll('.magns_bar')
-				// 	// 	.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.magns))
-				// 	// chart
-				// 	// 	.svg()
-				// 	// 	.selectAll('.probs_bar')
-				// 	// 	.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.probs))
-				// 	// chart
-				// 	// 	.svg()
-				// 	// 	.selectAll('.phases_bar')
-				// 	// 	.attr('y', (d) => chart.getBodyHeight() / 2 + 1)
-				// 	// 	.attr('height', (d) => chart.scaleY2(d.phases))
-				// 	// chart
-				// 	// 	.svg()
-				// 	// 	.select('.xAxis')
-				// 	// 	.attr(
-				// 	// 		'transform',
-				// 	// 		'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2) + ')'
-				// 	// 	)
-				// 	// chart
-				// 	// 	.svg()
-				// 	// 	.select('.xAxis2')
-				// 	// 	.attr(
-				// 	// 		'transform',
-				// 	// 		'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2) + ')'
-				// 	// 	)
-				// 	// chart.svg().select('.xAxis2 .domain').attr('stroke', 'none')
-				// }
+				if (event.transform.k > 5.28) {
+
+					chart
+						.svg()
+						.select('.xAxis')
+						.attr(
+							'transform',
+							'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2 + 15) + ')'
+						)
+					chart
+						.svg()
+						.select('.xAxis2')
+						.attr(
+							'transform',
+							'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2 - 15) + ')'
+						)
+					chart.svg().select('.xAxis2 .domain').attr('stroke', '#000')
+					// magnsY 轴
+					chart.scaleY.range([chart.getBodyHeight() / 2, 15])
+					// phases Y轴
+					chart.scaleY2.range([15, chart.getBodyHeight() / 2 - 15])
+					chart.svg().selectAll('.magnYAxis').call(chart.renderMagnsY)
+					chart.svg().selectAll('.phaseYAxis').call(chart.renderPhasesY)
+					const newY = chart.bodyY() - 15
+					chart.svg().selectAll('.magnYAxis').attr('transform', 'translate(' + chart.bodyX() + ',' + newY + ')')
+					chart.svg().selectAll('.phaseYAxis').attr(
+						'transform',
+						'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2 + 15) + ')'
+					)
+
+					chart
+						.svg()
+						.selectAll('.magns_bar')
+						.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.magns))
+					chart
+						.svg()
+						.selectAll('.probs_bar')
+						.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.probs))
+					chart
+						.svg()
+						.selectAll('.phases_bar')
+						.attr('y', (d) => chart.getBodyHeight() / 2 + 16)
+						.attr('height', (d) => chart.scaleY2(d.phases))
+				} else {
+					chart
+						.svg()
+						.select('.xAxis')
+						.attr(
+							'transform',
+							'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2) + ')'
+						)
+					chart
+						.svg()
+						.select('.xAxis2')
+						.attr(
+							'transform',
+							'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2) + ')'
+						)
+					chart.svg().select('.xAxis2 .domain').attr('stroke', 'none')
+
+					// magnsY 轴
+					chart.scaleY.range([chart.getBodyHeight() / 2, 0])
+					// phases Y轴
+					chart.scaleY2.range([0, chart.getBodyHeight() / 2 ])
+					chart.svg().selectAll('.magnYAxis').call(chart.renderMagnsY)
+					chart.svg().selectAll('.phaseYAxis').call(chart.renderPhasesY)
+					const newY = chart.bodyY()
+					chart.svg().selectAll('.magnYAxis').attr('transform', 'translate(' + chart.bodyX() + ',' + newY + ')')
+					chart.svg().selectAll('.phaseYAxis').attr(
+						'transform',
+						'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2) + ')'
+					)
+
+					chart
+						.svg()
+						.selectAll('.magns_bar')
+						.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.magns))
+					chart
+						.svg()
+						.selectAll('.probs_bar')
+						.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.probs))
+					chart
+						.svg()
+						.selectAll('.phases_bar')
+						.attr('y', (d) => chart.getBodyHeight() / 2)
+						.attr('height', (d) => chart.scaleY2(d.phases))
+				}
 			}
 		}
 		// 总体绘制
@@ -1997,16 +2016,14 @@ export default class d3Draw {
 				const scrollLeft = chartSvgDiv._groups[0][0].scrollLeft
 				const scrollTop = chartSvgDiv._groups[0][0].scrollTop
 				chartDiv.selectAll('.show_data_div').remove()
-			
+
 				const showDataDiv = chartDiv
 					.append('div')
 					.attr('class', 'show_data_div')
 					.attr(
 						'style',
-						`height:${32 * allKeys.length }px;top:${
-							offsetY ? offsetY - scrollTop + 40 : e.offsetY - scrollTop + 36
-						}px;left:${
-							offsetX ? offsetX + 50 - scrollLeft: e.offsetX - scrollLeft + 10
+						`height:${32 * allKeys.length}px;top:${offsetY ? offsetY - scrollTop + 40 : e.offsetY - scrollTop + 36
+						}px;left:${offsetX ? offsetX + 50 - scrollLeft : e.offsetX - scrollLeft + 10
 						}px;border:1px solid black`
 					)
 				const showDataSVG = showDataDiv
@@ -2221,8 +2238,7 @@ export default class d3Draw {
 					.attr('class', 'relaed_div')
 					.attr(
 						'style',
-						`top:${e.offsetY - scrollTop + 36}px;left:${e.offsetX - scrollLeft + 10}px;height:${
-							self.dLength * data.length + 10
+						`top:${e.offsetY - scrollTop + 36}px;left:${e.offsetX - scrollLeft + 10}px;height:${self.dLength * data.length + 10
 						}px;width:${self.dLength + 8}px;border:1px solid black`
 					)
 				relaedDiv
@@ -2270,7 +2286,7 @@ export default class d3Draw {
 			.attr('y', this.dLength / 2)
 	}
 	// 绘制基本结构
-	drawElement(labelName, labelId, qc, circleNum, inputStateNumber, svgWidth,svgHeight) {
+	drawElement(labelName, labelId, qc, circleNum, inputStateNumber, svgWidth, svgHeight) {
 		const self = this
 		let isShowMore = false
 		let isFull = false
@@ -2310,7 +2326,7 @@ export default class d3Draw {
 				isShowMore = false
 				svg.attr('width', svgWidth / this.viewBoxWidth)
 				svg.attr('height', svgHeight / this.viewBoxHeight)
-				svg.attr('viewBox', `0,0,${svgWidth },${svgHeight}`)
+				svg.attr('viewBox', `0,0,${svgWidth},${svgHeight}`)
 				isFull = !isFull
 			} else {
 				svg.attr('width', '100%')
@@ -2395,24 +2411,24 @@ export default class d3Draw {
 			tension === 1
 				? ['M', [sx, sy], 'L', [tx, ty], 'V', ty + tdy, 'L', [sx, sy + sdy], 'Z']
 				: [
-						'M',
-						[sx, sy],
-						'C',
-						[(m0 = tension * sx + (1 - tension) * tx), sy],
-						' ',
-						[(m1 = tension * tx + (1 - tension) * sx), ty],
-						' ',
-						[tx, ty],
-						'V',
-						ty + tdy,
-						'C',
-						[m1, ty + tdy],
-						' ',
-						[m0, sy + sdy],
-						' ',
-						[sx, sy + sdy],
-						'Z',
-				  ]
+					'M',
+					[sx, sy],
+					'C',
+					[(m0 = tension * sx + (1 - tension) * tx), sy],
+					' ',
+					[(m1 = tension * tx + (1 - tension) * sx), ty],
+					' ',
+					[tx, ty],
+					'V',
+					ty + tdy,
+					'C',
+					[m1, ty + tdy],
+					' ',
+					[m0, sy + sdy],
+					' ',
+					[sx, sy + sdy],
+					'Z',
+				]
 		).join('')
 	}
 	silkRibbonPathString(sx, sy, tx, ty, tension) {
@@ -2420,23 +2436,23 @@ export default class d3Draw {
 		return (
 			tension == 1
 				? [
-						'M',
-						[sx, sy],
-						'L',
-						[tx, ty],
-						//"Z"
-				  ]
+					'M',
+					[sx, sy],
+					'L',
+					[tx, ty],
+					//"Z"
+				]
 				: [
-						'M',
-						[sx, sy],
-						'C',
-						[(m0 = tension * sx + (1 - tension) * tx), sy],
-						' ',
-						[(m1 = tension * tx + (1 - tension) * sx), ty],
-						' ',
-						[tx, ty],
-						//"Z"
-				  ]
+					'M',
+					[sx, sy],
+					'C',
+					[(m0 = tension * sx + (1 - tension) * tx), sy],
+					' ',
+					[(m1 = tension * tx + (1 - tension) * sx), ty],
+					' ',
+					[tx, ty],
+					//"Z"
+				]
 		).join('')
 	}
 	// 绘制sankey图
