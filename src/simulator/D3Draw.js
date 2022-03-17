@@ -55,8 +55,8 @@ export default class d3Draw {
 		// 存储QC
 		this.qc = null
 		// D viewBox 和svg宽的比
-		this.viewBoxWidth = 1.6
-		this.viewBoxHeight = 2
+		this.viewBoxWidth = 1
+		this.viewBoxHeight = 1
 	}
 	exportD3SVG(data) {
 		const svg = d3.select('#circuit_svg')
@@ -1997,15 +1997,16 @@ export default class d3Draw {
 				const scrollLeft = chartSvgDiv._groups[0][0].scrollLeft
 				const scrollTop = chartSvgDiv._groups[0][0].scrollTop
 				chartDiv.selectAll('.show_data_div').remove()
+			
 				const showDataDiv = chartDiv
 					.append('div')
 					.attr('class', 'show_data_div')
 					.attr(
 						'style',
-						`height:${32 * allKeys.length}px;top:${
+						`height:${32 * allKeys.length }px;top:${
 							offsetY ? offsetY - scrollTop + 40 : e.offsetY - scrollTop + 36
 						}px;left:${
-							offsetX ? offsetX + 50 - scrollLeft : e.offsetX - scrollLeft + 10
+							offsetX ? offsetX + 50 - scrollLeft: e.offsetX - scrollLeft + 10
 						}px;border:1px solid black`
 					)
 				const showDataSVG = showDataDiv
@@ -2820,6 +2821,7 @@ export default class d3Draw {
 						10,
 						chartDiv,
 						chartSvgDiv
+
 					)
 				}
 			}
