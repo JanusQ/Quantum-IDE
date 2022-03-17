@@ -1524,9 +1524,9 @@ export default class d3Draw {
 		// const barWidth = 20
 		for (let i = 0; i < data.magns.length; i++) {
 			dataArr.push({
-				magns: data.magns[i],
-				phases: data.phases[i],
-				probs: data.probs[i],
+				magns: 1,
+				phases: 250,
+				probs: 1,
 				index: i,
 				base: data.base[i],
 			})
@@ -1557,6 +1557,11 @@ export default class d3Draw {
 			.domain(data.map((d) => d.index))
 			.range([0, chart.getBodyWidth()])
 			.padding(config.barPadding)
+		chart.scaleX2 = d3
+			.scaleBand()
+			.domain(data.map((d) => d.index))
+			.range([0, chart.getBodyWidth()])
+			.padding(config.barPadding)
 		// magnsY 轴
 		chart.scaleY = d3
 			.scaleLinear()
@@ -1579,6 +1584,19 @@ export default class d3Draw {
 			context.moveTo(chart.scaleX(0), 0)
 			context.lineTo(chart.scaleX(data.length - 1), 0)
 			g.select('.domain').attr('d', context.toString()).attr('stroke', '#000').attr('stroke-width', 1)
+		}
+		// 处理x2轴样式
+		function customXAxis2(g) {
+			const xAxis = d3.axisBottom(chart.scaleX)
+			g.call(xAxis)
+			// g.select('.domain').remove()
+			g.selectAll('.tick line').remove()
+			g.selectAll('.tick text').remove()
+			const context = d3.path()
+			// 自定义X轴线
+			context.moveTo(chart.scaleX(0), 0)
+			context.lineTo(chart.scaleX(data.length - 1), 0)
+			g.select('.domain').attr('d', context.toString()).attr('stroke', 'none').attr('stroke-width', 1)
 		}
 		// 处理mangns Y轴样式
 		function customYAxis(g) {
@@ -1664,8 +1682,21 @@ export default class d3Draw {
 				.classed('svgtext', true)
 				.call(customXAxis)
 		}
-
+		chart.renderX2 = function () {
+			chart.svg().select('.xAxis2').remove()
+			chart
+				.svg()
+				.insert('g', '.body')
+				.attr(
+					'transform',
+					'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2) + ')'
+				)
+				.attr('class', 'xAxis2')
+				.classed('svgtext', true)
+				.call(customXAxis2)
+		}
 		chart.renderMagnsY = function () {
+			chart.svg().select('.magnYAxis').remove()
 			chart
 				.svg()
 				.insert('g', '.body')
@@ -1675,6 +1706,7 @@ export default class d3Draw {
 				.call(customYAxis)
 		}
 		chart.renderPhasesY = function () {
+			chart.svg().select('.phaseYAxis').remove()
 			chart
 				.svg()
 				.insert('g', '.body')
@@ -1691,6 +1723,7 @@ export default class d3Draw {
 			chart.renderMagnsY()
 			chart.renderPhasesY()
 			chart.renderX()
+			chart.renderX2()
 		}
 		// 绑定事件
 		chart.addMouseOn = function () {
@@ -1791,11 +1824,14 @@ export default class d3Draw {
 			chart.svg().call(d3.zoom().scaleExtent([1, 8]).translateExtent(extent).extent(extent).on('zoom', zoomed))
 			function zoomed(event) {
 				chart.scaleX.range([0, chart.getBodyWidth()].map((d) => event.transform.applyX(d)))
+				chart.scaleX2.range([0, chart.getBodyWidth()].map((d) => event.transform.applyX(d)))
+			
 				chart
 					.svg()
 					.selectAll('.magns_bar')
 					.attr('x', (d) => chart.scaleX(d.index))
 					.attr('width', chart.scaleX.bandwidth())
+
 				chart
 					.svg()
 					.selectAll('.probs_bar')
@@ -1807,6 +1843,73 @@ export default class d3Draw {
 					.attr('x', (d) => chart.scaleX(d.index))
 					.attr('width', chart.scaleX.bandwidth())
 				chart.svg().selectAll('.xAxis').call(chart.renderX)
+				chart.svg().selectAll('.xAxis2').call(chart.renderX2)
+				// 5.28 目前试的大概显示24个柱子
+				if (event.transform.k > 5.28) {
+				// magnsY 轴
+				chart.scaleY.range([chart.getBodyHeight() / 2 - 15, 0])
+				// phases Y轴
+				chart.scaleY2.range([0, chart.getBodyHeight() / 2 - 15])
+				chart.svg().selectAll('.magnYAxis').call(chart.renderMagnsY)
+				chart.svg().selectAll('.phaseYAxis').call(chart.renderPhasesY)
+					// chart
+					// 	.svg()
+					// 	.select('.xAxis')
+					// 	.attr(
+					// 		'transform',
+					// 		'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2 + 15) + ')'
+					// 	)
+					// chart
+					// 	.svg()
+					// 	.select('.xAxis2')
+					// 	.attr(
+					// 		'transform',
+					// 		'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2 - 15) + ')'
+					// 	)
+					// chart.svg().select('.xAxis2 .domain').attr('stroke', '#000')
+					// chart
+					// 	.svg()
+					// 	.selectAll('.magns_bar')
+					// 	.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.magns) - 15)
+					// chart
+					// 	.svg()
+					// 	.selectAll('.probs_bar')
+					// 	.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.probs) - 15)
+					// chart
+					// 	.svg()
+					// 	.selectAll('.phases_bar')
+					// 	.attr('y', (d) => chart.getBodyHeight() / 2 + 16)
+					// 	.attr('height', (d) => chart.scaleY2(d.phases) - 15)
+				} else {
+					// chart
+					// 	.svg()
+					// 	.selectAll('.magns_bar')
+					// 	.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.magns))
+					// chart
+					// 	.svg()
+					// 	.selectAll('.probs_bar')
+					// 	.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.probs))
+					// chart
+					// 	.svg()
+					// 	.selectAll('.phases_bar')
+					// 	.attr('y', (d) => chart.getBodyHeight() / 2 + 1)
+					// 	.attr('height', (d) => chart.scaleY2(d.phases))
+					// chart
+					// 	.svg()
+					// 	.select('.xAxis')
+					// 	.attr(
+					// 		'transform',
+					// 		'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2) + ')'
+					// 	)
+					// chart
+					// 	.svg()
+					// 	.select('.xAxis2')
+					// 	.attr(
+					// 		'transform',
+					// 		'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2) + ')'
+					// 	)
+					// chart.svg().select('.xAxis2 .domain').attr('stroke', 'none')
+				}
 			}
 		}
 		// 总体绘制
