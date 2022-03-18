@@ -1665,7 +1665,7 @@ export default class QCEngine {
         return sankey;
     }
 
-    transferSankeyOrdered(label_id, precision = 1e-5)
+    transferSankeyOrdered(label_id, precision = 1e-5, per = false)
     {
         let res= {};
         let matrix = this.getEvoMatrix(label_id);
@@ -1684,14 +1684,18 @@ export default class QCEngine {
                     sankey[k]['to_id'] = i;
                     sankey[k]['y_index'] = k;
                     sankey[k]['ratio'] = matrix[i][j]['ratio'];
-                    parray.push(i);
+                    if(per)
+                        parray.push(i);
                     k++;
                     
                 }
             }
         }
         //console.log('parray',parray);
-        res['permute'] = parray;
+        if(per)
+            res['permute'] = parray;
+        else
+            res['permute'] = range(0, matrix.length);
         res['sankey'] = sankey;
         return res;
     }
