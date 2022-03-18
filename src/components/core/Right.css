@@ -167,6 +167,7 @@
 .label_name {
 	color: rgb(100, 159, 174);
 }
+.show_circle_div,
 .relaed_div,
 .show_data_div {
 	position: absolute;
@@ -174,8 +175,17 @@
 	background: #fff;
 	z-index: 99;
 }
+.show_circle_div,
 .show_data_div {
 	width: 150px;
 	/* height: 198px; */
 	padding: 10px;
+	
+}
+.show_circle_div{
+	width: auto;
+}
+.show_circle_div p{
+	margin: 0;
+	
 }

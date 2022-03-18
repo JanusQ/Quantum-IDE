@@ -58,7 +58,6 @@ export default class d3Draw {
 		// D viewBox 和svg宽的比
 		this.viewBoxWidth = 1
 		this.viewBoxHeight = 1
-	
 	}
 	exportD3SVG(data) {
 		const svg = d3.select('#circuit_svg')
@@ -1123,36 +1122,35 @@ export default class d3Draw {
 			g.call(xAxis)
 			g.select('.domain').remove()
 			g.selectAll('.tick line').remove()
+
+			g.append('rect')
+				.attr('width', chart.getBodyWidth())
+				.attr('height', 5)
+				.attr('fill', 'rgb(220, 216, 216)')
+				.classed('x_rect', true)
+				.classed('svgtext', true)
+				.attr('rx', 5)
+				.attr('ry', 5)
+			// g.selectAll('.tick text').remove()
+			g.selectAll('.tick text')
+				.nodes()
+				.forEach(function (t, index) {
+					const textSvg = getDirac(t.innerHTML)
+					const z = new XMLSerializer()
+					g.select(`.tick:nth-of-type(${index + 1})`)
+						.append('foreignObject')
+						.attr('width', 24)
+						.attr('height', 24)
+						.attr('transform', 'scale(0.8)')
+						.attr('x', t.innerHTML.length > 1 ? -11 : -7)
+						.attr('y', 6)
+						.append('xhtml:div')
+						.attr('height', '100%')
+						.attr('width', '100%')
+						.html(z.serializeToString(textSvg))
+				})
+
 			g.selectAll('.tick text').remove()
-			// g.selectAll('.tick text').classed('svgtext', true).attr('transform', 'rotate(45)').attr('x', 8).attr('y', 8)
-			// g.selectAll('.tick')
-			// 	.append('g')
-			// 	.attr('transform', 'translate(-6,8) rotate(45)')
-			// 	.append('line')
-			// 	.attr('x1', 0.25)
-			// 	.attr('y2', 9)
-			// 	.attr('stroke-width', 0.5)
-			// 	.attr('stroke', 'black')
-			// 	.classed('svgtext', true)
-			// g.selectAll('.tick')
-			// 	.append('g')
-			// 	.attr('transform', 'translate(6,12) rotate(45)')
-			// 	.append('path')
-			// 	.attr('d', 'M0.845337 1L2.63087 5.40266L0.845337 9.71606')
-			// 	.attr('stroke', 'black')
-			// 	.attr('stroke-width', 0.5)
-			// 	.attr('stroke-linecap', 'round')
-			// 	.classed('svgtext', true)
-			// g.append('rect')
-			// 	.attr('width', chart.getBodyWidth())
-			// 	.attr('height', 5)
-			// 	.attr('fill', 'rgb(220, 216, 216)')
-			// 	.classed('x_rect', true)
-			// 	.classed('svgtext', true)
-			// 	.attr('rx', 5)
-			// 	.attr('ry', 5)
-			const textSvg = getDirac(0)
-			console.log(textSvg)
 		}
 		// 处理上边Y轴样式
 		function customYAxis(g) {
@@ -1347,6 +1345,7 @@ export default class d3Draw {
 
 		chart.renderChart()
 	}
+
 	// 渲染C视图柱子
 	renderBar(chart, data) {
 		// 绘制Magn bar
@@ -1453,9 +1452,9 @@ export default class d3Draw {
 						.attr(
 							'width',
 							bars.data()[bars.data().length - 1].x -
-							bars.data()[0].x +
-							barWidth -
-							barWidth * config.barPadding
+								bars.data()[0].x +
+								barWidth -
+								barWidth * config.barPadding
 						)
 						.attr('x', bars.data()[0].x - config.margins.left - barWidth / 2 + barWidth * config.barPadding)
 						.attr('y', 1)
@@ -1829,7 +1828,7 @@ export default class d3Draw {
 				[0, config.margins.top],
 				[chart.getBodyWidth() - 10, chart.getBodyHeight()],
 			]
-			
+
 			chart.svg().call(d3.zoom().scaleExtent([1, 8]).translateExtent(extent).extent(extent).on('zoom', zoomed))
 			function zoomed(event) {
 				chart.scaleX.range([0, chart.getBodyWidth()].map((d) => event.transform.applyX(d)))
@@ -1851,7 +1850,7 @@ export default class d3Draw {
 					.attr('width', chart.scaleX.bandwidth())
 				chart.svg().selectAll('.xAxis').call(chart.renderX)
 				chart.svg().selectAll('.xAxis2').call(chart.renderX2)
-				
+
 				// 5.28 目前试的大概显示24个柱子
 				if (event.transform.k > 5.28) {
 					const zoomHeight = 20
@@ -1860,14 +1859,22 @@ export default class d3Draw {
 						.select('.xAxis')
 						.attr(
 							'transform',
-							'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2 + zoomHeight) + ')'
+							'translate(' +
+								chart.bodyX() +
+								',' +
+								(chart.bodyY() + chart.getBodyHeight() / 2 + zoomHeight) +
+								')'
 						)
 					chart
 						.svg()
 						.select('.xAxis2')
 						.attr(
 							'transform',
-							'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2 - zoomHeight) + ')'
+							'translate(' +
+								chart.bodyX() +
+								',' +
+								(chart.bodyY() + chart.getBodyHeight() / 2 - zoomHeight) +
+								')'
 						)
 					chart.svg().select('.xAxis2 .domain').attr('stroke', '#000')
 					// magnsY 轴
@@ -1877,24 +1884,34 @@ export default class d3Draw {
 					chart.svg().selectAll('.magnYAxis').call(chart.renderMagnsY)
 					chart.svg().selectAll('.phaseYAxis').call(chart.renderPhasesY)
 					const newY = chart.bodyY() - zoomHeight
-					chart.svg().selectAll('.magnYAxis').attr('transform', 'translate(' + chart.bodyX() + ',' + newY + ')')
-					chart.svg().selectAll('.phaseYAxis').attr(
-						'transform',
-						'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2 + zoomHeight) + ')'
-					)
-				
+					chart
+						.svg()
+						.selectAll('.magnYAxis')
+						.attr('transform', 'translate(' + chart.bodyX() + ',' + newY + ')')
+					chart
+						.svg()
+						.selectAll('.phaseYAxis')
+						.attr(
+							'transform',
+							'translate(' +
+								chart.bodyX() +
+								',' +
+								(chart.bodyY() + chart.getBodyHeight() / 2 + zoomHeight) +
+								')'
+						)
+
 					chart
 						.svg()
 						.selectAll('.magns_bar')
-						.attr('height', (d) => chart.getBodyHeight() / 2  - chart.scaleY(d.magns))
+						.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.magns))
 						.attr('y', (d) => chart.scaleY(d.magns) - 1 - zoomHeight)
-						
+
 					chart
 						.svg()
 						.selectAll('.probs_bar')
-						.attr('height', (d) => chart.getBodyHeight() / 2  - chart.scaleY(d.probs))
+						.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.probs))
 						.attr('y', (d) => chart.scaleY(d.probs) - 1 - zoomHeight)
-						
+
 					chart
 						.svg()
 						.selectAll('.phases_bar')
@@ -1920,15 +1937,21 @@ export default class d3Draw {
 					// magnsY 轴
 					chart.scaleY.range([chart.getBodyHeight() / 2, 0])
 					// phases Y轴
-					chart.scaleY2.range([0, chart.getBodyHeight() / 2 ])
+					chart.scaleY2.range([0, chart.getBodyHeight() / 2])
 					chart.svg().selectAll('.magnYAxis').call(chart.renderMagnsY)
 					chart.svg().selectAll('.phaseYAxis').call(chart.renderPhasesY)
 					const newY = chart.bodyY()
-					chart.svg().selectAll('.magnYAxis').attr('transform', 'translate(' + chart.bodyX() + ',' + newY + ')')
-					chart.svg().selectAll('.phaseYAxis').attr(
-						'transform',
-						'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2) + ')'
-					)
+					chart
+						.svg()
+						.selectAll('.magnYAxis')
+						.attr('transform', 'translate(' + chart.bodyX() + ',' + newY + ')')
+					chart
+						.svg()
+						.selectAll('.phaseYAxis')
+						.attr(
+							'transform',
+							'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2) + ')'
+						)
 					chart
 						.svg()
 						.selectAll('.magns_bar')
@@ -2035,8 +2058,10 @@ export default class d3Draw {
 					.attr('class', 'show_data_div')
 					.attr(
 						'style',
-						`height:${32 * allKeys.length}px;top:${offsetY ? offsetY - scrollTop + 40 : e.offsetY - scrollTop + 36
-						}px;left:${offsetX ? offsetX + 50 - scrollLeft : e.offsetX - scrollLeft + 10
+						`height:${32 * allKeys.length}px;top:${
+							offsetY ? offsetY - scrollTop + 40 : e.offsetY - scrollTop + 36
+						}px;left:${
+							offsetX ? offsetX + 50 - scrollLeft : e.offsetX - scrollLeft + 10
 						}px;border:1px solid black`
 					)
 				const showDataSVG = showDataDiv
@@ -2109,7 +2134,7 @@ export default class d3Draw {
 		}
 	}
 	// 绘制D circle
-	drawDCircle(svg, x, y, color, arcR, arcDeg, isNeedBorder) {
+	drawDCircle(svg, x, y, color, arcR, arcDeg, isNeedBorder, roation, scale, chartDiv, chartSvgDiv) {
 		//   R 10
 		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`).classed('d_item', true)
 		const borderRect = parentG
@@ -2129,7 +2154,7 @@ export default class d3Draw {
 					.attr('r', circleR - 2)
 					.attr('stroke-width', 1)
 					.attr('stroke', color)
-					.attr('fill', 'none')
+					.attr('fill', 'transparent')
 					.classed('d_item', true)
 			}
 		} else {
@@ -2140,18 +2165,8 @@ export default class d3Draw {
 				.attr('r', circleR - 2)
 				.attr('stroke-width', 1)
 				.attr('stroke', color)
-				.attr('fill', 'none')
+				.attr('fill', 'transparent')
 				.classed('d_item', true)
-			// childG
-			// 	.append('circle')
-			// 	.attr('cx', circleR)
-			// 	.attr('cy', circleR)
-			// 	.attr('r', circleR - 2)
-			// 	.attr('stroke-width', 1)
-			// 	.attr('stroke', color)
-			// 	.attr('fill', 'none')
-			// 	.attr('opacity', 0.5)
-			// 	.classed('d_item', true)
 		}
 		if (arcDeg) {
 			arcR = (arcR * this.dLength) / 2 - 2
@@ -2182,7 +2197,26 @@ export default class d3Draw {
 				.attr('transform', 'translate(13,13)')
 				.attr('opacity', this.dCircleColorOpacity)
 		}
+		childG.on('mouseover', function (e) {
+			const scrollLeft = chartSvgDiv._groups[0][0].scrollLeft
+			const scrollTop = chartSvgDiv._groups[0][0].scrollTop
+			chartDiv.selectAll('.show_circle_div').remove()
 
+			const showCircleDiv = chartDiv
+				.append('div')
+				.attr('class', 'show_circle_div')
+				.attr(
+					'style',
+					`height:${64}px;top:${e.offsetY - scrollTop}px;left:${
+						e.offsetX - scrollLeft + 20
+					}px;border:1px solid #ccc`
+				)
+			showCircleDiv.append('p').html(`roation：${roation}`)
+			showCircleDiv.append('p').html(`scale：${scale}`)
+		})
+		childG.on('mouseleave', function (e) {
+			chartDiv.selectAll('.show_circle_div').remove()
+		})
 		return parentG
 	}
 	// 绘制text
@@ -2251,7 +2285,8 @@ export default class d3Draw {
 					.attr('class', 'relaed_div')
 					.attr(
 						'style',
-						`top:${e.offsetY - scrollTop + 36}px;left:${e.offsetX - scrollLeft + 10}px;height:${self.dLength * data.length + 10
+						`top:${e.offsetY - scrollTop + 36}px;left:${e.offsetX - scrollLeft + 10}px;height:${
+							self.dLength * data.length + 10
 						}px;width:${self.dLength + 8}px;border:1px solid black`
 					)
 				relaedDiv
@@ -2424,24 +2459,24 @@ export default class d3Draw {
 			tension === 1
 				? ['M', [sx, sy], 'L', [tx, ty], 'V', ty + tdy, 'L', [sx, sy + sdy], 'Z']
 				: [
-					'M',
-					[sx, sy],
-					'C',
-					[(m0 = tension * sx + (1 - tension) * tx), sy],
-					' ',
-					[(m1 = tension * tx + (1 - tension) * sx), ty],
-					' ',
-					[tx, ty],
-					'V',
-					ty + tdy,
-					'C',
-					[m1, ty + tdy],
-					' ',
-					[m0, sy + sdy],
-					' ',
-					[sx, sy + sdy],
-					'Z',
-				]
+						'M',
+						[sx, sy],
+						'C',
+						[(m0 = tension * sx + (1 - tension) * tx), sy],
+						' ',
+						[(m1 = tension * tx + (1 - tension) * sx), ty],
+						' ',
+						[tx, ty],
+						'V',
+						ty + tdy,
+						'C',
+						[m1, ty + tdy],
+						' ',
+						[m0, sy + sdy],
+						' ',
+						[sx, sy + sdy],
+						'Z',
+				  ]
 		).join('')
 	}
 	silkRibbonPathString(sx, sy, tx, ty, tension) {
@@ -2449,23 +2484,23 @@ export default class d3Draw {
 		return (
 			tension == 1
 				? [
-					'M',
-					[sx, sy],
-					'L',
-					[tx, ty],
-					//"Z"
-				]
+						'M',
+						[sx, sy],
+						'L',
+						[tx, ty],
+						//"Z"
+				  ]
 				: [
-					'M',
-					[sx, sy],
-					'C',
-					[(m0 = tension * sx + (1 - tension) * tx), sy],
-					' ',
-					[(m1 = tension * tx + (1 - tension) * sx), ty],
-					' ',
-					[tx, ty],
-					//"Z"
-				]
+						'M',
+						[sx, sy],
+						'C',
+						[(m0 = tension * sx + (1 - tension) * tx), sy],
+						' ',
+						[(m1 = tension * tx + (1 - tension) * sx), ty],
+						' ',
+						[tx, ty],
+						//"Z"
+				  ]
 		).join('')
 	}
 	// 绘制sankey图
@@ -2516,8 +2551,19 @@ export default class d3Draw {
 		for (let i = 0; i < sankeyData.length; i++) {
 			const color = sankeyData[i].used ? this.dCircleUsedColor : this.dCircleColor
 			const arcR = sankeyData[i].ratio
-
-			this.drawDCircle(circleG, 0, this.dLength * i, color, arcR, sankeyData[i].phase, false)
+			this.drawDCircle(
+				circleG,
+				0,
+				this.dLength * i,
+				color,
+				arcR,
+				sankeyData[i].phase,
+				false,
+				sankeyData[i].maganitude,
+				sankeyData[i].phase,
+				chartDiv,
+				chartSvgDiv
+			)
 		}
 		// 绘制input_state
 		for (let i = 0; i < inputStateData.vars.length; i++) {
@@ -2724,7 +2770,19 @@ export default class d3Draw {
 			for (let j = 0; j < circleData[i].length; j++) {
 				const color = circleData[i][j].used ? this.dCircleUsedColor : this.dCircleColor
 				const arcR = circleData[i][j].ratio
-				this.drawDCircle(circleG, this.dLength * j, this.dLength * i, color, arcR, circleData[i][j].phase, true)
+				this.drawDCircle(
+					circleG,
+					this.dLength * j,
+					this.dLength * i,
+					color,
+					arcR,
+					circleData[i][j].phase,
+					true,
+					circleData[i][j].magnitude,
+					circleData[i][j].phase,
+					chartDiv,
+					chartSvgDiv
+				)
 			}
 		}
 		// 绘制out_state
@@ -2850,7 +2908,6 @@ export default class d3Draw {
 						10,
 						chartDiv,
 						chartSvgDiv
-
 					)
 				}
 			}
