@@ -1552,6 +1552,7 @@ export default class d3Draw {
 			hoverColor: 'gray',
 			animateDuration: 1000,
 		}
+		chart.tramsformHeight(data[0].base.length * 15 / 2.8)
 		chart.box(d3.select('.c_down_draw'))
 		chart.width(546)
 		chart.svg(g)
@@ -1605,7 +1606,7 @@ export default class d3Draw {
 					const z = new XMLSerializer()
 					g.select(`.tick:nth-of-type(${index + 1})`)
 						.append('foreignObject')
-						.attr('width', 60)
+						.attr('width', data[index].base.length * 15)
 						.attr('height', 24)
 						.attr('style', 'color:rgba(0,0,0,0)')
 						.attr('transform', 'scale(0.8) rotate(45)')
@@ -1887,7 +1888,7 @@ export default class d3Draw {
 				if (event.transform.k > 5.28) {
 					chart.svg().selectAll('.xAxis2 .tick foreignObject').attr('style', 'color:rgb(0,0,0)')
 
-					const zoomHeight = 20
+					const zoomHeight = chart.tramsformHeight()
 					chart
 						.svg()
 						.select('.xAxis')
@@ -2617,7 +2618,6 @@ export default class d3Draw {
 				.classed('q_name_g', true)
 				.attr('transform', `translate(${qNameX + 5},0)`)
 			this.drawDqName(qNameG, inputStateData.vars[i])
-			console.log(inputStateData)
 			for (let j = 0; j < inputBases.length; j++) {
 				this.drawText(textG, 0, this.dLength * j, inputBases[j].var2value[inputStateData.vars[i]])
 			}
