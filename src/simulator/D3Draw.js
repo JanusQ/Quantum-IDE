@@ -1350,7 +1350,6 @@ export default class d3Draw {
 	renderBar(chart, data) {
 		// 绘制Magn bar
 		let magnBars = chart.body().selectAll('.magn_bar').data(data)
-
 		magnBars
 			.enter()
 			.append('rect')
@@ -1365,9 +1364,7 @@ export default class d3Draw {
 			.attr('stroke-width', 1)
 		magnBars.exit().remove()
 		// 绘制Prob bar
-
 		let probBars = chart.body().selectAll('.prob_bar').data(data)
-
 		probBars
 			.enter()
 			.append('rect')
@@ -1598,6 +1595,28 @@ export default class d3Draw {
 			g.call(xAxis)
 			// g.select('.domain').remove()
 			g.selectAll('.tick line').remove()
+			// g.selectAll('.tick text').attr('color', 'rgba(0,0,0,0)')
+
+			g.selectAll('.tick text')
+				.nodes()
+				.forEach(function (t, index) {
+					// console.log(data)
+					const textSvg = getDirac(data[index].base)
+					const z = new XMLSerializer()
+					g.select(`.tick:nth-of-type(${index + 1})`)
+						.append('foreignObject')
+						.attr('width', 60)
+						.attr('height', 24)
+						.attr('style', 'color:rgba(0,0,0,0)')
+						.attr('transform', 'scale(0.8) rotate(45)')
+						.attr('x', 0)
+						.attr('y', 0)
+						.append('xhtml:div')
+						.attr('height', '100%')
+						.attr('width', '100%')
+						.html(z.serializeToString(textSvg))
+				})
+
 			g.selectAll('.tick text').remove()
 			const context = d3.path()
 			// 自定义X轴线
@@ -1735,16 +1754,19 @@ export default class d3Draw {
 		chart.addMouseOn = function () {
 			g.selectAll('.magns_bar')
 				.on('mouseover', function (e, d) {
+					const textSvg = getDirac(d.base)
+					const z = new XMLSerializer()
 					const position = d3.pointer(e)
 					const tipG = g
 						.append('g')
 						.classed('tip', true)
 						.attr('transform', `translate(${position[0] + 85},${position[1] - 5})`)
+
 					tipG.append('rect')
-						.attr('stroke', 'gray')
+						.attr('stroke', '#ccc')
 						.attr('stroke-width', 1)
 						.attr('height', 26)
-						.attr('width', 110)
+						.attr('width', d.base.length * 22)
 						.attr('fill', '#fff')
 						.attr('rx', 2)
 					const text = tipG
@@ -1752,8 +1774,18 @@ export default class d3Draw {
 						.attr('fill', chart.textColor)
 						.classed('svgtext', true)
 						.attr('x', 4)
-						.attr('y', 16)
-					text.append('tspan').text('Base:' + d.base)
+						.attr('y', 18)
+					text.append('tspan').text('Base:')
+					tipG.append('foreignObject')
+						.attr('width', d.base.length * 22)
+						.attr('height', 24)
+						// .attr('transform', 'scale(1)')
+						.attr('x', 38)
+						.attr('y', 2)
+						.append('xhtml:div')
+						.attr('height', '100%')
+						.attr('width', '100%')
+						.html(z.serializeToString(textSvg))
 				})
 				.on('mouseleave', function (e, d) {
 					g.select('.tip').remove()
@@ -1824,11 +1856,11 @@ export default class d3Draw {
 		// 缩放
 		chart.addZoom = function () {
 			// console.log(getDirac(123))
+
 			const extent = [
 				[0, config.margins.top],
 				[chart.getBodyWidth() - 10, chart.getBodyHeight()],
 			]
-
 			chart.svg().call(d3.zoom().scaleExtent([1, 8]).translateExtent(extent).extent(extent).on('zoom', zoomed))
 			function zoomed(event) {
 				chart.scaleX.range([0, chart.getBodyWidth()].map((d) => event.transform.applyX(d)))
@@ -1853,6 +1885,8 @@ export default class d3Draw {
 
 				// 5.28 目前试的大概显示24个柱子
 				if (event.transform.k > 5.28) {
+					chart.svg().selectAll('.xAxis2 .tick foreignObject').attr('style', 'color:rgb(0,0,0)')
+
 					const zoomHeight = 20
 					chart
 						.svg()
@@ -1876,6 +1910,7 @@ export default class d3Draw {
 								(chart.bodyY() + chart.getBodyHeight() / 2 - zoomHeight) +
 								')'
 						)
+					// g.selectAll('.tick text')
 					chart.svg().select('.xAxis2 .domain').attr('stroke', '#000')
 					// magnsY 轴
 					chart.scaleY.range([chart.getBodyHeight() / 2, zoomHeight])
@@ -1918,6 +1953,11 @@ export default class d3Draw {
 						.attr('y', (d) => chart.getBodyHeight() / 2 + zoomHeight + 1)
 						.attr('height', (d) => chart.scaleY2(d.phases))
 				} else {
+					chart
+						.svg()
+						.selectAll('.xAxis2 .tick foreignObject')
+
+						.attr('style', 'color:rgba(0,0,0,0)')
 					chart
 						.svg()
 						.select('.xAxis')
