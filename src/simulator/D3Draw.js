@@ -5,6 +5,7 @@ import { event as currentEvent } from 'd3-selection'
 import { im, number, re } from 'mathjs'
 import { ConsoleErrorListener, toDocs } from '../resource/js/quantum-circuit.min'
 import Chart from './Chart'
+import { getDirac } from '../components/Mathjax'
 export default class d3Draw {
 	constructor(options) {
 		// 扩展颜色可配置
@@ -57,6 +58,7 @@ export default class d3Draw {
 		// D viewBox 和svg宽的比
 		this.viewBoxWidth = 1
 		this.viewBoxHeight = 1
+	
 	}
 	exportD3SVG(data) {
 		const svg = d3.select('#circuit_svg')
@@ -1121,33 +1123,36 @@ export default class d3Draw {
 			g.call(xAxis)
 			g.select('.domain').remove()
 			g.selectAll('.tick line').remove()
-			g.selectAll('.tick text').classed('svgtext', true).attr('transform', 'rotate(45)').attr('x', 8).attr('y', 8)
-			g.selectAll('.tick')
-				.append('g')
-				.attr('transform', 'translate(-6,8) rotate(45)')
-				.append('line')
-				.attr('x1', 0.25)
-				.attr('y2', 9)
-				.attr('stroke-width', 0.5)
-				.attr('stroke', 'black')
-				.classed('svgtext', true)
-			g.selectAll('.tick')
-				.append('g')
-				.attr('transform', 'translate(6,12) rotate(45)')
-				.append('path')
-				.attr('d', 'M0.845337 1L2.63087 5.40266L0.845337 9.71606')
-				.attr('stroke', 'black')
-				.attr('stroke-width', 0.5)
-				.attr('stroke-linecap', 'round')
-				.classed('svgtext', true)
-			g.append('rect')
-				.attr('width', chart.getBodyWidth())
-				.attr('height', 5)
-				.attr('fill', 'rgb(220, 216, 216)')
-				.classed('x_rect', true)
-				.classed('svgtext', true)
-				.attr('rx', 5)
-				.attr('ry', 5)
+			g.selectAll('.tick text').remove()
+			// g.selectAll('.tick text').classed('svgtext', true).attr('transform', 'rotate(45)').attr('x', 8).attr('y', 8)
+			// g.selectAll('.tick')
+			// 	.append('g')
+			// 	.attr('transform', 'translate(-6,8) rotate(45)')
+			// 	.append('line')
+			// 	.attr('x1', 0.25)
+			// 	.attr('y2', 9)
+			// 	.attr('stroke-width', 0.5)
+			// 	.attr('stroke', 'black')
+			// 	.classed('svgtext', true)
+			// g.selectAll('.tick')
+			// 	.append('g')
+			// 	.attr('transform', 'translate(6,12) rotate(45)')
+			// 	.append('path')
+			// 	.attr('d', 'M0.845337 1L2.63087 5.40266L0.845337 9.71606')
+			// 	.attr('stroke', 'black')
+			// 	.attr('stroke-width', 0.5)
+			// 	.attr('stroke-linecap', 'round')
+			// 	.classed('svgtext', true)
+			// g.append('rect')
+			// 	.attr('width', chart.getBodyWidth())
+			// 	.attr('height', 5)
+			// 	.attr('fill', 'rgb(220, 216, 216)')
+			// 	.classed('x_rect', true)
+			// 	.classed('svgtext', true)
+			// 	.attr('rx', 5)
+			// 	.attr('ry', 5)
+			const textSvg = getDirac(0)
+			console.log(textSvg)
 		}
 		// 处理上边Y轴样式
 		function customYAxis(g) {
@@ -1609,7 +1614,7 @@ export default class d3Draw {
 				.tickFormat((d) => `${d}`)
 			g.call(yAxis)
 			g.select('.domain').remove()
-			// g.selectAll('.tick line').remove()
+			g.selectAll('.tick line').remove()
 			// g.selectAll('.tick')
 			g.select('.magnYAxis .tick:nth-of-type(1)').attr(
 				'transform',
@@ -1625,7 +1630,7 @@ export default class d3Draw {
 				.tickFormat((d) => `${d}°`)
 			g.call(yAxis)
 			g.select('.domain').remove()
-			// g.selectAll('.tick line').remove()
+			g.selectAll('.tick line').remove()
 			g.select('.phaseYAxis .tick:nth-of-type(1)').attr('transform', 'translate(0,5)')
 		}
 		// 绘制bar
@@ -1819,10 +1824,12 @@ export default class d3Draw {
 		}
 		// 缩放
 		chart.addZoom = function () {
+			// console.log(getDirac(123))
 			const extent = [
 				[0, config.margins.top],
 				[chart.getBodyWidth() - 10, chart.getBodyHeight()],
 			]
+			
 			chart.svg().call(d3.zoom().scaleExtent([1, 8]).translateExtent(extent).extent(extent).on('zoom', zoomed))
 			function zoomed(event) {
 				chart.scaleX.range([0, chart.getBodyWidth()].map((d) => event.transform.applyX(d)))
@@ -1844,49 +1851,54 @@ export default class d3Draw {
 					.attr('width', chart.scaleX.bandwidth())
 				chart.svg().selectAll('.xAxis').call(chart.renderX)
 				chart.svg().selectAll('.xAxis2').call(chart.renderX2)
+				
 				// 5.28 目前试的大概显示24个柱子
 				if (event.transform.k > 5.28) {
-
+					const zoomHeight = 20
 					chart
 						.svg()
 						.select('.xAxis')
 						.attr(
 							'transform',
-							'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2 + 15) + ')'
+							'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2 + zoomHeight) + ')'
 						)
 					chart
 						.svg()
 						.select('.xAxis2')
 						.attr(
 							'transform',
-							'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2 - 15) + ')'
+							'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2 - zoomHeight) + ')'
 						)
 					chart.svg().select('.xAxis2 .domain').attr('stroke', '#000')
 					// magnsY 轴
-					chart.scaleY.range([chart.getBodyHeight() / 2, 15])
+					chart.scaleY.range([chart.getBodyHeight() / 2, zoomHeight])
 					// phases Y轴
-					chart.scaleY2.range([15, chart.getBodyHeight() / 2 - 15])
+					chart.scaleY2.range([0, chart.getBodyHeight() / 2 - zoomHeight])
 					chart.svg().selectAll('.magnYAxis').call(chart.renderMagnsY)
 					chart.svg().selectAll('.phaseYAxis').call(chart.renderPhasesY)
-					const newY = chart.bodyY() - 15
+					const newY = chart.bodyY() - zoomHeight
 					chart.svg().selectAll('.magnYAxis').attr('transform', 'translate(' + chart.bodyX() + ',' + newY + ')')
 					chart.svg().selectAll('.phaseYAxis').attr(
 						'transform',
-						'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2 + 15) + ')'
+						'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2 + zoomHeight) + ')'
 					)
-
+				
 					chart
 						.svg()
 						.selectAll('.magns_bar')
-						.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.magns))
+						.attr('height', (d) => chart.getBodyHeight() / 2  - chart.scaleY(d.magns))
+						.attr('y', (d) => chart.scaleY(d.magns) - 1 - zoomHeight)
+						
 					chart
 						.svg()
 						.selectAll('.probs_bar')
-						.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.probs))
+						.attr('height', (d) => chart.getBodyHeight() / 2  - chart.scaleY(d.probs))
+						.attr('y', (d) => chart.scaleY(d.probs) - 1 - zoomHeight)
+						
 					chart
 						.svg()
 						.selectAll('.phases_bar')
-						.attr('y', (d) => chart.getBodyHeight() / 2 + 16)
+						.attr('y', (d) => chart.getBodyHeight() / 2 + zoomHeight + 1)
 						.attr('height', (d) => chart.scaleY2(d.phases))
 				} else {
 					chart
@@ -1917,15 +1929,16 @@ export default class d3Draw {
 						'transform',
 						'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2) + ')'
 					)
-
 					chart
 						.svg()
 						.selectAll('.magns_bar')
 						.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.magns))
+						.attr('y', (d) => chart.scaleY(d.magns) - 1)
 					chart
 						.svg()
 						.selectAll('.probs_bar')
 						.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.probs))
+						.attr('y', (d) => chart.scaleY(d.probs) - 1)
 					chart
 						.svg()
 						.selectAll('.phases_bar')
