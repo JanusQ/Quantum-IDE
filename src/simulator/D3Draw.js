@@ -105,7 +105,7 @@ export default class d3Draw {
 				drawG,
 				this.firstX,
 				this.svgItemHeight * (i + 2),
-				(row + 3) * this.svgItemWidth,
+				(row + 3) * this.svgItemWidth> 1299 ? (row + 3) * this.svgItemWidth: 1299,
 				this.svgItemHeight * (i + 2)
 			)
 			this.drawName(drawG, this.svgItemWidth * 2 + 5, this.svgItemHeight * (i + 2), 'Q' + i)
@@ -1046,11 +1046,12 @@ export default class d3Draw {
 	}
 	drawStackedBar(data, j, qc, index) {
 		// 连线的数据 放在这个方法里 计算图标Y轴整体向下移动的距离
-		const heightStep = 5
+		const heightStep = 10
 		const lineData = qc.getPmiIndex(index, 0.25)
+
 		const config = {
 			barPadding: 0.1,
-			margins: { top: 20, left: 80, bottom: 100, right: 40 },
+			margins: { top: 20, left: 50, bottom: 100, right: 40 },
 			tickShowGrid: [60, 120, 180],
 			textColor: 'black',
 			gridColor: 'gray',
@@ -1080,11 +1081,21 @@ export default class d3Draw {
 				})
 				lineXArr[key].push(barWidth * i + barWidth / 2 + config.margins.left + (j ? widthArr[j - 1] : 0))
 			}
-
 			const width = barWidth * dataArr.length + config.margins.left + config.margins.right
 			widthArr.push(width + (j ? widthArr[j - 1] : 0))
 			const g = chart_svg.append('g').attr('transform', `translate(${j ? widthArr[j - 1] : 0},${6 * heightStep})`)
-			this.StackedBarChart(dataArr, g, width, key, qc, config, barWidth, index)
+			this.StackedBarChart(
+				dataArr,
+				g,
+				width,
+				key,
+				qc,
+				config,
+				barWidth,
+				index,
+				j ? widthArr[j - 1] : 0,
+				heightStep
+			)
 			allWidth += width
 			chart_svg.attr('width', allWidth + 50)
 			j += 1
@@ -1093,7 +1104,7 @@ export default class d3Draw {
 		this.drawCLine(chart_svg, lineData, lineXArr, heightStep)
 	}
 
-	StackedBarChart(data, g, width, name, qc, config, barWidth, index) {
+	StackedBarChart(data, g, width, name, qc, config, barWidth, index, left, heightStep) {
 		const chart = new Chart()
 		const self = this
 		chart.width(width)
@@ -1246,10 +1257,11 @@ export default class d3Draw {
 			g.selectAll('.magn_bar')
 				.on('mouseover', function (e, d) {
 					const position = d3.pointer(e)
-					const tipG = g
+					const tipG = d3
+						.select('#chart_svg')
 						.append('g')
 						.classed('tip', true)
-						.attr('transform', `translate(${position[0] + 85},${position[1] - 5})`)
+						.attr('transform', `translate(${position[0] + 55 + left},${position[1] + heightStep * 6 - 10})`)
 					tipG.append('rect')
 						.attr('stroke', 'gray')
 						.attr('stroke-width', 1)
@@ -1266,19 +1278,25 @@ export default class d3Draw {
 					text.append('tspan').text('Maganitue:' + d.magn.toFixed(2))
 				})
 				.on('mouseleave', function (e, d) {
-					g.select('.tip').remove()
+					d3.select('#chart_svg').select('.tip').remove()
 				})
 				.on('mousemove', function (e) {
 					const position = d3.pointer(e)
-					g.select('.tip').attr('transform', `translate(${position[0] + 85},${position[1] - 5})`)
+					d3.select('#chart_svg')
+						.select('.tip')
+						.attr('transform', `translate(${position[0] + 55 + left},${position[1] + heightStep * 6 - 10})`)
 				})
 			g.selectAll('.prob_bar')
 				.on('mouseover', function (e, d) {
 					const position = d3.pointer(e)
-					const tipG = g
+					const tipG = d3
+						.select('#chart_svg')
 						.append('g')
 						.classed('tip', true)
-						.attr('transform', `translate(${position[0] + 85},${position[1] - 5})`)
+						.attr(
+							'transform',
+							`translate(${position[0] + 55 + left},${position[1] + +heightStep * 6 - 10})`
+						)
 					tipG.append('rect')
 						.attr('stroke', 'gray')
 						.attr('stroke-width', 1)
@@ -1296,19 +1314,28 @@ export default class d3Draw {
 					text.append('tspan').text('probability:' + d.prob.toFixed(2))
 				})
 				.on('mouseleave', function (e, d) {
-					g.select('.tip').remove()
+					d3.select('#chart_svg').select('.tip').remove()
 				})
 				.on('mousemove', function (e) {
 					const position = d3.pointer(e)
-					g.select('.tip').attr('transform', `translate(${position[0] + 85},${position[1] - 5})`)
+					d3.select('#chart_svg')
+						.select('.tip')
+						.attr(
+							'transform',
+							`translate(${position[0] + 55 + left},${position[1] + +heightStep * 6 - 10})`
+						)
 				})
 			g.selectAll('.phase_bar')
 				.on('mouseover', function (e, d) {
 					const position = d3.pointer(e)
-					const tipG = g
+					const tipG = d3
+						.select('#chart_svg')
 						.append('g')
 						.classed('tip', true)
-						.attr('transform', `translate(${position[0] + 85},${position[1] - 5})`)
+						.attr(
+							'transform',
+							`translate(${position[0] + 55 + left},${position[1] + +heightStep * 6 - 10})`
+						)
 					tipG.append('rect')
 						.attr('stroke', 'gray')
 						.attr('stroke-width', 1)
@@ -1325,11 +1352,16 @@ export default class d3Draw {
 					text.append('tspan').text('phase:' + d.phase.toFixed(2))
 				})
 				.on('mouseleave', function (e, d) {
-					g.select('.tip').remove()
+					d3.select('#chart_svg').select('.tip').remove()
 				})
 				.on('mousemove', function (e) {
 					const position = d3.pointer(e)
-					g.select('.tip').attr('transform', `translate(${position[0] + 85},${position[1] - 5})`)
+					d3.select('#chart_svg')
+						.select('.tip')
+						.attr(
+							'transform',
+							`translate(${position[0] + 55 + left},${position[1] + +heightStep * 6 - 10})`
+						)
 				})
 		}
 		self.chartBrushFn(g, barWidth, config, index, qc, name, chart)
@@ -1370,9 +1402,9 @@ export default class d3Draw {
 			.append('rect')
 			.attr('class', 'prob_bar')
 			.merge(probBars)
-			.attr('x', (d) => chart.scaleX(d.index))
-			.attr('y', (d) => chart.scaleY(d.prob))
-			.attr('width', chart.scaleX.bandwidth())
+			.attr('x', (d) => chart.scaleX(d.index) + 1)
+			.attr('y', (d) => chart.scaleY(d.prob) - 1)
+			.attr('width', chart.scaleX.bandwidth() - 3)
 			.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.prob))
 			.attr('fill', chart._colors[0])
 			.attr('stroke', chart._colors[0])
@@ -1518,6 +1550,8 @@ export default class d3Draw {
 		}
 		brush_event.on('end', brushed_end)
 		brushG.attr('class', 'brush').call(brush_event)
+
+		brushG.select('.overlay').attr('width', chart.width()).attr('height', chart.height())
 	}
 	// 绘制C视图下半
 	drawCdownStackedBar(data) {
@@ -2379,6 +2413,7 @@ export default class d3Draw {
 		const self = this
 		let isShowMore = false
 		let isFull = false
+		let isReduce = false
 		//删除
 		const getParentNode = (obj) => {
 			if (!obj.classList.contains('d_chart_div')) {
@@ -2407,7 +2442,7 @@ export default class d3Draw {
 			}
 		}
 		// 放大到全屏
-		const expandFn = (chartDiv, operationDiv) => {
+		const expandFn = (chartDiv, operationDiv, svg) => {
 			// const expand_div = d3.select('.App').append('div').classed('expand_div', true)
 			if (isFull) {
 				chartDiv.attr('class', null).classed('d_chart_div', true)
@@ -2416,18 +2451,48 @@ export default class d3Draw {
 				svg.attr('width', svgWidth / this.viewBoxWidth)
 				svg.attr('height', svgHeight / this.viewBoxHeight)
 				svg.attr('viewBox', `0,0,${svgWidth},${svgHeight}`)
+				chartSvgDiv.attr('style','display:block;')
+				chartDiv.select('.reduce_icon').attr('src','/icon/reduce_icon.svg')
 				isFull = !isFull
+				isReduce = false
 			} else {
 				svg.attr('width', '100%')
 				svg.attr('height', '100%')
 				svg.attr('viewBox', null)
 				chartDiv.classed('d_chart_div_full', true)
 				operationDiv.attr('style', 'display:none')
+				chartSvgDiv.attr('style','display:block;')
+				chartDiv.selectAll('.title_icon').attr('style','display:inline-block;')
+				chartDiv.select('.reduce_icon').attr('src','/icon/reduce_icon.svg')
 				isShowMore = false
 				isFull = !isFull
+				isReduce = false
 			}
 		}
-
+		// 缩小
+		const reduceFn = (chartDiv, operationDiv,chartSvgDiv) => {
+			if (isReduce) {
+				operationDiv.attr('style', 'display:none')
+				isShowMore = false
+				chartSvgDiv.attr('style','display:block;')
+				chartDiv.selectAll('.title_icon').attr('style','display:inline-block;')
+				svg.attr('width', svgWidth / this.viewBoxWidth)
+				svg.attr('height', svgHeight / this.viewBoxHeight)
+				svg.attr('viewBox', `0,0,${svgWidth},${svgHeight}`)
+				chartDiv.select('.reduce_icon').attr('src','/icon/reduce_icon.svg')
+				isReduce = !isReduce
+				isFull = false
+			} else {
+				chartDiv.attr('class', null).classed('d_chart_div', true)
+				chartDiv.selectAll('.title_icon').attr('style', 'display:none')
+				operationDiv.attr('style', 'display:none')
+				chartSvgDiv.attr('style','display:none;')
+				isShowMore = false
+				isReduce = !isReduce
+				isFull = false
+				chartDiv.select('.reduce_icon').attr('src','/icon/zhankai_icon.svg')
+			}
+		}
 		const drawDiv = d3.select('#d_draw_div')
 		// drawDiv.selectAll('*').remove()
 		const chartDiv = drawDiv.append('div').classed('d_chart_div', true)
@@ -2438,10 +2503,10 @@ export default class d3Draw {
 		const svg = chartSvgDiv.append('svg').classed('d_chart_svg', true).attr('width', '320').attr('height', '280')
 		// const svg = chartSvgDiv.append('svg').classed('d_chart_svg', true)
 		const operationDiv = btnDiv.append('div').classed('operation_div', true).attr('style', 'display:none;')
-		btnDiv.append('img').attr('src', '/img/legends/yellowCircle.png').attr('width', 15).attr('height', 15)
-		btnDiv.append('span').text(`${circleNum}`).attr('style', 'font-size:12px;margin-left:5px;')
-		btnDiv.append('img').attr('src', '/img/legends/chart.png').attr('width', 15).attr('height', 15)
-		btnDiv.append('span').text(`${inputStateNumber}`).attr('style', 'font-size:12px;margin-left:5px;')
+		btnDiv.append('img').attr('src', '/img/legends/yellowCircle.png').attr('width', 15).attr('height', 15).classed('title_icon',true)
+		btnDiv.append('span').text(`${circleNum}`).attr('style', 'font-size:12px;margin-left:5px;').classed('title_icon',true)
+		btnDiv.append('img').attr('src', '/img/legends/chart.png').attr('width', 15).attr('height', 15).classed('title_icon',true)
+		btnDiv.append('span').text(`${inputStateNumber}`).attr('style', 'font-size:12px;margin-left:5px;').classed('title_icon',true)
 		btnDiv
 			.append('img')
 			.attr('src', '/icon/more_icon.svg')
@@ -2462,6 +2527,15 @@ export default class d3Draw {
 			.attr('src', '/icon/expand_icon.svg')
 			.on('click', function () {
 				expandFn(chartDiv, operationDiv, svg)
+			})
+		operationDiv
+			.append('img')
+			.attr('src', '/icon/reduce_icon.svg')
+			.attr('width', 15)
+			.attr('height', 15)
+			.classed('reduce_icon',true)
+			.on('click', function () {
+				reduceFn(chartDiv, operationDiv, chartSvgDiv)
 			})
 		operationDiv.append('img').attr('src', '/icon/delete_icon.svg').on('click', close)
 		return {
