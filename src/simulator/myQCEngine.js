@@ -1085,9 +1085,14 @@ export default class QCEngine {
         return 1 - ent;
     }
 
-    variableEntropy(operation_index, variable) {
+    variableEntropy(operation_index, variable, precision = 1e-5) {
         let vec = this._getPartialTrace(variable, operation_index);
         let ent = linear_entropy(vec);
+        
+        if(Math.abs(ent - 0) < precision)
+            ent = 0;
+        
+        //console.log(variable, ent);
         return ent;
     }
 
@@ -1125,7 +1130,8 @@ export default class QCEngine {
     }
 
     // TODO: 能复用的数据可以存一下
-    getPmiIndex(operation_index, threshold) {
+    getPmiIndex(operation_index, threshold, precision =1e-5) {
+        threshold = 0.1;
         const { name2index } = this;
         let ids = [];
         let i, j = 0;
@@ -1147,9 +1153,11 @@ export default class QCEngine {
                                 select[key2] = [j];
                                 //console.log(select);
                                 let pmi = this._calcPmi(operation_index, select);
-                                // if(pmi != 0){
-                                //     console.log(select,pmi);
-                                // }
+                                if(Math.abs(pmi - 0) < precision)
+                                    pmi = 0;
+                                if(pmi != 0){
+                                    console.log(select,pmi);
+                                }
                                 if (pmi >= threshold) {
                                     select[key] = select[key][0];
                                     select[key2] = select[key2][0];
