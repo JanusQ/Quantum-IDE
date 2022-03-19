@@ -1250,7 +1250,7 @@ export default class d3Draw {
 				.attr('width', 18)
 				.attr('x', -29)
 				.attr('y', chart.getBodyHeight() / 2 - childRectHeight + 5)
-				.attr('fill', 'pink')
+				.attr('fill', 'rgb(229,143,130)')
 		}
 		// 绑定事件
 		chart.addMouseOn = function () {
