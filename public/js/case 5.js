@@ -23,7 +23,7 @@ qc.nop();
 qc.nop();
 
 qc.startlabel('if (a == 1) then b+=3');
-b.add(3, ancillary.bits(0x1));
+b.add(2, ancillary.bits(0x1));
 qc.endlabel('if (a == 1) then b+=3');
 
 qc.nop();

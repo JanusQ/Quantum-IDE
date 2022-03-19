@@ -66,7 +66,7 @@ qc.nop()
 // qc.startlabel('preprae')
 // qc.endlabel('preprae')
 
-qc.startlabel('Calculate probability')
+qc.startlabel('simulation')
 
 
 qc.startlabel('ry 101°')
@@ -87,7 +87,7 @@ flip(step_2, not_step_2)
 
 setConditional(0.2, step_2, step_3, false)  //0.66 * 0.1
 setConditional(0.1, not_step_2, step_3, true) //0.34 * 0.8
-qc.endlabel('Calculate probability')
+qc.endlabel('simulation')  //TODO: 没有end的warnning
 
 // flip(step_3, not_step_3)
 // // qc.cry(theta1to1(0.3), not_step_1.bits(0x1), step_2.bits(0x1))

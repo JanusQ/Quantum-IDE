@@ -2211,8 +2211,8 @@ export default class d3Draw {
 						e.offsetX - scrollLeft + 20
 					}px;border:1px solid #ccc`
 				)
-			showCircleDiv.append('p').html(`roation：${roation}`)
-			showCircleDiv.append('p').html(`scale：${scale}`)
+			showCircleDiv.append('p').html(`roation：${scale.toFixed(2)}`)
+			showCircleDiv.append('p').html(`scale：${roation.toFixed(2)}`)
 		})
 		childG.on('mouseleave', function (e) {
 			chartDiv.selectAll('.show_circle_div').remove()
@@ -2224,7 +2224,7 @@ export default class d3Draw {
 		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`).classed('d_item', true)
 		parentG.append('rect').attr('width', this.dLength).attr('height', this.dLength).attr('fill', 'none')
 		const ketLieftG = parentG
-			.append('g')
+			.anpmppend('g')
 			.append('line')
 			.attr('x1', 0.25)
 			.attr('y2', 9)
