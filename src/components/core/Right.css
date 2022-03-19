@@ -27,7 +27,7 @@
 	margin-top: 8px;
 }
 #right_down_div .scroll_div {
-	width: 741px;
+	width: 800px;
 	height: 100%;
 	margin-right: 8px;
 	background: #fff;
@@ -40,7 +40,7 @@
 	overflow-x: visible;
 }
 #right_down_div .c_component {
-	width: 566px;
+	width: 507px;
 	height: 100%;
 	background: #fff;
 	padding: 10px;
@@ -99,12 +99,13 @@
 	width: 100%;
 	height: calc(100% - 32px);
 	overflow: auto;
-	white-space: nowrap;
+	/* white-space: nowrap; */
 }
 .d_chart_div {
 	/* width: 48%; */
 	/* height: 49%; */
-	display: inline-block;
+	/* display: inline-block; */
+	float: left;
 	margin-right: 2%;
 	border: 1px solid #c4c4c4;
 	border-radius: 4px;
