@@ -1155,9 +1155,9 @@ export default class QCEngine {
                                 let pmi = this._calcPmi(operation_index, select);
                                 if(Math.abs(pmi - 0) < precision)
                                     pmi = 0;
-                                if(pmi != 0){
-                                    console.log(select,pmi);
-                                }
+                                // if(pmi != 0){
+                                //     console.log(select,pmi);
+                                // }
                                 if (pmi >= threshold) {
                                     select[key] = select[key][0];
                                     select[key2] = select[key2][0];
