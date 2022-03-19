@@ -2299,7 +2299,7 @@ export default class d3Draw {
 		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`).classed('d_item', true)
 		parentG.append('rect').attr('width', this.dLength).attr('height', this.dLength).attr('fill', 'none')
 		const ketLieftG = parentG
-			.anpmppend('g')
+			.append('g')
 			.append('line')
 			.attr('x1', 0.25)
 			.attr('y2', 9)
