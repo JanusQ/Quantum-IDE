@@ -29,14 +29,17 @@ export default class d3Draw {
 		this.dLightRectColor = options.dLightRectColor || 'rgb(137, 214, 220)'
 		// 浅色块条形图的颜色
 		this.dBarColor = options.dBarColor || 'rgb(137, 214, 220)'
+		
+		// 设置比例
+		this.scaleNum = 3
 		// 设置空白和间距
-		this.firstX = 90
 		this.svgItemWidth = 30
+		this.firstX = this.svgItemWidth * this.scaleNum
+		
 		this.svgItemHeight = 30
 		// 鼠标放上的小label宽
 		this.svgItemLabelWidth = 30
-		// 计算比例
-		this.scaleNum = this.firstX / this.svgItemWidth
+		
 		// label位置的偏移 x - 图形的宽
 		this.labelTranslate = this.firstX - this.svgItemWidth / 2
 		// 存getWholeState
