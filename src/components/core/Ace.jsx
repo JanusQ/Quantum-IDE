@@ -26,7 +26,7 @@ const Ace = (props) => {
 
 	// 多个选择框
 	const { Option } = Select
-	const optionList = ['case 4', 'case 3',  'case 5','case 1',  'case 2', 'bell_state', 'all gates', 'adding two integers', 'ex7-7', 'ex7-1', 'about:black'] // case的列表，public\js中需要存对应的文件
+	const optionList = ['case 3', 'case 4',  'case 5','case 1',  'case 2', 'bell_state', 'all gates', 'adding two integers', 'ex7-7', 'ex7-1', 'about:black'] // case的列表，public\js中需要存对应的文件
 	const optionChildren = []
 	for (let i = 0; i < optionList.length; i++) {
 		optionChildren.push(

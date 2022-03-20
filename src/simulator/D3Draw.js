@@ -2620,14 +2620,17 @@ export default class d3Draw {
 	}
 	// 绘制sankey图
 	drawSankey(qc, data) {
+		let filter_unused = true //false
+
 		const circleData = qc.getEvoMatrix(data.id)
 		let circleDataNum = 0
 		if (circleData.length && circleData[0].length) {
 			circleDataNum = circleData[0][0]['max'].toFixed(2)
 		}
-		const { sankey: sankeyData, permute } = qc.transferSankeyOrdered(data.id)
-		const { input_state: inputStateData, output_state: outStateData } = qc.getState(data.id)
 
+		const { input_state: inputStateData, output_state: outStateData } = qc.getState(data.id)
+		const { sankey: sankeyData, permute } = qc.transferSankeyOrdered(data.id,  1e-5, false, filter_unused, inputStateData, outStateData)
+		
 		const inputBases = inputStateData.bases
 		const outBases = outStateData.bases
 		// outBases根据permute排序
@@ -2641,7 +2644,7 @@ export default class d3Draw {
 		// 计算out_input 浅色块X轴移动
 		const outRelatedGX = outGTransformX + (outStateData.vars.length + 1) * this.dLength
 		// 设置svg的宽高
-		const svgHeight = (inputStateData.bases.length + 1) * this.dLength
+		const svgHeight = (outStateData.bases.length + 1) * this.dLength
 		const svgWidth = outRelatedGX + this.dLength * 2 + 100
 		const { svg, chartDiv, chartSvgDiv } = this.drawElement(
 			data.text,

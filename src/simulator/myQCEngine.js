@@ -14,7 +14,7 @@
 // let QuantumCircuit = require('../resource/js/quantum-circuit.min.js')
 import { write0, write1 } from './MyGate';
 import QuantumCircuit from './QuantumCircuit'
-import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, alt_tensor, calibrate, getExp, linear_entropy, binary2int, average, spec, average_sum, normalize, density} from './CommonFunction'
+import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, alt_tensor, calibrate, getExp, linear_entropy, binary2int, average, spec, average_sum, normalize, density, weight_rand } from './CommonFunction'
 
 import {
     cos, sin, round, pi, complex, create, all, max, sparse, map,
@@ -58,8 +58,10 @@ export default class QCEngine {
 
         this.operation_index2whole_state = {}
         this.operation_index2var_state = {}
-        
-        this.draw_evo = true;
+
+        // this.dont_draw_evo = true;
+        this.dont_draw_evo = {}
+
     }
 
 
@@ -228,7 +230,7 @@ export default class QCEngine {
         console.warn('label() will be abandoned in the future')
     }
     //  ---------------WARNING: DO NOT USE THIS, USE STARTLABEL & ENDLABEL INSTEAD--------------
-    
+
     startlabel(labelname) {
         const { _now_label, labels, operations } = this
         let label_id = this.genLabelId();
@@ -363,8 +365,8 @@ export default class QCEngine {
         const qubits = this.parseBinaryQubits(binary_qubits)
 
         let phi = 0
-        if(rotation!==0){
-            phi = rotation > 0?  "pi/" + (180/rotation) : "-pi/" + (180/-rotation)
+        if (rotation !== 0) {
+            phi = rotation > 0 ? "pi/" + (180 / rotation) : "-pi/" + (180 / -rotation)
         }
 
 
@@ -453,18 +455,18 @@ export default class QCEngine {
         let controls = binary_control ? this.parseBinaryQubits(binary_control) : []
         let target = binary_target ? this.parseBinaryQubits(binary_target) : []
 
-        if(controls.length != 1){
+        if (controls.length != 1) {
             console.error(controls, 'control qubit number of cry is not one')
             debugger
         }
-        if(target.length != 1){
+        if (target.length != 1) {
             console.error(target, 'target qubit number of cry is not one')
             debugger
         }
 
         let phi = 0
-        if(rotation!==0){
-            phi = rotation > 0?  "pi/" + (180/rotation) : "-pi/" + (180/-rotation)
+        if (rotation !== 0) {
+            phi = rotation > 0 ? "pi/" + (180 / rotation) : "-pi/" + (180 / -rotation)
         }
 
         circuit.addGate("cry", now_column, [...controls, ...target], {
@@ -650,40 +652,35 @@ export default class QCEngine {
 
     apply(gate_name, qubits) {
         let ops = name2gate[gate_name];
-        if(ops == undefined)
-        {
+        if (ops == undefined) {
             console.error("gatename is not saved:", gate_name);
             debugger
         }
-        for(let i=0; i<ops.length; i++)
-        {
-            let opera= ops[i];
+        for (let i = 0; i < ops.length; i++) {
+            let opera = ops[i];
             let op_name = opera['operation']
             let inv_qubit;
-            if(op_name == 'h')
-            {
+            if (op_name == 'h') {
                 //remap(qubits)
                 this.had(qubits)
             }
-            else if(op_name == 'phase')
-            {
+            else if (op_name == 'phase') {
 
             }
-            else if(op_name == 'not')
-            {
+            else if (op_name == 'not') {
 
             }
-            else if(op_name == '')
+            else if (op_name == '')
 
-            
-            this._addGate({
-                'qubits': qubits,
-                'operation': gate_name,
-                'columns': this.nextColumn()
-            })
+
+                this._addGate({
+                    'qubits': qubits,
+                    'operation': gate_name,
+                    'columns': this.nextColumn()
+                })
 
         }
-        
+
 
 
     }
@@ -822,7 +819,7 @@ export default class QCEngine {
     getVarState(operation_index, filter = undefined) {
         const { operations, qubit_number, operation_index2var_state } = this;
 
-        if(filter === undefined && operation_index2var_state[operation_index])
+        if (filter === undefined && operation_index2var_state[operation_index])
             return operation_index2var_state[operation_index]
 
         let res = {};
@@ -837,10 +834,10 @@ export default class QCEngine {
             res[key]['magn'] = [];
             res[key]['phase'] = [];
 
-            let bits = var_index[key][1] - var_index[key][0];        
+            let bits = var_index[key][1] - var_index[key][0];
 
             for (let i = 0; i < Math.pow(2, bits); i++) {
-                let input_index ={}
+                let input_index = {}
                 input_index[key] = [i];
                 let tmp_index = this.getIndex(operation_index, input_index);
 
@@ -853,7 +850,7 @@ export default class QCEngine {
         if (filter != undefined) {
             for (let key in var_index)
                 res[key] = this._variableFilter(operation_index, key, filter);
-        }else{
+        } else {
             operation_index2var_state[operation_index] = res
         }
 
@@ -862,9 +859,9 @@ export default class QCEngine {
     }
 
     getWholeState(operation_index) {
-        const { qubit_number, operations,operation_index2whole_state, name2index} = this;
+        const { qubit_number, operations, operation_index2whole_state, name2index } = this;
 
-        if(operation_index2whole_state[operation_index]){
+        if (operation_index2whole_state[operation_index]) {
             return operation_index2whole_state[operation_index]
         }
 
@@ -898,13 +895,12 @@ export default class QCEngine {
             res['magns'][i] = polar['r'];
             res['probs'][i] = res['magns'][i] * res['magns'][i];
             res['phases'][i] = calibrate(polar['phi'], true) * 180 / Math.PI;
-            
+
             let all_bits = binary(i, qubit_number);
             all_bits = all_bits.reverse();
             let value = [];
-            for(let key in name2index)
-            {
-                let bin = all_bits.slice(name2index[key][0],name2index[key][1]);
+            for (let key in name2index) {
+                let bin = all_bits.slice(name2index[key][0], name2index[key][1]);
                 bin = bin.reverse();
                 let val = binary2int(bin);
                 value.push(val);
@@ -991,10 +987,9 @@ export default class QCEngine {
         let all_bin = [];
         let mask = [];
         let ret = [];
-        for(let i=0; i<Math.pow(2,ran); i++)
-        {
-            let bini = binary(i,ran);
-            bini=bini.reverse();
+        for (let i = 0; i < Math.pow(2, ran); i++) {
+            let bini = binary(i, ran);
+            bini = bini.reverse();
 
             let j = 0;
 
@@ -1017,7 +1012,7 @@ export default class QCEngine {
                 }
             }
             all_bin = all_bin.reverse();
-            ret[i] = binary2int(all_bin,this.qubit_number);
+            ret[i] = binary2int(all_bin, this.qubit_number);
         }
 
         return ret;
@@ -1044,24 +1039,23 @@ export default class QCEngine {
                 prob += whole_state['probs'][ids[i]];
                 vecs[i] = complex(state[ids[i]]['amplitude'].re, state[ids[i]]['amplitude'].im);
             }
-            
+
             vecs = normalize(vecs)
             let den = density(vecs);
-            
-            if(fin_den == undefined)
+
+            if (fin_den == undefined)
                 fin_den = math.multiply(den, prob);
             else
-                fin_den = math.add(fin_den, math.multiply(den,prob));
-            
+                fin_den = math.add(fin_den, math.multiply(den, prob));
+
         }
 
 
-        
+
         return fin_den;
     }
 
-    getEntropy(operation_index, precision = 1e-5)
-    {
+    getEntropy(operation_index, precision = 1e-5) {
         let len = 0;
         let ent = 0;
         let var_index = this.name2index;
@@ -1072,11 +1066,11 @@ export default class QCEngine {
             //console.log(key, den, ent);
             len++;
         }
-        
-        if(Math.abs(ent - 0) < precision)
+
+        if (Math.abs(ent - 0) < precision)
             ent = 0;
         //console.log("entropy",ent);
-        return ent/len;
+        return ent / len;
     }
 
     variablePurity(operation_index, variable) {
@@ -1088,10 +1082,10 @@ export default class QCEngine {
     variableEntropy(operation_index, variable, precision = 1e-5) {
         let vec = this._getPartialTrace(variable, operation_index);
         let ent = linear_entropy(vec);
-        
-        if(Math.abs(ent - 0) < precision)
+
+        if (Math.abs(ent - 0) < precision)
             ent = 0;
-        
+
         //console.log(variable, ent);
         return ent;
     }
@@ -1109,7 +1103,7 @@ export default class QCEngine {
             p_xy += magn * magn;
         }
 
-        if(p_xy === 0)
+        if (p_xy === 0)
             return 0
 
         let var_state = this.getVarState(operation_index);
@@ -1117,7 +1111,7 @@ export default class QCEngine {
 
         for (let key in select) {
             div *= var_state[key]['prob'][select[key][0]];
-            if(div === 0)
+            if (div === 0)
                 return 0
         }
 
@@ -1130,7 +1124,7 @@ export default class QCEngine {
     }
 
     // TODO: 能复用的数据可以存一下
-    getPmiIndex(operation_index, threshold, precision =1e-5) {
+    getPmiIndex(operation_index, threshold, precision = 1e-5) {
         threshold = 0.1;
         const { name2index } = this;
         let ids = [];
@@ -1153,7 +1147,7 @@ export default class QCEngine {
                                 select[key2] = [j];
                                 //console.log(select);
                                 let pmi = this._calcPmi(operation_index, select);
-                                if(Math.abs(pmi - 0) < precision)
+                                if (Math.abs(pmi - 0) < precision)
                                     pmi = 0;
                                 // if(pmi != 0){
                                 //     console.log(select,pmi);
@@ -1339,9 +1333,9 @@ export default class QCEngine {
                 input_state['bases'][i]['related_bases'][k]['magnitude'] = whole['magns'][order];
                 input_state['bases'][i]['related_bases'][k]['phases'] = whole['phases'][order];
 
-                if(input_state['bases'][i]['max_base_magn'] < whole['magns'][order])
+                if (input_state['bases'][i]['max_base_magn'] < whole['magns'][order])
                     input_state['bases'][i]['max_base_magn'] = whole['magns'][order];
-                if(input_state['max_magn'] < whole['magns'][order])
+                if (input_state['max_magn'] < whole['magns'][order])
                     input_state['max_magn'] = whole['magns'][order];
 
             }
@@ -1368,16 +1362,14 @@ export default class QCEngine {
 
         // process ratio
         for (let i = 0; i < input_state['bases'].length; i++) {
-            if (input_state['max_magn'] == 0){
-                for(let j = 0; j< input_state['bases'][i]['related_bases'].length; j++)
-                {
+            if (input_state['max_magn'] == 0) {
+                for (let j = 0; j < input_state['bases'][i]['related_bases'].length; j++) {
                     input_state['bases'][i]['related_bases'][j]['ratio'] = 0;
                 }
                 input_state['bases'][i]['ratio'] = 0;
             }
-            else{
-                for(let j = 0; j< input_state['bases'][i]['related_bases'].length; j++)
-                {
+            else {
+                for (let j = 0; j < input_state['bases'][i]['related_bases'].length; j++) {
                     input_state['bases'][i]['related_bases'][j]['ratio'] = input_state['bases'][i]['related_bases'][j]['magnitude'] / input_state['max_magn'];
                 }
                 input_state['bases'][i]['ratio'] = input_state['bases'][i]['magnitude'] / input_state['max_magn'];
@@ -1425,23 +1417,25 @@ export default class QCEngine {
 
     }
 
-    disableEvolutionview()
-    {
-        this.draw_evo = false;
+    disableDisplay(label_name) {
+        // this.dont_draw_evo = false;
+        this.dont_draw_evo[label_name] = true;
     }
-    
-    enableEvolutionview()
-    {
-        this.draw_evo = true;
+
+    enableDisplay(label_name) {
+        // this.dont_draw_evo = true;
+        this.dont_draw_evo[label_name] = false;
     }
 
     canShow(label_id) {
+        // debugger
         // console.log(this.operations);
         // console.log(this.labels);
         let ops = [this.labels[label_id]['start_operation'], this.labels[label_id]['end_operation']];
+        let label_name = this.labels[label_id]['text']
         for (let i = ops[0]; i < ops[1]; i++) {
             let opera = this.operations[i];
-            if (opera['operation'] == 'write' || opera['operation'] == 'read' || this.draw_evo == false)
+            if (opera['operation'] == 'write' || opera['operation'] == 'read' || this.dont_draw_evo[label_name])
                 return false;
 
         }
@@ -1453,12 +1447,12 @@ export default class QCEngine {
         // debugger
         //console.log(label_id);
         //console.log(this.labels);
-        console.log(this.operations);
+        // console.log(this.operations);
         let gate_mats = [];
         let ops = [this.labels[label_id]['start_operation'], this.labels[label_id]['end_operation']];
         //console.log(ops);
         let vars = [];
-        
+
         let tmp_array = [];
         for (let i = ops[0]; i < ops[1]; i++) {
             let opera = this.operations[i];
@@ -1650,11 +1644,12 @@ export default class QCEngine {
     }
 
     transferSankey(label_id, precision = 1e-5) {
+        // debugger
         let matrix = this.getEvoMatrix(label_id);
         let sankey = [];
         let k = 0;
-        for (let j=0; j<matrix.length; j++) {
-            for (let i=0; i<matrix.length; i++) {
+        for (let j = 0; j < matrix.length; j++) {
+            for (let i = 0; i < matrix.length; i++) {
                 if (Math.abs(matrix[i][j]['magnitude'] - 0) > precision) {
                     sankey[k] = {};
                     sankey[k]['maganitude'] = matrix[i][j]['magnitude'];
@@ -1673,16 +1668,21 @@ export default class QCEngine {
         return sankey;
     }
 
-    transferSankeyOrdered(label_id, precision = 1e-5, per = false)
-    {
-        let res= {};
+    transferSankeyOrdered(label_id, precision = 1e-5, per = false, filter_unused = false, input_state = undefined, output_state = undefined) {
+        // debugger
+        let res = {};
         let matrix = this.getEvoMatrix(label_id);
         let sankey = [];
         let k = 0;
         let parray = [];
-        for (let j=0; j<matrix.length; j++) {
-            for (let i=0; i<matrix.length; i++) {
+        let input_used = {}, output_used = {};
+
+        for (let j = 0; j < matrix.length; j++) {
+            for (let i = 0; i < matrix.length; i++) {
                 if (Math.abs(matrix[i][j]['magnitude'] - 0) > precision) {
+                    if (filter_unused & !matrix[i][j]['used']) {
+                        continue
+                    }
                     sankey[k] = {};
                     sankey[k]['maganitude'] = matrix[i][j]['magnitude'];
                     sankey[k]['phase'] = matrix[i][j]['phase'];
@@ -1692,33 +1692,41 @@ export default class QCEngine {
                     sankey[k]['to_id'] = i;
                     sankey[k]['y_index'] = k;
                     sankey[k]['ratio'] = matrix[i][j]['ratio'];
-                    if(per)
+                    if (per)
                         parray.push(i);
+
+                    input_used[j] = true;
+                    output_used[i] = true;
                     k++;
-                    
+
                 }
             }
         }
         //console.log('parray',parray);
-        if(per)
+        if (per)
             res['permute'] = parray;
         else
             res['permute'] = range(0, matrix.length);
         res['sankey'] = sankey;
+
+        if (filter_unused) {
+            // let new_index_input = {}
+            // let 
+            input_state.bases = input_state.bases.filter(elm => input_used[elm.id])
+            output_state.bases = output_state.bases.filter(elm => output_used[elm.id])
+        }
+        // debugger
         return res;
     }
 
-    _postProcess(state)
-    {
+    _postProcess(state) {
         let max_magn = state['input_state']['max_magn'] > state['output_state']['max_magn'] ? state['input_state']['max_magn'] : state['output_state']['max_magn'];
         state['input_state']['max_magn'] = max_magn;
         state['output_state']['max_magn'] = max_magn;
-        for(let key in state){
-            for (let i = 0; i < state[key]['bases'].length; i++){
-                if(max_magn != 0)
-                {
-                    for(let j = 0; j< state[key]['bases'][i]['related_bases'].length; j++)
-                    {
+        for (let key in state) {
+            for (let i = 0; i < state[key]['bases'].length; i++) {
+                if (max_magn != 0) {
+                    for (let j = 0; j < state[key]['bases'][i]['related_bases'].length; j++) {
                         state[key]['bases'][i]['related_bases'][j]['ratio'] = state[key]['bases'][i]['related_bases'][j]['magnitude'] / max_magn;
                     }
                     state[key]['bases'][i]['ratio'] = state[key]['bases'][i]['magnitude'] / max_magn;
@@ -1729,8 +1737,7 @@ export default class QCEngine {
         return state;
     }
 
-    getState(label_id)
-    {
+    getState(label_id) {
         let state = {};
         state['input_state'] = this._makeState(label_id, 'start');
         state['output_state'] = this._makeState(label_id, 'end');
@@ -1773,6 +1780,24 @@ class QInt {
         // 1 0x2
     }
 
+    // TODO: 之后写个真的
+    sample(times) {
+        const { qc, name } = this
+        const { operations } = qc
+        let var_state = qc.getVarState(operations.length - 1)
+        let self_state = var_state[name].prob
+
+        self_state = self_state.map((prob, index) => {
+            return {
+                'base': index,
+                'weight':  prob,
+            }
+        })
+
+        let r = range(0, times).map(time=> weight_rand(self_state).base)
+        // debugger
+        return r
+    }
 
     parseBinaryQubits(binary_qubits) {
         if (binary_qubits !== undefined) {
@@ -1931,6 +1956,8 @@ class QInt {
         return qc.read(binary_qubits)
     }
 
+
+
     exchange(another_qint) {
         let { qc, binary_qubits } = this
         qc.exchange(binary_qubits, another_qint.binary_qubits)
@@ -1959,12 +1986,12 @@ class QInt {
     invQFT() {
         let { qc, index } = this
         let qubits = range(...index)
-        
-        for(let start = index[0], end = index[1]-1; start < end; start++, end--){
+
+        for (let start = index[0], end = index[1] - 1; start < end; start++, end--) {
             // debugger
             qc.swap(pow2(start), pow2(end))
         }
-        
+
         qubits.forEach((qubits1, index1) => {
             qc.had(pow2(qubits1))
             qubits.slice(index1 + 1).forEach((qubits2, index2) => {
@@ -1990,7 +2017,7 @@ class QInt {
             })
         })
 
-        for(let start = index[0], end = index[1]-1; start < end; start++, end--){
+        for (let start = index[0], end = index[1] - 1; start < end; start++, end--) {
             qc.swap(pow2(start), pow2(end))
         }
 
