@@ -29,17 +29,17 @@ export default class d3Draw {
 		this.dLightRectColor = options.dLightRectColor || 'rgb(137, 214, 220)'
 		// 浅色块条形图的颜色
 		this.dBarColor = options.dBarColor || 'rgb(137, 214, 220)'
-		
+
 		// 设置比例
 		this.scaleNum = 3
 		// 设置空白和间距
 		this.svgItemWidth = 30
 		this.firstX = this.svgItemWidth * this.scaleNum
-		
+
 		this.svgItemHeight = 30
 		// 鼠标放上的小label宽
 		this.svgItemLabelWidth = 30
-		
+
 		// label位置的偏移 x - 图形的宽
 		this.labelTranslate = this.firstX - this.svgItemWidth / 2
 		// 存getWholeState
@@ -92,9 +92,9 @@ export default class d3Draw {
 					const labelRow = obj.down_qubit - obj.up_qubit
 					this.drawLabel(
 						labelG,
-						(this.svgItemWidth+this.gate_offest) * data.labels[i].start_operation + this.labelTranslate,
+						(this.svgItemWidth + this.gate_offest) * data.labels[i].start_operation + this.labelTranslate,
 						this.svgItemHeight * (obj.up_qubit + 1),
-						(this.svgItemWidth+this.gate_offest) * lineCol,
+						(this.svgItemWidth + this.gate_offest) * lineCol,
 						this.svgItemHeight * (labelRow + 1),
 						data.labels[i].text,
 						data.labels[i].id
@@ -110,7 +110,7 @@ export default class d3Draw {
 				drawG,
 				this.firstX,
 				this.svgItemHeight * (i + 2),
-				(row + 3) * this.svgItemWidth> 1299 ? (row + 3) * this.svgItemWidth: 1299,
+				(row + 3) * this.svgItemWidth > 1299 ? (row + 3) * this.svgItemWidth : 1299,
 				this.svgItemHeight * (i + 2)
 			)
 			this.drawName(drawG, this.svgItemWidth * 2 + 5, this.svgItemHeight * (i + 2), 'Q' + i)
@@ -149,6 +149,8 @@ export default class d3Draw {
 		this.drawDChart(data)
 		// 加入折线图
 		this.drawLineChart(svg, data, row)
+		// 默认最后一个index的C视图
+		this.drawCFn(operations.length - 1, data)
 	}
 	// 清空缓存的值
 	clear() {
@@ -702,7 +704,7 @@ export default class d3Draw {
 	drawOperations(svg, operations, data) {
 		for (let i = 0; i < operations.length; i++) {
 			let operation = operations[i]
-			const x = (this.svgItemWidth+this.gate_offest) * (i + this.scaleNum)
+			const x = (this.svgItemWidth + this.gate_offest) * (i + this.scaleNum)
 			operation.x = x
 			switch (operations[i].operation) {
 				// write操作
@@ -716,6 +718,41 @@ export default class d3Draw {
 						} else {
 							this.drawWrite0(writeG, x, this.svgItemHeight * (operations[i].qubits[j] + 2))
 						}
+						writeG.on('mouseover', function (e) {
+							svg.selectAll('.tip').remove()
+							const position = d3.pointer(e)
+							const tipG = svg
+								.append('g')
+								.classed('tip', true)
+								.attr(
+									'transform',
+									`translate(${position[0] + 10},${position[1]})`
+								)
+							tipG.append('rect')
+								.attr('stroke', 'gray')
+								.attr('stroke-width', 1)
+								.attr('height', 26)
+								.attr('width', 42)
+								.attr('fill', '#fff')
+								.attr('rx', 2)
+							const text = tipG
+								.append('text')
+								.attr('fill', '#000')
+								.classed('svgtext', true)
+								.attr('x', 4)
+								.attr('y', 16)
+
+							text.append('tspan').text('write')
+						})
+						writeG.on('mousemove', function (e) {
+							const position = d3.pointer(e)
+							svg.selectAll('.tip')
+								.attr('transform', `translate(${position[0] + 10},${position[1]})`)
+
+						})
+						writeG.on('mouseleave', function (e) {
+							svg.selectAll('.tip').remove()
+						})
 					}
 					break
 				// had操作
@@ -724,7 +761,43 @@ export default class d3Draw {
 						const hG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
 						hG.datum(operation) //绑定数据到dom节点
 						this.drawH(hG, x, this.svgItemHeight * (operations[i].qubits[j] + 2))
+						hG.on('mouseover', function (e) {
+							svg.selectAll('.tip').remove()
+							const position = d3.pointer(e)
+							const tipG = svg
+								.append('g')
+								.classed('tip', true)
+								.attr(
+									'transform',
+									`translate(${position[0] + 20},${position[1]})`
+								)
+							tipG.append('rect')
+								.attr('stroke', 'gray')
+								.attr('stroke-width', 1)
+								.attr('height', 26)
+								.attr('width', 18)
+								.attr('fill', '#fff')
+								.attr('rx', 2)
+							const text = tipG
+								.append('text')
+								.attr('fill', '#000')
+								.classed('svgtext', true)
+								.attr('x', 4)
+								.attr('y', 16)
+
+							text.append('tspan').text('H')
+						})
+						hG.on('mousemove', function (e) {
+							const position = d3.pointer(e)
+							svg.selectAll('.tip')
+								.attr('transform', `translate(${position[0] + 10},${position[1]})`)
+
+						})
+						hG.on('mouseleave', function (e) {
+							svg.selectAll('.tip').remove()
+						})
 					}
+
 					break
 				case 'swap':
 					for (let j = 0; j < operations[i].qubits1.length; j++) {
@@ -732,6 +805,14 @@ export default class d3Draw {
 						swapG.datum(operation) //绑定数据到dom节点
 						this.drawSwap(swapG, x, this.svgItemHeight * (operations[i].qubits1[j] + 2))
 						this.drawSwap(swapG, x, this.svgItemHeight * (operations[i].qubits2[j] + 2))
+						const max = Math.max(operations[i].qubits1[j], operations[i].qubits2[j])
+						const min = Math.min(operations[i].qubits1[j], operations[i].qubits2[j])
+						swapG.append('rect')
+							.attr('height', this.svgItemHeight * (max - min + 1))
+							.attr('width', 22)
+							.attr('fill', 'transparent')
+							.attr('x', x - 10)
+							.attr('y', this.svgItemHeight * (min + 2) - this.svgItemHeight / 2)
 						this.drawLine(
 							swapG,
 							x,
@@ -739,62 +820,114 @@ export default class d3Draw {
 							x,
 							this.svgItemHeight * (operations[i].qubits2[j] + 2)
 						)
+						swapG.on('mouseover', function (e) {
+							svg.selectAll('.tip').remove()
+							const position = d3.pointer(e)
+							const tipG = svg
+								.append('g')
+								.classed('tip', true)
+								.attr(
+									'transform',
+									`translate(${position[0] + 10},${position[1]})`
+								)
+							tipG.append('rect')
+								.attr('stroke', 'gray')
+								.attr('stroke-width', 1)
+								.attr('height', 26)
+								.attr('width', 38)
+								.attr('fill', '#fff')
+								.attr('rx', 2)
+							const text = tipG
+								.append('text')
+								.attr('fill', '#000')
+								.classed('svgtext', true)
+								.attr('x', 4)
+								.attr('y', 16)
+
+							text.append('tspan').text('swap')
+						})
+						swapG.on('mousemove', function (e) {
+							const position = d3.pointer(e)
+							svg.selectAll('.tip')
+								.attr('transform', `translate(${position[0] + 10},${position[1]})`)
+
+						})
+						swapG.on('mouseleave', function (e) {
+							svg.selectAll('.tip').remove()
+						})
 					}
 					break
 				case 'ccnot':
 					const ccnotG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
 					ccnotG.datum(operation) //绑定数据到dom节点
 					// 判断最大值最小值 向两个极端画线
-					const controlsMin = Math.min(...operations[i].controls)
-					const controlsMax = Math.max(...operations[i].controls)
-
-					if (controlsMax < operations[i].target[0]) {
-						this.drawLine(
-							ccnotG,
-							x,
-							this.svgItemHeight * (operations[i].target[0] + 2),
-							x,
-							this.svgItemHeight * (controlsMin + 2)
-						)
-					}
-					if (controlsMin > operations[i].target[0]) {
-						this.drawLine(
-							ccnotG,
-							x,
-							this.svgItemHeight * (operations[i].target[0] + 2),
-							x,
-							this.svgItemHeight * (controlsMax + 2)
-						)
-					}
-					if (controlsMin < operations[i].target[0] && operations[i].target[0] < controlsMax) {
-						this.drawLine(
-							ccnotG,
-							x,
-							this.svgItemHeight * (operations[i].target[0] + 2),
-							x,
-							this.svgItemHeight * (controlsMax + 2)
-						)
-						this.drawLine(
-							ccnotG,
-							x,
-							this.svgItemHeight * (operations[i].target[0] + 2),
-							x,
-							this.svgItemHeight * (controlsMin + 2)
-						)
-					}
-
+					const controlsMin = Math.min(...operations[i].controls, ...operations[i].target)
+					const controlsMax = Math.max(...operations[i].controls, ...operations[i].target)
+					ccnotG.append('rect')
+						.attr('height', this.svgItemHeight * (controlsMax - controlsMin + 1))
+						.attr('width', 20)
+						.attr('fill', 'transparent')
+						.attr('x', x - 10)
+						.attr('y', this.svgItemHeight * (controlsMin + 2) - this.svgItemHeight / 2)
+					this.drawLine(
+						ccnotG,
+						x,
+						this.svgItemHeight * (controlsMax + 2),
+						x,
+						this.svgItemHeight * (controlsMin + 2)
+					)
 					for (let j = 0; j < operations[i].controls.length; j++) {
 						this.drawCircle(ccnotG, x, this.svgItemHeight * (operations[i].controls[j] + 2))
 					}
 
 					this.drawCcnot(ccnotG, x, this.svgItemHeight * (operations[i].target[0] + 2))
+					ccnotG.on('mouseover', function (e) {
+						svg.selectAll('.tip').remove()
+						const position = d3.pointer(e)
+						const tipG = svg
+							.append('g')
+							.classed('tip', true)
+							.attr(
+								'transform',
+								`translate(${position[0] + 10},${position[1]})`
+							)
+						tipG.append('rect')
+							.attr('stroke', 'gray')
+							.attr('stroke-width', 1)
+							.attr('height', 26)
+							.attr('width', 44)
+							.attr('fill', '#fff')
+							.attr('rx', 2)
+						const text = tipG
+							.append('text')
+							.attr('fill', '#000')
+							.classed('svgtext', true)
+							.attr('x', 4)
+							.attr('y', 16)
+
+						text.append('tspan').text('ccnot')
+					})
+					ccnotG.on('mousemove', function (e) {
+						const position = d3.pointer(e)
+						svg.selectAll('.tip')
+							.attr('transform', `translate(${position[0] + 10},${position[1]})`)
+
+					})
+					ccnotG.on('mouseleave', function (e) {
+						svg.selectAll('.tip').remove()
+					})
 					break
 				case 'ccphase':
 					const ccphaseG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
 					ccphaseG.datum(operation) //绑定数据到dom节点
-
 					const qubitMax = Math.max(...operations[i].qubits)
 					const qubitMin = Math.min(...operations[i].qubits)
+					ccphaseG.append('rect')
+						.attr('height', this.svgItemHeight * (qubitMax - qubitMin + 1))
+						.attr('width', 20)
+						.attr('fill', 'transparent')
+						.attr('x', x - 10)
+						.attr('y', this.svgItemHeight * (qubitMin + 2) - this.svgItemHeight / 2)
 					this.drawLine(
 						ccphaseG,
 						x,
@@ -804,7 +937,51 @@ export default class d3Draw {
 					)
 					for (let j = 0; j < operations[i].qubits.length; j++) {
 						this.drawCCPhase(ccphaseG, x, this.svgItemHeight * (operations[i].qubits[j] + 2))
+
 					}
+					ccphaseG.append('text')
+						.attr('x', x + 2)
+						.attr('y', this.svgItemHeight * (qubitMin + 2) - this.svgItemHeight / 2 + 3)
+						.classed('svgtext', true)
+						.append('tspan')
+						.attr('text-anchor', 'middle')
+						.attr('style', 'font-size:12px;')
+						.text(Math.floor(operations[i].rotation) ? Math.floor(operations[i].rotation) + '°' : '')
+					ccphaseG.on('mouseover', function (e) {
+						svg.selectAll('.tip').remove()
+						const position = d3.pointer(e)
+						const tipG = svg
+							.append('g')
+							.classed('tip', true)
+							.attr(
+								'transform',
+								`translate(${position[0] + 10},${position[1]})`
+							)
+						tipG.append('rect')
+							.attr('stroke', 'gray')
+							.attr('stroke-width', 1)
+							.attr('height', 26)
+							.attr('width', 59)
+							.attr('fill', '#fff')
+							.attr('rx', 2)
+						const text = tipG
+							.append('text')
+							.attr('fill', '#000')
+							.classed('svgtext', true)
+							.attr('x', 4)
+							.attr('y', 16)
+
+						text.append('tspan').text('ccphase')
+					})
+					ccphaseG.on('mousemove', function (e) {
+						const position = d3.pointer(e)
+						svg.selectAll('.tip')
+							.attr('transform', `translate(${position[0] + 10},${position[1]})`)
+
+					})
+					ccphaseG.on('mouseleave', function (e) {
+						svg.selectAll('.tip').remove()
+					})
 					break
 				case 'phase':
 					const phaseG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
@@ -824,15 +1001,43 @@ export default class d3Draw {
 							.attr('text-anchor', 'middle')
 							.attr('style', 'font-size:12px;')
 							.text(Math.floor(operations[i].rotation) + '°')
+						phaseG.on('mouseover', function (e) {
+							svg.selectAll('.tip').remove()
+							const position = d3.pointer(e)
+							const tipG = svg
+								.append('g')
+								.classed('tip', true)
+								.attr(
+									'transform',
+									`translate(${position[0] + 10},${position[1]})`
+								)
+							tipG.append('rect')
+								.attr('stroke', 'gray')
+								.attr('stroke-width', 1)
+								.attr('height', 26)
+								.attr('width', 46)
+								.attr('fill', '#fff')
+								.attr('rx', 2)
+							const text = tipG
+								.append('text')
+								.attr('fill', '#000')
+								.classed('svgtext', true)
+								.attr('x', 4)
+								.attr('y', 16)
+
+							text.append('tspan').text('phase')
+						})
+						phaseG.on('mousemove', function (e) {
+							const position = d3.pointer(e)
+							svg.selectAll('.tip')
+								.attr('transform', `translate(${position[0] + 10},${position[1]})`)
+
+						})
+						phaseG.on('mouseleave', function (e) {
+							svg.selectAll('.tip').remove()
+						})
 					}
-					// const phaseMinQ = Math.min(...operations[i].qubits)
-					// const phaseMaxQ = Math.max(...operations[i].qubits)
-					// this.drawMouseHover(
-					// 	phaseG,
-					// 	x - this.svgItemHeight / 2,
-					// 	this.svgItemHeight * (phaseMinQ + 2) - this.svgItemHeight / 2 - 12,
-					// 	this.svgItemHeight * (phaseMaxQ - phaseMinQ + 1) + 15
-					// )
+
 					break
 				case 'read':
 					// TODO: 需要要一个大G,在写绑定
@@ -849,6 +1054,41 @@ export default class d3Draw {
 					notG.datum(operation) //绑定数据到dom节点
 					for (let j = 0; j < operations[i].qubits.length; j++) {
 						this.drawCcnot(notG, x, this.svgItemHeight * (operations[i].qubits[j] + 2))
+						notG.on('mouseover', function (e) {
+							svg.selectAll('.tip').remove()
+							const position = d3.pointer(e)
+							const tipG = svg
+								.append('g')
+								.classed('tip', true)
+								.attr(
+									'transform',
+									`translate(${position[0] + 10},${position[1]})`
+								)
+							tipG.append('rect')
+								.attr('stroke', 'gray')
+								.attr('stroke-width', 1)
+								.attr('height', 26)
+								.attr('width', 30)
+								.attr('fill', '#fff')
+								.attr('rx', 2)
+							const text = tipG
+								.append('text')
+								.attr('fill', '#000')
+								.classed('svgtext', true)
+								.attr('x', 4)
+								.attr('y', 16)
+
+							text.append('tspan').text('not')
+						})
+						notG.on('mousemove', function (e) {
+							const position = d3.pointer(e)
+							svg.selectAll('.tip')
+								.attr('transform', `translate(${position[0] + 10},${position[1]})`)
+
+						})
+						notG.on('mouseleave', function (e) {
+							svg.selectAll('.tip').remove()
+						})
 					}
 					break
 				case 'ry':
@@ -865,6 +1105,41 @@ export default class d3Draw {
 							.attr('text-anchor', 'middle')
 							.attr('style', 'font-size:12px;')
 							.text(Math.floor(operations[i].rotation) + '°')
+						ryG.on('mouseover', function (e) {
+							svg.selectAll('.tip').remove()
+							const position = d3.pointer(e)
+							const tipG = svg
+								.append('g')
+								.classed('tip', true)
+								.attr(
+									'transform',
+									`translate(${position[0] + 10},${position[1]})`
+								)
+							tipG.append('rect')
+								.attr('stroke', 'gray')
+								.attr('stroke-width', 1)
+								.attr('height', 26)
+								.attr('width', 22)
+								.attr('fill', '#fff')
+								.attr('rx', 2)
+							const text = tipG
+								.append('text')
+								.attr('fill', '#000')
+								.classed('svgtext', true)
+								.attr('x', 4)
+								.attr('y', 16)
+
+							text.append('tspan').text('ry')
+						})
+						ryG.on('mousemove', function (e) {
+							const position = d3.pointer(e)
+							svg.selectAll('.tip')
+								.attr('transform', `translate(${position[0] + 10},${position[1]})`)
+
+						})
+						ryG.on('mouseleave', function (e) {
+							svg.selectAll('.tip').remove()
+						})
 					}
 
 					break
@@ -906,6 +1181,41 @@ export default class d3Draw {
 						.attr('text-anchor', 'middle')
 						.attr('style', 'font-size:12px;')
 						.text(Math.floor(operations[i].rotation) + '°')
+					cryG.on('mouseover', function (e) {
+						svg.selectAll('.tip').remove()
+						const position = d3.pointer(e)
+						const tipG = svg
+							.append('g')
+							.classed('tip', true)
+							.attr(
+								'transform',
+								`translate(${position[0] + 10},${position[1]})`
+							)
+						tipG.append('rect')
+							.attr('stroke', 'gray')
+							.attr('stroke-width', 1)
+							.attr('height', 26)
+							.attr('width', 28)
+							.attr('fill', '#fff')
+							.attr('rx', 2)
+						const text = tipG
+							.append('text')
+							.attr('fill', '#000')
+							.classed('svgtext', true)
+							.attr('x', 4)
+							.attr('y', 16)
+
+						text.append('tspan').text('cry')
+					})
+					cryG.on('mousemove', function (e) {
+						const position = d3.pointer(e)
+						svg.selectAll('.tip')
+							.attr('transform', `translate(${position[0] + 10},${position[1]})`)
+
+					})
+					cryG.on('mouseleave', function (e) {
+						svg.selectAll('.tip').remove()
+					})
 					break
 				default:
 					const defaultG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
@@ -942,6 +1252,42 @@ export default class d3Draw {
 						.attr('text-anchor', 'middle')
 						.attr('style', 'font-size:12px;')
 						.text('self-define')
+					defaultG.on('mouseover', function (e) {
+						svg.selectAll('.tip').remove()
+						const position = d3.pointer(e)
+						const tipG = svg
+							.append('g')
+							.classed('tip', true)
+							.attr(
+								'transform',
+								`translate(${position[0] + 10},${position[1]})`
+							)
+						tipG.append('rect')
+							.attr('stroke', 'gray')
+							.attr('stroke-width', 1)
+							.attr('height', 26)
+							.attr('width', 90)
+							.attr('fill', '#fff')
+							.attr('rx', 2)
+						const text = tipG
+							.append('text')
+							.attr('fill', '#000')
+							.classed('svgtext', true)
+							.attr('x', 4)
+							.attr('y', 16)
+
+						text.append('tspan').text('self-define')
+					})
+					defaultG.on('mousemove', function (e) {
+						const position = d3.pointer(e)
+						svg.selectAll('.tip')
+							.attr('transform', `translate(${position[0] + 10},${position[1]})`)
+
+					})
+					defaultG.on('mouseleave', function (e) {
+						svg.selectAll('.tip').remove()
+					})
+
 					break
 			}
 		}
@@ -1315,7 +1661,7 @@ export default class d3Draw {
 						.classed('svgtext', true)
 						.attr('x', 4)
 						.attr('y', 16)
-					// TODO: prob name
+
 					text.append('tspan').text('probability:' + d.prob.toFixed(2))
 				})
 				.on('mouseleave', function (e, d) {
@@ -1408,7 +1754,7 @@ export default class d3Draw {
 			.attr('class', 'prob_bar')
 			.merge(probBars)
 			.attr('x', (d) => chart.scaleX(d.index) + 1)
-			.attr('y', (d) => chart.scaleY(d.prob)+ 1)
+			.attr('y', (d) => chart.scaleY(d.prob) + 1)
 			.attr('width', chart.scaleX.bandwidth() - 3)
 			.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.prob) - 2)
 			.attr('fill', chart._colors[0])
@@ -1486,9 +1832,9 @@ export default class d3Draw {
 						.attr(
 							'width',
 							bars.data()[bars.data().length - 1].x -
-								bars.data()[0].x +
-								barWidth -
-								barWidth * config.barPadding
+							bars.data()[0].x +
+							barWidth -
+							barWidth * config.barPadding
 						)
 						.attr('x', bars.data()[0].x - config.margins.left - barWidth / 2 + barWidth * config.barPadding)
 						.attr('y', 1)
@@ -1934,10 +2280,10 @@ export default class d3Draw {
 						.attr(
 							'transform',
 							'translate(' +
-								chart.bodyX() +
-								',' +
-								(chart.bodyY() + chart.getBodyHeight() / 2 + zoomHeight) +
-								')'
+							chart.bodyX() +
+							',' +
+							(chart.bodyY() + chart.getBodyHeight() / 2 + zoomHeight) +
+							')'
 						)
 					chart
 						.svg()
@@ -1945,10 +2291,10 @@ export default class d3Draw {
 						.attr(
 							'transform',
 							'translate(' +
-								chart.bodyX() +
-								',' +
-								(chart.bodyY() + chart.getBodyHeight() / 2 - zoomHeight) +
-								')'
+							chart.bodyX() +
+							',' +
+							(chart.bodyY() + chart.getBodyHeight() / 2 - zoomHeight) +
+							')'
 						)
 					// g.selectAll('.tick text')
 					chart.svg().select('.xAxis2 .domain').attr('stroke', '#000')
@@ -1969,10 +2315,10 @@ export default class d3Draw {
 						.attr(
 							'transform',
 							'translate(' +
-								chart.bodyX() +
-								',' +
-								(chart.bodyY() + chart.getBodyHeight() / 2 + zoomHeight) +
-								')'
+							chart.bodyX() +
+							',' +
+							(chart.bodyY() + chart.getBodyHeight() / 2 + zoomHeight) +
+							')'
 						)
 
 					chart
@@ -2119,6 +2465,15 @@ export default class d3Draw {
 			context.moveTo(10, 10)
 			context.lineTo(phaseX, phaseY)
 			childG.append('path').attr('d', context.toString()).attr('stroke', '#000').attr('stroke-width', 1)
+		} else {
+			childG
+			.append('g')
+			.attr('transform', `translate(0,0)`)
+			.append('rect')
+			.attr('width', 20)
+			.attr('height', 20)
+			.attr('fill',this.dCircleColor)
+			
 		}
 		// 浅色块鼠标事件 需要显示图
 
@@ -2138,10 +2493,8 @@ export default class d3Draw {
 					.attr('class', 'show_data_div')
 					.attr(
 						'style',
-						`height:${32 * allKeys.length}px;top:${
-							offsetY ? offsetY - scrollTop + 40 : e.offsetY - scrollTop + 36
-						}px;left:${
-							offsetX ? offsetX + 50 - scrollLeft : e.offsetX - scrollLeft + 10
+						`height:${32 * allKeys.length}px;top:${offsetY ? offsetY - scrollTop + 40 : e.offsetY - scrollTop + 36
+						}px;left:${offsetX ? offsetX + 50 - scrollLeft : e.offsetX - scrollLeft + 10
 						}px;border:1px solid black`
 					)
 				const showDataSVG = showDataDiv
@@ -2287,8 +2640,7 @@ export default class d3Draw {
 				.attr('class', 'show_circle_div')
 				.attr(
 					'style',
-					`height:${64}px;top:${e.offsetY - scrollTop}px;left:${
-						e.offsetX - scrollLeft + 20
+					`height:${64}px;top:${e.offsetY - scrollTop}px;left:${e.offsetX - scrollLeft + 20
 					}px;border:1px solid #ccc`
 				)
 			showCircleDiv.append('p').html(`roation：${scale.toFixed(2)}`)
@@ -2365,8 +2717,7 @@ export default class d3Draw {
 					.attr('class', 'relaed_div')
 					.attr(
 						'style',
-						`top:${e.offsetY - scrollTop + 36}px;left:${e.offsetX - scrollLeft + 10}px;height:${
-							self.dLength * data.length + 10
+						`top:${e.offsetY - scrollTop + 36}px;left:${e.offsetX - scrollLeft + 10}px;height:${self.dLength * data.length + 10
 						}px;width:${self.dLength + 8}px;border:1px solid black`
 					)
 				relaedDiv
@@ -2456,8 +2807,8 @@ export default class d3Draw {
 				svg.attr('width', svgWidth / this.viewBoxWidth)
 				svg.attr('height', svgHeight / this.viewBoxHeight)
 				svg.attr('viewBox', `0,0,${svgWidth},${svgHeight}`)
-				chartSvgDiv.attr('style','display:block;')
-				chartDiv.select('.reduce_icon').attr('src','/icon/reduce_icon.svg')
+				chartSvgDiv.attr('style', 'display:block;')
+				chartDiv.select('.reduce_icon').attr('src', '/icon/reduce_icon.svg')
 				isFull = !isFull
 				isReduce = false
 			} else {
@@ -2466,52 +2817,52 @@ export default class d3Draw {
 				svg.attr('viewBox', null)
 				chartDiv.classed('d_chart_div_full', true)
 				operationDiv.attr('style', 'display:none')
-				chartSvgDiv.attr('style','display:block;')
-				chartDiv.selectAll('.title_icon').attr('style','display:inline-block;')
-				chartDiv.select('.reduce_icon').attr('src','/icon/reduce_icon.svg')
+				chartSvgDiv.attr('style', 'display:block;')
+				chartDiv.selectAll('.title_icon').attr('style', 'display:inline-block;')
+				chartDiv.select('.reduce_icon').attr('src', '/icon/reduce_icon.svg')
 				isShowMore = false
 				isFull = !isFull
 				isReduce = false
 			}
 		}
 		// 缩小
-		const reduceFn = (chartDiv, operationDiv,chartSvgDiv) => {
+		const reduceFn = (chartDiv, operationDiv, chartSvgDiv) => {
 			if (isReduce) {
 				operationDiv.attr('style', 'display:none')
 				isShowMore = false
-				chartSvgDiv.attr('style','display:block;')
-				chartDiv.selectAll('.title_icon').attr('style','display:inline-block;')
+				chartSvgDiv.attr('style', 'display:block;')
+				chartDiv.selectAll('.title_icon').attr('style', 'display:inline-block;')
 				svg.attr('width', svgWidth / this.viewBoxWidth)
 				svg.attr('height', svgHeight / this.viewBoxHeight)
 				svg.attr('viewBox', `0,0,${svgWidth},${svgHeight}`)
-				chartDiv.select('.reduce_icon').attr('src','/icon/reduce_icon.svg')
+				chartDiv.select('.reduce_icon').attr('src', '/icon/reduce_icon.svg')
 				isReduce = !isReduce
 				isFull = false
 			} else {
 				chartDiv.attr('class', null).classed('d_chart_div', true)
 				chartDiv.selectAll('.title_icon').attr('style', 'display:none')
 				operationDiv.attr('style', 'display:none')
-				chartSvgDiv.attr('style','display:none;')
+				chartSvgDiv.attr('style', 'display:none;')
 				isShowMore = false
 				isReduce = !isReduce
 				isFull = false
-				chartDiv.select('.reduce_icon').attr('src','/icon/zhankai_icon.svg')
+				chartDiv.select('.reduce_icon').attr('src', '/icon/zhankai_icon.svg')
 			}
 		}
 		const drawDiv = d3.select('#d_draw_div')
 		// drawDiv.selectAll('*').remove()
 		const chartDiv = drawDiv.append('div').classed('d_chart_div', true)
 		const titleDiv = chartDiv.append('div').classed('d_chart_title', true)
-		titleDiv.append('span').classed('label_name', true).text(`${labelName}`)
+		const labelNameSpan = titleDiv.append('span').classed('label_name', true).text(`${labelName}`)
 		const btnDiv = titleDiv.append('div').classed('btn_group', true)
 		const chartSvgDiv = chartDiv.append('div').classed('chart_svg_div', true)
 		const svg = chartSvgDiv.append('svg').classed('d_chart_svg', true).attr('width', '320').attr('height', '280')
 		// const svg = chartSvgDiv.append('svg').classed('d_chart_svg', true)
 		const operationDiv = btnDiv.append('div').classed('operation_div', true).attr('style', 'display:none;')
-		btnDiv.append('img').attr('src', '/img/legends/yellowCircle.png').attr('width', 15).attr('height', 15).classed('title_icon',true)
-		btnDiv.append('span').text(`${circleNum}`).attr('style', 'font-size:12px;margin-left:5px;').classed('title_icon',true)
-		btnDiv.append('img').attr('src', '/img/legends/chart.png').attr('width', 15).attr('height', 15).classed('title_icon',true)
-		btnDiv.append('span').text(`${inputStateNumber}`).attr('style', 'font-size:12px;margin-left:5px;').classed('title_icon',true)
+		btnDiv.append('img').attr('src', '/img/legends/yellowCircle.png').attr('width', 15).attr('height', 15).classed('title_icon', true)
+		btnDiv.append('span').text(`${circleNum}`).attr('style', 'font-size:12px;margin-left:5px;').classed('title_icon', true)
+		btnDiv.append('img').attr('src', '/img/legends/chart.png').attr('width', 15).attr('height', 15).classed('title_icon', true)
+		btnDiv.append('span').text(`${inputStateNumber}`).attr('style', 'font-size:12px;margin-left:5px;').classed('title_icon', true)
 		btnDiv
 			.append('img')
 			.attr('src', '/icon/more_icon.svg')
@@ -2525,7 +2876,8 @@ export default class d3Draw {
 			.append('img')
 			.attr('src', '/icon/save_icon.svg')
 			.on('click', function () {
-				self.saveFn(chartSvgDiv.html())
+
+				self.saveFn(svg.html(), labelNameSpan.html(), svg.attr('width'), svg.attr('height'))
 			})
 		operationDiv
 			.append('img')
@@ -2538,7 +2890,7 @@ export default class d3Draw {
 			.attr('src', '/icon/reduce_icon.svg')
 			.attr('width', 15)
 			.attr('height', 15)
-			.classed('reduce_icon',true)
+			.classed('reduce_icon', true)
 			.on('click', function () {
 				reduceFn(chartDiv, operationDiv, chartSvgDiv)
 			})
@@ -2550,7 +2902,7 @@ export default class d3Draw {
 		}
 	}
 	// 保存
-	saveFn(elm) {
+	saveFn(elm, labelName, width, height) {
 		const getParentNode = (obj) => {
 			if (!obj.classList.contains('save_draw_div')) {
 				getParentNode(obj.parentNode)
@@ -2566,8 +2918,8 @@ export default class d3Draw {
 		const titleDiv = drawDiv.append('div').classed('save_div_title', true)
 		const btnDiv = titleDiv.append('div').classed('save_btn_group', true)
 		btnDiv.append('img').attr('src', '/icon/delete_icon.svg').on('click', close)
-		titleDiv.append('span').classed('label_name', true).text(`123`)
-		const saveSvg = drawDiv.append('div').classed('save_svg', true)
+		titleDiv.append('span').classed('label_name', true).text(`${labelName}`)
+		const saveSvg = drawDiv.append('div').classed('save_svg', true).append('svg').attr('width', 130).attr('height', 107).attr('viewBox', `0,0,${width},${height}`)
 		saveSvg.html(elm)
 		// d3.select('.save_svg .d_chart_svg').attr('transform', 'translate(0,0) scale(0.1)')
 		// console.log(svg)
@@ -2579,24 +2931,24 @@ export default class d3Draw {
 			tension === 1
 				? ['M', [sx, sy], 'L', [tx, ty], 'V', ty + tdy, 'L', [sx, sy + sdy], 'Z']
 				: [
-						'M',
-						[sx, sy],
-						'C',
-						[(m0 = tension * sx + (1 - tension) * tx), sy],
-						' ',
-						[(m1 = tension * tx + (1 - tension) * sx), ty],
-						' ',
-						[tx, ty],
-						'V',
-						ty + tdy,
-						'C',
-						[m1, ty + tdy],
-						' ',
-						[m0, sy + sdy],
-						' ',
-						[sx, sy + sdy],
-						'Z',
-				  ]
+					'M',
+					[sx, sy],
+					'C',
+					[(m0 = tension * sx + (1 - tension) * tx), sy],
+					' ',
+					[(m1 = tension * tx + (1 - tension) * sx), ty],
+					' ',
+					[tx, ty],
+					'V',
+					ty + tdy,
+					'C',
+					[m1, ty + tdy],
+					' ',
+					[m0, sy + sdy],
+					' ',
+					[sx, sy + sdy],
+					'Z',
+				]
 		).join('')
 	}
 	silkRibbonPathString(sx, sy, tx, ty, tension) {
@@ -2604,23 +2956,23 @@ export default class d3Draw {
 		return (
 			tension == 1
 				? [
-						'M',
-						[sx, sy],
-						'L',
-						[tx, ty],
-						//"Z"
-				  ]
+					'M',
+					[sx, sy],
+					'L',
+					[tx, ty],
+					//"Z"
+				]
 				: [
-						'M',
-						[sx, sy],
-						'C',
-						[(m0 = tension * sx + (1 - tension) * tx), sy],
-						' ',
-						[(m1 = tension * tx + (1 - tension) * sx), ty],
-						' ',
-						[tx, ty],
-						//"Z"
-				  ]
+					'M',
+					[sx, sy],
+					'C',
+					[(m0 = tension * sx + (1 - tension) * tx), sy],
+					' ',
+					[(m1 = tension * tx + (1 - tension) * sx), ty],
+					' ',
+					[tx, ty],
+					//"Z"
+				]
 		).join('')
 	}
 	// 绘制sankey图
@@ -2634,8 +2986,8 @@ export default class d3Draw {
 		}
 
 		const { input_state: inputStateData, output_state: outStateData } = qc.getState(data.id)
-		const { sankey: sankeyData, permute } = qc.transferSankeyOrdered(data.id,  1e-5, false, filter_unused, inputStateData, outStateData)
-		
+		const { sankey: sankeyData, permute } = qc.transferSankeyOrdered(data.id, 1e-5, false, filter_unused, inputStateData, outStateData)
+
 		const inputBases = inputStateData.bases
 		const outBases = outStateData.bases
 		// outBases根据permute排序
@@ -2650,7 +3002,7 @@ export default class d3Draw {
 		const outRelatedGX = outGTransformX + (outStateData.vars.length + 1) * this.dLength
 		// 设置svg的宽高
 		const svgHeight = (outStateData.bases.length + 1) * this.dLength
-		const svgWidth = outRelatedGX + this.dLength * 2 + 100
+		const svgWidth = outRelatedGX + this.dLength * 2 - 10
 		const { svg, chartDiv, chartSvgDiv } = this.drawElement(
 			data.text,
 			data.id,
@@ -2711,7 +3063,7 @@ export default class d3Draw {
 		const inputRelatedG = svg
 			.append('g')
 			.classed('input_related_g', true)
-			.attr('transform', `translate(14,${this.dLength})`)
+			.attr('transform', `translate(14 ,${this.dLength})`)
 		const drawInputRelaedNumG = svg
 			.append('g')
 			.classed('input_related_num', true)
@@ -2825,7 +3177,8 @@ export default class d3Draw {
 				this.dLength * (i + 1) + this.dLength / 2,
 
 				inputGTransformX + this.dLength,
-				this.dLength * (sankeyData[i].from_id + 1) + this.dLength / 2,
+				// this.dLength * (sankeyData[i].from_id + 1) + this.dLength / 2,
+				this.findfromDy(inputBases, sankeyData[i].from_id),
 
 				0.5
 			)
@@ -2837,6 +3190,17 @@ export default class d3Draw {
 		let y = 0
 		for (let i = 0; i < outBases.length; i++) {
 			if (outBases[i].id === id) {
+				y = this.dLength * (i + 1) + this.dLength / 2
+				break
+			}
+		}
+		return y
+	}
+	// 差from_d连线的Y
+	findfromDy(fromBases, id) {
+		let y = 0
+		for (let i = 0; i < fromBases.length; i++) {
+			if (fromBases[i].id === id) {
 				y = this.dLength * (i + 1) + this.dLength / 2
 				break
 			}

@@ -19,6 +19,7 @@
 	color: red;
 }
 #console_div .right_content p {
-    margin-bottom: 10px;
+    margin-bottom: 0px;
+	line-height: 20px;
 	color: rgb(102, 100, 100);
 }
