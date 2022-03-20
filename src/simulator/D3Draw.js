@@ -58,6 +58,8 @@ export default class d3Draw {
 		// D viewBox 和svg宽的比
 		this.viewBoxWidth = 1
 		this.viewBoxHeight = 1
+
+		this.gate_offest = 0
 	}
 	exportD3SVG(data) {
 		const svg = d3.select('#circuit_svg')
@@ -87,9 +89,9 @@ export default class d3Draw {
 					const labelRow = obj.down_qubit - obj.up_qubit
 					this.drawLabel(
 						labelG,
-						this.svgItemWidth * data.labels[i].start_operation + this.labelTranslate,
+						(this.svgItemWidth+this.gate_offest) * data.labels[i].start_operation + this.labelTranslate,
 						this.svgItemHeight * (obj.up_qubit + 1),
-						this.svgItemWidth * lineCol,
+						(this.svgItemWidth+this.gate_offest) * lineCol,
 						this.svgItemHeight * (labelRow + 1),
 						data.labels[i].text,
 						data.labels[i].id
@@ -697,7 +699,7 @@ export default class d3Draw {
 	drawOperations(svg, operations, data) {
 		for (let i = 0; i < operations.length; i++) {
 			let operation = operations[i]
-			const x = this.svgItemWidth * (i + this.scaleNum)
+			const x = (this.svgItemWidth+this.gate_offest) * (i + this.scaleNum)
 			operation.x = x
 			switch (operations[i].operation) {
 				// write操作

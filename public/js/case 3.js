@@ -1,7 +1,4 @@
-// 论文case 1
-// TODO: 优化下variable state点击的速度
-
-// QFT 的case
+// QFT
 
 qc.reset(7);
 
@@ -14,11 +11,6 @@ qc.write(0x0)
 let label = 'genData'
 qc.startlabel(label)
 sender.ry(135, 0x2 | 0x4)
-// provider.ry(135, 0x4)
-
-// TODO: 反着了
-// let initial_state = tensorState(groundState(5), groundState(4, [7, 9]), )
-// qc.setState(initial_state)
 qc.disableDisplay(label)
 qc.endlabel(label)
 
@@ -38,7 +30,6 @@ qc.endlabel(label)
 qc.disableDisplay(label)
 qc.nop()
 
-// 加一个conditional ry
 
 label = 'QFT'
 qc.startlabel(label)
@@ -47,13 +38,6 @@ qc.endlabel(label)
 
 qc.nop()
 
-// label = 'entangle'
-// qc.startlabel(label)
-// qc.cnot(receiver.bits(0x4), ancillary.bits(0x1))
-// qc.endlabel(label)
-
-// qc.nop()
-// qc.nop()
 label = 'A = R>=8'
 qc.startlabel(label)
 qc.cnot(receiver.bits(0x4), ancillary.bits(0x1))
