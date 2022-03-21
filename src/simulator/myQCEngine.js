@@ -1050,27 +1050,70 @@ export default class QCEngine {
 
         }
 
+        return fin_den;
+    }
 
+    _getPartialTraceAlt(qubit_index, operation_index) {
+        let opera = this.operations[operation_index];
+        let state = opera['state_after_opertaion'];
+
+        let bits = 1;
+        let whole_state = this.getWholeState(operation_index);
+        let now_num = 0;
+        let fin_den = undefined;
+        let ran = [qubit_index, qubit_index + 1]
+
+        for (now_num = 0; now_num < Math.pow(2, this.qubit_number - bits); now_num++) {
+            let ids = this._selectedState(now_num, ran);
+
+            let prob = 0;
+            let vecs = [];
+
+            for (let i = 0; i < ids.length; i++) {
+                prob += whole_state['probs'][ids[i]];
+                vecs[i] = complex(state[ids[i]]['amplitude'].re, state[ids[i]]['amplitude'].im);
+            }
+
+            vecs = normalize(vecs)
+            let den = density(vecs);
+
+            if (fin_den == undefined)
+                fin_den = math.multiply(den, prob);
+            else
+                fin_den = math.add(fin_den, math.multiply(den, prob));
+
+        }
 
         return fin_den;
     }
 
-    getEntropy(operation_index, precision = 1e-5) {
+    getEntropy(operation_index, precision = 1e-5, type = 'qubit') {
+        const {name2index, qubit_number} = this;
         let len = 0;
         let ent = 0;
-        let var_index = this.name2index;
-
-        for (let key in var_index) {
-            let den = this._getPartialTrace(key, operation_index);
-            ent += linear_entropy(den);
-            //console.log(key, den, ent);
-            len++;
+        let var_index = name2index;
+        if(type == 'qubit'){
+            for(let i=0; i<qubit_number; i++)
+            {
+                let den = this._getPartialTraceAlt(i, operation_index);
+                ent += linear_entropy(den);
+                len++;
+            }
+        }
+        else{
+            for (let key in var_index) {
+                let den = this._getPartialTrace(key, operation_index);
+                ent += linear_entropy(den);
+                //console.log(key, den, ent);
+                len++;
+            }
         }
 
         if (Math.abs(ent - 0) < precision)
             ent = 0;
         //console.log("entropy",ent);
         return ent / len;
+        
     }
 
     variablePurity(operation_index, variable) {
