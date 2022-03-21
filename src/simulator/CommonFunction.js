@@ -316,9 +316,13 @@ function average(list, index, probs, type = undefined) {
         for (let i = 0; i < index.length; i++) {
             totalprob += probs[index[i]];
         }
-        for (let i = 0; i < index.length; i++) {
-            res += list[index[i]] * probs[index[i]] / totalprob;
+        if(totalprob != 0){
+            for (let i = 0; i < index.length; i++) {
+                res += list[index[i]] * probs[index[i]] / totalprob;
+            }
         }
+        else
+            res = 0;
     }
     return res;
 }
