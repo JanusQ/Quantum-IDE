@@ -97,7 +97,7 @@ ul li {
 
 /* 滚动槽--外层轨道 */
 ::-webkit-scrollbar-track {
-	background: rgba(0,0,0,0.2);
+	background: #eee;
 }
 
 /* 内层轨道（不包含滚动块部分） */
@@ -108,5 +108,5 @@ ul li {
 /* 滚动条滑块 */
 ::-webkit-scrollbar-thumb {
   border-radius: 3px;
-  background: rgba(0,0,0,0.5);
+  background: #ccc;
 }

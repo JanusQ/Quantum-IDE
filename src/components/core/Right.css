@@ -4,20 +4,19 @@
 	width: 100%;
 	background: #fff;
 	cursor: auto;
-	
 }
-#circuit_view .title{
+#circuit_view .title {
 	font-size: 18px;
 	padding: 10px;
 	padding-bottom: 0;
 }
-#circuit_view .circuit_div{
+#circuit_view .circuit_div {
 	height: calc(100% - 40px);
 	width: 100%;
 	overflow: auto;
 	position: relative;
 }
-#circuit_view .line_chart_div{
+#circuit_view .line_chart_div {
 	position: sticky;
 	bottom: -10px;
 }
@@ -59,9 +58,8 @@
 #right_down_div .d_component .title {
 	height: 32px;
 	line-height: 32px;
-	
 }
-#right_down_div .d_component .title .title_name{
+#right_down_div .d_component .title .title_name {
 	float: left;
 }
 #right_down_div .d_component .title .pic_tip {
@@ -74,7 +72,7 @@
 #right_down_div .d_component .title .pic_tip img {
 	vertical-align: middle;
 }
-#right_down_div .d_component .title .pic_tip .tip_text{
+#right_down_div .d_component .title .pic_tip .tip_text {
 	margin-left: 5px;
 }
 #right_down_div .c_component .c_up_draw {
@@ -104,7 +102,18 @@
 }
 .restore_btn {
 	float: right;
+	transition: 0;
+	box-shadow: none;
 }
+.restore_btn::after{
+	display: none;
+}
+.restore_btn:hover,.restore_btn:focus{
+	border-color: #d9d9d9;
+    color: #000;
+	
+}
+
 #d_draw_div {
 	width: 100%;
 	height: calc(100% - 32px);
@@ -172,10 +181,8 @@
 }
 .btn_group .operation_img {
 	cursor: pointer;
-	
-	
 }
-.btn_group img{
+.btn_group img {
 	margin-left: 8px;
 }
 .label_name {
@@ -194,13 +201,31 @@
 	width: 150px;
 	/* height: 198px; */
 	padding: 10px;
-	
 }
-.show_circle_div{
+.show_circle_div {
 	width: auto;
-	
 }
-.show_circle_div p{
+.show_circle_div p {
 	margin: 0;
+}
+#right_div_box .tip_svg {
+	display: inline-block;
+	background: url('../../../public/img/info.png') no-repeat;
+	background-size: 100% 100%;
+	width: 12px;
+	height: 12px;
+	cursor: pointer;
+	vertical-align: middle;
+	margin-left: 5px;
+	position: relative;
+}
+#right_div_box .tip_content {
+	display: block;
+	padding: 8px;
+	border: 1px solid #ccc;
+	position: absolute;
+	left: 15px;
+	font-size: 14px;
+	line-height: 14px;
 	
 }

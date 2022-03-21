@@ -75,3 +75,17 @@
 	height: calc(100% - 22px);
 	overflow: auto;
 }
+#self_definded .tip_svg,.ace_div .tip_svg{
+	display: inline-block;
+	background: url('../../../public/img/info.png') no-repeat;
+	background-size:100% 100% ;
+	width: 14px;
+	height: 14px;
+	cursor: pointer;
+	margin-left: 5px;
+}
+#self_definded .tip_svg{
+	width: 12px;
+	height: 12px;
+	vertical-align: middle;
+}

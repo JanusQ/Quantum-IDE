@@ -3,7 +3,7 @@ import AceEditor from 'react-ace'
 import './Ace.css'
 import 'ace-builds/src-noconflict/mode-javascript'
 import 'ace-builds/src-noconflict/theme-github'
-import { Button, Select, Modal } from 'antd'
+import { Button, Select, Modal,Tooltip } from 'antd'
 import { ZoomInOutlined, ZoomOutOutlined } from '@ant-design/icons'
 import { createFile } from '../../simulator/CommonFunction'
 import QCEngine from '../../simulator/MyQCEngine'
@@ -26,7 +26,19 @@ const Ace = (props) => {
 
 	// 多个选择框
 	const { Option } = Select
-	const optionList = ['case 3', 'case 4',  'case 5','case 1',  'case 2', 'bell_state', 'all gates', 'adding two integers', 'ex7-7', 'ex7-1', 'about:black'] // case的列表，public\js中需要存对应的文件
+	const optionList = [
+		'case 3',
+		'case 4',
+		'case 5',
+		'case 1',
+		'case 2',
+		'bell_state',
+		'all gates',
+		'adding two integers',
+		'ex7-7',
+		'ex7-1',
+		'about:black',
+	] // case的列表，public\js中需要存对应的文件
 	const optionChildren = []
 	for (let i = 0; i < optionList.length; i++) {
 		optionChildren.push(
@@ -79,13 +91,22 @@ const Ace = (props) => {
 	return (
 		<div>
 			<div className='ace_div'>
-				<div className='title'>QuCode</div>
+				<div className='title'>
+					QuCode
+					<Tooltip placement='right' title={'tip'}>
+						<span className='tip_svg'></span>
+					</Tooltip>
+				</div>
 				{/* 操作按钮 */}
 				<div className='ace_operation'>
 					<Button type='primary' onClick={props.runProgram}>
 						Run Program
 					</Button>
-					<Select style={{ width: '30%', marginLeft: '10px' }} onChange={props.selectChange} defaultValue={optionList[0]}>
+					<Select
+						style={{ width: '30%', marginLeft: '10px' }}
+						onChange={props.selectChange}
+						defaultValue={optionList[0]}
+					>
 						{optionChildren}
 					</Select>
 					<Button style={{ marginLeft: '10px' }} onClick={exportFile} className='export_btn'>
@@ -128,7 +149,12 @@ const Ace = (props) => {
 				</Modal>
 			</div>
 			<div id='self_definded'>
-				<div className='title'>Self-defined Gate</div>
+				<div className='title'>
+					Self-defined Gate
+					<Tooltip placement='right' title={'tip'}>
+						<span className='tip_svg'></span>
+					</Tooltip>
+				</div>
 				<div id='self_definded_draw'></div>
 			</div>
 		</div>

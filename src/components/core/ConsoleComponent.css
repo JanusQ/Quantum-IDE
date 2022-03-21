@@ -23,3 +23,13 @@
 	line-height: 20px;
 	color: rgb(102, 100, 100);
 }
+#console_div .tip_svg{
+	display: inline-block;
+	background: url('../../../public/img/info.png') no-repeat;
+	background-size:100% 100% ;
+	width: 12px;
+	height: 12px;
+	cursor: pointer;
+	vertical-align: middle;
+	margin-left: 5px;
+}
