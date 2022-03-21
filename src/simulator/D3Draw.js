@@ -2625,7 +2625,7 @@ export default class d3Draw {
 	}
 	// 绘制sankey图
 	drawSankey(qc, data) {
-		let filter_unused = true //false
+		let filter_unused = false
 
 		const circleData = qc.getEvoMatrix(data.id)
 		let circleDataNum = 0
