@@ -3,13 +3,23 @@
 	height: 361px;
 	width: 100%;
 	background: #fff;
-	overflow: auto;
 	cursor: auto;
+	
 }
 #circuit_view .title{
 	font-size: 18px;
 	padding: 10px;
 	padding-bottom: 0;
+}
+#circuit_view .circuit_div{
+	height: calc(100% - 40px);
+	width: 100%;
+	overflow: auto;
+	position: relative;
+}
+#circuit_view .line_chart_div{
+	position: sticky;
+	bottom: -10px;
 }
 .svgtext {
 	user-select: none;
