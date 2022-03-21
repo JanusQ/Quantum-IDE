@@ -651,38 +651,35 @@ export default class QCEngine {
     }
 
     apply(gate_name, qubits) {
-        let ops = name2gate[gate_name];
-        if (ops == undefined) {
-            console.error("gatename is not saved:", gate_name);
-            debugger
-        }
-        for (let i = 0; i < ops.length; i++) {
-            let opera = ops[i];
-            let op_name = opera['operation']
-            let inv_qubit;
-            if (op_name == 'h') {
-                //remap(qubits)
-                this.had(qubits)
-            }
-            else if (op_name == 'phase') {
+        // let ops = name2gate[gate_name];
+        // if (ops == undefined) {
+        //     console.error("gatename is not saved:", gate_name);
+        //     debugger
+        // }
+        // for (let i = 0; i < ops.length; i++) {
+        //     let opera = ops[i];
+        //     let op_name = opera['operation']
+        //     let inv_qubit;
+        //     if (op_name == 'h') {
+        //         //remap(qubits)
+        //         this.had(qubits)
+        //     }
+        //     else if (op_name == 'phase') {
 
-            }
-            else if (op_name == 'not') {
+        //     }
+        //     else if (op_name == 'not') {
 
-            }
-            else if (op_name == '')
-
-
-                this._addGate({
-                    'qubits': qubits,
-                    'operation': gate_name,
-                    'columns': this.nextColumn()
-                })
-
-        }
+        //     }
+        //     else if (op_name == '')
 
 
+        //         this._addGate({
+        //             'qubits': qubits,
+        //             'operation': gate_name,
+        //             'columns': this.nextColumn()
+        //         })
 
+        // }
     }
 
 
