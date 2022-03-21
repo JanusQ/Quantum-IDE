@@ -7,13 +7,20 @@ const Right = () => {
 		<div id='right_div_box'>
 			<div id='circuit_view'>
 				<div className='title'>Circuit</div>
-				<svg id='circuit_svg'>
-					<g id='circuit_label' />
-					<g id='circuit_brush' />
-					<g id='circuit_graph' />
-					<g id='lineChart_graph' />
-					{/* 下面的在前面 */}
-				</svg>
+				<div className='circuit_div'>
+					<svg id='circuit_svg'>
+						<g id='circuit_label' />
+						<g id='circuit_brush' />
+						<g id='circuit_graph' />
+
+						{/* 下面的在前面 */}
+					</svg>
+					<div className='line_chart_div'>
+						<svg id='line_chart_svg'>
+							<g id='lineChart_graph'></g>
+						</svg>
+					</div>
+				</div>
 			</div>
 			<div id='right_down_div'>
 				<div className='scroll_div'>
@@ -37,9 +44,7 @@ const Right = () => {
 								<span className='tip_text'>idle transformation</span>
 							</div>
 						</div>
-						<div id='d_draw_div'>
-							
-						</div>
+						<div id='d_draw_div'></div>
 					</div>
 				</div>
 				<div className='c_component'>
