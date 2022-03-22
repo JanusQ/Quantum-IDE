@@ -1464,9 +1464,9 @@ export default class d3Draw {
 						.append('foreignObject')
 						.attr('width', 24)
 						.attr('height', 24)
-						.attr('transform', 'scale(0.8)')
-						.attr('x', t.innerHTML.length > 1 ? -11 : -7)
-						.attr('y', 6)
+						.attr('transform', 'scale(0.9)')
+						.attr('x', t.innerHTML.length > 1 ? -10 : -8)
+						.attr('y', 5)
 						.append('xhtml:div')
 						.attr('height', '100%')
 						.attr('width', '100%')
@@ -1735,31 +1735,25 @@ export default class d3Draw {
 
 		phaseBars.exit().remove()
 		// 绘制最高的值
-		// const maxNumber = d3.max([...data.map((d) => d.magn), ...data.map((d) => d.prob)])
-		const magnProbMaxdata = []
+		let upTextIndex = 0
+
+		const upMaxNumber = d3.max([...data.map((d) => d.magn), ...data.map((d) => d.prob)])
+		let bar_texts = chart.body().selectAll('.bar_text').data([upMaxNumber])
 		for (let i = 0; i < data.length; i++) {
-			if (data[i].magn >= data[i].prob) {
-				magnProbMaxdata.push(data[i].magn)
-			} else {
-				magnProbMaxdata.push(data[i].prob)
+			if (data[i].magn === upMaxNumber || data[i].prob === upMaxNumber) {
+				upTextIndex = data[i].index
+				break
 			}
 		}
-		let bar_texts = chart.body().selectAll('.bar_text').data(magnProbMaxdata)
-		// for (let i = 0; i < data.length; i++) {
-		// 	if (data[i].magn === maxNumber || data[i].prob === maxNumber) {
-		// 		textIndex = data[i].index
-		// 		break
-		// 	}
-		// }
 		bar_texts
 			.enter()
 			.append('text')
 			.attr('class', 'bar_text')
 			.merge(bar_texts)
-			.attr('x', (d, index) => (chart.scaleX(index) + 8) / 0.8)
+			.attr('x', (chart.scaleX(upTextIndex) + 8) / 0.8)
 			.attr('y', (d) => (chart.scaleY(d) - 2) / 0.8)
 			.attr('text-anchor', 'middle')
-			.text((d) => Math.floor(d * 100) / 100)
+			.text(Math.floor(upMaxNumber * 100) / 100)
 			.classed('svgtext', true)
 			.attr('style', 'font-size:12px;')
 			.attr('transform', 'scale(0.8)')
@@ -1767,37 +1761,40 @@ export default class d3Draw {
 		bar_texts.exit().remove()
 
 		// 绘制phase的值
-		const phaseData = []
-		for (let i = 0; i < data.length; i++) {
-
-			if(data[i].phase){
-
-				phaseData.push(data[i].phase)
-			}else{
-				phaseData.push(0)
-			}
-		}
-	
-		let bar_texts2 = chart.body().selectAll('.bar_text2').data(phaseData)
+		let downTextIndex = 0
+		// const phaseData = []
 		// for (let i = 0; i < data.length; i++) {
-		// 	if (data[i].magn === maxNumber || data[i].prob === maxNumber) {
-		// 		textIndex = data[i].index
-		// 		break
+
+		// 	if(data[i].phase){
+
+		// 		phaseData.push(data[i].phase)
+		// 	}else{
+		// 		phaseData.push(0)
 		// 	}
 		// }
-		bar_texts2
-			.enter()
-			.append('text')
-			.attr('class', 'bar_text')
-			.merge(bar_texts2)
-			.attr('x', (d, index) => (chart.scaleX(index) + 8) / 0.8)
-			.attr('y', (d) => (chart.getBodyHeight() / 2 + chart.scalePhaseY(d) + 32) / 0.8)
-			.attr('text-anchor', 'middle')
-			.text((d) => Math.floor(d * 100) / 100)
-			.classed('svgtext', true)
-			.attr('style', 'font-size:12px;')
-			.attr('transform', 'scale(0.8)')
-		bar_texts2.exit().remove()
+		const downMaxNumber = d3.max([...data.map((d) => d.phase)])
+		if (downMaxNumber) {
+			let bar_texts2 = chart.body().selectAll('.bar_text2').data([downMaxNumber])
+			for (let i = 0; i < data.length; i++) {
+				if (data[i].phase === downMaxNumber) {
+					downTextIndex = data[i].index
+					break
+				}
+			}
+			bar_texts2
+				.enter()
+				.append('text')
+				.attr('class', 'bar_text')
+				.merge(bar_texts2)
+				.attr('x', (chart.scaleX(downTextIndex) + 8) / 0.8)
+				.attr('y', (d) => (chart.getBodyHeight() / 2 + chart.scalePhaseY(d) + 32) / 0.8)
+				.attr('text-anchor', 'middle')
+				.text(Math.floor(downMaxNumber * 100) / 100)
+				.classed('svgtext', true)
+				.attr('style', 'font-size:12px;')
+				.attr('transform', 'scale(0.8)')
+			bar_texts2.exit().remove()
+		}
 	}
 	// c视图框选
 	chartBrushFn(svg, barWidth, config, index, qc, key, chart) {
@@ -2047,8 +2044,8 @@ export default class d3Draw {
 				.attr('width', chart.scaleX.bandwidth())
 				.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.magns))
 				.attr('fill', 'transparent')
-				.attr('stroke','#000')
-				.attr('stroke-width',1)
+				.attr('stroke', '#000')
+				.attr('stroke-width', 0.5)
 			bars.exit().remove()
 		}
 		chart.renderProbsBars = function () {
@@ -2337,13 +2334,13 @@ export default class d3Draw {
 					chart
 						.svg()
 						.selectAll('.magns_bar')
-						.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.magns))
+						.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.magns) - 1)
 						.attr('y', (d) => chart.scaleY(d.magns) - 1 - zoomHeight)
-
+						.attr('stroke-width', 1)
 					chart
 						.svg()
 						.selectAll('.probs_bar')
-						.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.probs))
+						.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.probs) - 1)
 						.attr('y', (d) => chart.scaleY(d.probs) - 1 - zoomHeight)
 
 					chart
@@ -2384,6 +2381,7 @@ export default class d3Draw {
 						.svg()
 						.selectAll('.magnYAxis')
 						.attr('transform', 'translate(' + chart.bodyX() + ',' + newY + ')')
+
 					chart
 						.svg()
 						.selectAll('.phaseYAxis')
@@ -2396,6 +2394,7 @@ export default class d3Draw {
 						.selectAll('.magns_bar')
 						.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.magns))
 						.attr('y', (d) => chart.scaleY(d.magns) - 1)
+						.attr('stroke-width', 0.5)
 					chart
 						.svg()
 						.selectAll('.probs_bar')
@@ -2608,19 +2607,30 @@ export default class d3Draw {
 				.classed('d_item', true)
 		}
 		if (arcDeg) {
-			arcR = (arcR * this.dLength) / 2 - 2
+			const arcRealR = (arcR * this.dLength) / 2 - 2
 			const data = { startAngle: 0, endAngle: (Math.PI * arcDeg) / 180 }
-			const acrPath = d3.arc().innerRadius(0).outerRadius(arcR)
+			const acrPath = d3.arc().innerRadius(0).outerRadius(arcRealR)
 			childG.append('path').attr('d', acrPath(data)).attr('fill', color).attr('transform', 'translate(13,13)')
 			// 用浅色圆填充剩余的部分
 			const opacityCircleR = { startAngle: (Math.PI * arcDeg) / 180, endAngle: (Math.PI * 360) / 180 }
-			const circlePath = d3.arc().innerRadius(0).outerRadius(arcR)
+			const circlePath = d3.arc().innerRadius(0).outerRadius(arcRealR)
 			childG
 				.append('path')
 				.attr('d', circlePath(opacityCircleR))
 				.attr('fill', color)
 				.attr('transform', 'translate(13,13)')
 				.attr('opacity', this.dCircleColorOpacity)
+			if (arcR < 1) {
+				const borderCircleR = { startAngle: (Math.PI * (arcDeg - 1)) / 180, endAngle: (Math.PI * arcDeg) / 180}
+				const borderPath = d3.arc().innerRadius(0).outerRadius((this.dLength) / 2 - 2)
+				childG
+					.append('path')
+					.attr('d', borderPath(borderCircleR))
+					.attr('fill', 'rgba(142, 132, 112,0.5)')
+					.attr('transform', 'translate(13,13)')
+					// .attr('stroke','rgba(142, 132, 112,0.5)')
+					// .attr('stroke-width',1)
+			}
 		} else if (!arcDeg && arcR) {
 			arcR = (arcR * this.dLength) / 2 - 2
 			const context = d3.path()
@@ -2703,7 +2713,7 @@ export default class d3Draw {
 		return parentG
 	}
 	// 绘制浅色块text
-	drawRelaedNum(svg, x, y, data, textX, chartDiv, chartSvgDiv) {
+	drawRelaedNum(svg, x, y, data, textX, chartDiv, chartSvgDiv,textY) {
 		data = data.slice(1, data.length)
 		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`).classed('d_item', true)
 		parentG.append('rect').attr('width', this.dLength).attr('height', 14).attr('fill', 'none')
@@ -2714,7 +2724,7 @@ export default class d3Draw {
 			.text(`${data.length}+`)
 			.attr('style', 'font-size:12px;')
 			.classed('svgtext', true)
-			.attr('transform', `translate(${textX}, 14) scale(0.8)`)
+			.attr('transform', `translate(${textX}, ${textY})`)
 			.on('mouseover', function (e) {
 				const scrollLeft = chartSvgDiv._groups[0][0].scrollLeft
 				const scrollTop = chartSvgDiv._groups[0][0].scrollTop
@@ -3137,7 +3147,8 @@ export default class d3Draw {
 					inputBases[j].related_bases,
 					0,
 					chartDiv,
-					chartSvgDiv
+					chartSvgDiv,
+					17
 				)
 			}
 		}
@@ -3198,7 +3209,8 @@ export default class d3Draw {
 					outBases[j].related_bases,
 					0,
 					chartDiv,
-					chartSvgDiv
+					chartSvgDiv,
+					17
 				)
 			}
 		}
@@ -3369,7 +3381,8 @@ export default class d3Draw {
 					outStateData.bases[j].related_bases,
 					0,
 					chartDiv,
-					chartSvgDiv
+					chartSvgDiv,
+					17
 				)
 			}
 		}
@@ -3432,9 +3445,10 @@ export default class d3Draw {
 						this.dLength * j,
 						0,
 						inputStateData.bases[j].related_bases,
-						10,
+						7,
 						chartDiv,
-						chartSvgDiv
+						chartSvgDiv,
+						14
 					)
 				}
 			}
@@ -3450,7 +3464,7 @@ export default class d3Draw {
 		}
 		for (let i = 0; i < labels.length; i++) {
 			if (qc.canShow(labels[i].id)) {
-				if (qc.isSparse(labels[i].id)) {
+				if (false) {
 					this.drawSankey(qc, labels[i])
 				} else {
 					this.drawMatrix(qc, labels[i])
