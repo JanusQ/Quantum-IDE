@@ -1,12 +1,17 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import './Right.css'
-import { Button } from 'antd'
+import { Button, Tooltip } from 'antd'
 import { restore } from '../../simulator/CommonFunction'
 const Right = () => {
 	return (
 		<div id='right_div_box'>
 			<div id='circuit_view'>
-				<div className='title'>Circuit</div>
+				<div className='title'>
+					Circuit
+					<Tooltip placement='right' title={'tip'}>
+						<span className='tip_svg'></span>
+					</Tooltip>
+				</div>
 				<div className='circuit_div'>
 					<svg id='circuit_svg'>
 						<g id='circuit_label' />
@@ -26,7 +31,12 @@ const Right = () => {
 				<div className='scroll_div'>
 					<div className='d_component'>
 						<div className='title'>
-							<span className='title_name'>Evolution</span>
+							<span className='title_name'>
+								Evolution
+								<Tooltip placement='right' title={'tip'}>
+									<span className='tip_svg'></span>
+								</Tooltip>
+							</span>
 							<div className='pic_tip'>
 								<img src='/img/legends/subbase.png' />
 								<span className='tip_text'>subbase</span>
@@ -49,7 +59,12 @@ const Right = () => {
 				</div>
 				<div className='c_component'>
 					<div className='title'>
-						<span className='title_name'>Variable State</span>
+						<span className='title_name'>
+							Variable State
+							<Tooltip placement='right' title={'tip'}>
+								<span className='tip_svg'></span>
+							</Tooltip>
+						</span>
 						<Button className='export_btn restore_btn' onClick={restore}>
 							restore filter
 						</Button>
@@ -58,7 +73,12 @@ const Right = () => {
 						<svg id='chart_svg'></svg>
 					</div>
 					<div className='title'>
-						<span className='title_name'>System State</span>
+						<span className='title_name'>
+							System State
+							<Tooltip placement='right' title={'tip'}>
+								<span className='tip_svg'></span>
+							</Tooltip>
+						</span>
 					</div>
 					<div className='c_down_draw'>
 						<svg id='chart_down_svg'></svg>
