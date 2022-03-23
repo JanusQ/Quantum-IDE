@@ -3,7 +3,8 @@ import AceEditor from 'react-ace'
 import './Ace.css'
 import 'ace-builds/src-noconflict/mode-javascript'
 import 'ace-builds/src-noconflict/theme-github'
-import { Button, Select, Modal,Tooltip } from 'antd'
+import "ace-builds/src-min-noconflict/ext-language_tools";
+import { Button, Select, Modal, Tooltip } from 'antd'
 import { ZoomInOutlined, ZoomOutOutlined } from '@ant-design/icons'
 import { createFile } from '../../simulator/CommonFunction'
 import QCEngine from '../../simulator/MyQCEngine'
@@ -139,6 +140,7 @@ const Ace = (props) => {
 					highlightActiveLine={false}
 					setOptions={{
 						wrap: true,
+						enableLiveAutocompletion:true
 					}}
 				/>
 				{/* 导出弹框 */}

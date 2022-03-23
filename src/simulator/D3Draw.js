@@ -261,7 +261,7 @@ export default class d3Draw {
 			.attr('width', 20)
 			.attr('height', 20)
 			.attr('fill', 'none')
-			.attr('stroke', '#000')
+			.attr('stroke', '#fff')
 			.attr('stroke-width', 1)
 			.classed('operation_item', true)
 		const childG = parentG.append('g')
@@ -2484,7 +2484,13 @@ export default class d3Draw {
 			const self = this
 			data.probability = Math.pow(data.magnitude.toFixed(1), 2)
 			const allKeys = [...Object.keys(data), ...Object.keys(data.var2value)].filter(
-				(item) => item !== 'var2value' && item !== 'range' && item !== 'ratio'
+				(item) =>
+					item !== 'var2value' &&
+					item !== 'range' &&
+					item !== 'ratio' &&
+					item !== 'related_bases' &&
+					item !== 'id' &&
+					item !== 'max_base_magn'
 			)
 			childG.on('mouseover', function (e) {
 				const scrollLeft = chartSvgDiv._groups[0][0].scrollLeft
@@ -2496,18 +2502,18 @@ export default class d3Draw {
 					.attr('class', 'show_data_div')
 					.attr(
 						'style',
-						`height:${32 * allKeys.length}px;top:${
+						`height:${32 * (allKeys / 2).length}px;top:${
 							offsetY ? offsetY - scrollTop + 40 : e.offsetY - scrollTop + 36
 						}px;left:${
 							offsetX ? offsetX + 50 - scrollLeft : e.offsetX - scrollLeft + 10
 						}px;border:1px solid black`
 					)
-				const showDataSVG = showDataDiv
-					.append('svg')
-					.classed('relaed_svg', true)
-					.attr('width', '100%')
-					.attr('height', '100%')
-				self.drawShowData(showDataSVG, data)
+				// const showDataSVG = showDataDiv
+				// 	.append('svg')
+				// 	.classed('relaed_svg', true)
+				// 	.attr('width', '100%')
+				// 	.attr('height', '100%')
+				self.drawShowData(showDataDiv, data)
 			})
 			childG.on('mouseleave', function (e) {
 				chartDiv.selectAll('.show_data_div').remove()
@@ -2516,59 +2522,30 @@ export default class d3Draw {
 		return parentG
 	}
 	// 绘制浅色块显示的条形
-	drawShowData(svg, data) {
-		const keys = Object.keys(data.var2value)
-		const allKeys = Object.keys(data).filter((item) => item !== 'range' && item !== 'var2value' && item !== 'ratio')
-		const arr = []
-
-		svg.append('line')
-			.attr('x1', 111)
-			.attr('x2', 111)
-			.attr('y1', 6)
-			// 32 * key.length - 6 * keys.length
-			.attr('y2', 26 * keys.length)
-			.attr('stroke-width', 2)
-			.attr('stroke', '#000')
-			.attr('stroke-dasharray', '5,5')
-
-		for (let i = 0; i < keys.length; i++) {
-			const parentG = svg.append('g').attr('transform', `translate(0, ${26 * i})`)
-			parentG.append('rect').attr('width', 120).attr('height', 32).attr('fill', 'none')
-			const childG = parentG.append('g')
-			const text = childG
-				.append('text')
-				.text(`${keys[i]}`)
-				.attr('style', 'font-size:12px;')
-				.classed('svgtext', true)
-				.attr('x', 0)
-				.attr('y', 19)
-			childG
-				.append('rect')
-				.attr('width', 90 * (data.var2value[keys[i]] / data.range[keys[i]]))
-				.attr('height', 20)
-				.attr('x', 20)
-				.attr('y', 6)
-				.attr('fill', this.dBarColor)
-
-			childG
-				.append('text')
-				.text(`${data.var2value[keys[i]]}`)
-				.attr('style', 'font-size:12px;')
-				.classed('svgtext', true)
-				.attr('x', 22 + 90 * (data.var2value[keys[i]] / data.range[keys[i]]))
-				.attr('y', 19)
+	drawShowData(showDataDiv, data) {
+		// const keys = Object.keys(data.var2value)
+		// const allKeys = Object.keys(data).filter((item) =>)
+		// const arr = []
+		for (const key in data.var2value) {
+			showDataDiv
+				.append('span')
+				.text(`${key}:${Math.floor(data.var2value[key] * 100) / 100}`)
+				.classed('show_data_div_span', true)
 		}
-		for (let i = 0; i < allKeys.length; i++) {
-			const parentG = svg.append('g').attr('transform', `translate(0, ${26 * i + 26 * keys.length})`)
-			parentG.append('rect').attr('width', 120).attr('height', 32).attr('fill', 'none')
-			const childG = parentG.append('g')
-			const text = childG
-				.append('text')
-				.text(`${allKeys[i]}:${data[allKeys[i]].toFixed(1)}`)
-				.attr('style', 'font-size:12px;')
-				.classed('svgtext', true)
-				.attr('x', 0)
-				.attr('y', 19)
+		for (const key in data) {
+			if (
+				key !== 'range' &&
+				key !== 'var2value' &&
+				key !== 'ratio' &&
+				key !== 'related_bases' &&
+				key !== 'id' &&
+				key !== 'max_base_magn'
+			) {
+				showDataDiv
+					.append('span')
+					.text(`${key}:${Math.floor(data[key] * 100) / 100}`)
+					.classed('show_data_div_span', true)
+			}
 		}
 	}
 	// 绘制D circle
@@ -2621,15 +2598,18 @@ export default class d3Draw {
 				.attr('transform', 'translate(13,13)')
 				.attr('opacity', this.dCircleColorOpacity)
 			if (arcR < 1) {
-				const borderCircleR = { startAngle: (Math.PI * (arcDeg - 1)) / 180, endAngle: (Math.PI * arcDeg) / 180}
-				const borderPath = d3.arc().innerRadius(0).outerRadius((this.dLength) / 2 - 2)
+				const borderCircleR = { startAngle: (Math.PI * (arcDeg - 1)) / 180, endAngle: (Math.PI * arcDeg) / 180 }
+				const borderPath = d3
+					.arc()
+					.innerRadius(0)
+					.outerRadius(this.dLength / 2 - 2)
 				childG
 					.append('path')
 					.attr('d', borderPath(borderCircleR))
 					.attr('fill', 'rgba(142, 132, 112,0.5)')
 					.attr('transform', 'translate(13,13)')
-					// .attr('stroke','rgba(142, 132, 112,0.5)')
-					// .attr('stroke-width',1)
+				// .attr('stroke','rgba(142, 132, 112,0.5)')
+				// .attr('stroke-width',1)
 			}
 		} else if (!arcDeg && arcR) {
 			arcR = (arcR * this.dLength) / 2 - 2
@@ -2713,7 +2693,7 @@ export default class d3Draw {
 		return parentG
 	}
 	// 绘制浅色块text
-	drawRelaedNum(svg, x, y, data, textX, chartDiv, chartSvgDiv,textY) {
+	drawRelaedNum(svg, x, y, data, textX, chartDiv, chartSvgDiv, textY) {
 		data = data.slice(1, data.length)
 		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`).classed('d_item', true)
 		parentG.append('rect').attr('width', this.dLength).attr('height', 14).attr('fill', 'none')
@@ -2735,7 +2715,7 @@ export default class d3Draw {
 					.attr(
 						'style',
 						`top:${e.offsetY - scrollTop + 36}px;left:${e.offsetX - scrollLeft + 10}px;height:${
-							self.dLength * data.length + 10
+							self.dLength * data.length + 17
 						}px;width:${self.dLength + 8}px;border:1px solid black`
 					)
 				relaedDiv
@@ -3120,7 +3100,18 @@ export default class d3Draw {
 			.classed('input_related_num', true)
 			.attr('transform', `translate(0,${this.dLength})`)
 		for (let j = 0; j < inputBases.length; j++) {
-			this.drawDinput(inputG, 0, this.dLength * j, inputBases[j].ratio, inputBases[j].phases, 'rgb(80, 128, 132)')
+			this.drawDinput(
+				inputG,
+				0,
+				this.dLength * j,
+				inputBases[j].ratio,
+				inputBases[j].phases,
+				'rgb(80, 128, 132)',
+				!!inputBases[j].ratio,
+				inputBases[j],
+				chartDiv,
+				chartSvgDiv
+			)
 			const number = 0
 			for (let k = 0; k < inputBases[j].related_bases.length; k++) {
 				if (k === 0) {
@@ -3183,7 +3174,18 @@ export default class d3Draw {
 			.classed('input_related_num', true)
 			.attr('transform', `translate(${outRelatedGX + this.dLength},${this.dLength})`)
 		for (let j = 0; j < outBases.length; j++) {
-			this.drawDinput(outG, 0, this.dLength * j, outBases[j].ratio, outBases[j].phases, 'rgb(80, 128, 132)')
+			this.drawDinput(
+				outG,
+				0,
+				this.dLength * j,
+				outBases[j].ratio,
+				outBases[j].phases,
+				'rgb(80, 128, 132)',
+				!!outBases[j].ratio,
+				outBases[j],
+				chartDiv,
+				chartSvgDiv
+			)
 			for (let k = 0; k < outBases[j].related_bases.length; k++) {
 				if (k === 0) {
 					// 只绘一个 然后显示几个 开发时候是全传入了
@@ -3354,7 +3356,11 @@ export default class d3Draw {
 				this.dLength * j,
 				outStateData.bases[j].ratio,
 				outStateData.bases[j].phases,
-				'rgb(80, 128, 132)'
+				'rgb(80, 128, 132)',
+				!!outStateData.bases[j].ratio,
+				outStateData.bases[j],
+				chartDiv,
+				chartSvgDiv
 			)
 			for (let k = 0; k < outStateData.bases[j].related_bases.length; k++) {
 				if (k === 0) {
@@ -3418,7 +3424,11 @@ export default class d3Draw {
 				0,
 				inputStateData.bases[j].ratio,
 				inputStateData.bases[j].phases,
-				'rgb(80, 128, 132)'
+				'rgb(80, 128, 132)',
+				!!inputStateData.bases[j].ratio,
+				inputStateData.bases[j],
+				chartDiv,
+				chartSvgDiv
 			)
 			// 绘制浅色块
 			if (inputStateData.bases[j].related_bases.length) {
@@ -3464,7 +3474,7 @@ export default class d3Draw {
 		}
 		for (let i = 0; i < labels.length; i++) {
 			if (qc.canShow(labels[i].id)) {
-				if (false) {
+				if (qc.isSparse(labels[i].id)) {
 					this.drawSankey(qc, labels[i])
 				} else {
 					this.drawMatrix(qc, labels[i])
