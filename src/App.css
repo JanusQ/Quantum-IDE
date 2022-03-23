@@ -14,9 +14,9 @@ img{
 	display: inline-block;
 }
 .App {
-	width: 1920px;
+	width: 1914px;
 	padding: 8px;
-	background: #f5f5f5;
+	background: #000;
 	display: flex;
 	font-family: 'Ubuntu-R';
 	position: relative;
@@ -35,7 +35,7 @@ img{
 	z-index: 999;
 }
 .App .right-div {
-	width: 1316px;
+	width: 1310px;
 	flex-shrink: 0;
 }
 .App .left-div {
@@ -91,13 +91,13 @@ ul li {
 }
 /* 设置滚动条整体部分的样式 */ 
 ::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 6px;
+  height: 6px;
 }
 
 /* 滚动槽--外层轨道 */
 ::-webkit-scrollbar-track {
-	background: #eee;
+	background: none;
 }
 
 /* 内层轨道（不包含滚动块部分） */
@@ -108,5 +108,5 @@ ul li {
 /* 滚动条滑块 */
 ::-webkit-scrollbar-thumb {
   border-radius: 3px;
-  background: #ccc;
+  background: #ECECEC;
 }
