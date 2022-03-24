@@ -3,29 +3,29 @@
 // conditional 
 
 // Initialize
-var num_qubits = 6;
+var num_qubits = 5;
 qc.reset(num_qubits);
 
-var a = qint.new(3, 'a');
+var a = qint.new(2, 'a');
 var b = qint.new(1, 'b');
 var c = qint.new(2, 'c');
 
 
-b.write(0x1);
-a.write(0x1);
+b.write(0x0);
+a.write(0x0);
 // b.hadamard();
 b.ry(60)
-a.ry(30, 0x2);
-a.phase(45, 0x2);
+a.ry(30, 0x1);
+// a.phase(45, 0x2);
 
 c.ry(60, 0x3);
 
 qc.nop();
 qc.nop();
 
-qc.startlabel('if (b == 1) then a+=3');
-a.add(2, b.bits(0x1));
-qc.endlabel('if (b == 1) then a+=3');
+qc.startlabel('if (b == 1) then a+=1');
+a.add(1, b.bits(0x1));
+qc.endlabel('if (b == 1) then a+=1');
 
 qc.nop();
 

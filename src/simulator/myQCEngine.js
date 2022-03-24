@@ -1669,6 +1669,7 @@ export default class QCEngine {
         // console.log("label_id", label_id);
         // console.log(this.labels);
         // return false;
+        // return true;
         let matrix = this.getEvoMatrix(label_id);
         let count = 0;
         for (let i = 0; i < matrix.length; i++) {
