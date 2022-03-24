@@ -2651,6 +2651,7 @@ export default class d3Draw {
 				.classed('d_item', true)
 		}
 		if (arcDeg) {
+			
 			const arcRealR = (arcR * this.dLength) / 2 - 2
 			const data = { startAngle: 0, endAngle: (Math.PI * arcDeg) / 180 }
 			const acrPath = d3.arc().innerRadius(0).outerRadius(arcRealR)
@@ -2664,7 +2665,7 @@ export default class d3Draw {
 				.attr('fill', color)
 				.attr('transform', 'translate(13,13)')
 				.attr('opacity', this.dCircleColorOpacity)
-			if (arcR < 1) {
+			if (arcR < 1 && arcR > 0) {
 				const borderCircleR = { startAngle: (Math.PI * (arcDeg - 1)) / 180, endAngle: (Math.PI * arcDeg) / 180 }
 				const borderPath = d3
 					.arc()
@@ -2673,7 +2674,7 @@ export default class d3Draw {
 				childG
 					.append('path')
 					.attr('d', borderPath(borderCircleR))
-					.attr('fill', 'rgba(142, 132, 112,0.5)')
+					.attr('fill', color)
 					.attr('transform', 'translate(13,13)')
 				// .attr('stroke','rgba(142, 132, 112,0.5)')
 				// .attr('stroke-width',1)
@@ -2682,7 +2683,7 @@ export default class d3Draw {
 			arcR = (arcR * this.dLength) / 2 - 2
 			const context = d3.path()
 			context.moveTo(circleR, circleR)
-			context.lineTo(circleR, circleR - arcR)
+			context.lineTo(circleR,  2)
 			childG.append('path').attr('d', context.toString()).attr('stroke', color).attr('stroke-width', 1)
 			const opacityCircleR = { startAngle: 0, endAngle: (Math.PI * 360) / 180 }
 			const circlePath = d3.arc().innerRadius(0).outerRadius(arcR)
@@ -3348,6 +3349,7 @@ export default class d3Draw {
 		svg.attr('width', svgWidth / this.viewBoxWidth)
 		svg.attr('height', svgHeight / this.viewBoxHeight)
 		const circleG = svg.append('g').classed('circle_g', true).attr('transform', `translate(0,${circleGtransformY})`)
+		console.log(circleData)
 		for (let i = 0; i < circleData.length; i++) {
 			for (let j = 0; j < circleData[i].length; j++) {
 				const color = circleData[i][j].used ? this.dCircleUsedColor : this.dCircleColor
