@@ -261,7 +261,7 @@ export default class d3Draw {
 			.attr('width', 20)
 			.attr('height', 20)
 			.attr('fill', 'none')
-			.attr('stroke', '#000')
+			.attr('stroke', '#fff')
 			.attr('stroke-width', 1)
 			.classed('operation_item', true)
 		const childG = parentG.append('g')
@@ -1370,7 +1370,7 @@ export default class d3Draw {
 			hoverColor: 'gray',
 		}
 
-		const barWidth = 20
+		const barWidth = 26
 		const chart_svg = d3.select('#chart_svg')
 		chart_svg.selectAll('*').remove()
 		const keyArr = Object.keys(data)
@@ -1464,7 +1464,7 @@ export default class d3Draw {
 						.append('foreignObject')
 						.attr('width', 24)
 						.attr('height', 24)
-						.attr('transform', 'scale(0.9)')
+						// .attr('transform', 'scale(0.9)')
 						.attr('x', t.innerHTML.length > 1 ? -10 : -8)
 						.attr('y', 5)
 						.append('xhtml:div')
@@ -1698,12 +1698,13 @@ export default class d3Draw {
 			.attr('y', (d) => chart.scaleY(d.magn))
 			.attr('width', chart.scaleX.bandwidth() - 1)
 			.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.magn))
-			.attr('fill', '#fff')
-			.attr('stroke', '#000')
-			.attr('stroke-width', 1)
+			.attr('fill', chart._colors[0])
+		// .attr('stroke', '#000')
+		// .attr('stroke-width', 1)
 		magnBars.exit().remove()
 		// 绘制Prob bar
 		let probBars = chart.body().selectAll('.prob_bar').data(data)
+		// console.log(chart.getBodyHeight() / 2)
 		probBars
 			.enter()
 			.append('rect')
@@ -1712,9 +1713,15 @@ export default class d3Draw {
 			.attr('x', (d) => chart.scaleX(d.index) + 1)
 			.attr('y', (d) => chart.scaleY(d.prob) + 1)
 			.attr('width', chart.scaleX.bandwidth() - 3)
-			.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.prob) - 2)
-			.attr('fill', chart._colors[0])
-			.attr('stroke', chart._colors[0])
+			.attr('height', (d) =>
+				chart.getBodyHeight() / 2 - chart.scaleY(d.prob) > 2
+					? 1
+					: chart.getBodyHeight() / 2 - chart.scaleY(d.prob) - 1 > 0
+					? chart.getBodyHeight() / 2 - chart.scaleY(d.prob) - 1
+					: 0
+			)
+			.attr('fill', '#fff')
+			.attr('stroke', '#fff')
 			.attr('stroke-width', 1)
 
 		probBars.exit().remove()
@@ -1750,13 +1757,13 @@ export default class d3Draw {
 			.append('text')
 			.attr('class', 'bar_text')
 			.merge(bar_texts)
-			.attr('x', (chart.scaleX(upTextIndex) + 8) / 0.8)
-			.attr('y', (d) => (chart.scaleY(d) - 2) / 0.8)
+			.attr('x', chart.scaleX(upTextIndex) + 10)
+			.attr('y', (d) => chart.scaleY(d) - 2)
 			.attr('text-anchor', 'middle')
 			.text(Math.floor(upMaxNumber * 100) / 100)
 			.classed('svgtext', true)
 			.attr('style', 'font-size:12px;')
-			.attr('transform', 'scale(0.8)')
+		// .attr('transform', '1')
 
 		bar_texts.exit().remove()
 
@@ -1786,13 +1793,13 @@ export default class d3Draw {
 				.append('text')
 				.attr('class', 'bar_text')
 				.merge(bar_texts2)
-				.attr('x', (chart.scaleX(downTextIndex) + 8) / 0.8)
-				.attr('y', (d) => (chart.getBodyHeight() / 2 + chart.scalePhaseY(d) + 32) / 0.8)
+				.attr('x', chart.scaleX(downTextIndex) + 10)
+				.attr('y', (d) => chart.getBodyHeight() / 2 + chart.scalePhaseY(d) + 32)
 				.attr('text-anchor', 'middle')
 				.text(Math.floor(downMaxNumber * 100) / 100)
 				.classed('svgtext', true)
 				.attr('style', 'font-size:12px;')
-				.attr('transform', 'scale(0.8)')
+			// .attr('transform', 'scale(0.8)')
 			bar_texts2.exit().remove()
 		}
 	}
@@ -1831,7 +1838,7 @@ export default class d3Draw {
 								barWidth -
 								barWidth * config.barPadding
 						)
-						.attr('x', bars.data()[0].x - config.margins.left - barWidth / 2 + barWidth * config.barPadding)
+						.attr('x', bars.data()[0].x - config.margins.left - barWidth / 2)
 						.attr('y', 1)
 						.attr('rx', 3)
 						.attr('ry', 3)
@@ -2040,12 +2047,12 @@ export default class d3Draw {
 				.attr('class', 'magns_bar')
 				.merge(bars)
 				.attr('x', (d) => chart.scaleX(d.index))
-				.attr('y', (d) => chart.scaleY(d.magns) - 1)
+				.attr('y', (d) => (chart.scaleY(d.magns) - 1 > 0 ? chart.scaleY(d.magns) - 1 : 0))
 				.attr('width', chart.scaleX.bandwidth())
 				.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.magns))
-				.attr('fill', 'transparent')
-				.attr('stroke', '#000')
-				.attr('stroke-width', 0.5)
+				.attr('fill', chart._colors[0])
+			// .attr('stroke', '#000')
+			// .attr('stroke-width', 0.5)
 			bars.exit().remove()
 		}
 		chart.renderProbsBars = function () {
@@ -2054,11 +2061,19 @@ export default class d3Draw {
 				.append('rect')
 				.attr('class', 'probs_bar')
 				.merge(bars)
-				.attr('x', (d) => chart.scaleX(d.index))
+				.attr('x', (d) => chart.scaleX(d.index) + 0.5)
 				.attr('y', (d) => chart.scaleY(d.probs) - 1)
-				.attr('width', chart.scaleX.bandwidth())
-				.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.probs))
-				.attr('fill', chart._colors[0])
+				.attr('width', chart.scaleX.bandwidth() - 1.5)
+				.attr('height', (d) =>
+					chart.getBodyHeight() / 2 - chart.scaleY(d.probs) > 2
+						? 1
+						: chart.getBodyHeight() / 2 - chart.scaleY(d.probs) - 1 > 0
+						? chart.getBodyHeight() / 2 - chart.scaleY(d.probs) - 1
+						: 0
+				)
+				.attr('fill', '#fff')
+				.attr('stroke', '#fff')
+				.attr('stroke-width', 1)
 			bars.exit().remove()
 		}
 		chart.renderPhasesBars = function () {
@@ -2137,6 +2152,57 @@ export default class d3Draw {
 			g.selectAll('.magns_bar')
 				.on('mouseover', function (e, d) {
 					const textSvg = getDirac(d.base)
+					const initWidth = d.base.length < 3 ? 9.8 : 7.8
+					const z = new XMLSerializer()
+					const width = Number(textSvg.width.baseVal.valueAsString.split('e')[0])
+					const position = d3.pointer(e)
+					const tipG = g
+						.append('g')
+						.classed('tip', true)
+						.attr('transform', `translate(${position[0] + 85},${position[1] - 5})`)
+					tipG.append('rect')
+						.attr('stroke', '#ccc')
+						.attr('stroke-width', 1)
+						.attr('height', 44)
+						.attr('width', width + initWidth + 'ex')
+						.attr('fill', '#fff')
+						.attr('rx', 2)
+					const text = tipG
+						.append('text')
+						.attr('fill', chart.textColor)
+						.classed('svgtext', true)
+						.attr('x', 4)
+						.attr('y', 18)
+					text.append('tspan').text('Base:')
+					tipG.append('foreignObject')
+						.attr('width', width + 'ex')
+						.attr('height', 24)
+						// .attr('transform', 'scale(1)')
+						.attr('x', 38)
+						.attr('y', 2)
+						.append('xhtml:div')
+						.attr('height', '100%')
+						.attr('width', '100%')
+						.html(z.serializeToString(textSvg))
+					const text2 = tipG
+						.append('text')
+						.attr('fill', chart.textColor)
+						.classed('svgtext', true)
+						.attr('x', 4)
+						.attr('y', 36)
+						.text(`Maganitue:${Math.floor(d.magns * 100) / 100}`)
+				})
+				.on('mouseleave', function (e, d) {
+					g.select('.tip').remove()
+				})
+				.on('mousemove', function (e) {
+					const position = d3.pointer(e)
+					g.select('.tip').attr('transform', `translate(${position[0] + 55},${position[1] - 5})`)
+				})
+			g.selectAll('.probs_bar')
+				.on('mouseover', function (e, d) {
+					const initWidth = d.base.length < 3 ? 10 : 8
+					const textSvg = getDirac(d.base)
 					const z = new XMLSerializer()
 					const width = Number(textSvg.width.baseVal.valueAsString.split('e')[0])
 					const position = d3.pointer(e)
@@ -2148,8 +2214,8 @@ export default class d3Draw {
 					tipG.append('rect')
 						.attr('stroke', '#ccc')
 						.attr('stroke-width', 1)
-						.attr('height', 26)
-						.attr('width', width + 5.5 + 'ex')
+						.attr('height', 44)
+						.attr('width', width + initWidth + 'ex')
 						.attr('fill', '#fff')
 						.attr('rx', 2)
 					const text = tipG
@@ -2169,35 +2235,13 @@ export default class d3Draw {
 						.attr('height', '100%')
 						.attr('width', '100%')
 						.html(z.serializeToString(textSvg))
-				})
-				.on('mouseleave', function (e, d) {
-					g.select('.tip').remove()
-				})
-				.on('mousemove', function (e) {
-					const position = d3.pointer(e)
-					g.select('.tip').attr('transform', `translate(${position[0] + 55},${position[1] - 5})`)
-				})
-			g.selectAll('.probs_bar')
-				.on('mouseover', function (e, d) {
-					const position = d3.pointer(e)
-					const tipG = g
-						.append('g')
-						.classed('tip', true)
-						.attr('transform', `translate(${position[0] + 55},${position[1] - 5})`)
-					tipG.append('rect')
-						.attr('stroke', 'gray')
-						.attr('stroke-width', 1)
-						.attr('height', 26)
-						.attr('width', 110)
-						.attr('fill', '#fff')
-						.attr('rx', 2)
-					const text = tipG
+					const text2 = tipG
 						.append('text')
 						.attr('fill', chart.textColor)
 						.classed('svgtext', true)
 						.attr('x', 4)
-						.attr('y', 16)
-					text.append('tspan').text('Base:' + d.base)
+						.attr('y', 36)
+						.text(`Probability:${Math.floor(d.probs * 100) / 100}`)
 				})
 				.on('mouseleave', function (e, d) {
 					g.select('.tip').remove()
@@ -2209,6 +2253,7 @@ export default class d3Draw {
 			g.selectAll('.phases_bar')
 				.on('mouseover', function (e, d) {
 					const textSvg = getDirac(d.base)
+					const initWidth = d.base.length < 3 ? 6.8 : 6
 					const width = Number(textSvg.width.baseVal.valueAsString.split('e')[0])
 					const z = new XMLSerializer()
 					const position = d3.pointer(e)
@@ -2219,8 +2264,8 @@ export default class d3Draw {
 					tipG.append('rect')
 						.attr('stroke', '#ccc')
 						.attr('stroke-width', 1)
-						.attr('height', 26)
-						.attr('width', width + 5.5 + 'ex')
+						.attr('height', 44)
+						.attr('width', width + initWidth + 'ex')
 						.attr('fill', '#fff')
 						.attr('rx', 2)
 					const text = tipG
@@ -2240,6 +2285,13 @@ export default class d3Draw {
 						.attr('height', '100%')
 						.attr('width', '100%')
 						.html(z.serializeToString(textSvg))
+					const text2 = tipG
+						.append('text')
+						.attr('fill', chart.textColor)
+						.classed('svgtext', true)
+						.attr('x', 4)
+						.attr('y', 36)
+						.text(`Phase:${Math.floor(d.phases * 100) / 100}`)
 				})
 				.on('mouseleave', function (e, d) {
 					g.select('.tip').remove()
@@ -2269,8 +2321,8 @@ export default class d3Draw {
 				chart
 					.svg()
 					.selectAll('.probs_bar')
-					.attr('x', (d) => chart.scaleX(d.index))
-					.attr('width', chart.scaleX.bandwidth())
+					.attr('x', (d) => chart.scaleX(d.index) + 0.5)
+					.attr('width', chart.scaleX.bandwidth() - 1.5)
 				chart
 					.svg()
 					.selectAll('.phases_bar')
@@ -2334,14 +2386,22 @@ export default class d3Draw {
 					chart
 						.svg()
 						.selectAll('.magns_bar')
-						.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.magns) - 1)
-						.attr('y', (d) => chart.scaleY(d.magns) - 1 - zoomHeight)
+						.attr('height', (d) =>
+							chart.getBodyHeight() / 2 - chart.scaleY(d.magns) > 0
+								? chart.getBodyHeight() / 2 - chart.scaleY(d.magns)
+								: 0
+						)
+						.attr('y', (d) => chart.scaleY(d.magns) - zoomHeight)
 						.attr('stroke-width', 1)
 					chart
 						.svg()
 						.selectAll('.probs_bar')
-						.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.probs) - 1)
-						.attr('y', (d) => chart.scaleY(d.probs) - 1 - zoomHeight)
+						.attr('height', (d) =>
+							chart.getBodyHeight() / 2 - chart.scaleY(d.probs) > 1
+								? 1
+								: chart.getBodyHeight() / 2 - chart.scaleY(d.probs)
+						)
+						.attr('y', (d) => chart.scaleY(d.probs) - zoomHeight)
 
 					chart
 						.svg()
@@ -2393,25 +2453,31 @@ export default class d3Draw {
 						.svg()
 						.selectAll('.magns_bar')
 						.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.magns))
-						.attr('y', (d) => chart.scaleY(d.magns) - 1)
+						.attr('y', (d) => (chart.scaleY(d.magns) - 1 > 0 ? chart.scaleY(d.magns) - 1 : 0))
 						.attr('stroke-width', 0.5)
 					chart
 						.svg()
 						.selectAll('.probs_bar')
-						.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.probs))
+						.attr('height', (d) =>
+							chart.getBodyHeight() / 2 - chart.scaleY(d.probs) > 2
+								? 1
+								: chart.getBodyHeight() / 2 - chart.scaleY(d.probs) - 1 > 0
+								? chart.getBodyHeight() / 2 - chart.scaleY(d.probs) - 1
+								: 0
+						)
 						.attr('y', (d) => chart.scaleY(d.probs) - 1)
 					chart
 						.svg()
 						.selectAll('.phases_bar')
-						.attr('y', (d) => chart.getBodyHeight() / 2)
+						.attr('y', (d) => chart.getBodyHeight() / 2 + 1)
 						.attr('height', (d) => chart.scaleY2(d.phases))
 				}
 			}
 		}
 		// 总体绘制
 		chart.render = function () {
-			chart.renderProbsBars()
 			chart.renderMagnsBars()
+			chart.renderProbsBars()
 			chart.renderPhasesBars()
 
 			chart.addMouseOn()
@@ -2484,7 +2550,13 @@ export default class d3Draw {
 			const self = this
 			data.probability = Math.pow(data.magnitude.toFixed(1), 2)
 			const allKeys = [...Object.keys(data), ...Object.keys(data.var2value)].filter(
-				(item) => item !== 'var2value' && item !== 'range' && item !== 'ratio'
+				(item) =>
+					item !== 'var2value' &&
+					item !== 'range' &&
+					item !== 'ratio' &&
+					item !== 'related_bases' &&
+					item !== 'id' &&
+					item !== 'max_base_magn'
 			)
 			childG.on('mouseover', function (e) {
 				const scrollLeft = chartSvgDiv._groups[0][0].scrollLeft
@@ -2496,18 +2568,18 @@ export default class d3Draw {
 					.attr('class', 'show_data_div')
 					.attr(
 						'style',
-						`height:${32 * allKeys.length}px;top:${
+						`height:${32 * (allKeys / 2).length}px;top:${
 							offsetY ? offsetY - scrollTop + 40 : e.offsetY - scrollTop + 36
 						}px;left:${
 							offsetX ? offsetX + 50 - scrollLeft : e.offsetX - scrollLeft + 10
 						}px;border:1px solid black`
 					)
-				const showDataSVG = showDataDiv
-					.append('svg')
-					.classed('relaed_svg', true)
-					.attr('width', '100%')
-					.attr('height', '100%')
-				self.drawShowData(showDataSVG, data)
+				// const showDataSVG = showDataDiv
+				// 	.append('svg')
+				// 	.classed('relaed_svg', true)
+				// 	.attr('width', '100%')
+				// 	.attr('height', '100%')
+				self.drawShowData(showDataDiv, data)
 			})
 			childG.on('mouseleave', function (e) {
 				chartDiv.selectAll('.show_data_div').remove()
@@ -2516,59 +2588,30 @@ export default class d3Draw {
 		return parentG
 	}
 	// 绘制浅色块显示的条形
-	drawShowData(svg, data) {
-		const keys = Object.keys(data.var2value)
-		const allKeys = Object.keys(data).filter((item) => item !== 'range' && item !== 'var2value' && item !== 'ratio')
-		const arr = []
-
-		svg.append('line')
-			.attr('x1', 111)
-			.attr('x2', 111)
-			.attr('y1', 6)
-			// 32 * key.length - 6 * keys.length
-			.attr('y2', 26 * keys.length)
-			.attr('stroke-width', 2)
-			.attr('stroke', '#000')
-			.attr('stroke-dasharray', '5,5')
-
-		for (let i = 0; i < keys.length; i++) {
-			const parentG = svg.append('g').attr('transform', `translate(0, ${26 * i})`)
-			parentG.append('rect').attr('width', 120).attr('height', 32).attr('fill', 'none')
-			const childG = parentG.append('g')
-			const text = childG
-				.append('text')
-				.text(`${keys[i]}`)
-				.attr('style', 'font-size:12px;')
-				.classed('svgtext', true)
-				.attr('x', 0)
-				.attr('y', 19)
-			childG
-				.append('rect')
-				.attr('width', 90 * (data.var2value[keys[i]] / data.range[keys[i]]))
-				.attr('height', 20)
-				.attr('x', 20)
-				.attr('y', 6)
-				.attr('fill', this.dBarColor)
-
-			childG
-				.append('text')
-				.text(`${data.var2value[keys[i]]}`)
-				.attr('style', 'font-size:12px;')
-				.classed('svgtext', true)
-				.attr('x', 22 + 90 * (data.var2value[keys[i]] / data.range[keys[i]]))
-				.attr('y', 19)
+	drawShowData(showDataDiv, data) {
+		// const keys = Object.keys(data.var2value)
+		// const allKeys = Object.keys(data).filter((item) =>)
+		// const arr = []
+		for (const key in data.var2value) {
+			showDataDiv
+				.append('span')
+				.text(`${key}:${Math.floor(data.var2value[key] * 100) / 100}`)
+				.classed('show_data_div_span', true)
 		}
-		for (let i = 0; i < allKeys.length; i++) {
-			const parentG = svg.append('g').attr('transform', `translate(0, ${26 * i + 26 * keys.length})`)
-			parentG.append('rect').attr('width', 120).attr('height', 32).attr('fill', 'none')
-			const childG = parentG.append('g')
-			const text = childG
-				.append('text')
-				.text(`${allKeys[i]}:${data[allKeys[i]].toFixed(1)}`)
-				.attr('style', 'font-size:12px;')
-				.classed('svgtext', true)
-				.attr('x', 0)
-				.attr('y', 19)
+		for (const key in data) {
+			if (
+				key !== 'range' &&
+				key !== 'var2value' &&
+				key !== 'ratio' &&
+				key !== 'related_bases' &&
+				key !== 'id' &&
+				key !== 'max_base_magn'
+			) {
+				showDataDiv
+					.append('span')
+					.text(`${key}:${Math.floor(data[key] * 100) / 100}`)
+					.classed('show_data_div_span', true)
+			}
 		}
 	}
 	// 绘制D circle
@@ -2621,15 +2664,18 @@ export default class d3Draw {
 				.attr('transform', 'translate(13,13)')
 				.attr('opacity', this.dCircleColorOpacity)
 			if (arcR < 1) {
-				const borderCircleR = { startAngle: (Math.PI * (arcDeg - 1)) / 180, endAngle: (Math.PI * arcDeg) / 180}
-				const borderPath = d3.arc().innerRadius(0).outerRadius((this.dLength) / 2 - 2)
+				const borderCircleR = { startAngle: (Math.PI * (arcDeg - 1)) / 180, endAngle: (Math.PI * arcDeg) / 180 }
+				const borderPath = d3
+					.arc()
+					.innerRadius(0)
+					.outerRadius(this.dLength / 2 - 2)
 				childG
 					.append('path')
 					.attr('d', borderPath(borderCircleR))
 					.attr('fill', 'rgba(142, 132, 112,0.5)')
 					.attr('transform', 'translate(13,13)')
-					// .attr('stroke','rgba(142, 132, 112,0.5)')
-					// .attr('stroke-width',1)
+				// .attr('stroke','rgba(142, 132, 112,0.5)')
+				// .attr('stroke-width',1)
 			}
 		} else if (!arcDeg && arcR) {
 			arcR = (arcR * this.dLength) / 2 - 2
@@ -2672,48 +2718,25 @@ export default class d3Draw {
 	drawText(svg, x, y, index) {
 		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`).classed('d_item', true)
 		parentG.append('rect').attr('width', this.dLength).attr('height', this.dLength).attr('fill', 'none')
-		const ketLieftG = parentG
-			.append('g')
-			.append('line')
-			.attr('x1', 0.25)
-			.attr('y2', 9)
-			.attr('stroke-width', 0.5)
-			.attr('stroke', 'black')
-			.attr('svgtext', true)
 
-		const textG = parentG
-			.append('g')
-			.append('text')
-			.text(index)
-			.attr('style', 'font-size:12px;')
-			.attr('fill', 'gray')
-			.classed('svgtext', true)
+		const textSvg = getDirac(index)
+		const z = new XMLSerializer()
 
-		const kitRightG = parentG
-			.append('g')
-			.append('path')
-			.attr('d', 'M0.845337 1L2.63087 5.40266L0.845337 9.71606')
-			.attr('stroke', 'black')
-			.attr('stroke-width', 0.5)
-			.attr('stroke-linecap', 'round')
-			.attr('fill', 'none')
-			.classed('svgtext', true)
-
-		if (index > 9) {
-			// textG.attr('')
-			ketLieftG.attr('transform', 'translate(4,9)')
-			textG.attr('transform', 'translate(7,18)')
-			kitRightG.attr('transform', 'translate(21,8)')
-		} else {
-			ketLieftG.attr('transform', 'translate(6,9)')
-			textG.attr('transform', 'translate(9,18)')
-			kitRightG.attr('transform', 'translate(17,8)')
-		}
+		parentG
+			.append('foreignObject')
+			.attr('width', 26)
+			.attr('height', 26)
+			.attr('x', String(index).length > 1 ? 0 : 3)
+			.attr('y', 1)
+			.append('xhtml:div')
+			.attr('height', '100%')
+			.attr('width', '100%')
+			.html(z.serializeToString(textSvg))
 
 		return parentG
 	}
 	// 绘制浅色块text
-	drawRelaedNum(svg, x, y, data, textX, chartDiv, chartSvgDiv,textY) {
+	drawRelaedNum(svg, x, y, data, textX, chartDiv, chartSvgDiv, textY) {
 		data = data.slice(1, data.length)
 		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`).classed('d_item', true)
 		parentG.append('rect').attr('width', this.dLength).attr('height', 14).attr('fill', 'none')
@@ -2735,7 +2758,7 @@ export default class d3Draw {
 					.attr(
 						'style',
 						`top:${e.offsetY - scrollTop + 36}px;left:${e.offsetX - scrollLeft + 10}px;height:${
-							self.dLength * data.length + 10
+							self.dLength * data.length + 17
 						}px;width:${self.dLength + 8}px;border:1px solid black`
 					)
 				relaedDiv
@@ -3120,7 +3143,18 @@ export default class d3Draw {
 			.classed('input_related_num', true)
 			.attr('transform', `translate(0,${this.dLength})`)
 		for (let j = 0; j < inputBases.length; j++) {
-			this.drawDinput(inputG, 0, this.dLength * j, inputBases[j].ratio, inputBases[j].phases, 'rgb(80, 128, 132)')
+			this.drawDinput(
+				inputG,
+				0,
+				this.dLength * j,
+				inputBases[j].ratio,
+				inputBases[j].phases,
+				'rgb(80, 128, 132)',
+				!!inputBases[j].ratio,
+				inputBases[j],
+				chartDiv,
+				chartSvgDiv
+			)
 			const number = 0
 			for (let k = 0; k < inputBases[j].related_bases.length; k++) {
 				if (k === 0) {
@@ -3183,7 +3217,18 @@ export default class d3Draw {
 			.classed('input_related_num', true)
 			.attr('transform', `translate(${outRelatedGX + this.dLength},${this.dLength})`)
 		for (let j = 0; j < outBases.length; j++) {
-			this.drawDinput(outG, 0, this.dLength * j, outBases[j].ratio, outBases[j].phases, 'rgb(80, 128, 132)')
+			this.drawDinput(
+				outG,
+				0,
+				this.dLength * j,
+				outBases[j].ratio,
+				outBases[j].phases,
+				'rgb(80, 128, 132)',
+				!!outBases[j].ratio,
+				outBases[j],
+				chartDiv,
+				chartSvgDiv
+			)
 			for (let k = 0; k < outBases[j].related_bases.length; k++) {
 				if (k === 0) {
 					// 只绘一个 然后显示几个 开发时候是全传入了
@@ -3224,18 +3269,15 @@ export default class d3Draw {
 				this.findToDy(outBases, sankeyData[i].to_id),
 				0.5
 			)
-			svg.append('path').attr('d', toD).attr('fill', 'none').attr('stroke-width', 2).attr('stroke', color)
+			svg.append('path').attr('d', toD).attr('fill', 'none').attr('stroke-width', 1).attr('stroke', color)
 			const fromD = this.silkRibbonPathString(
 				circleGtransformX,
 				this.dLength * (i + 1) + this.dLength / 2,
-
 				inputGTransformX + this.dLength,
-				// this.dLength * (sankeyData[i].from_id + 1) + this.dLength / 2,
 				this.findfromDy(inputBases, sankeyData[i].from_id),
-
 				0.5
 			)
-			svg.append('path').attr('d', fromD).attr('fill', 'none').attr('stroke-width', 2).attr('stroke', color)
+			svg.append('path').attr('d', fromD).attr('fill', 'none').attr('stroke-width', 1).attr('stroke', color)
 		}
 	}
 	// 查to_d连线的Y值
@@ -3354,7 +3396,11 @@ export default class d3Draw {
 				this.dLength * j,
 				outStateData.bases[j].ratio,
 				outStateData.bases[j].phases,
-				'rgb(80, 128, 132)'
+				'rgb(80, 128, 132)',
+				!!outStateData.bases[j].ratio,
+				outStateData.bases[j],
+				chartDiv,
+				chartSvgDiv
 			)
 			for (let k = 0; k < outStateData.bases[j].related_bases.length; k++) {
 				if (k === 0) {
@@ -3418,7 +3464,11 @@ export default class d3Draw {
 				0,
 				inputStateData.bases[j].ratio,
 				inputStateData.bases[j].phases,
-				'rgb(80, 128, 132)'
+				'rgb(80, 128, 132)',
+				!!inputStateData.bases[j].ratio,
+				inputStateData.bases[j],
+				chartDiv,
+				chartSvgDiv
 			)
 			// 绘制浅色块
 			if (inputStateData.bases[j].related_bases.length) {
@@ -3464,7 +3514,7 @@ export default class d3Draw {
 		}
 		for (let i = 0; i < labels.length; i++) {
 			if (qc.canShow(labels[i].id)) {
-				if (false) {
+				if (qc.isSparse(labels[i].id)) {
 					this.drawSankey(qc, labels[i])
 				} else {
 					this.drawMatrix(qc, labels[i])

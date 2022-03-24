@@ -1120,9 +1120,25 @@ export default class QCEngine {
         return 1 - ent;
     }
 
-    variableEntropy(operation_index, variable, precision = 1e-5) {
-        let vec = this._getPartialTrace(variable, operation_index);
-        let ent = linear_entropy(vec);
+    variableEntropy(operation_index, variable, precision = 1e-5, type = 'qubit') {
+        const {name2index} = this;
+        let ent = 0;
+
+        if(type == 'qubit'){
+            let len = 0;
+            for(let i=name2index[variable][0]; i<name2index[variable][1]; i++)
+            {
+                let den = this._getPartialTraceAlt(i, operation_index);
+                ent += linear_entropy(den);
+                len++;
+            }
+            ent /= len;
+        }
+        else
+        {
+            let vec = this._getPartialTrace(variable, operation_index);
+            ent = linear_entropy(vec);
+        }
 
         if (Math.abs(ent - 0) < precision)
             ent = 0;

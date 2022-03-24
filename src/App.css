@@ -15,7 +15,7 @@ img{
 }
 .App {
 	width: 1914px;
-	padding: 8px;
+	padding: 5px;
 	background: #000;
 	display: flex;
 	font-family: 'Ubuntu-R';
@@ -35,12 +35,12 @@ img{
 	z-index: 999;
 }
 .App .right-div {
-	width: 1310px;
+	width: 1318px;
 	flex-shrink: 0;
 }
 .App .left-div {
 	width: 580px;
-	margin-right: 8px;
+	margin-right: 5px;
 	flex-shrink: 0;
 }
 .App .left-div,

@@ -1,6 +1,6 @@
 @import url('./AntDesign.css');
 #circuit_view {
-	height: 361px;
+	height: 367px;
 	width: 100%;
 	background: #fff;
 	cursor: auto;
@@ -31,14 +31,14 @@
 	overflow: auto;
 }
 #right_down_div {
-	height: 695px;
+	height: 698px;
 	display: flex;
-	margin-top: 8px;
+	margin-top: 5px;
 }
 #right_down_div .scroll_div {
-	width: 800px;
+	width: 803px;
 	height: 100%;
-	margin-right: 8px;
+	margin-right: 5px;
 	background: #fff;
 	padding: 10px;
 
@@ -49,7 +49,7 @@
 	overflow-x: visible;
 }
 #right_down_div .c_component {
-	width: 507px;
+	width: 510px;
 	height: 100%;
 	background: #fff;
 	padding: 10px;
@@ -86,7 +86,7 @@
 }
 #right_down_div .c_component .c_down_draw {
 	width: 100%;
-	height: 290px;
+	height: 312px;
 }
 #right_down_div .c_component .c_down_draw #chart_down_svg {
 	width: 100%;
@@ -196,9 +196,14 @@
 	background: #fff;
 	z-index: 99;
 }
+.show_data_div .show_data_div_span{
+	display: inline-block;
+	width: 49%;
+	margin-right: 1%;
+}
 .show_circle_div,
 .show_data_div {
-	width: 150px;
+	width: 220px;
 	/* height: 198px; */
 	padding: 10px;
 }

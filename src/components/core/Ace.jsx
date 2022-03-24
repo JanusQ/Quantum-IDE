@@ -3,7 +3,8 @@ import AceEditor from 'react-ace'
 import './Ace.css'
 import 'ace-builds/src-noconflict/mode-javascript'
 import 'ace-builds/src-noconflict/theme-github'
-import { Button, Select, Modal,Tooltip } from 'antd'
+import 'ace-builds/src-min-noconflict/ext-language_tools'
+import { Button, Select, Modal, Tooltip } from 'antd'
 import { ZoomInOutlined, ZoomOutOutlined } from '@ant-design/icons'
 import { createFile } from '../../simulator/CommonFunction'
 import QCEngine from '../../simulator/MyQCEngine'
@@ -73,9 +74,33 @@ const Ace = (props) => {
 	const handleCancel = () => {
 		setIsModalVisible(false)
 	}
+	// 代码补全内容数组
+	const completers = [
+		{
+			name: 'name',
+			value: 'qc',
+			score: 1,
+			meta: '实例',
+		},
+		{
+			name: 'name',
+			value: 'print',
+			score: 1,
+			meta: '打印',
+		},
+	]
+	const complete = (editor) => {
+		//向编辑器中添加自动补全列表
+		editor.completers.push({
+			getCompletions: function (editor, session, pos, prefix, callback) {
+				callback(null, completers)
+			},
+		})
+	}
 	useEffect(() => {
 		props.selectChange(optionList[0])
 	}, [])
+
 	return (
 		<div>
 			<div className='ace_div'>
@@ -118,6 +143,7 @@ const Ace = (props) => {
 					mode='javascript'
 					theme='github'
 					onChange={props.onChange}
+					onLoad={complete}
 					name='ACE-EDITOR'
 					width='100%'
 					height='576px'
@@ -127,6 +153,7 @@ const Ace = (props) => {
 					highlightActiveLine={false}
 					setOptions={{
 						wrap: true,
+						enableLiveAutocompletion: true,
 					}}
 				/>
 				{/* 导出弹框 */}
