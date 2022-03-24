@@ -3328,13 +3328,13 @@ export default class d3Draw {
 		// 计算输入input Y轴移动
 		const inputGTransformY = (inputStateData.vars.length + 1) * this.dLength + 14
 		// 计算out_input X轴移动
-		const inputWidth = inputStateData.bases.length * this.dLength
+		const inputWidth = (inputStateData.bases.length + 1) * this.dLength + 15
 		// 计算out_input 浅色块X轴移动
 		const outRelatedGX = inputWidth + (outStateData.vars.length + 1) * this.dLength
 		// 绘制矩阵
 		// 设置svg的宽高
 		const svgHeight = circleGtransformY + outStateData.bases.length * this.dLength
-		const svgWidth = outRelatedGX + this.dLength * 2 + 14
+		const svgWidth = outRelatedGX + this.dLength * 2 + 15
 		const { svg, chartDiv, chartSvgDiv } = this.drawElement(
 			data.text,
 			data.id,
@@ -3348,8 +3348,7 @@ export default class d3Draw {
 		svg.attr('viewBox', `0,0,${svgWidth},${svgHeight}`)
 		svg.attr('width', svgWidth / this.viewBoxWidth)
 		svg.attr('height', svgHeight / this.viewBoxHeight)
-		const circleG = svg.append('g').classed('circle_g', true).attr('transform', `translate(0,${circleGtransformY})`)
-		console.log(circleData)
+		const circleG = svg.append('g').classed('circle_g', true).attr('transform', `translate(${this.dLength + 15},${circleGtransformY})`)
 		for (let i = 0; i < circleData.length; i++) {
 			for (let j = 0; j < circleData[i].length; j++) {
 				const color = circleData[i][j].used ? this.dCircleUsedColor : this.dCircleColor
@@ -3442,7 +3441,7 @@ export default class d3Draw {
 			const textG = svg
 				.append('g')
 				.classed('text_g', true)
-				.attr('transform', `translate(0,${this.dLength * (i + 1) + 14})`)
+				.attr('transform', `translate(${this.dLength + 15},${this.dLength * (i + 1) + 14})`)
 			// 绘制变量名
 			const qNameY = this.dLength * (i + 1) + 14
 			const qNameG = svg
@@ -3457,9 +3456,9 @@ export default class d3Draw {
 			}
 		}
 
-		const inputG = svg.append('g').classed('input_g', true).attr('transform', `translate(0,${inputGTransformY})`)
-		const inputRelatedG = svg.append('g').classed('input_related_g', true).attr('transform', `translate(0,14)`)
-		const drawRelaedNumG = svg.append('g').classed('input_related_num', true).attr('transform', `translate(0,0)`)
+		const inputG = svg.append('g').classed('input_g', true).attr('transform', `translate(${this.dLength + 15},${inputGTransformY})`)
+		const inputRelatedG = svg.append('g').classed('input_related_g', true).attr('transform', `translate(${this.dLength + 15},14)`)
+		const drawRelaedNumG = svg.append('g').classed('input_related_num', true).attr('transform', `translate(${this.dLength + 15},0)`)
 		for (let j = 0; j < inputStateData.bases.length; j++) {
 			this.drawDinput(
 				inputG,
