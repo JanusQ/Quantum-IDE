@@ -1932,7 +1932,7 @@ export default class d3Draw {
 		const chart = new Chart()
 		const config = {
 			barPadding: 0.1,
-			margins: { top: 20, left: 40, bottom: 0, right: 10 },
+			margins: { top: 20, left: 40, bottom: 0, right: 80 },
 			tickShowGrid: [60, 120, 180],
 			textColor: 'black',
 			gridColor: 'gray',
@@ -1966,11 +1966,14 @@ export default class d3Draw {
 			.range([0, chart.getBodyHeight() / 2])
 		// 处理x轴样式
 		function customXAxis(g) {
+			// todo
 			const xAxis = d3.axisBottom(chart.scaleX)
 			g.call(xAxis)
 			// g.select('.domain').remove()
 			g.selectAll('.tick line').remove()
 			g.selectAll('.tick text').remove()
+			g.selectAll('.tick:nth-of-type(1)').append('text').text('0').attr('fill','#000').attr('y',9)
+			g.selectAll('.tick:nth-last-of-type(1)').append('text').text(g.selectAll('.tick')._groups[0].length).attr('fill','#000').attr('y',9)
 			const context = d3.path()
 			// 自定义X轴线
 			context.moveTo(chart.scaleX(0), 0)
@@ -1984,7 +1987,6 @@ export default class d3Draw {
 			// g.select('.domain').remove()
 			g.selectAll('.tick line').remove()
 			// g.selectAll('.tick text').attr('color', 'rgba(0,0,0,0)')
-
 			g.selectAll('.tick text')
 				.nodes()
 				.forEach(function (t, index) {
@@ -2304,10 +2306,9 @@ export default class d3Draw {
 		// 缩放
 		chart.addZoom = function () {
 			// console.log(getDirac(123))
-
 			const extent = [
 				[0, config.margins.top],
-				[chart.getBodyWidth() - 10, chart.getBodyHeight()],
+				[chart.getBodyWidth(), chart.getBodyHeight()],
 			]
 			chart.svg().call(d3.zoom().scaleExtent([1, 8]).translateExtent(extent).extent(extent).on('zoom', zoomed))
 			function zoomed(event) {
