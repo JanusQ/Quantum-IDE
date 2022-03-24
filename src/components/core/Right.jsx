@@ -14,8 +14,10 @@ const Right = () => {
 				</div>
 				<div className='circuit_div'>
 					<svg id='circuit_svg'>
-						<g id='circuit_label' />
 						<g id='circuit_brush' />
+						<g id='brush_label' />
+						<g id='circuit_label' />
+
 						<g id='circuit_graph' />
 
 						{/* 下面的在前面 */}

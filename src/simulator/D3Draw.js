@@ -1,6 +1,6 @@
 import { data } from 'browserslist'
 import * as d3 from 'd3'
-import { color, group } from 'd3'
+import { color, group, pointer } from 'd3'
 import { event as currentEvent } from 'd3-selection'
 import { im, number, re } from 'mathjs'
 import { ConsoleErrorListener, toDocs } from '../resource/js/quantum-circuit.min'
@@ -61,7 +61,6 @@ export default class d3Draw {
 		// D viewBox 和svg宽的比
 		this.viewBoxWidth = 1
 		this.viewBoxHeight = 1
-
 		this.gate_offest = 0
 	}
 	exportD3SVG(data) {
@@ -69,6 +68,7 @@ export default class d3Draw {
 		const drawG = svg.select('#circuit_graph')
 		const brushG = svg.select('#circuit_brush')
 		const labelG = svg.select('#circuit_label')
+		const brushLabelG = svg.select('#brush_label')
 		// 移除已经添加过的
 		drawG.selectAll('*').remove()
 		labelG.selectAll('*').remove()
@@ -83,6 +83,7 @@ export default class d3Draw {
 		// 设置SVG宽高 高度整体下移了一行
 		svg.attr('width', svgWidth)
 		svg.attr('height', (col + 4) * this.svgItemHeight - 40)
+
 		// 加Label,先加载label label在最底层
 		for (let i = 0; i < data.labels.length; i++) {
 			if (data.labels[i].text && data.labels[i].end_operation !== undefined) {
@@ -144,13 +145,24 @@ export default class d3Draw {
 		this.drawOperations(drawG, operations, data)
 
 		// 框选
-		this.brushedFn(svg, brushG, labelG, data)
+		this.brushedFn(svg, brushG, brushLabelG, data)
 		// 绘制d模块
 		this.drawDChart(data)
 		// 加入折线图
 		this.drawLineChart(data, row, svgWidth)
 		// 默认最后一个index的C视图
 		this.drawCFn(operations.length - 1, data)
+		svg.on('contextmenu', function (e) {
+			// const position = d3.pointer(e)
+			// e.preventDefault()
+			// svg.append('rect')
+			// 	.attr('width', 100)
+			// 	.attr('height', 100)
+			// 	.attr('x', position[0])
+			// 	.attr('y', position[1])
+			// 	.attr('fill', '#fff')
+			// 	.attr('stroke','#fff')
+		}) // attach menu to element
 	}
 	// 清空缓存的值
 	clear() {
@@ -1972,8 +1984,12 @@ export default class d3Draw {
 			// g.select('.domain').remove()
 			g.selectAll('.tick line').remove()
 			g.selectAll('.tick text').remove()
-			g.selectAll('.tick:nth-of-type(1)').append('text').text('0').attr('fill','#000').attr('y',9)
-			g.selectAll('.tick:nth-last-of-type(1)').append('text').text(g.selectAll('.tick')._groups[0].length).attr('fill','#000').attr('y',9)
+			g.selectAll('.tick:nth-of-type(1)').append('text').text('0').attr('fill', '#000').attr('y', 9)
+			g.selectAll('.tick:nth-last-of-type(1)')
+				.append('text')
+				.text(g.selectAll('.tick')._groups[0].length)
+				.attr('fill', '#000')
+				.attr('y', 9)
 			const context = d3.path()
 			// 自定义X轴线
 			context.moveTo(chart.scaleX(0), 0)
@@ -2651,7 +2667,6 @@ export default class d3Draw {
 				.classed('d_item', true)
 		}
 		if (arcDeg) {
-			
 			const arcRealR = (arcR * this.dLength) / 2 - 2
 			const data = { startAngle: 0, endAngle: (Math.PI * arcDeg) / 180 }
 			const acrPath = d3.arc().innerRadius(0).outerRadius(arcRealR)
@@ -2683,7 +2698,7 @@ export default class d3Draw {
 			arcR = (arcR * this.dLength) / 2 - 2
 			const context = d3.path()
 			context.moveTo(circleR, circleR)
-			context.lineTo(circleR,  2)
+			context.lineTo(circleR, 2)
 			childG.append('path').attr('d', context.toString()).attr('stroke', color).attr('stroke-width', 1)
 			const opacityCircleR = { startAngle: 0, endAngle: (Math.PI * 360) / 180 }
 			const circlePath = d3.arc().innerRadius(0).outerRadius(arcR)
@@ -3348,7 +3363,10 @@ export default class d3Draw {
 		svg.attr('viewBox', `0,0,${svgWidth},${svgHeight}`)
 		svg.attr('width', svgWidth / this.viewBoxWidth)
 		svg.attr('height', svgHeight / this.viewBoxHeight)
-		const circleG = svg.append('g').classed('circle_g', true).attr('transform', `translate(${this.dLength + 15},${circleGtransformY})`)
+		const circleG = svg
+			.append('g')
+			.classed('circle_g', true)
+			.attr('transform', `translate(${this.dLength + 15},${circleGtransformY})`)
 		for (let i = 0; i < circleData.length; i++) {
 			for (let j = 0; j < circleData[i].length; j++) {
 				const color = circleData[i][j].used ? this.dCircleUsedColor : this.dCircleColor
@@ -3456,9 +3474,18 @@ export default class d3Draw {
 			}
 		}
 
-		const inputG = svg.append('g').classed('input_g', true).attr('transform', `translate(${this.dLength + 15},${inputGTransformY})`)
-		const inputRelatedG = svg.append('g').classed('input_related_g', true).attr('transform', `translate(${this.dLength + 15},14)`)
-		const drawRelaedNumG = svg.append('g').classed('input_related_num', true).attr('transform', `translate(${this.dLength + 15},0)`)
+		const inputG = svg
+			.append('g')
+			.classed('input_g', true)
+			.attr('transform', `translate(${this.dLength + 15},${inputGTransformY})`)
+		const inputRelatedG = svg
+			.append('g')
+			.classed('input_related_g', true)
+			.attr('transform', `translate(${this.dLength + 15},14)`)
+		const drawRelaedNumG = svg
+			.append('g')
+			.classed('input_related_num', true)
+			.attr('transform', `translate(${this.dLength + 15},0)`)
 		for (let j = 0; j < inputStateData.bases.length; j++) {
 			this.drawDinput(
 				inputG,
