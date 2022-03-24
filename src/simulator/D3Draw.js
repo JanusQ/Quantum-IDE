@@ -1699,8 +1699,8 @@ export default class d3Draw {
 			.attr('width', chart.scaleX.bandwidth() - 1)
 			.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.magn))
 			.attr('fill', chart._colors[0])
-			.attr('stroke', '#000')
-			.attr('stroke-width', 1)
+			// .attr('stroke', '#000')
+			// .attr('stroke-width', 1)
 		magnBars.exit().remove()
 		// 绘制Prob bar
 		let probBars = chart.body().selectAll('.prob_bar').data(data)
@@ -2051,8 +2051,8 @@ export default class d3Draw {
 				.attr('width', chart.scaleX.bandwidth())
 				.attr('height', (d) => chart.getBodyHeight() / 2 - chart.scaleY(d.magns))
 				.attr('fill', chart._colors[0])
-				.attr('stroke', '#000')
-				.attr('stroke-width', 0.5)
+				// .attr('stroke', '#000')
+				// .attr('stroke-width', 0.5)
 			bars.exit().remove()
 		}
 		chart.renderProbsBars = function () {
