@@ -37,6 +37,7 @@
     "jest": "^27.4.3",
     "jest-resolve": "^27.4.2",
     "jest-watch-typeahead": "^1.0.0",
+    "lodash": "^4.17.21",
     "mathjax": "^3.2.0",
     "mathjax-full": "^3.2.0",
     "mathjs": "^10.1.1",

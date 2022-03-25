@@ -6,6 +6,7 @@ import { im, number, re } from 'mathjs'
 import { ConsoleErrorListener, toDocs } from '../resource/js/quantum-circuit.min'
 import Chart from './Chart'
 import { getDirac } from '../components/Mathjax'
+const _ = require('lodash')
 export default class d3Draw {
 	constructor(options) {
 		// 扩展颜色可配置
@@ -62,7 +63,12 @@ export default class d3Draw {
 		this.viewBoxWidth = 1
 		this.viewBoxHeight = 1
 		this.gate_offest = 0
+		// 框选的操作
 		this.brushOperations = {}
+		// 用于折叠的opeartions副本
+		this.copyOperations = []
+		// labels副本
+		this.copyLabels = []
 	}
 	exportD3SVG(data) {
 		const svg = d3.select('#circuit_svg')
@@ -73,7 +79,7 @@ export default class d3Draw {
 		// 移除已经添加过的
 		drawG.selectAll('*').remove()
 		labelG.selectAll('*').remove()
-
+		brushLabelG.selectAll('*').remove()
 		this.qc = data
 		const { operations, qubit_number } = data
 		// 列数
@@ -153,6 +159,10 @@ export default class d3Draw {
 		this.drawLineChart(data, row, svgWidth)
 		// 默认最后一个index的C视图
 		this.drawCFn(operations.length - 1, data)
+		// this.fold(svg, data, drawG, operations, brushLabelG)
+	}
+	// 折叠
+	fold(svg, qc, drawG, operations, brushLabelG) {
 		const self = this
 		svg.on('contextmenu', function (e) {
 			// const position = d3.pointer(e)
@@ -164,41 +174,45 @@ export default class d3Draw {
 			// 	.attr('y', position[1])
 			// 	.attr('fill', '#fff')
 			// 	.attr('stroke','#fff')
-			if (e.target.classList.contains('label_rect')) {
-				console.log(e.target.parentNode.classList.value)
-				console.log(operations)
-				const labelId = e.target.parentNode.classList.value.split('_')[1]
-				const clickLabel = data.labels.filter((item) => item.id === Number(labelId))[0]
+			if (e.target.classList.contains('brush_label_rect')) {
+				const labelId = Number(e.target.parentNode.classList.value.split('_')[1])
+				self.copyLabels = _.cloneDeep(qc.labels)
+				const clickLabel = self.copyLabels.filter((item) => item.id === labelId)[0]
+
 				const start_operation = clickLabel.start_operation
 				const end_operation = clickLabel.end_operation
+
 				// operations.splice()
-				let catchArr = []
-				const copyOperations = JSON.parse(
-					JSON.stringify(operations, function (key, value) {
-						if (typeof value === 'object') {
-							if (catchArr.indexOf(value) !== -1) {
-								// 移除
-								return
-							}
-							// 收集所有的值
-							catchArr.push(value)
-						}
-						return value
-					})
-				)
-				catchArr = null
-			
+				if (!self.copyOperations.length) {
+					self.copyOperations = _.cloneDeep(operations)
+				}
+
 				drawG.selectAll('.operation_item').remove()
-				// copyOperations.splice(start_operation, end_operation - start_operation)
-				console.log(copyOperations)
 				console.log(operations)
-				self.drawOperations(drawG, copyOperations, data)
-				
+
+				if (self.copyOperations[start_operation].index === start_operation) {
+					self.copyOperations.splice(start_operation, end_operation - start_operation)
+					// for (let i = 0; i < self.copyLabels.length; i++) {
+					// 	if (self.copyLabels[i].id === labelId) {
+					// 		// self.copyLabels[i].id.end_operation =
+					// 	}
+					// }
+					const regex1 = /\(([^)]*)\)/
+					self.end_operation = start_operation + 1
+					const x = brushLabelG.select(`.label_${labelId}`).attr('transform').match(regex1)[1].split(',')[0]
+					const y = brushLabelG.select(`.label_${labelId}`).attr('transform').match(regex1)[1].split(',')[1]
+					const width = self.svgItemWidth
+					const height = brushLabelG.select(`.label_${labelId} rect`).attr('height')
+					brushLabelG.select(`.label_${labelId}`).remove()
+					self.drawLabel(brushLabelG,x, y, width, height, labelId, labelId, true)
+				}
+				self.drawOperations(drawG, self.copyOperations, qc)
 			}
 		})
 	}
 	// 清空缓存的值
 	clear() {
+		this.copyOperations = []
 		this.getWholeState = []
 		this.filter = {}
 		this.labels = []
@@ -454,19 +468,18 @@ export default class d3Draw {
 			.attr('stroke', '#000')
 			.attr('stroke-width', 1)
 			.attr('fill', 'none')
-			.classed('operation_item', true)
 	}
 	// 绘制label
 	drawLabel(svg, x, y, width, height, labelText, labelId, isBrushed) {
 		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`).classed(`label_${labelId}`, true)
-		parentG
+		const outRect = parentG
 			.append('rect')
 			.attr('width', width)
 			.attr('height', height)
 			.attr('fill', '#f2f2f2')
 			.attr('rx', 10)
 			.attr('opacity', '0.5')
-			.classed('label_rect', true)
+
 		const context = d3.path()
 		context.moveTo(0, 10)
 		context.quadraticCurveTo(0, 0, 10, 0)
@@ -478,6 +491,7 @@ export default class d3Draw {
 		context.quadraticCurveTo(width, height, width, height - 10)
 
 		if (isBrushed) {
+			outRect.classed('brush_label_rect', true)
 			const textG = parentG.append('g').attr('transform', `translate(${width / 2},${height + 7}) scale(0.6)`)
 			textG
 				.append('circle')
@@ -544,7 +558,6 @@ export default class d3Draw {
 			.attr('stroke', 'rgb(100, 159, 174)')
 			.attr('stroke-width', 1)
 			.attr('fill', 'none')
-			.classed('operation_item', true)
 		parentG
 			.append('text')
 			.attr('width', 20)
@@ -666,7 +679,7 @@ export default class d3Draw {
 			})
 	}
 
-	// 刷取选中
+	// b视图框选
 	brushedFn(svg, brushG, labelG, qc) {
 		// Example: https://observablehq.com/@d3/double-click-brush-clear
 
@@ -710,8 +723,6 @@ export default class d3Draw {
 						indexArr.push(operation_notations.data()[i].index)
 						qubitsArr.push(...qc.getQubitsInvolved(operation_notations.data()[i]))
 					}
-
-					// debugger
 					const down_qubit = Math.max(...qubitsArr) //  down_qubit
 					const up_qubit = Math.min(...qubitsArr) // up_qubit
 					const start_operation = Math.min(...indexArr) // start_operation
@@ -719,7 +730,6 @@ export default class d3Draw {
 					const lineCol = end_operation - start_operation + 1
 					const labelRow = down_qubit - up_qubit + 1
 					const labelObj = qc.createlabel(start_operation, end_operation + 1)
-					console.log(labelRow)
 					// console.log(qc)
 					this.drawLabel(
 						labelG,
@@ -736,7 +746,6 @@ export default class d3Draw {
 					// self.brushOperations.push({
 					// 	labelObj.id:
 					// })
-					console.log(labelObj)
 				}
 
 				brushG.call(brush_event.clear) // 如果当前有选择才需要清空
@@ -2001,21 +2010,40 @@ export default class d3Draw {
 		chart.scaleY2 = d3
 			.scaleLinear()
 			.domain([0, 360])
-			.range([0, chart.getBodyHeight() / 2])
+			.range([0, chart.getBodyHeight() / 2 - chart.tramsformHeight()])
 		// 处理x轴样式
 		function customXAxis(g) {
-			// todo
+			const z = new XMLSerializer()
+
 			const xAxis = d3.axisBottom(chart.scaleX)
 			g.call(xAxis)
 			// g.select('.domain').remove()
 			g.selectAll('.tick line').remove()
 			g.selectAll('.tick text').remove()
-			g.selectAll('.tick:nth-of-type(1)').append('text').text('0').attr('fill', '#000').attr('y', 9)
+			g.selectAll('.tick:nth-of-type(1)')
+				.append('foreignObject')
+				.attr('width', data[0].base.length * 15)
+				.attr('height', 24)
+				.attr('style', 'color:rgba(0,0,0,1)')
+				.attr('transform', 'scale(0.7) rotate(45)')
+				.attr('x', 0)
+				.attr('y', 0)
+				.append('xhtml:div')
+				.attr('height', '100%')
+				.attr('width', '100%')
+				.html(z.serializeToString(getDirac(data[0].base)))
 			g.selectAll('.tick:nth-last-of-type(1)')
-				.append('text')
-				.text(g.selectAll('.tick')._groups[0].length)
-				.attr('fill', '#000')
-				.attr('y', 9)
+				.append('foreignObject')
+				.attr('width', data[g.selectAll('.tick')._groups[0].length - 1].base.length * 15)
+				.attr('height', 24)
+				.attr('style', 'color:rgba(0,0,0,1)')
+				.attr('transform', 'scale(0.7) rotate(45)')
+				.attr('x', 0)
+				.attr('y', 0)
+				.append('xhtml:div')
+				.attr('height', '100%')
+				.attr('width', '100%')
+				.html(z.serializeToString(getDirac(data[g.selectAll('.tick')._groups[0].length - 1].base)))
 			const context = d3.path()
 			// 自定义X轴线
 			context.moveTo(chart.scaleX(0), 0)
@@ -2176,10 +2204,16 @@ export default class d3Draw {
 			chart
 				.svg()
 				.insert('g', '.body')
+				// 'translate(' +
+				// 		chart.bodyX() +
+				// 		',' +
+				// 		(chart.bodyY() + chart.getBodyHeight() / 2 + chart.tramsformHeight()) +
+				// 		')'
 				.attr(
 					'transform',
 					'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2) + ')'
 				)
+
 				.attr('class', 'phaseYAxis')
 				.classed('svgtext', true)
 				.call(customYAxis2)
@@ -2377,7 +2411,7 @@ export default class d3Draw {
 				// 5.28 目前试的大概显示24个柱子
 				if (event.transform.k > 5.28) {
 					chart.svg().selectAll('.xAxis2 .tick foreignObject').attr('style', 'color:rgb(0,0,0)')
-
+					chart.svg().selectAll('.xAxis .tick foreignObject').attr('style', 'color:rgba(0,0,0,0)')
 					const zoomHeight = chart.tramsformHeight()
 					chart
 						.svg()
@@ -2457,6 +2491,7 @@ export default class d3Draw {
 						.selectAll('.xAxis2 .tick foreignObject')
 
 						.attr('style', 'color:rgba(0,0,0,0)')
+					chart.svg().selectAll('.xAxis .tick foreignObject').attr('style', 'color:rgba(0,0,0,1)')
 					chart
 						.svg()
 						.select('.xAxis')
@@ -2522,10 +2557,8 @@ export default class d3Draw {
 			chart.renderMagnsBars()
 			chart.renderProbsBars()
 			chart.renderPhasesBars()
-
 			chart.addMouseOn()
 			chart.addZoom()
-
 			chart.renderAxis()
 		}
 		chart.renderChart()
