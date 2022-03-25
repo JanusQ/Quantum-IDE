@@ -1,11 +1,12 @@
 import { data } from 'browserslist'
 import * as d3 from 'd3'
-import { color, group } from 'd3'
+import { color, group, pointer } from 'd3'
 import { event as currentEvent } from 'd3-selection'
 import { im, number, re } from 'mathjs'
 import { ConsoleErrorListener, toDocs } from '../resource/js/quantum-circuit.min'
 import Chart from './Chart'
 import { getDirac } from '../components/Mathjax'
+const _ = require('lodash')
 export default class d3Draw {
 	constructor(options) {
 		// 扩展颜色可配置
@@ -61,18 +62,24 @@ export default class d3Draw {
 		// D viewBox 和svg宽的比
 		this.viewBoxWidth = 1
 		this.viewBoxHeight = 1
-
 		this.gate_offest = 0
+		// 框选的操作
+		this.brushOperations = {}
+		// 用于折叠的opeartions副本
+		this.copyOperations = []
+		// labels副本
+		this.copyLabels = []
 	}
 	exportD3SVG(data) {
 		const svg = d3.select('#circuit_svg')
 		const drawG = svg.select('#circuit_graph')
 		const brushG = svg.select('#circuit_brush')
 		const labelG = svg.select('#circuit_label')
+		const brushLabelG = svg.select('#brush_label')
 		// 移除已经添加过的
 		drawG.selectAll('*').remove()
 		labelG.selectAll('*').remove()
-
+		brushLabelG.selectAll('*').remove()
 		this.qc = data
 		const { operations, qubit_number } = data
 		// 列数
@@ -83,6 +90,7 @@ export default class d3Draw {
 		// 设置SVG宽高 高度整体下移了一行
 		svg.attr('width', svgWidth)
 		svg.attr('height', (col + 4) * this.svgItemHeight - 40)
+
 		// 加Label,先加载label label在最底层
 		for (let i = 0; i < data.labels.length; i++) {
 			if (data.labels[i].text && data.labels[i].end_operation !== undefined) {
@@ -144,16 +152,67 @@ export default class d3Draw {
 		this.drawOperations(drawG, operations, data)
 
 		// 框选
-		this.brushedFn(svg, brushG, labelG, data)
+		this.brushedFn(svg, brushG, brushLabelG, data)
 		// 绘制d模块
 		this.drawDChart(data)
 		// 加入折线图
 		this.drawLineChart(data, row, svgWidth)
 		// 默认最后一个index的C视图
 		this.drawCFn(operations.length - 1, data)
+		// this.fold(svg, data, drawG, operations, brushLabelG)
+	}
+	// 折叠
+	fold(svg, qc, drawG, operations, brushLabelG) {
+		const self = this
+		svg.on('contextmenu', function (e) {
+			// const position = d3.pointer(e)
+			e.preventDefault()
+			// svg.append('rect')
+			// 	.attr('width', 100)
+			// 	.attr('height', 100)
+			// 	.attr('x', position[0])
+			// 	.attr('y', position[1])
+			// 	.attr('fill', '#fff')
+			// 	.attr('stroke','#fff')
+			if (e.target.classList.contains('brush_label_rect')) {
+				const labelId = Number(e.target.parentNode.classList.value.split('_')[1])
+				self.copyLabels = _.cloneDeep(qc.labels)
+				const clickLabel = self.copyLabels.filter((item) => item.id === labelId)[0]
+
+				const start_operation = clickLabel.start_operation
+				const end_operation = clickLabel.end_operation
+
+				// operations.splice()
+				if (!self.copyOperations.length) {
+					self.copyOperations = _.cloneDeep(operations)
+				}
+
+				drawG.selectAll('.operation_item').remove()
+				console.log(operations)
+
+				if (self.copyOperations[start_operation].index === start_operation) {
+					self.copyOperations.splice(start_operation, end_operation - start_operation)
+					// for (let i = 0; i < self.copyLabels.length; i++) {
+					// 	if (self.copyLabels[i].id === labelId) {
+					// 		// self.copyLabels[i].id.end_operation =
+					// 	}
+					// }
+					const regex1 = /\(([^)]*)\)/
+					self.end_operation = start_operation + 1
+					const x = brushLabelG.select(`.label_${labelId}`).attr('transform').match(regex1)[1].split(',')[0]
+					const y = brushLabelG.select(`.label_${labelId}`).attr('transform').match(regex1)[1].split(',')[1]
+					const width = self.svgItemWidth
+					const height = brushLabelG.select(`.label_${labelId} rect`).attr('height')
+					brushLabelG.select(`.label_${labelId}`).remove()
+					self.drawLabel(brushLabelG,x, y, width, height, labelId, labelId, true)
+				}
+				self.drawOperations(drawG, self.copyOperations, qc)
+			}
+		})
 	}
 	// 清空缓存的值
 	clear() {
+		this.copyOperations = []
 		this.getWholeState = []
 		this.filter = {}
 		this.labels = []
@@ -409,18 +468,18 @@ export default class d3Draw {
 			.attr('stroke', '#000')
 			.attr('stroke-width', 1)
 			.attr('fill', 'none')
-			.classed('operation_item', true)
 	}
 	// 绘制label
 	drawLabel(svg, x, y, width, height, labelText, labelId, isBrushed) {
 		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`).classed(`label_${labelId}`, true)
-		parentG
+		const outRect = parentG
 			.append('rect')
 			.attr('width', width)
 			.attr('height', height)
 			.attr('fill', '#f2f2f2')
 			.attr('rx', 10)
 			.attr('opacity', '0.5')
+
 		const context = d3.path()
 		context.moveTo(0, 10)
 		context.quadraticCurveTo(0, 0, 10, 0)
@@ -432,6 +491,7 @@ export default class d3Draw {
 		context.quadraticCurveTo(width, height, width, height - 10)
 
 		if (isBrushed) {
+			outRect.classed('brush_label_rect', true)
 			const textG = parentG.append('g').attr('transform', `translate(${width / 2},${height + 7}) scale(0.6)`)
 			textG
 				.append('circle')
@@ -498,7 +558,6 @@ export default class d3Draw {
 			.attr('stroke', 'rgb(100, 159, 174)')
 			.attr('stroke-width', 1)
 			.attr('fill', 'none')
-			.classed('operation_item', true)
 		parentG
 			.append('text')
 			.attr('width', 20)
@@ -620,7 +679,7 @@ export default class d3Draw {
 			})
 	}
 
-	// 刷取选中
+	// b视图框选
 	brushedFn(svg, brushG, labelG, qc) {
 		// Example: https://observablehq.com/@d3/double-click-brush-clear
 
@@ -661,50 +720,38 @@ export default class d3Draw {
 					const qubitsArr = []
 					const indexArr = []
 					for (let i = 0; i < operation_notations.data().length; i++) {
-						// 可以按操作类型分 现在按字段名
-						if (operation_notations.data()[i].controls) {
-							qubitsArr.push(...operation_notations.data()[i].controls)
-							qubitsArr.push(...operation_notations.data()[i].target)
-						} else if (operation_notations.data()[i].qubits1) {
-							qubitsArr.push(...operation_notations.data()[i].qubits1)
-							qubitsArr.push(...operation_notations.data()[i].qubits2)
-						} else {
-							qubitsArr.push(...operation_notations.data()[i].qubits)
-						}
 						indexArr.push(operation_notations.data()[i].index)
-						// let operation = operation_notations.data()[i]
-						// qubitsArr.push(...operation.qc.getQubitsInvolved(operation))
+						qubitsArr.push(...qc.getQubitsInvolved(operation_notations.data()[i]))
 					}
-					// debugger
 					const down_qubit = Math.max(...qubitsArr) //  down_qubit
 					const up_qubit = Math.min(...qubitsArr) // up_qubit
 					const start_operation = Math.min(...indexArr) // start_operation
 					const end_operation = Math.max(...indexArr) // end_operation
 					const lineCol = end_operation - start_operation + 1
-					const labelRow = down_qubit - up_qubit
-
+					const labelRow = down_qubit - up_qubit + 1
 					const labelObj = qc.createlabel(start_operation, end_operation + 1)
 					// console.log(qc)
 					this.drawLabel(
 						labelG,
 						this.svgItemWidth * start_operation + this.labelTranslate,
-						this.svgItemHeight * 2 - this.svgItemHeight / 2,
+						this.svgItemHeight * (up_qubit + 1.5),
 						this.svgItemWidth * lineCol,
-						this.svgItemHeight * qc.qubit_number,
+						this.svgItemHeight * labelRow,
 						labelObj.id,
 						labelObj.id,
 						true
 					)
 
 					self.drawDChart(qc, { labels: [labelObj] })
+					// self.brushOperations.push({
+					// 	labelObj.id:
+					// })
 				}
 
 				brushG.call(brush_event.clear) // 如果当前有选择才需要清空
 			}
 		}
-
 		brush_event.on('end', brushed_end)
-
 		brushG.attr('class', 'brush').call(brush_event)
 	}
 
@@ -1932,7 +1979,7 @@ export default class d3Draw {
 		const chart = new Chart()
 		const config = {
 			barPadding: 0.1,
-			margins: { top: 20, left: 40, bottom: 0, right: 10 },
+			margins: { top: 20, left: 40, bottom: 0, right: 80 },
 			tickShowGrid: [60, 120, 180],
 			textColor: 'black',
 			gridColor: 'gray',
@@ -1963,14 +2010,40 @@ export default class d3Draw {
 		chart.scaleY2 = d3
 			.scaleLinear()
 			.domain([0, 360])
-			.range([0, chart.getBodyHeight() / 2])
+			.range([0, chart.getBodyHeight() / 2 - chart.tramsformHeight()])
 		// 处理x轴样式
 		function customXAxis(g) {
+			const z = new XMLSerializer()
+
 			const xAxis = d3.axisBottom(chart.scaleX)
 			g.call(xAxis)
 			// g.select('.domain').remove()
 			g.selectAll('.tick line').remove()
 			g.selectAll('.tick text').remove()
+			g.selectAll('.tick:nth-of-type(1)')
+				.append('foreignObject')
+				.attr('width', data[0].base.length * 15)
+				.attr('height', 24)
+				.attr('style', 'color:rgba(0,0,0,1)')
+				.attr('transform', 'scale(0.7) rotate(45)')
+				.attr('x', 0)
+				.attr('y', 0)
+				.append('xhtml:div')
+				.attr('height', '100%')
+				.attr('width', '100%')
+				.html(z.serializeToString(getDirac(data[0].base)))
+			g.selectAll('.tick:nth-last-of-type(1)')
+				.append('foreignObject')
+				.attr('width', data[g.selectAll('.tick')._groups[0].length - 1].base.length * 15)
+				.attr('height', 24)
+				.attr('style', 'color:rgba(0,0,0,1)')
+				.attr('transform', 'scale(0.7) rotate(45)')
+				.attr('x', 0)
+				.attr('y', 0)
+				.append('xhtml:div')
+				.attr('height', '100%')
+				.attr('width', '100%')
+				.html(z.serializeToString(getDirac(data[g.selectAll('.tick')._groups[0].length - 1].base)))
 			const context = d3.path()
 			// 自定义X轴线
 			context.moveTo(chart.scaleX(0), 0)
@@ -1984,7 +2057,6 @@ export default class d3Draw {
 			// g.select('.domain').remove()
 			g.selectAll('.tick line').remove()
 			// g.selectAll('.tick text').attr('color', 'rgba(0,0,0,0)')
-
 			g.selectAll('.tick text')
 				.nodes()
 				.forEach(function (t, index) {
@@ -2132,10 +2204,16 @@ export default class d3Draw {
 			chart
 				.svg()
 				.insert('g', '.body')
+				// 'translate(' +
+				// 		chart.bodyX() +
+				// 		',' +
+				// 		(chart.bodyY() + chart.getBodyHeight() / 2 + chart.tramsformHeight()) +
+				// 		')'
 				.attr(
 					'transform',
 					'translate(' + chart.bodyX() + ',' + (chart.bodyY() + chart.getBodyHeight() / 2) + ')'
 				)
+
 				.attr('class', 'phaseYAxis')
 				.classed('svgtext', true)
 				.call(customYAxis2)
@@ -2304,10 +2382,9 @@ export default class d3Draw {
 		// 缩放
 		chart.addZoom = function () {
 			// console.log(getDirac(123))
-
 			const extent = [
 				[0, config.margins.top],
-				[chart.getBodyWidth() - 10, chart.getBodyHeight()],
+				[chart.getBodyWidth(), chart.getBodyHeight()],
 			]
 			chart.svg().call(d3.zoom().scaleExtent([1, 8]).translateExtent(extent).extent(extent).on('zoom', zoomed))
 			function zoomed(event) {
@@ -2334,7 +2411,7 @@ export default class d3Draw {
 				// 5.28 目前试的大概显示24个柱子
 				if (event.transform.k > 5.28) {
 					chart.svg().selectAll('.xAxis2 .tick foreignObject').attr('style', 'color:rgb(0,0,0)')
-
+					chart.svg().selectAll('.xAxis .tick foreignObject').attr('style', 'color:rgba(0,0,0,0)')
 					const zoomHeight = chart.tramsformHeight()
 					chart
 						.svg()
@@ -2414,6 +2491,7 @@ export default class d3Draw {
 						.selectAll('.xAxis2 .tick foreignObject')
 
 						.attr('style', 'color:rgba(0,0,0,0)')
+					chart.svg().selectAll('.xAxis .tick foreignObject').attr('style', 'color:rgba(0,0,0,1)')
 					chart
 						.svg()
 						.select('.xAxis')
@@ -2479,10 +2557,8 @@ export default class d3Draw {
 			chart.renderMagnsBars()
 			chart.renderProbsBars()
 			chart.renderPhasesBars()
-
 			chart.addMouseOn()
 			chart.addZoom()
-
 			chart.renderAxis()
 		}
 		chart.renderChart()
@@ -2663,7 +2739,7 @@ export default class d3Draw {
 				.attr('fill', color)
 				.attr('transform', 'translate(13,13)')
 				.attr('opacity', this.dCircleColorOpacity)
-			if (arcR < 1) {
+			if (arcR < 1 && arcR > 0) {
 				const borderCircleR = { startAngle: (Math.PI * (arcDeg - 1)) / 180, endAngle: (Math.PI * arcDeg) / 180 }
 				const borderPath = d3
 					.arc()
@@ -2672,7 +2748,7 @@ export default class d3Draw {
 				childG
 					.append('path')
 					.attr('d', borderPath(borderCircleR))
-					.attr('fill', 'rgba(142, 132, 112,0.5)')
+					.attr('fill', color)
 					.attr('transform', 'translate(13,13)')
 				// .attr('stroke','rgba(142, 132, 112,0.5)')
 				// .attr('stroke-width',1)
@@ -2681,7 +2757,7 @@ export default class d3Draw {
 			arcR = (arcR * this.dLength) / 2 - 2
 			const context = d3.path()
 			context.moveTo(circleR, circleR)
-			context.lineTo(circleR, circleR - arcR)
+			context.lineTo(circleR, 2)
 			childG.append('path').attr('d', context.toString()).attr('stroke', color).attr('stroke-width', 1)
 			const opacityCircleR = { startAngle: 0, endAngle: (Math.PI * 360) / 180 }
 			const circlePath = d3.arc().innerRadius(0).outerRadius(arcR)
@@ -3326,13 +3402,13 @@ export default class d3Draw {
 		// 计算输入input Y轴移动
 		const inputGTransformY = (inputStateData.vars.length + 1) * this.dLength + 14
 		// 计算out_input X轴移动
-		const inputWidth = inputStateData.bases.length * this.dLength
+		const inputWidth = (inputStateData.bases.length + 1) * this.dLength + 15
 		// 计算out_input 浅色块X轴移动
 		const outRelatedGX = inputWidth + (outStateData.vars.length + 1) * this.dLength
 		// 绘制矩阵
 		// 设置svg的宽高
 		const svgHeight = circleGtransformY + outStateData.bases.length * this.dLength
-		const svgWidth = outRelatedGX + this.dLength * 2 + 14
+		const svgWidth = outRelatedGX + this.dLength * 2 + 15
 		const { svg, chartDiv, chartSvgDiv } = this.drawElement(
 			data.text,
 			data.id,
@@ -3346,7 +3422,10 @@ export default class d3Draw {
 		svg.attr('viewBox', `0,0,${svgWidth},${svgHeight}`)
 		svg.attr('width', svgWidth / this.viewBoxWidth)
 		svg.attr('height', svgHeight / this.viewBoxHeight)
-		const circleG = svg.append('g').classed('circle_g', true).attr('transform', `translate(0,${circleGtransformY})`)
+		const circleG = svg
+			.append('g')
+			.classed('circle_g', true)
+			.attr('transform', `translate(${this.dLength + 15},${circleGtransformY})`)
 		for (let i = 0; i < circleData.length; i++) {
 			for (let j = 0; j < circleData[i].length; j++) {
 				const color = circleData[i][j].used ? this.dCircleUsedColor : this.dCircleColor
@@ -3439,7 +3518,7 @@ export default class d3Draw {
 			const textG = svg
 				.append('g')
 				.classed('text_g', true)
-				.attr('transform', `translate(0,${this.dLength * (i + 1) + 14})`)
+				.attr('transform', `translate(${this.dLength + 15},${this.dLength * (i + 1) + 14})`)
 			// 绘制变量名
 			const qNameY = this.dLength * (i + 1) + 14
 			const qNameG = svg
@@ -3454,9 +3533,18 @@ export default class d3Draw {
 			}
 		}
 
-		const inputG = svg.append('g').classed('input_g', true).attr('transform', `translate(0,${inputGTransformY})`)
-		const inputRelatedG = svg.append('g').classed('input_related_g', true).attr('transform', `translate(0,14)`)
-		const drawRelaedNumG = svg.append('g').classed('input_related_num', true).attr('transform', `translate(0,0)`)
+		const inputG = svg
+			.append('g')
+			.classed('input_g', true)
+			.attr('transform', `translate(${this.dLength + 15},${inputGTransformY})`)
+		const inputRelatedG = svg
+			.append('g')
+			.classed('input_related_g', true)
+			.attr('transform', `translate(${this.dLength + 15},14)`)
+		const drawRelaedNumG = svg
+			.append('g')
+			.classed('input_related_num', true)
+			.attr('transform', `translate(${this.dLength + 15},0)`)
 		for (let j = 0; j < inputStateData.bases.length; j++) {
 			this.drawDinput(
 				inputG,

@@ -12,7 +12,7 @@ export default class Chart {
 		this._box = null
 		this._svg = null
 		this._body = null
-		this._padding = { top: 20, left: 0, right: 170, bottom: 120 }
+		this._padding = { top: 20, left: 0, right: 80, bottom: 120 }
 		this._key = 'a'
 		// 下半缩放之后的距离 / 2
 		this._transformHeight = '20'
