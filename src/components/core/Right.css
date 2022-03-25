@@ -209,6 +209,7 @@
 }
 .show_circle_div {
 	width: auto;
+	white-space:nowrap;
 }
 .show_circle_div p {
 	margin: 0;

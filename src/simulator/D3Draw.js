@@ -62,6 +62,7 @@ export default class d3Draw {
 		this.viewBoxWidth = 1
 		this.viewBoxHeight = 1
 		this.gate_offest = 0
+		this.brushOperations = {}
 	}
 	exportD3SVG(data) {
 		const svg = d3.select('#circuit_svg')
@@ -152,9 +153,10 @@ export default class d3Draw {
 		this.drawLineChart(data, row, svgWidth)
 		// 默认最后一个index的C视图
 		this.drawCFn(operations.length - 1, data)
+		const self = this
 		svg.on('contextmenu', function (e) {
 			// const position = d3.pointer(e)
-			// e.preventDefault()
+			e.preventDefault()
 			// svg.append('rect')
 			// 	.attr('width', 100)
 			// 	.attr('height', 100)
@@ -162,7 +164,38 @@ export default class d3Draw {
 			// 	.attr('y', position[1])
 			// 	.attr('fill', '#fff')
 			// 	.attr('stroke','#fff')
-		}) // attach menu to element
+			if (e.target.classList.contains('label_rect')) {
+				console.log(e.target.parentNode.classList.value)
+				console.log(operations)
+				const labelId = e.target.parentNode.classList.value.split('_')[1]
+				const clickLabel = data.labels.filter((item) => item.id === Number(labelId))[0]
+				const start_operation = clickLabel.start_operation
+				const end_operation = clickLabel.end_operation
+				// operations.splice()
+				let catchArr = []
+				const copyOperations = JSON.parse(
+					JSON.stringify(operations, function (key, value) {
+						if (typeof value === 'object') {
+							if (catchArr.indexOf(value) !== -1) {
+								// 移除
+								return
+							}
+							// 收集所有的值
+							catchArr.push(value)
+						}
+						return value
+					})
+				)
+				catchArr = null
+			
+				drawG.selectAll('.operation_item').remove()
+				// copyOperations.splice(start_operation, end_operation - start_operation)
+				console.log(copyOperations)
+				console.log(operations)
+				self.drawOperations(drawG, copyOperations, data)
+				
+			}
+		})
 	}
 	// 清空缓存的值
 	clear() {
@@ -433,6 +466,7 @@ export default class d3Draw {
 			.attr('fill', '#f2f2f2')
 			.attr('rx', 10)
 			.attr('opacity', '0.5')
+			.classed('label_rect', true)
 		const context = d3.path()
 		context.moveTo(0, 10)
 		context.quadraticCurveTo(0, 0, 10, 0)
@@ -673,50 +707,42 @@ export default class d3Draw {
 					const qubitsArr = []
 					const indexArr = []
 					for (let i = 0; i < operation_notations.data().length; i++) {
-						// 可以按操作类型分 现在按字段名
-						if (operation_notations.data()[i].controls) {
-							qubitsArr.push(...operation_notations.data()[i].controls)
-							qubitsArr.push(...operation_notations.data()[i].target)
-						} else if (operation_notations.data()[i].qubits1) {
-							qubitsArr.push(...operation_notations.data()[i].qubits1)
-							qubitsArr.push(...operation_notations.data()[i].qubits2)
-						} else {
-							qubitsArr.push(...operation_notations.data()[i].qubits)
-						}
 						indexArr.push(operation_notations.data()[i].index)
-						// let operation = operation_notations.data()[i]
-						// qubitsArr.push(...operation.qc.getQubitsInvolved(operation))
+						qubitsArr.push(...qc.getQubitsInvolved(operation_notations.data()[i]))
 					}
+
 					// debugger
 					const down_qubit = Math.max(...qubitsArr) //  down_qubit
 					const up_qubit = Math.min(...qubitsArr) // up_qubit
 					const start_operation = Math.min(...indexArr) // start_operation
 					const end_operation = Math.max(...indexArr) // end_operation
 					const lineCol = end_operation - start_operation + 1
-					const labelRow = down_qubit - up_qubit
-
+					const labelRow = down_qubit - up_qubit + 1
 					const labelObj = qc.createlabel(start_operation, end_operation + 1)
+					console.log(labelRow)
 					// console.log(qc)
 					this.drawLabel(
 						labelG,
 						this.svgItemWidth * start_operation + this.labelTranslate,
-						this.svgItemHeight * 2 - this.svgItemHeight / 2,
+						this.svgItemHeight * (up_qubit + 1.5),
 						this.svgItemWidth * lineCol,
-						this.svgItemHeight * qc.qubit_number,
+						this.svgItemHeight * labelRow,
 						labelObj.id,
 						labelObj.id,
 						true
 					)
 
 					self.drawDChart(qc, { labels: [labelObj] })
+					// self.brushOperations.push({
+					// 	labelObj.id:
+					// })
+					console.log(labelObj)
 				}
 
 				brushG.call(brush_event.clear) // 如果当前有选择才需要清空
 			}
 		}
-
 		brush_event.on('end', brushed_end)
-
 		brushG.attr('class', 'brush').call(brush_event)
 	}
 
