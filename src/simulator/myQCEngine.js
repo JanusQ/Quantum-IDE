@@ -1792,7 +1792,7 @@ export default class QCEngine {
             for (let i = 0; i < state[key]['bases'].length; i++) {
                 if (max_magn != 0) {
                     for (let j = 0; j < state[key]['bases'][i]['related_bases'].length; j++) {
-                        state[key]['bases'][i]['related_bases'][j]['ratio'] = state[key]['bases'][i]['related_bases'][j]['magnitude']// / max_magn;
+                        state[key]['bases'][i]['related_bases'][j]['ratio'] = state[key]['bases'][i]['related_bases'][j]['magnitude'] / max_magn;
                     }
                     state[key]['bases'][i]['ratio'] = state[key]['bases'][i]['magnitude'] / max_magn;
                 }
