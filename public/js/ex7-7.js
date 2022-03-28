@@ -11,8 +11,9 @@ var n = 4;
 // Prepare a complex sinuisoidal signal
 qc.reset(n);
 var freq = 2;
-qc.startlabel('prep sinusoidal input signal');
+
 qc.write(freq);
+qc.startlabel('prep sinusoidal input signal');
 var signal = qint.new(n, 'signal');
 signal.invQFT();
 qc.endlabel('prep sinusoidal input signal');
