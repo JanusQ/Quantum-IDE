@@ -69,18 +69,23 @@ qc.nop()
 
 // qc.startlabel('simulation')
 
-
-qc.startlabel('ry 101°')
+let label = 'P(S1=0)=0.6'
+qc.startlabel(label)
 qc.ry(theta1to1(0.6), 0x1,)
-qc.endlabel('ry 101°')
+qc.endlabel(label)
+qc.nop()
 
-qc.startlabel('cnot')
+label = 'P(NS1=0|S1=1)=1'
+qc.startlabel(label)
 flip(step_1, not_step_1)
-qc.endlabel('cnot')
+qc.endlabel(label)
+qc.nop()
 
-qc.startlabel('cry 66°')
+label = 'P(S2=1|S1=0)=0.4'
+qc.startlabel(label)
 setConditional(0.3, step_1, step_2, false)
-qc.endlabel('cry 66°')
+qc.endlabel(label)
+qc.nop()
 
 setConditional(0.4, not_step_1, step_2, true) 
 flip(step_2, not_step_2)
