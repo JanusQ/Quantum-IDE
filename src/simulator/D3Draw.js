@@ -159,10 +159,10 @@ export default class d3Draw {
 		this.drawLineChart(data, row, svgWidth)
 		// 默认最后一个index的C视图
 		this.drawCFn(operations.length - 1, data)
-		// this.fold(svg, data, drawG, operations, brushLabelG)
+		this.fold(svg, data, drawG, operations, brushLabelG, labelG)
 	}
 	// 折叠
-	fold(svg, qc, drawG, operations, brushLabelG) {
+	fold(svg, qc, drawG, operations, brushLabelG, labelG) {
 		const self = this
 		svg.on('contextmenu', function (e) {
 			// const position = d3.pointer(e)
@@ -175,10 +175,10 @@ export default class d3Draw {
 			// 	.attr('fill', '#fff')
 			// 	.attr('stroke','#fff')
 			if (e.target.classList.contains('brush_label_rect')) {
-				const labelId = Number(e.target.parentNode.classList.value.split('_')[1])
+				const labelId = Number(e.target.parentNode.classList.value.split('_')[1].split('')[0])
+
 				self.copyLabels = _.cloneDeep(qc.labels)
 				const clickLabel = self.copyLabels.filter((item) => item.id === labelId)[0]
-
 				const start_operation = clickLabel.start_operation
 				const end_operation = clickLabel.end_operation
 
@@ -189,24 +189,81 @@ export default class d3Draw {
 
 				drawG.selectAll('.operation_item').remove()
 				console.log(operations)
-
 				if (self.copyOperations[start_operation].index === start_operation) {
-					self.copyOperations.splice(start_operation, end_operation - start_operation)
+					const defineObj = { qubits: [], operation: 'define' }
+					const spliceArr = self.copyOperations.splice(start_operation, end_operation - start_operation)
+					// defineObj.
+					spliceArr.forEach((item) => {
+						defineObj.qubits.push(...qc.getQubitsInvolved(item))
+					})
+					defineObj.qubits = [...new Set(defineObj.qubits)]
+					self.copyOperations.splice(start_operation, 0, defineObj)
 					// for (let i = 0; i < self.copyLabels.length; i++) {
 					// 	if (self.copyLabels[i].id === labelId) {
 					// 		// self.copyLabels[i].id.end_operation =
 					// 	}
 					// }
-					const regex1 = /\(([^)]*)\)/
-					self.end_operation = start_operation + 1
-					const x = brushLabelG.select(`.label_${labelId}`).attr('transform').match(regex1)[1].split(',')[0]
-					const y = brushLabelG.select(`.label_${labelId}`).attr('transform').match(regex1)[1].split(',')[1]
-					const width = self.svgItemWidth
-					const height = brushLabelG.select(`.label_${labelId} rect`).attr('height')
+					// const regex1 = /\(([^)]*)\)/
+					// 将点击的label修改为折叠后的
+					self.copyLabels[labelId].start_operation = start_operation
+					self.copyLabels[labelId].end_operation = start_operation + 1
+					for (let i = 0; i < self.copyLabels.length; i++) {
+						if (
+							self.copyLabels[i].start_operation >= start_operation &&
+							self.copyLabels[i].start_operation < end_operation &&
+							self.copyLabels[i].id !== labelId
+						) {
+							self.copyLabels.splice(i, 1)
+							i = i - 1
+						}
+					}
+					// console.log(self.copyLabels)
+					labelG.selectAll('.label_item').remove()
 					brushLabelG.select(`.label_${labelId}`).remove()
-					self.drawLabel(brushLabelG,x, y, width, height, labelId, labelId, true)
+					// 重新绘制label
+					for (let i = 0; i < self.copyLabels.length; i++) {
+						if (self.copyLabels[i].text && self.copyLabels[i].end_operation !== undefined) {
+							const obj = qc.getLabelUpDown(self.copyLabels[i].id)
+							if (obj.down_qubit !== Infinity && obj.up_qubit !== Infinity) {
+								const lineCol = self.copyLabels[i].end_operation - self.copyLabels[i].start_operation
+								const labelRow = obj.down_qubit - obj.up_qubit
+								if (self.copyLabels[i].id !== labelId) {
+									self.drawLabel(
+										labelG,
+										(self.svgItemWidth + self.gate_offest) * self.copyLabels[i].start_operation +
+											self.labelTranslate,
+										self.svgItemHeight * (obj.up_qubit + 1.5),
+										(self.svgItemWidth + self.gate_offest) * lineCol,
+										self.svgItemHeight * labelRow,
+										self.copyLabels[i].text,
+										self.copyLabels[i].id
+									)
+								} else {
+									self.drawLabel(
+										labelG,
+										(self.svgItemWidth + self.gate_offest) * self.copyLabels[i].start_operation +
+											self.labelTranslate,
+										self.svgItemHeight * (obj.up_qubit + 1.5),
+										(self.svgItemWidth + self.gate_offest) * lineCol,
+										self.svgItemHeight * labelRow,
+										self.copyLabels[i].text,
+										self.copyLabels[i].id,
+										true
+									)
+								}
+							}
+						}
+					}
+
+					// const x = brushLabelG.select(`.label_${labelId}`).attr('transform').match(regex1)[1].split(',')[0]
+					// const y = brushLabelG.select(`.label_${labelId}`).attr('transform').match(regex1)[1].split(',')[1]
+					// const width = self.svgItemWidth
+					// const height = Number(brushLabelG.select(`.label_${labelId} rect`).attr('height'))
+					// brushLabelG.select(`.label_${labelId}`).remove()
+					// self.drawLabel(brushLabelG,x, y, width, height, labelId, labelId, true)
+					// 重新绘制操作
+					self.drawOperations(drawG, self.copyOperations, qc)
 				}
-				self.drawOperations(drawG, self.copyOperations, qc)
 			}
 		})
 	}
@@ -471,7 +528,11 @@ export default class d3Draw {
 	}
 	// 绘制label
 	drawLabel(svg, x, y, width, height, labelText, labelId, isBrushed) {
-		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`).classed(`label_${labelId}`, true)
+		const parentG = svg
+			.append('g')
+			.attr('transform', `translate(${x}, ${y})`)
+			.classed(`label_${labelId}`, true)
+			.classed('label_item', true)
 		const outRect = parentG
 			.append('rect')
 			.attr('width', width)
@@ -1259,7 +1320,7 @@ export default class d3Draw {
 					defaultG
 						.append('text')
 						.attr('x', x + 2)
-						.attr('y', this.svgItemHeight * (defaultMinQ + 2) - this.svgItemHeight / 2 + 3)
+						.attr('y', this.svgItemHeight * (defaultMinQ + 2) - this.svgItemHeight / 2)
 						.classed('svgtext', true)
 						.append('tspan')
 						.attr('text-anchor', 'middle')
