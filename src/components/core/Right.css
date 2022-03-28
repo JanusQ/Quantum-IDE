@@ -18,7 +18,7 @@
 }
 #circuit_view .line_chart_div {
 	position: sticky;
-	bottom: -10px;
+	bottom: 0px;
 }
 .svgtext {
 	user-select: none;
@@ -234,4 +234,7 @@
 	font-size: 14px;
 	line-height: 14px;
 	
+}
+#circuit_svg{
+	min-height: 280px;
 }

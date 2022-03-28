@@ -89,8 +89,7 @@ export default class d3Draw {
 			(row + this.scaleNum) * this.svgItemWidth > 1299 ? (row + this.scaleNum) * this.svgItemWidth : 1299
 		// 设置SVG宽高 高度整体下移了一行
 		svg.attr('width', svgWidth)
-		svg.attr('height', (col + 4) * this.svgItemHeight - 40)
-
+		svg.attr('height', (col + 4) * this.svgItemHeight - 50)
 		// 加Label,先加载label label在最底层
 		for (let i = 0; i < data.labels.length; i++) {
 			if (data.labels[i].text && data.labels[i].end_operation !== undefined) {
@@ -516,13 +515,13 @@ export default class d3Draw {
 			.classed('operation_item', true)
 	}
 	// x,y 起始位置 targetX/Y 结束位置
-	drawLine(svg, x, y, targetX, targetY) {
+	drawLine(svg, x, y, targetX, targetY, color) {
 		const context = d3.path()
 		context.moveTo(x, y)
 		context.lineTo(targetX, targetY)
 		svg.append('path')
 			.attr('d', context.toString())
-			.attr('stroke', '#000')
+			.attr('stroke', `${color ? color : '#000'}`)
 			.attr('stroke-width', 1)
 			.attr('fill', 'none')
 	}
@@ -1879,16 +1878,6 @@ export default class d3Draw {
 
 		// 绘制phase的值
 		let downTextIndex = 0
-		// const phaseData = []
-		// for (let i = 0; i < data.length; i++) {
-
-		// 	if(data[i].phase){
-
-		// 		phaseData.push(data[i].phase)
-		// 	}else{
-		// 		phaseData.push(0)
-		// 	}
-		// }
 		const downMaxNumber = d3.max([...data.map((d) => d.phase)])
 		if (downMaxNumber) {
 			let bar_texts2 = chart.body().selectAll('.bar_text2').data([downMaxNumber])
@@ -1906,7 +1895,7 @@ export default class d3Draw {
 				.attr('x', chart.scaleX(downTextIndex) + 10)
 				.attr('y', (d) => chart.getBodyHeight() / 2 + chart.scalePhaseY(d) + 32)
 				.attr('text-anchor', 'middle')
-				.text(Math.floor(downMaxNumber * 100) / 100)
+				.text(Math.floor(downMaxNumber * 100) / 100 + '°')
 				.classed('svgtext', true)
 				.attr('style', 'font-size:12px;')
 			// .attr('transform', 'scale(0.8)')
@@ -2857,10 +2846,8 @@ export default class d3Draw {
 	drawText(svg, x, y, index) {
 		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`).classed('d_item', true)
 		parentG.append('rect').attr('width', this.dLength).attr('height', this.dLength).attr('fill', 'none')
-
 		const textSvg = getDirac(index)
 		const z = new XMLSerializer()
-
 		parentG
 			.append('foreignObject')
 			.attr('width', 26)
@@ -2873,6 +2860,130 @@ export default class d3Draw {
 			.html(z.serializeToString(textSvg))
 
 		return parentG
+	}
+	// 绘制text
+	drawRepeatText(svg, x, y, index, k, isPortrait) {
+		if (isPortrait) {
+			for (let i = 0; i < index.length; i++) {
+				if (index[i][1] - index[i][0] > 2) {
+					const textSvg = getDirac(k)
+					const z = new XMLSerializer()
+					const parentG = svg
+						.append('g')
+						.attr('transform', `translate(${x}, ${this.dLength * index[i][0]})`)
+						.classed('d_item', true)
+					parentG
+						.append('rect')
+						.attr('width', this.dLength)
+						.attr('height', this.dLength * (index[i][1] - index[i][0] + 1))
+						.attr('fill', 'none')
+					parentG
+						.append('rect')
+						.attr('width', this.dLength - 7)
+						.attr('height', 1)
+						.attr('fill', 'rgba(142, 132, 112,0.5)')
+						.attr('x', x + 3)
+						.attr('y', 2)
+					parentG
+						.append('rect')
+						.attr('width', this.dLength - 7)
+						.attr('height', 1)
+						.attr('fill', 'rgba(142, 132, 112,0.5)')
+						.attr('x', x + 3)
+						.attr('y', this.dLength * (index[i][1] - index[i][0] + 1) - 4)
+					parentG
+						.append('foreignObject')
+						.attr('width', 26)
+						.attr('height', 26)
+						.attr('x', String(k).length > 1 ? 0 : 3)
+						.attr('y', (this.dLength * (index[i][1] - index[i][0] + 1)) / 2 - 12)
+						.append('xhtml:div')
+						.attr('height', '100%')
+						.attr('width', '100%')
+						.html(z.serializeToString(textSvg))
+					this.drawLine(
+						parentG,
+						x + 12,
+						8,
+						x + 12,
+						(this.dLength * (index[i][1] - index[i][0] + 1)) / 2 - 14,
+						'rgba(142, 132, 112, 0.5)'
+					)
+					this.drawLine(
+						parentG,
+						x + 12,
+						(this.dLength * (index[i][1] - index[i][0] + 1)) / 2 + 14,
+						x + 12,
+						this.dLength * (index[i][1] - index[i][0] + 1) - 8,
+						'rgba(142, 132, 112, 0.5)'
+					)
+				} else {
+					for (let j = index[i][0]; j <= index[i][1]; j++) {
+						this.drawText(svg, x, this.dLength * j, k)
+					}
+				}
+			}
+		} else {
+			for (let i = 0; i < index.length; i++) {
+				if (index[i][1] - index[i][0] > 2) {
+					const textSvg = getDirac(k)
+					const z = new XMLSerializer()
+					const parentG = svg
+						.append('g')
+						.attr('transform', `translate(${this.dLength * index[i][0]}, ${y})`)
+						.classed('d_item', true)
+					parentG
+						.append('rect')
+						.attr('width', this.dLength * (index[i][1] - index[i][0] + 1))
+						.attr('height', this.dLength)
+						.attr('fill', 'none')
+					parentG
+						.append('rect')
+						.attr('width', 1)
+						.attr('height', this.dLength - 7)
+						.attr('fill', 'rgba(142, 132, 112,0.5)')
+						.attr('x', 2)
+						.attr('y', y + 3)
+					parentG
+						.append('rect')
+						.attr('width', 1)
+						.attr('height', this.dLength - 7)
+						.attr('fill', 'rgba(142, 132, 112,0.5)')
+						.attr('x', this.dLength * (index[i][1] - index[i][0] + 1) - 4)
+						.attr('y', y + 3)
+					parentG
+						.append('foreignObject')
+						.attr('width', 26)
+						.attr('height', 26)
+						.attr('x', (this.dLength * (index[i][1] - index[i][0] + 1)) / 2 - 9)
+						.attr('y', 1)
+						.append('xhtml:div')
+						.attr('height', '100%')
+						.attr('width', '100%')
+						.html(z.serializeToString(textSvg))
+					this.drawLine(
+						parentG,
+						8,
+						y + 13,
+						(this.dLength * (index[i][1] - index[i][0] + 1)) / 2 - 14,
+						y + 13,
+						'rgba(142, 132, 112, 0.5)'
+					)
+					this.drawLine(
+						parentG,
+						(this.dLength * (index[i][1] - index[i][0] + 1)) / 2 + 14,
+						y + 13,
+						this.dLength * (index[i][1] - index[i][0] + 1) - 10,
+						y + 13,
+						'rgba(142, 132, 112, 0.5)'
+					)
+				} else {
+					for (let j = index[i][0]; j <= index[i][1]; j++) {
+						this.drawText(svg, x, this.dLength * j, k)
+					}
+				}
+			}
+		}
 	}
 	// 绘制浅色块text
 	drawRelaedNum(svg, x, y, data, textX, chartDiv, chartSvgDiv, textY) {
@@ -3254,7 +3365,9 @@ export default class d3Draw {
 			)
 		}
 		// 绘制input_state
+
 		for (let i = 0; i < inputStateData.vars.length; i++) {
+			const inputVar2ValueArr = []
 			const textG = svg
 				.append('g')
 				.classed('text_g', true)
@@ -3265,8 +3378,22 @@ export default class d3Draw {
 				.classed('q_name_g', true)
 				.attr('transform', `translate(${qNameX + 5},0)`)
 			this.drawDqName(qNameG, inputStateData.vars[i])
+
 			for (let j = 0; j < inputBases.length; j++) {
-				this.drawText(textG, 0, this.dLength * j, inputBases[j].var2value[inputStateData.vars[i]])
+				inputVar2ValueArr.push(inputBases[j].var2value[inputStateData.vars[i]])
+			}
+			// 得到重复的开始/结束位置:{10:[[0,1],[4,8]]}
+			const repeatObj = this.getRepeat(inputVar2ValueArr)
+			const catchObj = {}
+			for (let k = 0; k < inputVar2ValueArr.length; k++) {
+				if (repeatObj[inputVar2ValueArr[k]]) {
+					if (!catchObj[inputVar2ValueArr[k]]) {
+						this.drawRepeatText(textG, 0, this.dLength * k, repeatObj[inputVar2ValueArr[k]], inputVar2ValueArr[k], true)
+					}
+					catchObj[inputVar2ValueArr[k]] = 1
+				} else {
+					this.drawText(textG, 0, this.dLength * k, inputVar2ValueArr[k])
+				}
 			}
 		}
 		const inputG = svg
@@ -3327,6 +3454,7 @@ export default class d3Draw {
 		}
 		// 绘制out_state
 		for (let i = 0; i < outStateData.vars.length; i++) {
+			let outVar2ValueArr = []
 			const textG = svg
 				.append('g')
 				.classed('text_g', true)
@@ -3338,9 +3466,22 @@ export default class d3Draw {
 				.attr('transform', `translate(${qNameX + 5},0)`)
 			this.drawDqName(qNameG, outStateData.vars[i])
 
-			// 需要改为正确数据
+			// 绘制text |0>
 			for (let j = 0; j < outBases.length; j++) {
-				this.drawText(textG, 0, this.dLength * j, outBases[j].var2value[outStateData.vars[i]])
+				outVar2ValueArr.push(outBases[j].var2value[outStateData.vars[i]])
+			}
+			// 得到重复的开始/结束位置:{10:[[0,1],[4,8]]}
+			const repeatObj = this.getRepeat(outVar2ValueArr)
+			const catchObj = {}
+			for (let k = 0; k < outVar2ValueArr.length; k++) {
+				if (repeatObj[outVar2ValueArr[k]]) {
+					if (!catchObj[outVar2ValueArr[k]]) {
+						this.drawRepeatText(textG, 0, this.dLength * k, repeatObj[outVar2ValueArr[k]], outVar2ValueArr[k], true)
+					}
+					catchObj[outVar2ValueArr[k]] = 1
+				} else {
+					this.drawText(textG, 0, this.dLength * k, outVar2ValueArr[k])
+				}
 			}
 		}
 		const outG = svg
@@ -3430,7 +3571,7 @@ export default class d3Draw {
 		}
 		return y
 	}
-	// 差from_d连线的Y
+	// 查from_d连线的Y
 	findfromDy(fromBases, id) {
 		let y = 0
 		for (let i = 0; i < fromBases.length; i++) {
@@ -3510,13 +3651,32 @@ export default class d3Draw {
 		}
 		// 绘制out_state
 		for (let i = 0; i < outStateData.vars.length; i++) {
+			const outVar2ValueArr = []
 			const textG = svg
 				.append('g')
 				.classed('text_g', true)
 				.attr('transform', `translate(${inputWidth + this.dLength * (i + 1)},${circleGtransformY})`)
 
+			// for (let j = 0; j < outStateData.bases.length; j++) {
+			// 	this.drawText(textG, 0, this.dLength * j, outStateData.bases[j].var2value[outStateData.vars[i]])
+			// }
+			// 绘制text |0>
 			for (let j = 0; j < outStateData.bases.length; j++) {
-				this.drawText(textG, 0, this.dLength * j, outStateData.bases[j].var2value[outStateData.vars[i]])
+				outVar2ValueArr.push(outStateData.bases[j].var2value[outStateData.vars[i]])
+			}
+			// 得到重复的开始/结束位置:{10:[[0,1],[4,8]]}
+		
+			const repeatObj = this.getRepeat(outVar2ValueArr)
+			const catchObj = {}
+			for (let k = 0; k < outVar2ValueArr.length; k++) {
+				if (repeatObj[outVar2ValueArr[k]]) {
+					if (!catchObj[outVar2ValueArr[k]]) {
+						this.drawRepeatText(textG, 0, this.dLength * k, repeatObj[outVar2ValueArr[k]], outVar2ValueArr[k], true)
+					}
+					catchObj[outVar2ValueArr[k]] = 1
+				} else {
+					this.drawText(textG, 0, this.dLength * k, outVar2ValueArr[k])
+				}
 			}
 		}
 		const outG = svg
@@ -3578,6 +3738,7 @@ export default class d3Draw {
 		inputStateData.vars.reverse()
 		let j = inputStateData.vars.length - 1
 		for (let i = 0; i < inputStateData.vars.length; i++) {
+			const inputVar2ValueArr = []
 			const textG = svg
 				.append('g')
 				.classed('text_g', true)
@@ -3590,9 +3751,28 @@ export default class d3Draw {
 				.attr('transform', `translate(${inputWidth + this.dLength * (j + 1) + 5},${qNameY})`)
 			this.drawDqName(qNameG, inputStateData.vars[i])
 			j--
-			// 绘制文字 |0>
+			// // 绘制文字 |0>
+			// for (let j = 0; j < inputStateData.bases.length; j++) {
+			// 	this.drawText(textG, this.dLength * j, 0, inputStateData.bases[j].var2value[inputStateData.vars[i]])
+			// }
+
+			// 绘制text |0>
 			for (let j = 0; j < inputStateData.bases.length; j++) {
-				this.drawText(textG, this.dLength * j, 0, inputStateData.bases[j].var2value[inputStateData.vars[i]])
+				inputVar2ValueArr.push(inputStateData.bases[j].var2value[inputStateData.vars[i]])
+			}
+			// 得到重复的开始/结束位置:{10:[[0,1],[4,8]]}
+		
+			const repeatObj = this.getRepeat(inputVar2ValueArr)
+			const catchObj = {}
+			for (let k = 0; k < inputVar2ValueArr.length; k++) {
+				if (repeatObj[inputVar2ValueArr[k]]) {
+					if (!catchObj[inputVar2ValueArr[k]]) {
+						this.drawRepeatText(textG, this.dLength * k, 0, repeatObj[inputVar2ValueArr[k]], inputVar2ValueArr[k], false)
+					}
+					catchObj[inputVar2ValueArr[k]] = 1
+				} else {
+					this.drawText(textG, this.dLength * k, 0, inputVar2ValueArr[k])
+				}
 			}
 		}
 
@@ -3672,5 +3852,25 @@ export default class d3Draw {
 				}
 			}
 		}
+	}
+	// 计算重复的key 和出现的起始位置结束位置
+	getRepeat(arr) {
+		let dic = {}
+		for (let k in arr) {
+			k = Number(k)
+			if (arr[k] == arr[k - 1] || arr[k] == arr[k + 1]) {
+				if (!dic[arr[k]]) {
+					dic[arr[k]] = [[k, k]]
+					continue
+				}
+				let s = dic[arr[k]].slice(-1)[0]
+				if (k - s[1] == 1) {
+					s[1] = k
+				} else {
+					dic[arr[k]].push([k, k])
+				}
+			}
+		}
+		return dic
 	}
 }
