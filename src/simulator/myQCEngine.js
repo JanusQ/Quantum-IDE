@@ -2089,6 +2089,13 @@ class QInt {
         // qc.swap(pow2(qubits[0]), pow2(qubits[qubits.length - 1]))
     }
 
+    Grover()
+    {
+        let { qc, index } = this
+        
+
+    }
+
 }
 // TODO: ccnot, cccnot 也要加
 
