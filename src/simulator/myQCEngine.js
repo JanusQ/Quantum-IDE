@@ -841,6 +841,8 @@ export default class QCEngine {
 
                 res[key]['prob'][i] = average(whole['probs'], tmp_index, whole['probs'], 'probs');
                 res[key]['magn'][i] = average(whole['probs'], tmp_index, whole['probs'], 'magns');
+                if(1- res[key]['magn'][i] <1e-5)
+                    res[key]['magn'][i] = 1.00;
                 res[key]['phase'][i] = average(whole['phases'], tmp_index, whole['probs'], 'phases');
             }
         }
@@ -1109,8 +1111,14 @@ export default class QCEngine {
 
         if (Math.abs(ent - 0) < precision)
             ent = 0;
+
+        // if(ent == 0)
+        //     ent +=0.1;
         //console.log("entropy",ent);
-        return ent / len;
+        let res= ent/len;
+        // if(res==0)
+        //     res+=0.2;
+        return res;
         
     }
 

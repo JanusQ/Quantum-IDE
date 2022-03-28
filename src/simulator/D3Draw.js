@@ -1320,9 +1320,11 @@ export default class d3Draw {
 			.scaleBand()
 			.domain(data.map((d) => d.index))
 			.range([this.firstX + this.svgItemWidth / 2, (row + 3) * this.svgItemWidth + this.svgItemWidth / 2])
+
+			// d3.min(data, (d) => d.entropy)
 		const scaleY = d3
 			.scaleLinear()
-			.domain([d3.min(data, (d) => d.entropy), d3.max(data, (d) => d.entropy)])
+			.domain([-0.02, d3.max(data, (d) => d.entropy)])
 			// .range([transformY + this.svgItemHeight * 4, transformY + this.svgItemHeight * 3])
 			.range([this.svgItemHeight, 0])
 		// 渲染线条

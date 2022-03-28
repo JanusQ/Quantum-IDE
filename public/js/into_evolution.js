@@ -3,10 +3,10 @@
 // conditional 
 
 // Initialize
-var num_qubits = 5;
+var num_qubits = 6;
 qc.reset(num_qubits);
 
-var a = qint.new(2, 'a');
+var a = qint.new(3, 'a');
 var b = qint.new(1, 'b');
 var c = qint.new(2, 'c');
 
@@ -24,7 +24,7 @@ qc.nop();
 qc.nop();
 
 qc.startlabel('if (b == 1) then a+=1');
-a.add(1, b.bits(0x1));
+a.add(2, b.bits(0x1));
 qc.endlabel('if (b == 1) then a+=1');
 
 qc.nop();

@@ -27,7 +27,8 @@ const Ace = (props) => {
 
 	// 多个选择框
 	const { Option } = Select
-	const optionList = ['user_study', 'case 3', 'case 4',  'into_evolution','case 1',  'case 2', 'bell_state', 'all gates', 'adding two integers', 'ex7-7', 'ex7-1', 'about:black'] // case的列表，public\js中需要存对应的文件
+	const optionList = ['Quantum Fourier Transform', 'user_study', 'case 3', 'case 4',  'into_evolution','case 1',  'case 2', 'bell_state', 'all gates', 'adding two integers', 'ex7-7', 'ex7-1', 'about:black'] // case的列表，public\js中需要存对应的文件
+	// const optionList = ['Quantum Fourier Transform', 'Grover\'s Algorithm', 'Shor\'s Algorithm', 'Deutsch-Jozsa Algorithm', 'Simon\'s Algorithm', 'Bernstein-Vazirani Algorithm','about:black']
 	const optionChildren = []
 	for (let i = 0; i < optionList.length; i++) {
 		optionChildren.push(
@@ -165,7 +166,7 @@ const Ace = (props) => {
 			</div>
 			<div id='self_definded'>
 				<div className='title'>
-					Self-defined Gate
+					Circuit Resue
 					<Tooltip placement='right' title={'tip'}>
 						<span className='tip_svg'></span>
 					</Tooltip>
