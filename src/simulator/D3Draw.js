@@ -175,7 +175,6 @@ export default class d3Draw {
 			// 	.attr('stroke','#fff')
 			if (e.target.classList.contains('brush_label_rect')) {
 				const labelId = Number(e.target.parentNode.classList.value.split('_')[1].split('')[0])
-
 				self.copyLabels = _.cloneDeep(qc.labels)
 				const clickLabel = self.copyLabels.filter((item) => item.id === labelId)[0]
 				const start_operation = clickLabel.start_operation
@@ -185,9 +184,7 @@ export default class d3Draw {
 				if (!self.copyOperations.length) {
 					self.copyOperations = _.cloneDeep(operations)
 				}
-
 				drawG.selectAll('.operation_item').remove()
-				console.log(operations)
 				if (self.copyOperations[start_operation].index === start_operation) {
 					const defineObj = { qubits: [], operation: 'define' }
 					const spliceArr = self.copyOperations.splice(start_operation, end_operation - start_operation)
@@ -207,6 +204,7 @@ export default class d3Draw {
 					self.copyLabels[labelId].start_operation = start_operation
 					self.copyLabels[labelId].end_operation = start_operation + 1
 					for (let i = 0; i < self.copyLabels.length; i++) {
+						
 						if (
 							self.copyLabels[i].start_operation >= start_operation &&
 							self.copyLabels[i].start_operation < end_operation &&
@@ -216,10 +214,17 @@ export default class d3Draw {
 							i = i - 1
 						}
 					}
+					for(let j = 0;j<self.copyLabels.length;j++){
+						if (self.copyLabels[j].start_operation > end_operation) {
+							self.copyLabels[j].start_operation = self.copyLabels[j].start_operation - spliceArr.length + 1
+							self.copyLabels[j].end_operation = self.copyLabels[j].end_operation - spliceArr.length + 1
+						}
+					}
 					// console.log(self.copyLabels)
 					labelG.selectAll('.label_item').remove()
 					brushLabelG.select(`.label_${labelId}`).remove()
 					// 重新绘制label
+					console.log(self.copyLabels)
 					for (let i = 0; i < self.copyLabels.length; i++) {
 						if (self.copyLabels[i].text && self.copyLabels[i].end_operation !== undefined) {
 							const obj = qc.getLabelUpDown(self.copyLabels[i].id)
@@ -1290,9 +1295,9 @@ export default class d3Draw {
 						svg.selectAll('.tip').remove()
 					})
 					break
-				default:
+				default: //绑定数据到dom节点
 					const defaultG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
-					defaultG.datum(operation) //绑定数据到dom节点
+					defaultG.datum(operation)
 					const qubits = data.getQubitsInvolved(operations[i])
 					const defaultMinQ = Math.min(...qubits)
 					const defaultMaxQ = Math.max(...qubits)
@@ -1381,7 +1386,7 @@ export default class d3Draw {
 			.domain(data.map((d) => d.index))
 			.range([this.firstX + this.svgItemWidth / 2, (row + 3) * this.svgItemWidth + this.svgItemWidth / 2])
 
-			// d3.min(data, (d) => d.entropy)
+		// d3.min(data, (d) => d.entropy)
 		const scaleY = d3
 			.scaleLinear()
 			.domain([-0.02, d3.max(data, (d) => d.entropy)])
@@ -3294,7 +3299,7 @@ export default class d3Draw {
 	}
 	// 绘制sankey图
 	drawSankey(qc, data) {
-		let filter_unused = true;
+		let filter_unused = true
 
 		const circleData = qc.getEvoMatrix(data.id)
 		let circleDataNum = 0
@@ -3388,7 +3393,14 @@ export default class d3Draw {
 			for (let k = 0; k < inputVar2ValueArr.length; k++) {
 				if (repeatObj[inputVar2ValueArr[k]]) {
 					if (!catchObj[inputVar2ValueArr[k]]) {
-						this.drawRepeatText(textG, 0, this.dLength * k, repeatObj[inputVar2ValueArr[k]], inputVar2ValueArr[k], true)
+						this.drawRepeatText(
+							textG,
+							0,
+							this.dLength * k,
+							repeatObj[inputVar2ValueArr[k]],
+							inputVar2ValueArr[k],
+							true
+						)
 					}
 					catchObj[inputVar2ValueArr[k]] = 1
 				} else {
@@ -3476,7 +3488,14 @@ export default class d3Draw {
 			for (let k = 0; k < outVar2ValueArr.length; k++) {
 				if (repeatObj[outVar2ValueArr[k]]) {
 					if (!catchObj[outVar2ValueArr[k]]) {
-						this.drawRepeatText(textG, 0, this.dLength * k, repeatObj[outVar2ValueArr[k]], outVar2ValueArr[k], true)
+						this.drawRepeatText(
+							textG,
+							0,
+							this.dLength * k,
+							repeatObj[outVar2ValueArr[k]],
+							outVar2ValueArr[k],
+							true
+						)
 					}
 					catchObj[outVar2ValueArr[k]] = 1
 				} else {
@@ -3665,13 +3684,20 @@ export default class d3Draw {
 				outVar2ValueArr.push(outStateData.bases[j].var2value[outStateData.vars[i]])
 			}
 			// 得到重复的开始/结束位置:{10:[[0,1],[4,8]]}
-		
+
 			const repeatObj = this.getRepeat(outVar2ValueArr)
 			const catchObj = {}
 			for (let k = 0; k < outVar2ValueArr.length; k++) {
 				if (repeatObj[outVar2ValueArr[k]]) {
 					if (!catchObj[outVar2ValueArr[k]]) {
-						this.drawRepeatText(textG, 0, this.dLength * k, repeatObj[outVar2ValueArr[k]], outVar2ValueArr[k], true)
+						this.drawRepeatText(
+							textG,
+							0,
+							this.dLength * k,
+							repeatObj[outVar2ValueArr[k]],
+							outVar2ValueArr[k],
+							true
+						)
 					}
 					catchObj[outVar2ValueArr[k]] = 1
 				} else {
@@ -3761,13 +3787,20 @@ export default class d3Draw {
 				inputVar2ValueArr.push(inputStateData.bases[j].var2value[inputStateData.vars[i]])
 			}
 			// 得到重复的开始/结束位置:{10:[[0,1],[4,8]]}
-		
+
 			const repeatObj = this.getRepeat(inputVar2ValueArr)
 			const catchObj = {}
 			for (let k = 0; k < inputVar2ValueArr.length; k++) {
 				if (repeatObj[inputVar2ValueArr[k]]) {
 					if (!catchObj[inputVar2ValueArr[k]]) {
-						this.drawRepeatText(textG, this.dLength * k, 0, repeatObj[inputVar2ValueArr[k]], inputVar2ValueArr[k], false)
+						this.drawRepeatText(
+							textG,
+							this.dLength * k,
+							0,
+							repeatObj[inputVar2ValueArr[k]],
+							inputVar2ValueArr[k],
+							false
+						)
 					}
 					catchObj[inputVar2ValueArr[k]] = 1
 				} else {
