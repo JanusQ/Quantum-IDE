@@ -175,7 +175,9 @@ export default class d3Draw {
 			// 	.attr('stroke','#fff')
 			if (e.target.classList.contains('brush_label_rect')) {
 				const labelId = Number(e.target.parentNode.classList.value.split('_')[1].split('')[0])
-				self.copyLabels = _.cloneDeep(qc.labels)
+				if (!self.copyLabels.length) {
+					self.copyLabels = _.cloneDeep(qc.labels)
+				}
 				const clickLabel = self.copyLabels.filter((item) => item.id === labelId)[0]
 				const start_operation = clickLabel.start_operation
 				const end_operation = clickLabel.end_operation
@@ -184,9 +186,10 @@ export default class d3Draw {
 				if (!self.copyOperations.length) {
 					self.copyOperations = _.cloneDeep(operations)
 				}
+				console.log(start_operation)
 				drawG.selectAll('.operation_item').remove()
 				if (self.copyOperations[start_operation].index === start_operation) {
-					const defineObj = { qubits: [], operation: 'define' }
+					const defineObj = { qubits: [], operation: 'define',index:start_operation }
 					const spliceArr = self.copyOperations.splice(start_operation, end_operation - start_operation)
 					// defineObj.
 					spliceArr.forEach((item) => {
@@ -194,17 +197,11 @@ export default class d3Draw {
 					})
 					defineObj.qubits = [...new Set(defineObj.qubits)]
 					self.copyOperations.splice(start_operation, 0, defineObj)
-					// for (let i = 0; i < self.copyLabels.length; i++) {
-					// 	if (self.copyLabels[i].id === labelId) {
-					// 		// self.copyLabels[i].id.end_operation =
-					// 	}
-					// }
-					// const regex1 = /\(([^)]*)\)/
+					
 					// 将点击的label修改为折叠后的
 					self.copyLabels[labelId].start_operation = start_operation
 					self.copyLabels[labelId].end_operation = start_operation + 1
 					for (let i = 0; i < self.copyLabels.length; i++) {
-						
 						if (
 							self.copyLabels[i].start_operation >= start_operation &&
 							self.copyLabels[i].start_operation < end_operation &&
@@ -214,17 +211,21 @@ export default class d3Draw {
 							i = i - 1
 						}
 					}
-					for(let j = 0;j<self.copyLabels.length;j++){
+					for (let j = 0; j < self.copyLabels.length; j++) {
 						if (self.copyLabels[j].start_operation > end_operation) {
-							self.copyLabels[j].start_operation = self.copyLabels[j].start_operation - spliceArr.length + 1
+							self.copyLabels[j].start_operation =
+								self.copyLabels[j].start_operation - spliceArr.length + 1
 							self.copyLabels[j].end_operation = self.copyLabels[j].end_operation - spliceArr.length + 1
 						}
+					}
+					// 归整折叠后的index
+					for (let k = 0; k < self.copyOperations.length; k++) {
+						self.copyOperations[k].index = k
 					}
 					// console.log(self.copyLabels)
 					labelG.selectAll('.label_item').remove()
 					brushLabelG.select(`.label_${labelId}`).remove()
 					// 重新绘制label
-					console.log(self.copyLabels)
 					for (let i = 0; i < self.copyLabels.length; i++) {
 						if (self.copyLabels[i].text && self.copyLabels[i].end_operation !== undefined) {
 							const obj = qc.getLabelUpDown(self.copyLabels[i].id)
@@ -776,11 +777,11 @@ export default class d3Draw {
 				const [x0, x1] = selection
 				let operation_notations = svg.selectAll('.operation_g').filter((elm) => {
 					const { x } = elm
-					// console.log(x,  elm)
 
 					return x <= x1 && x > x0
 				})
 				if (operation_notations.data().length) {
+					console.log(operation_notations.data())
 					// 绘制label
 					const qubitsArr = []
 					const indexArr = []
@@ -796,6 +797,7 @@ export default class d3Draw {
 					const labelRow = down_qubit - up_qubit + 1
 					const labelObj = qc.createlabel(start_operation, end_operation + 1)
 					// console.log(qc)
+					console.log(labelObj)
 					this.drawLabel(
 						labelG,
 						this.svgItemWidth * start_operation + this.labelTranslate,
@@ -806,11 +808,10 @@ export default class d3Draw {
 						labelObj.id,
 						true
 					)
-
+					// self.copyLabels.push()
 					self.drawDChart(qc, { labels: [labelObj] })
-					// self.brushOperations.push({
-					// 	labelObj.id:
-					// })
+					// self.copyLabels.push(labelObj)
+					console.log(self.copyLabels)
 				}
 
 				brushG.call(brush_event.clear) // 如果当前有选择才需要清空
@@ -826,6 +827,7 @@ export default class d3Draw {
 			let operation = operations[i]
 			const x = (this.svgItemWidth + this.gate_offest) * (i + this.scaleNum)
 			operation.x = x
+			// console.log(x)
 			switch (operations[i].operation) {
 				// write操作
 				case 'write':
