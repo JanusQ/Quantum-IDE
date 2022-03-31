@@ -53,9 +53,9 @@ receiver.add(1, a.bits(0x1))
 qc.endlabel(label)
 
 
-// let results = receiver.sample(4)
-// results.forEach(result=>{
-//     qc.print('QFT Frequency: ' + result)
-// })
+let results = receiver.sample(4)
+results.forEach(result=>{
+    qc.print('QFT Frequency: ' + result)
+})
 
 // results = receiver.read()

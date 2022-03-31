@@ -410,8 +410,9 @@ export default class QCEngine {
         const { operations, circuit, now_column } = this
         let control = binary_control ? this.parseBinaryQubits(binary_control) : []
         let target = binary_target ? this.parseBinaryQubits(binary_target) : []
+        console.log("qubits",control, target);
         let qubits = unique([...control, ...target])
-
+        
         if (qubits.length === 0) {
             console.error('phase\'s qubits number is zero')
             debugger
@@ -2028,10 +2029,18 @@ class QInt {
         qc.exchange(binary_qubits, another_qint.binary_qubits)
     }
 
-    cphase(rotation, another_qint) {
-        console.warn('this function is not well implemented')
-        let { qc, binary_qubits } = this
-        qc.cphase(rotation, binary_qubits, another_qint.binary_qubits)
+    cphase(rotation, another_qint = undefined) {
+        if(another_qint == undefined){
+            let { qc, index, binary_qubits} = this
+
+            qc.cphase(rotation, binary_qubits, undefined);
+           
+        }
+        else{
+            console.warn('this function is not well implemented')
+            let { qc, binary_qubits } = this
+            qc.cphase(rotation, binary_qubits, another_qint.binary_qubits)
+        }
     }
 
     phase(rotation, binary_qubits) {
@@ -2089,12 +2098,21 @@ class QInt {
         // qc.swap(pow2(qubits[0]), pow2(qubits[qubits.length - 1]))
     }
 
-    Grover()
+    Grover(conditional_bits = undefined)
     {
         let { qc, index } = this
+        let qubits = range(...index)
+        this.had()
+        this.not()
         
+        this.cphase(180, conditional_bits);
+
+        this.not()
+        this.had()
+
 
     }
+
 
 }
 // TODO: ccnot, cccnot 也要加
