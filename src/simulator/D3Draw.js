@@ -149,7 +149,6 @@ export default class d3Draw {
 
 		// 处理操作
 		this.drawOperations(drawG, operations, data)
-
 		// 框选
 		this.brushedFn(svg, brushG, brushLabelG, data)
 		// 绘制d模块
@@ -186,10 +185,9 @@ export default class d3Draw {
 				if (!self.copyOperations.length) {
 					self.copyOperations = _.cloneDeep(operations)
 				}
-				console.log(start_operation)
 				drawG.selectAll('.operation_item').remove()
 				if (self.copyOperations[start_operation].index === start_operation) {
-					const defineObj = { qubits: [], operation: 'define',index:start_operation }
+					const defineObj = { qubits: [], operation: 'define', index: start_operation }
 					const spliceArr = self.copyOperations.splice(start_operation, end_operation - start_operation)
 					// defineObj.
 					spliceArr.forEach((item) => {
@@ -197,11 +195,15 @@ export default class d3Draw {
 					})
 					defineObj.qubits = [...new Set(defineObj.qubits)]
 					self.copyOperations.splice(start_operation, 0, defineObj)
-					
+
 					// 将点击的label修改为折叠后的
-					self.copyLabels[labelId].start_operation = start_operation
-					self.copyLabels[labelId].end_operation = start_operation + 1
+
 					for (let i = 0; i < self.copyLabels.length; i++) {
+						
+						if (self.copyLabels[i].id === labelId) {
+							self.copyLabels[i].start_operation = start_operation
+							self.copyLabels[i].end_operation = start_operation + 1
+						}
 						if (
 							self.copyLabels[i].start_operation >= start_operation &&
 							self.copyLabels[i].start_operation < end_operation &&
@@ -228,7 +230,8 @@ export default class d3Draw {
 					// 重新绘制label
 					for (let i = 0; i < self.copyLabels.length; i++) {
 						if (self.copyLabels[i].text && self.copyLabels[i].end_operation !== undefined) {
-							const obj = qc.getLabelUpDown(self.copyLabels[i].id)
+							const obj = qc.getDrawLabelUpDown(self.copyLabels[i].id,self.copyOperations,self.copyLabels)
+
 							if (obj.down_qubit !== Infinity && obj.up_qubit !== Infinity) {
 								const lineCol = self.copyLabels[i].end_operation - self.copyLabels[i].start_operation
 								const labelRow = obj.down_qubit - obj.up_qubit
@@ -578,7 +581,7 @@ export default class d3Draw {
 			parentG
 				.append('path')
 				.attr('d', context.toString())
-				.attr('stroke', 'rgb(0,0,0)')
+				.attr('stroke', 'rgb(100, 159, 174)')
 				.attr('stroke-width', 1)
 				.attr('fill', 'none')
 		} else {
@@ -781,7 +784,6 @@ export default class d3Draw {
 					return x <= x1 && x > x0
 				})
 				if (operation_notations.data().length) {
-					console.log(operation_notations.data())
 					// 绘制label
 					const qubitsArr = []
 					const indexArr = []
@@ -796,8 +798,7 @@ export default class d3Draw {
 					const lineCol = end_operation - start_operation + 1
 					const labelRow = down_qubit - up_qubit + 1
 					const labelObj = qc.createlabel(start_operation, end_operation + 1)
-					// console.log(qc)
-					console.log(labelObj)
+
 					this.drawLabel(
 						labelG,
 						this.svgItemWidth * start_operation + this.labelTranslate,
@@ -810,7 +811,10 @@ export default class d3Draw {
 					)
 					// self.copyLabels.push()
 					self.drawDChart(qc, { labels: [labelObj] })
-					// self.copyLabels.push(labelObj)
+
+					if (self.copyLabels.length) {
+						self.copyLabels.push(labelObj)
+					}
 					console.log(self.copyLabels)
 				}
 
@@ -2986,7 +2990,7 @@ export default class d3Draw {
 					)
 				} else {
 					for (let j = index[i][0]; j <= index[i][1]; j++) {
-						this.drawText(svg, x, this.dLength * j, k)
+						this.drawText(svg,this.dLength * j, y, k)
 					}
 				}
 			}
@@ -3612,10 +3616,10 @@ export default class d3Draw {
 
 	// 绘制普通完整表示
 	drawMatrix(qc, data) {
-		// const inputStateData = qc.getInputState(data.id)
-		// const outStateData = qc.getOutputState(data.id)
 		const { input_state: inputStateData, output_state: outStateData } = qc.getState(data.id)
+		
 		const circleData = qc.getEvoMatrix(data.id)
+	
 		let circleDataNum = 0
 		if (circleData.length && circleData[0].length) {
 			circleDataNum = circleData[0][0]['max'].toFixed(2)
@@ -3788,8 +3792,8 @@ export default class d3Draw {
 			for (let j = 0; j < inputStateData.bases.length; j++) {
 				inputVar2ValueArr.push(inputStateData.bases[j].var2value[inputStateData.vars[i]])
 			}
+			
 			// 得到重复的开始/结束位置:{10:[[0,1],[4,8]]}
-
 			const repeatObj = this.getRepeat(inputVar2ValueArr)
 			const catchObj = {}
 			for (let k = 0; k < inputVar2ValueArr.length; k++) {

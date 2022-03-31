@@ -775,6 +775,41 @@ export default class QCEngine {
             down_qubit: down_varable ? name2index[down_varable][1] : down_qubit
         }
     }
+    // 返回折叠之后label的上下界比特 同上 就是operatiions和labels传入画图的
+    getDrawLabelUpDown(label_id, operations, labels) {
+
+        const { name2index } = this
+        let label = labels.find(elm => elm.id === label_id)
+        if (!label) {
+            console.error('label', label, '不存在')
+            debugger
+        }
+        if (label.text == '') {
+            console.warn(label, '是空的，不需要画')
+            return undefined
+        }
+        let { start_operation, end_operation } = label
+        if (!end_operation) {
+            end_operation = operations.length
+        }
+
+        let qubits_involved = []
+        range(start_operation, end_operation).forEach(index => {
+            // debugger
+            qubits_involved = [...qubits_involved, ...this.getQubitsInvolved(operations[index])]
+        })
+        // console.log(qubits_involved)
+        qubits_involved = [...new Set(qubits_involved)]
+
+        let down_qubit = Math.max(...qubits_involved), up_qubit = Math.min(...qubits_involved)
+        let down_varable = this.getQubit2Variable(down_qubit).variable, up_varable = this.getQubit2Variable(up_qubit).variable
+
+        // debugger
+        return {
+            up_qubit: up_varable ? name2index[up_varable][0] : up_qubit,
+            down_qubit: down_varable ? name2index[down_varable][1] : down_qubit
+        }
+    }
     // TODO: 统一驼峰还是下划线命名
     setState(state_vector)//set initial state for test, invocate it before adding other gates
     {
