@@ -1,14 +1,4 @@
 // 马科夫序列
-// qc.reset(2);
-// var a = qint.new(1, 'a')
-// var b = qint.new(1, 'b')
-// a.write(1)
-// b.write(0)
-
-// qc.startlabel('preprae')
-// qc.cry(90, a.bits(0x1), b.bits(0x1));
-// qc.endlabel('preprae')
-
 
 // [
 //     ["cos(theta / 2)","-1 * sin(theta / 2)"],
@@ -69,27 +59,32 @@ qc.nop()
 
 // qc.startlabel('simulation')
 
-let label = 'P(S1=0)=0.6'
+let label = 'ry 101°' //'P(S1=0)=0.6'
 qc.startlabel(label)
 qc.ry(theta1to1(0.6), 0x1,)
 qc.endlabel(label)
-qc.nop()
+// qc.nop()
 
-label = 'P(NS1=0|S1=1)=1'
+label = 'cnot' //'P(NS1=0|S1=1)=1'
 qc.startlabel(label)
 flip(step_1, not_step_1)
 qc.endlabel(label)
-qc.nop()
 
-label = 'P(S2=1|S1=0)=0.4'
+label = 'cry 66 °' //'P(S2=1|S1=0)=0.4'
 qc.startlabel(label)
 setConditional(0.3, step_1, step_2, false)
-qc.endlabel(label)
-qc.nop()
+// qc.endlabel(label)
+// // qc.nop()
 
+
+
+// label = 'cry 66 °' //'P(S2=1|S1=0)=0.4'
+// qc.startlabel(label)
 setConditional(0.4, not_step_1, step_2, true) 
-flip(step_2, not_step_2)
+qc.endlabel(label)
 
+
+flip(step_2, not_step_2)
 
 setConditional(0.2, step_2, step_3, false)  //0.66 * 0.1
 setConditional(0.1, not_step_2, step_3, true) //0.34 * 0.8
