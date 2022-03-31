@@ -157,10 +157,10 @@ export default class d3Draw {
 		this.drawLineChart(data, row, svgWidth)
 		// 默认最后一个index的C视图
 		this.drawCFn(operations.length - 1, data)
-		this.fold(svg, data, drawG, operations, brushLabelG, labelG)
+		this.fold(svg, data, drawG, operations, brushLabelG, labelG, col)
 	}
 	// 折叠
-	fold(svg, qc, drawG, operations, brushLabelG, labelG) {
+	fold(svg, qc, drawG, operations, brushLabelG, labelG, col) {
 		const self = this
 		svg.on('contextmenu', function (e) {
 			// const position = d3.pointer(e)
@@ -180,14 +180,20 @@ export default class d3Draw {
 				const clickLabel = self.copyLabels.filter((item) => item.id === labelId)[0]
 				const start_operation = clickLabel.start_operation
 				const end_operation = clickLabel.end_operation
-
-				// operations.splice()
 				if (!self.copyOperations.length) {
 					self.copyOperations = _.cloneDeep(operations)
+					operations.forEach((item, index) => {
+						self.copyOperations[index].backIndex = item.index
+					})
 				}
 				drawG.selectAll('.operation_item').remove()
 				if (self.copyOperations[start_operation].index === start_operation) {
-					const defineObj = { qubits: [], operation: 'define', index: start_operation }
+					const defineObj = {
+						qubits: [],
+						operation: 'define',
+						index: start_operation,
+						backIndex: end_operation,
+					}
 					const spliceArr = self.copyOperations.splice(start_operation, end_operation - start_operation)
 					// defineObj.
 					spliceArr.forEach((item) => {
@@ -199,7 +205,6 @@ export default class d3Draw {
 					// 将点击的label修改为折叠后的
 
 					for (let i = 0; i < self.copyLabels.length; i++) {
-						
 						if (self.copyLabels[i].id === labelId) {
 							self.copyLabels[i].start_operation = start_operation
 							self.copyLabels[i].end_operation = start_operation + 1
@@ -220,9 +225,20 @@ export default class d3Draw {
 							self.copyLabels[j].end_operation = self.copyLabels[j].end_operation - spliceArr.length + 1
 						}
 					}
-					// 归整折叠后的index
+					// 去除所有选中线
+					drawG.selectAll('.select_line').remove()
+					// 归整折叠后的index 和 新加入的选择线
 					for (let k = 0; k < self.copyOperations.length; k++) {
 						self.copyOperations[k].index = k
+
+						self.drawCselectLine(
+							drawG,
+							self.svgItemWidth * (k + 3) + 14,
+							self.svgItemHeight * 2 - 6,
+							self.svgItemHeight * col - 15,
+							self.copyOperations[k].backIndex,
+							qc
+						)
 					}
 					// console.log(self.copyLabels)
 					labelG.selectAll('.label_item').remove()
@@ -230,7 +246,11 @@ export default class d3Draw {
 					// 重新绘制label
 					for (let i = 0; i < self.copyLabels.length; i++) {
 						if (self.copyLabels[i].text && self.copyLabels[i].end_operation !== undefined) {
-							const obj = qc.getDrawLabelUpDown(self.copyLabels[i].id,self.copyOperations,self.copyLabels)
+							const obj = qc.getDrawLabelUpDown(
+								self.copyLabels[i].id,
+								self.copyOperations,
+								self.copyLabels
+							)
 
 							if (obj.down_qubit !== Infinity && obj.up_qubit !== Infinity) {
 								const lineCol = self.copyLabels[i].end_operation - self.copyLabels[i].start_operation
@@ -262,13 +282,6 @@ export default class d3Draw {
 							}
 						}
 					}
-
-					// const x = brushLabelG.select(`.label_${labelId}`).attr('transform').match(regex1)[1].split(',')[0]
-					// const y = brushLabelG.select(`.label_${labelId}`).attr('transform').match(regex1)[1].split(',')[1]
-					// const width = self.svgItemWidth
-					// const height = Number(brushLabelG.select(`.label_${labelId} rect`).attr('height'))
-					// brushLabelG.select(`.label_${labelId}`).remove()
-					// self.drawLabel(brushLabelG,x, y, width, height, labelId, labelId, true)
 					// 重新绘制操作
 					self.drawOperations(drawG, self.copyOperations, qc)
 				}
@@ -278,6 +291,7 @@ export default class d3Draw {
 	// 清空缓存的值
 	clear() {
 		this.copyOperations = []
+		this.copyLabels = []
 		this.getWholeState = []
 		this.filter = {}
 		this.labels = []
@@ -685,7 +699,11 @@ export default class d3Draw {
 	}
 	// 绘制C模块选中线
 	drawCselectLine(svg, x, y, height, index, data) {
-		const parentG = svg.append('g').attr('transform', `translate(${x}, ${y})`).attr('style', 'cursor:pointer;')
+		const parentG = svg
+			.append('g')
+			.attr('transform', `translate(${x}, ${y})`)
+			.attr('style', 'cursor:pointer;')
+			.classed('select_line', true)
 		parentG
 			.append('rect')
 			.attr('width', 10)
@@ -780,7 +798,6 @@ export default class d3Draw {
 				const [x0, x1] = selection
 				let operation_notations = svg.selectAll('.operation_g').filter((elm) => {
 					const { x } = elm
-
 					return x <= x1 && x > x0
 				})
 				if (operation_notations.data().length) {
@@ -798,7 +815,6 @@ export default class d3Draw {
 					const lineCol = end_operation - start_operation + 1
 					const labelRow = down_qubit - up_qubit + 1
 					const labelObj = qc.createlabel(start_operation, end_operation + 1)
-
 					this.drawLabel(
 						labelG,
 						this.svgItemWidth * start_operation + this.labelTranslate,
@@ -2990,7 +3006,7 @@ export default class d3Draw {
 					)
 				} else {
 					for (let j = index[i][0]; j <= index[i][1]; j++) {
-						this.drawText(svg,this.dLength * j, y, k)
+						this.drawText(svg, this.dLength * j, y, k)
 					}
 				}
 			}
@@ -3305,7 +3321,7 @@ export default class d3Draw {
 	}
 	// 绘制sankey图
 	drawSankey(qc, data) {
-		let filter_unused = false; //true;
+		let filter_unused = false //true;
 
 		const circleData = qc.getEvoMatrix(data.id)
 		let circleDataNum = 0
@@ -3617,9 +3633,9 @@ export default class d3Draw {
 	// 绘制普通完整表示
 	drawMatrix(qc, data) {
 		const { input_state: inputStateData, output_state: outStateData } = qc.getState(data.id)
-		
+
 		const circleData = qc.getEvoMatrix(data.id)
-	
+
 		let circleDataNum = 0
 		if (circleData.length && circleData[0].length) {
 			circleDataNum = circleData[0][0]['max'].toFixed(2)
@@ -3792,7 +3808,7 @@ export default class d3Draw {
 			for (let j = 0; j < inputStateData.bases.length; j++) {
 				inputVar2ValueArr.push(inputStateData.bases[j].var2value[inputStateData.vars[i]])
 			}
-			
+
 			// 得到重复的开始/结束位置:{10:[[0,1],[4,8]]}
 			const repeatObj = this.getRepeat(inputVar2ValueArr)
 			const catchObj = {}
