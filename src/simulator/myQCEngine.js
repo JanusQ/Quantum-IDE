@@ -1924,6 +1924,11 @@ class QInt {
         this.qc.nop()
     }
 
+    cnot(another_qint)
+    {
+        this.qc.cnot(another_qint.bits(),this.bits())
+    }
+
     hadamard(binary_qubits) {
         this.had(binary_qubits)
     }
@@ -2148,6 +2153,7 @@ class QInt {
 
     }
 
+    
 
 }
 // TODO: ccnot, cccnot 也要加

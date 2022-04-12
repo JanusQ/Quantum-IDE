@@ -1,6 +1,3 @@
-// TODO：之后把qc去了
-// conditional 
-
 // Initialize
 var num_qubits = 6;
 qc.reset(num_qubits);
@@ -27,15 +24,13 @@ qc.endlabel('b = (1, 3)');
 
 qc.nop();
 
-
-// if a < 3 then b += 1
 qc.startlabel('a -= 3');
-ancillary.subtract(2);  //原先的里面-6和加3是一样的
+ancillary.subtract(2);
 qc.endlabel('a -= 3');
 
 qc.nop();
 
-// debugger
+
 qc.startlabel('if (a > 4) then b++');
 b.add(1, ancillary.bits(0x4));
 qc.endlabel('if (a > 4) then b++');

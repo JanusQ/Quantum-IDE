@@ -6,7 +6,7 @@ const ConsoleComponent = (props) => {
 		<div id='console_div'>
 			<p className='title'>
 				Console
-				<Tooltip placement='right' title={'tip'}>
+				<Tooltip placement='right' title={'console'}>
 					<span className='tip_svg'></span>
 				</Tooltip>
 			</p>
