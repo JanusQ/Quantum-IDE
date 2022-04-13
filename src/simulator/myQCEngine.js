@@ -249,8 +249,6 @@ export default class QCEngine {
     }
 
     endlabel(labelname) {
-        console.log("hello")
-        this.export();
         const { _now_label, labels, operations } = this
         for (let key in labels) {
             if (labels[key]['text'] == labelname) {
