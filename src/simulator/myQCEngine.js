@@ -63,7 +63,11 @@ export default class QCEngine {
         this.dont_draw_evo = {}
 
     }
-
+    export()
+    {
+        var qasm = this.circuit.exportToQASM({comment:"test"}, false);
+        
+    }
 
     // We always begin by specifying how many qubits we want to associate with our QPU using the qc.reset() method. For example, we could prepare ourselves for a simulation of an 8-qubit QPU as follows:
     // // Request 8 qubits for simulation in our QPU
@@ -245,6 +249,8 @@ export default class QCEngine {
     }
 
     endlabel(labelname) {
+        console.log("hello")
+        this.export();
         const { _now_label, labels, operations } = this
         for (let key in labels) {
             if (labels[key]['text'] == labelname) {
@@ -254,6 +260,7 @@ export default class QCEngine {
         }
         console.error("no start label found");
         //debugger;
+        
     }
 
     createlabel(op_start, op_end, labelname) {
@@ -613,6 +620,28 @@ export default class QCEngine {
         })
     }
 
+    cswap(binary_qubit1, binary_qubit2, control_qubit)
+    {
+        const { operations, circuit, now_column } = this
+        const qubit1 = this.parseBinaryQubits(binary_qubit1)
+        const qubit2 = this.parseBinaryQubits(binary_qubit2)
+        const c_qubit = this.parseBinaryQubits(control_qubit)
+        if (qubit1.length != 1 || qubit2.length != 1 || c_qubit != 1) {
+            console.error(qubit1, 'or', qubit2, 'or', c_qubit, 'has more than one qubit, which can not be swapped')
+            debugger
+        }
+
+        circuit.addGate("cswap", now_column, [...qubit1, ...qubit2, ...c_qubit]);
+        this._addGate({
+            // qubits1, qubits2实际上只有一个，现在是暂时为之
+            'qubits1': qubit1,
+            'qubits2': qubit2,
+            'controls': c_qubit,
+            'operation': 'cswap',
+            'columns': this.nextColumn()
+        })
+
+    }
 
     // 啥事都不干，就空一格
     nop() {
@@ -1874,6 +1903,7 @@ class QInt {
         this.qc = qc  //上一级的必须是一个qcengine
         this.name = name
         this.index = index  //起始到结束的qubit的序号，左闭右开
+        this.numBits = index[1]-index[0];
         this.binary_qubits = qubit12binary(range(...index))  // 相对于整个电路的
         // range(...index).reduce((sum, val) => sum | pow2(val), 0)  //TODO:check一下对不对
         // debugger

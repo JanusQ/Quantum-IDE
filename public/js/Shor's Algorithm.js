@@ -1,7 +1,7 @@
 function shor_sample()
 {
     var N = 15;             // The number we're factoring
-    var precision_bits = 6; // See the text for a description
+    var precision_bits = 4; // See the text for a description
     var coprime = 2;        // must be 2 in this QPU implementation
 
     var result = Shor(N, precision_bits, coprime);
@@ -64,21 +64,6 @@ function ShorLogic(N, repeat_period_candidates, coprime)
     return factor_candidates;
 }
 
-function ShorQPU(N, precision_bits, coprime)
-{
-    // Quantum part of Shor's algorithm
-    // For this implementation, the coprime must be 2.
-    coprime = 2;
-
-    // For some numbers (like 15 and 21) the "mod" in a^xmod(N)
-    // is not needed, because a^x wraps neatly around. This makes the
-    // code simpler, and much easier to follow.
-    if (N == 15 || N == 21)
-        return ShorQPU_WithoutModulo(N, precision_bits, coprime)
-    else
-        return ShorQPU_WithModulo(N, precision_bits, coprime)
-}
-
 // In case our QPU read returns a "signed" negative value,
 // convert it to unsigned.
 function read_unsigned(qreg)
@@ -89,7 +74,7 @@ function read_unsigned(qreg)
 
 // This is the short/simple version of ShorQPU() where we can perform a^x and
 // don't need to be concerned with performing a quantum int modulus.
-function ShorQPU_WithoutModulo(N, precision_bits, coprime)
+function ShorQPU(N, precision_bits, coprime)
 {
     var N_bits = 1;
     while ((1 << N_bits) < N)
@@ -118,81 +103,6 @@ function ShorQPU_WithoutModulo(N, precision_bits, coprime)
         num.rollLeft(num_shifts, condition);
     }
     // Perform the QFT
-    qc.label('QFT');
-    precision.QFT();
-    qc.label('');
-
-    var read_result = read_unsigned(precision);
-    qc.print('QPU read result: '+read_result+'\n')
-    var repeat_period_candidates = estimate_num_spikes(read_result, 1 << precision_bits);
-
-    return repeat_period_candidates;
-}
-
-// This is the complicated version of ShorQPU() where we DO
-// need to be concerned with performing a quantum int modulus.
-// That's a complicated operation, and it also requires us to
-// do the shifts one at a time.
-function ShorQPU_WithModulo(N, precision_bits, coprime)
-{
-    var scratch = null;
-    var max_value = 1;
-    var mod_engaged = false;
-
-    var N_bits = 1;
-    var scratch_bits = 0;
-    while ((1 << N_bits) < N)
-        N_bits++;
-    if (N != 15) // For this implementation, numbers other than 15 need an extra bit
-        N_bits++;
-    scratch_bits = 1;
-    var total_bits = N_bits + precision_bits + scratch_bits;
-
-    // Set up the QPU and the working registers
-    qc.reset(total_bits);
-    var num = qint.new(N_bits, 'work');
-    var precision = qint.new(precision_bits, 'precision');
-    var scratch = qint.new(1, 'scratch');
-
-    qc.label('init');
-    num.write(1);
-    precision.write(0);
-    precision.hadamard();
-    scratch.write(0);
-
-    var N_sign_bit_place = 1 << (N_bits - 1);
-    var N_sign_bit = num.bits(N_sign_bit_place);
-    for (var iter = 0; iter < precision_bits; ++iter)
-    {
-        var condition = precision.bits(1 << iter);
-        var N_sign_bit_with_condition = num.bits(N_sign_bit_place);
-        N_sign_bit_with_condition.orEquals(condition);
-
-        var shifts = 1 << iter;
-        for (var sh = 0; sh < shifts; ++sh)
-        {
-            qc.label('num *= coprime');
-            num.rollLeft(1, condition);   // Multiply by the coprime
-            max_value <<= 1;
-            if (max_value >= N)
-                mod_engaged = true;
-            if (mod_engaged)
-            {
-                qc.label('modulo N');
-                var wrap_mask = scratch.bits();
-                var wrap_mask_with_condition = scratch.bits();
-                wrap_mask_with_condition.orEquals(condition);
-
-                // Here's the modulo code.
-                num.subtract(N, condition); // subtract N, causing this to go negative if we HAVEN'T wrapped.
-                scratch.cnot(N_sign_bit_with_condition); // Skim off the sign bit
-                num.add(N, wrap_mask_with_condition); // If we went negative, undo the subtraction.
-                num.not(1);
-                scratch.cnot(num, 1, condition); // If it's odd, then we wrapped, so clear the wrap bit
-                num.not(1);
-            }
-        }
-    }
     qc.label('QFT');
     precision.QFT();
     qc.label('');
