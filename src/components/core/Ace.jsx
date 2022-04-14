@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import AceEditor from 'react-ace'
-import './Ace.css'
+import '../styles/Ace.css'
 import 'ace-builds/src-noconflict/mode-javascript'
 import 'ace-builds/src-noconflict/theme-github'
 import 'ace-builds/src-min-noconflict/ext-language_tools'

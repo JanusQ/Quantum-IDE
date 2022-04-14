@@ -1,6 +1,6 @@
 import { message,Tooltip } from 'antd'
 import React from 'react'
-import './ConsoleComponent.css'
+import '../styles/ConsoleComponent.css'
 const ConsoleComponent = (props) => {
 	return (
 		<div id='console_div'>

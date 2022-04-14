@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import './Right.css'
+import '../styles/Right.css'
 import { Button, Tooltip } from 'antd'
 import { restore } from '../../simulator/CommonFunction'
 const Right = () => {
