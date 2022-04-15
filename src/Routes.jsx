@@ -9,6 +9,7 @@ const Routes = () => {
 		<HashRouter>
 			<Switch>
 				<Route path='/' component={App} exact />
+				<Route path='/home' component={Home} exact />
                 {/* <Route path='/computer' component={App} exact /> */}
 				<Route path='/signIn' component={SignIn} exact />
                 <Route path='/signUp' component={SignUp} exact />

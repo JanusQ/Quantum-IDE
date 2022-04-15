@@ -1,4 +1,4 @@
-import Layout from './Layout'
+import SignLayout from './SignLayout'
 import React, { useEffect } from 'react'
 import { Button, Form, Input, Result } from 'antd'
 import { useDispatch, useSelector } from 'react-redux'
@@ -66,11 +66,11 @@ const SignUp = () => {
 		)
 	}
 	return (
-		<Layout title='注册' subTitle=''>
+		<SignLayout title='注册' subTitle=''>
 			{showSuccess()}
 			{showError()}
 			{signupForm()}
-		</Layout>
+		</SignLayout>
 	)
 }
 

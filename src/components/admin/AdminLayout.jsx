@@ -1,18 +1,17 @@
 import React from 'react'
-import Navigation from './Navigation'
-import { PageHeader } from 'antd'
+import AdminNavigation from './AdminNavigation'
 import '../styles/Layout.css'
-const Layout = ({ children }) => {
+const AdminLayout = ({ children }) => {
 	return (
 		<div>
 			<div className='front_header'>
 				<div className='front_menu_div'>
 					<span className='front_logo_title'>量子计算</span>
-					<Navigation />
+					<AdminNavigation />
 				</div>
 			</div>
-			<div className='front_content'>{children}</div>
+			<div >{children}</div>
 		</div>
 	)
 }
-export default Layout
+export default AdminLayout

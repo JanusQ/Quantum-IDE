@@ -1,0 +1,21 @@
+.sign_layout {
+	height: 100%;
+	width: 100%;
+}
+.sign_header {
+	height: 58px;
+	width: 100%;
+    background: rgba(0, 42, 128, 1);
+    line-height: 58px;
+    padding: 0 20px;
+}
+.sign_content{
+    width: 100%;
+    height: calc(100% - 58px);
+}
+.sign_logo_title{
+    font-weight: 700;
+    font-style: normal;
+    font-size: 26px;
+    color: #F2F2F2;
+}

@@ -1,4 +1,4 @@
-import Layout from './Layout'
+import SignLayout from './SignLayout'
 import React from 'react'
 import { Button, Form, Input, Result } from 'antd'
 import { useDispatch, useSelector } from 'react-redux'
@@ -9,7 +9,7 @@ import { Redirect } from 'react-router-dom'
 const SignIn = () => {
 	const dispath = useDispatch()
 	const auth = useSelector((state) => state.auth)
-	const state = useSelector(state=>state)
+	const state = useSelector((state) => state)
 	const onFinish = (value) => {
 		dispath(signin(value))
 	}
@@ -49,12 +49,11 @@ const SignIn = () => {
 		)
 	}
 	return (
-		<Layout title='登录' subTitle=''>
-			<div>{JSON.stringify(state)}</div>
+		<SignLayout>
 			{showError()}
 			{redirectToDashboard()}
 			{signinForm()}
-		</Layout>
+		</SignLayout>
 	)
 }
 

@@ -8,7 +8,7 @@ import '../styles/Layout.css'
 function useActive(currentPath, path) {
 	return currentPath === path ? 'active' : ''
 }
-const Navigation = () => {
+const AdminNavigation = () => {
 	const router = useSelector((state) => state.router)
 	const pathname = router.location.pathname
 	const isHome = useActive(pathname, '/home')
@@ -67,13 +67,9 @@ const Navigation = () => {
 						
 					</a>
 				</Dropdown>
-				<span className='front_ling_dang'></span>
-				<span className='front_tip_num'>
-					{1}
-				</span>
 			</li>
 			
 		</ul>
 	)
 }
-export default Navigation
+export default AdminNavigation
