@@ -8,8 +8,8 @@ const Routes = () => {
 	return (
 		<HashRouter>
 			<Switch>
-				<Route path='/' component={Home} exact />
-                <Route path='/computer' component={App} exact />
+				<Route path='/' component={App} exact />
+                {/* <Route path='/computer' component={App} exact /> */}
 				<Route path='/signIn' component={SignIn} exact />
                 <Route path='/signUp' component={SignUp} exact />
 			</Switch>
