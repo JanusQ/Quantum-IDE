@@ -4,15 +4,17 @@ import Home from './components/core/Home'
 import App from './App'
 import SignIn from './components/core/SignIn'
 import SignUp from './components/core/SignUp'
+import FindPassword from './components/core/FindPassword'
 const Routes = () => {
 	return (
 		<HashRouter>
 			<Switch>
 				<Route path='/' component={App} exact />
 				<Route path='/home' component={Home} exact />
-                {/* <Route path='/computer' component={App} exact /> */}
+				{/* <Route path='/computer' component={App} exact /> */}
 				<Route path='/signIn' component={SignIn} exact />
-                <Route path='/signUp' component={SignUp} exact />
+				<Route path='/signUp' component={SignUp} exact />
+				<Route path='/findPassword' component={FindPassword} exact />
 			</Switch>
 		</HashRouter>
 	)

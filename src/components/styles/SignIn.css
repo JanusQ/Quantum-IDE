@@ -1,0 +1,60 @@
+.sign_in_form {
+	width: 260px;
+	margin-left: 70%;
+	margin-top: 10%;
+}
+.sign_in_form .sign_in_title {
+	width: 100%;
+	text-align: center;
+	font-weight: 700;
+	font-style: normal;
+	font-size: 26px;
+	color: #f2f2f2;
+}
+.sign_in_form_operation span {
+	color: #fff;
+	user-select: none;
+	cursor: pointer;
+}
+.sign_in_form .ant-input {
+	border: 0;
+	height: 40px;
+	background: rgba(33, 49, 160, 1);
+	color: #fff;
+}
+.sign_in_form .ant-input::-webkit-input-placeholder {
+	color: rgb(255, 255, 255);
+}
+.sign_in_form .ant-input-password {
+	padding: 0 11px;
+	background: rgba(33, 49, 160, 1);
+	border: 0;
+}
+.sign_in_form .ant-btn {
+	height: 40px;
+	background: rgba(33, 49, 160, 1);
+	border: 0;
+	color: #fff;
+}
+.sign_in_form .ant-input-password-icon {
+	color: #fff;
+}
+.sign_in_form .sign_in_to_signup {
+	text-align: center;
+	user-select: none;
+	cursor: pointer;
+	font-size: 16px;
+	color: #ffffff;
+}
+.sign_in_form
+	.ant-form-item-has-error
+	:not(.ant-input-affix-wrapper-disabled):not(.ant-input-affix-wrapper-borderless).ant-input-affix-wrapper,
+.sign_in_form .ant-form-item-has-error :not(.ant-input-disabled):not(.ant-input-borderless).ant-input {
+	background: rgba(33, 49, 160, 1);
+}
+.sign_in_form .ant-form-item-label > label{
+    color: #fff;
+}
+.sign_in_form a{
+    color: #fff;
+}

@@ -1,13 +1,13 @@
 import SignLayout from './SignLayout'
-import React, { useEffect } from 'react'
-import { Button, Form, Input, Result } from 'antd'
+import React, { useEffect, useState } from 'react'
+import { Button, Form, Input, Result, Row, Col, Statistic } from 'antd'
 import { useDispatch, useSelector } from 'react-redux'
 import { resetSignup, signup } from '../../store/actions/auth.actions'
 import { Link } from 'react-router-dom'
 import { json } from 'd3'
 import '../styles/Common.css'
-import '../styles/Signup.css'
-const SignUp = () => {
+import '../styles/FindPassword.css'
+const FindPassword = () => {
 	// 获取dispath
 	const dispath = useDispatch()
 	const auth = useSelector((state) => state.auth)
@@ -46,11 +46,21 @@ const SignUp = () => {
 			dispath(resetSignup())
 		}
 	}, [])
-	const signupForm = () => {
+	// 倒计时
+	const { Countdown } = Statistic
+	const [isGetting, setIsGetting] = useState(false)
+	const deadline = Date.now() + 60 * 1000
+	const getCode = () => {
+		setIsGetting(true)
+	}
+	const onCodeFinish = () => {
+		setIsGetting(false)
+	}
+	const findPasswordForm = () => {
 		return (
-			<div className='sign_up_form'>
-				<div className='sign_up_form_item'></div>
-				<div className='sign_up_form_item'>
+			<div className='find_psd_form'>
+				<div className='find_psd_form_item'></div>
+				<div className='find_psd_form_item'>
 					<Form
 						onFinish={onFinish}
 						form={form}
@@ -59,7 +69,7 @@ const SignUp = () => {
 						autoComplete='off'
 					>
 						<Form.Item
-							label='用户名称：'
+							label='用户名：'
 							name='name'
 							rules={[
 								{
@@ -71,19 +81,46 @@ const SignUp = () => {
 							<Input />
 						</Form.Item>
 						<Form.Item
-							label='手机号码：'
-							name='phone'
+							label='电子邮箱：'
+							name='email'
 							rules={[
 								{
 									required: true,
-									message: '请输入手机号',
+									message: '请输入电子邮箱',
 								},
 							]}
 						>
 							<Input />
 						</Form.Item>
+						<Form.Item label='验证码'>
+							<Row gutter={8}>
+								<Col span={16}>
+									<Form.Item
+										name='captcha'
+										noStyle
+										rules={[{ required: true, message: '请输入验证码' }]}
+									>
+										<Input />
+									</Form.Item>
+								</Col>
+								<Col span={8}>
+									{!isGetting && (
+										<>
+											<Button onClick={getCode}>获取验证码</Button>
+										</>
+									)}
+									{isGetting && (
+										<>
+											<Button disabled={true}>
+												<Countdown value={deadline} format='ss' onFinish={onCodeFinish} />
+											</Button>
+										</>
+									)}
+								</Col>
+							</Row>
+						</Form.Item>
 						<Form.Item
-							label='密码：'
+							label='新密码：'
 							name='password'
 							rules={[
 								{
@@ -114,42 +151,15 @@ const SignUp = () => {
 						>
 							<Input.Password />
 						</Form.Item>
-						<Form.Item
-							label='电子邮箱：'
-							name='email'
-							rules={[
-								{
-									required: true,
-									message: '请输入电子邮箱',
-								},
-							]}
-						>
-							<Input />
-						</Form.Item>
-						<Form.Item
-							label='单位名称：'
-							name='danwei'
-							rules={[
-								{
-									required: true,
-									message: '请输入单位名称',
-								},
-							]}
-						>
-							<Input />
-						</Form.Item>
-						<Form.Item label='单位类型：' name='leixing'>
-							<Input />
-						</Form.Item>
-						<Form.Item label='单位地址：' name='address'>
-							<Input />
-						</Form.Item>
+
 						<Form.Item wrapperCol={{ offset: 5, span: 19 }}>
-							<Button htmlType='submit'>注册</Button>
+							<Button htmlType='submit'>确认</Button>
 						</Form.Item>
 						<Form.Item wrapperCol={{ offset: 5, span: 19 }}>
 							<div>
-								<span style={{ float: 'right' }} className="signup_to_in"><Link to='/signIn'>已经有账户了？点击登录</Link></span>
+								<span style={{ float: 'right' }} className='signup_to_in'>
+									<Link to='/signIn'>返回登录</Link>
+								</span>
 							</div>
 						</Form.Item>
 					</Form>
@@ -161,9 +171,9 @@ const SignUp = () => {
 		<SignLayout>
 			{/* {showSuccess()}
 			{showError()} */}
-			<div className='sign_div'>{signupForm()}</div>
+			<div className='sign_div'>{findPasswordForm()}</div>
 		</SignLayout>
 	)
 }
 
-export default SignUp
+export default FindPassword

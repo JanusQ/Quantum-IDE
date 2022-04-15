@@ -5,7 +5,7 @@ const SignLayout = ({ children }) => {
 		<div className='sign_layout'>
 			<div className='sign_header'>
                 <span className='sign_logo_title'>量子计算</span>
-              
+                
             </div>
 			<div className='sign_content'>{children}</div>
 		</div>

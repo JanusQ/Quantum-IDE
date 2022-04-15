@@ -8,10 +8,12 @@
     background: rgba(0, 42, 128, 1);
     line-height: 58px;
     padding: 0 20px;
+    min-width: 1200px;
 }
 .sign_content{
     width: 100%;
     height: calc(100% - 58px);
+    min-width: 1200px;
 }
 .sign_logo_title{
     font-weight: 700;
@@ -19,3 +21,5 @@
     font-size: 26px;
     color: #F2F2F2;
 }
+
+

@@ -1,0 +1,35 @@
+.sign_up_form {
+	width: 890px;
+	height: 600px;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	margin: auto;
+    background: #fff;
+    border-radius: 6px;
+    display: flex;
+    padding: 30px;
+    box-shadow: 5px 5px 5px rgb(0 0 0 / 35%);
+}
+.sign_up_form_item:nth-of-type(1){
+    margin-right: 10px;
+    background: yellow;
+}
+.sign_up_form_item{
+    flex: 1;
+}
+.sign_up_form .ant-btn{
+    width: 100%;
+    background: rgba(27, 27, 180, 1);
+    color: #fff;
+    border: 0;
+}
+.signup_to_in{
+    user-select: none;
+    cursor: pointer;
+}
+.sign_up_form a{
+    color: rgba(27, 27, 180, 1);
+}
