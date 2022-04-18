@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { resetSignup, signup } from '../../store/actions/auth.actions'
 import { Link } from 'react-router-dom'
 import { json } from 'd3'
-import '../styles/Common.css'
 import '../styles/FindPassword.css'
 const FindPassword = () => {
 	// 获取dispath
@@ -171,7 +170,7 @@ const FindPassword = () => {
 		<SignLayout>
 			{/* {showSuccess()}
 			{showError()} */}
-			<div className='sign_div'>{findPasswordForm()}</div>
+			<div className='sign_find_div'>{findPasswordForm()}</div>
 		</SignLayout>
 	)
 }

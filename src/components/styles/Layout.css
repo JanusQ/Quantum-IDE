@@ -3,6 +3,7 @@
 	width: 100%;
 	background: rgba(58, 142, 230, 1);
 	line-height: 70px;
+	min-width: 1200px;
 }
 .front_menu_div {
 	width: 82%;
@@ -86,6 +87,9 @@
 }
 .front_content{
     width: 82%;
+	height: calc(100% - 70px);
     min-width: 1200px;
     margin: 0 auto;
+	overflow: hidden;
+
 }

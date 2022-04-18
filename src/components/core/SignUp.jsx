@@ -1,13 +1,13 @@
 import SignLayout from './SignLayout'
 import React, { useEffect } from 'react'
-import { Button, Form, Input, Result } from 'antd'
+import { Button, Form, Input, Result, Select } from 'antd'
 import { useDispatch, useSelector } from 'react-redux'
 import { resetSignup, signup } from '../../store/actions/auth.actions'
 import { Link } from 'react-router-dom'
 import { json } from 'd3'
-import '../styles/Common.css'
 import '../styles/Signup.css'
 const SignUp = () => {
+	const { Option } = Select
 	// 获取dispath
 	const dispath = useDispatch()
 	const auth = useSelector((state) => state.auth)
@@ -60,7 +60,7 @@ const SignUp = () => {
 					>
 						<Form.Item
 							label='用户名称：'
-							name='name'
+							name='username'
 							rules={[
 								{
 									required: true,
@@ -72,7 +72,7 @@ const SignUp = () => {
 						</Form.Item>
 						<Form.Item
 							label='手机号码：'
-							name='phone'
+							name='telephone'
 							rules={[
 								{
 									required: true,
@@ -128,7 +128,7 @@ const SignUp = () => {
 						</Form.Item>
 						<Form.Item
 							label='单位名称：'
-							name='danwei'
+							name='company_name'
 							rules={[
 								{
 									required: true,
@@ -138,10 +138,20 @@ const SignUp = () => {
 						>
 							<Input />
 						</Form.Item>
-						<Form.Item label='单位类型：' name='leixing'>
-							<Input />
+						<Form.Item
+							label='单位类型：'
+							name='company_type'
+							rules={[{ required: true, message: '请选择单位类型' }]}
+						>
+							<Select placeholder='请选择单位类型'>
+								<Option value='0'>科研院所</Option>
+								<Option value='1'>学校</Option>
+								<Option value='2'>企业</Option>
+								<Option value='3'>个人</Option>
+								<Option value='4'>其它</Option>
+							</Select>
 						</Form.Item>
-						<Form.Item label='单位地址：' name='address'>
+						<Form.Item label='单位地址：' name='company_address' rules={[{ required: true, message: '请输入单位地址' }]}>
 							<Input />
 						</Form.Item>
 						<Form.Item wrapperCol={{ offset: 5, span: 19 }}>
@@ -149,7 +159,9 @@ const SignUp = () => {
 						</Form.Item>
 						<Form.Item wrapperCol={{ offset: 5, span: 19 }}>
 							<div>
-								<span style={{ float: 'right' }} className="signup_to_in"><Link to='/signIn'>已经有账户了？点击登录</Link></span>
+								<span style={{ float: 'right' }} className='signup_to_in'>
+									<Link to='/signIn'>已经有账户了？点击登录</Link>
+								</span>
 							</div>
 						</Form.Item>
 					</Form>
@@ -161,7 +173,7 @@ const SignUp = () => {
 		<SignLayout>
 			{/* {showSuccess()}
 			{showError()} */}
-			<div className='sign_div'>{signupForm()}</div>
+			<div className='sign_up_div'>{signupForm()}</div>
 		</SignLayout>
 	)
 }

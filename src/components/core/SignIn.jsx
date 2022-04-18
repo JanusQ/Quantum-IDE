@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { signin } from '../../store/actions/auth.actions'
 import { getCookie, isAuth } from '../../helpers/auth'
 import { Redirect } from 'react-router-dom'
-import '../styles/Common.css'
 import '../styles/SignIn.css'
 import { delCookie } from '../../helpers/auth'
 import { Link } from 'react-router-dom'
@@ -54,8 +53,8 @@ const SignIn = () => {
 			<div className='sign_in_form'>
 				<p className='sign_in_title'>用户登录</p>
 				<Form onFinish={onFinish} layout='vertical' autoComplete='off' form={form}>
-					<Form.Item label='用户名：' name='email' rules={[{ required: true, message: '请输入用户名' }]}>
-						<Input placeholder='请输入您的用户名' />
+					<Form.Item label='邮箱：' name='email' rules={[{ required: true, message: '请输入用户名' }]}>
+						<Input placeholder='请输入您的邮箱' />
 					</Form.Item>
 					<Form.Item
 						label='密码：'
@@ -99,7 +98,7 @@ const SignIn = () => {
 			{/* {showError()} */}
 			{/* {redirectToDashboard()} */}
 
-			<div className='sign_div'>{signinForm()}</div>
+			<div className='sign_in_div'>{signinForm()}</div>
 		</SignLayout>
 	)
 }
