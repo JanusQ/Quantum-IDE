@@ -1,8 +1,8 @@
 function shor_sample()
 {
-    var N = 15;             // The number we're factoring
-    var precision_bits = 4; // See the text for a description
-    var coprime = 2;        // must be 2 in this QPU implementation
+    var N = 15;             
+    var precision_bits = 4; 
+    var coprime = 2;        
 
     var result = Shor(N, precision_bits, coprime);
 
@@ -51,7 +51,7 @@ function check_result(N, factor_candidates)
 function ShorLogic(N, repeat_period_candidates, coprime)
 {
     qc.print('Repeat period candidates: '+repeat_period_candidates+'\n');
-    factor_candidates = [];
+    let factor_candidates = [];
     for (var i = 0; i < repeat_period_candidates.length; ++i)
     {
         var repeat_period = repeat_period_candidates[i];
@@ -72,6 +72,19 @@ function read_unsigned(qreg)
     return value & ((1 << qreg.numBits) - 1);
 }
 
+function rollLeft(num, condition, space)
+{
+    let start = num.numBits;
+    let i,j;
+    for(i=start - 1; i>0; i--){
+        j = i - space;
+        while(j < 0)
+            j +=start;
+        if(j>=i)
+            j=0;
+        qc.cswap(num.bits(Math.pow(2,i)),num.bits(Math.pow(2,j)),condition);
+    }
+}
 // This is the short/simple version of ShorQPU() where we can perform a^x and
 // don't need to be concerned with performing a quantum int modulus.
 function ShorQPU(N, precision_bits, coprime)
@@ -88,24 +101,27 @@ function ShorQPU(N, precision_bits, coprime)
     var num = qint.new(N_bits, 'work');
     var precision = qint.new(precision_bits, 'precision');
 
-    qc.label('init');
+    qc.startlabel('init');
     num.write(1);
     precision.write(0);
     precision.hadamard();
+    qc.endlabel('init');
 
     // Perform 2^x for all possible values of x in superposition
     for (var iter = 0; iter < precision_bits; ++iter)
     {
-        qc.label('iter ' + iter);
+        qc.startlabel('iter ' + iter);
         var num_shifts = 1 << iter;
         var condition = precision.bits(num_shifts);
-        num_shifts %= num.numBits;
-        num.rollLeft(num_shifts, condition);
+        // num_shifts %= num.numBits;
+        rollLeft(num, condition, Math.pow(2,iter));
+        //qc.cswap(num.bits(1),num.bits(2),precision.bits(1));
+        qc.endlabel('iter ' + iter);
     }
     // Perform the QFT
-    qc.label('QFT');
+    qc.startlabel('QFT');
     precision.QFT();
-    qc.label('');
+    qc.endlabel('QFT');
 
     var read_result = read_unsigned(precision);
     qc.print('QPU read result: '+read_result+'\n')
