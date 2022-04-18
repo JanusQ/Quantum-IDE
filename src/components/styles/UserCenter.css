@@ -1,0 +1,36 @@
+.user_center {
+	width: 80%;
+	margin: auto;
+	height: calc(100% - 150px);
+	margin-top: 30px;
+	display: flex;
+}
+.user_center_left_menu {
+	width: 200px;
+	background: #fff;
+	height: 100%;
+	border: 1px solid rgba(233, 233, 233, 1);
+}
+.user_center_left_menu_title {
+	height: 45px;
+	line-height: 45px;
+	padding-left: 35px;
+	color: #999;
+	border-bottom: 1px solid rgba(233, 233, 233, 1);
+}
+.user_center_left_menu_list {
+	user-select: none;
+}
+.user_center_left_menu_list li {
+	height: 45px;
+	line-height: 45px;
+	padding-left: 50px;
+	color: #333;
+	cursor: pointer;
+}
+.user_center_left_menu_list li.active{
+    
+    background:rgba(233, 233, 233, .5) ;
+    border-bottom: 1px solid rgba(233, 233, 233, 1);
+    color: rgb(64, 158, 255);
+}

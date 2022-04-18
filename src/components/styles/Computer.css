@@ -1,0 +1,76 @@
+.computer_search {
+	margin: 20px 0;
+	box-shadow: 2px 2px 5px rgb(0 0 0 / 35%);
+}
+.computer_list {
+	display: flex;
+	width: 100%;
+	flex-wrap: wrap;
+	overflow: auto;
+	height: calc(100% - 247px);
+}
+.computer_item {
+	flex: 0 0 24%;
+	margin-right: calc(4% / 3);
+	height: 186px;
+	background: #fff;
+	margin-bottom: calc(4% / 3);
+	padding: 10px;
+	cursor: pointer;
+}
+.computer_item:nth-child(4n) {
+	margin-right: 0;
+}
+/* 使最后一个元素的边距填满剩余空间 */
+.computer_item:last-child {
+	margin-right: auto;
+}
+.computer_name {
+	font-size: 18px;
+	margin-bottom: 14px;
+}
+.computer_number {
+	display: flex;
+}
+.computer_number_item {
+	width: 80px;
+	height: 59px;
+}
+.compuer_number_name {
+	font-size: 16px;
+}
+.compuer_number_contet {
+	font-size: 28px;
+}
+.computer_params_div{
+    width: 100%;
+    height: 270px;
+    border-bottom: 1px solid rgba(215, 215, 215, 1);
+}
+.computer_params_detail{
+    display: flex;
+
+}
+.computer_params_detail_num{
+    font-size: 28px;
+
+}
+.computer_params_detail_name{
+    font-size: 14px;
+    text-indent: 2px;
+}
+.computer_params_detail_item{
+    margin-bottom: 5px;
+}
+.computer_params_detail_div{
+    margin-right: 100px;
+}
+.computer_params_right_item{
+    line-height: 50px;
+}
+.computer_number_div{
+    padding-top: 24px;
+}
+.computer_number_title{
+    font-size: 16px;
+}

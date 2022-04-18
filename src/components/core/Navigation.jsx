@@ -12,11 +12,13 @@ const Navigation = () => {
 	const router = useSelector((state) => state.router)
 	const pathname = router.location.pathname
 	const isHome = useActive(pathname, '/home')
-	const isShop = useActive(pathname, '/shop')
+	const isComputer = useActive(pathname, '/computer')
 	const isApp = useActive(pathname, '/app')
 	const isSignIn = useActive(pathname, '/signIn')
 	const isSignUp = useActive(pathname, '/signUp')
-	const isDashboard = useActive(pathname, getDashboarUrl())
+	const isNotice = useActive(pathname, '/notice')
+	const isNoticeDetail = useActive(pathname, '/noticedetail')
+	const isProject = useActive(pathname, '/project')
 	function getDashboarUrl() {
 		let url = '/user/dashboard'
 		if (isAuth()) {
@@ -45,14 +47,14 @@ const Navigation = () => {
 	)
 	return (
 		<ul className='front_menu_list'>
-			<li className={isHome}>
+			<li className={isHome || isNotice || isNoticeDetail}>
 				<Link to='/home'>首页</Link>
 			</li>
-			<li>
-				<Link to='/'>计算机列表</Link>
+			<li className={isComputer}>
+				<Link to='/computer'>计算机列表</Link>
 			</li>
-			<li>
-				<Link to='/'>项目管理</Link>
+			<li className={isProject}>
+				<Link to='/project'>项目管理</Link>
 			</li>
 			<li>
 				<Link to='/'>参考文档</Link>
@@ -60,19 +62,13 @@ const Navigation = () => {
 			<li className='front_menu_user'>
 				<Dropdown overlay={menu}>
 					<a className='ant-dropdown-link' onClick={(e) => e.preventDefault()}>
-						<span className='front_user_name'>
-							aaa
-						</span>
+						<span className='front_user_name'>aaa</span>
 						<DownOutlined />
-						
 					</a>
 				</Dropdown>
 				<span className='front_ling_dang'></span>
-				<span className='front_tip_num'>
-					{1}
-				</span>
+				<span className='front_tip_num'>{1}</span>
 			</li>
-			
 		</ul>
 	)
 }

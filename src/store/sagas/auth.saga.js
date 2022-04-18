@@ -2,12 +2,11 @@ import axios from 'axios'
 import { takeEvery,put } from 'redux-saga/effects'
 import { SIGNIN, signinFail, signinSuccess, SIGNUP, signupFail, signupSuccess } from '../actions/auth.actions'
 import {setCookie } from '../../helpers/auth'
-const Api = "http://localhost/api"
+const Api = "/series"
 function* hanleSignUp(action){
     try{
         yield axios.post(`${Api}/signup`,action.payload)
         yield put(signupSuccess())
-        
     }catch(error){
         yield put(signupFail(error.response.data.error))
     }

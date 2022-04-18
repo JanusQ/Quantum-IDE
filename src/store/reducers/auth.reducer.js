@@ -36,7 +36,8 @@ export default function authReducer(state=intialState,action){
                 ...state,
                 signup:{
                     loaded:true,
-                    success:true
+                    success:true,
+                    message:''
                 }
             }
         case SIGNUP_FAIL:
