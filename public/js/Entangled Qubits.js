@@ -1,8 +1,4 @@
-// Programming Quantum Computers
-//   by Eric Johnston, Nic Harrigan and Mercedes Gimeno-Segovia
-//   O'Reilly Media
 
-// To run this online, go to http://oreilly-qc.github.io?p=3-2
 
 qc.reset(2);
 var a = qint.new(1, 'a');
@@ -11,12 +7,12 @@ qc.write(0);
 qc.nop();
 
 qc.startlabel('entangle');
-a.had();           // Place into superposition
-qc.cnot(0x1,0x2);         // Entangle
+a.had();           
+qc.cnot(0x1,0x2);         
 qc.endlabel('entangle');
 
 qc.nop();
-var a_result = a.read();  // The two bits will be random,
-var b_result = b.read();  // but always the same.
+var a_result = a.read();  
+var b_result = b.read();  
 qc.print(a_result);
 qc.print(b_result);

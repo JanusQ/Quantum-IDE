@@ -12,17 +12,11 @@ for (var i = 0; i < number_of_iterations; ++i)
 {
     qc.startlabel('Amplitude Amplification '+i);
 
-    // Flip the marked value
     reg.not(number_to_flip);
     reg.cphase(180);
     reg.not(number_to_flip);
     reg.Grover();
 
-    // Peek at the probability
-    //var prob = reg.peekProbability(number_to_flip);
-    //qc.print('Iter '+i+': probability = '+prob+'\n');
-
-    // just space it out visually
     qc.endlabel('Amplitude Amplification '+i);
     qc.nop();
 }

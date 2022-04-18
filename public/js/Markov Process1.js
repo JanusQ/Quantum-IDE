@@ -1,14 +1,4 @@
-// [
-//     ["cos(theta / 2)","-1 * sin(theta / 2)"],
-//     ["sin(theta / 2)","cos(theta / 2)"]
-// ]
 
-// [
-//     [1,0,0,0],
-//     [0,1,0,0],
-//     [0,0,"cos(theta / 2)","-1 * sin(theta / 2)"],
-//     [0,0,"sin(theta / 2)","cos(theta / 2)"]
-// ]
 
 let theta1to1 = probability => {  
     return asin(sqrt(probability)) / pi * 180 * 2
@@ -21,7 +11,7 @@ var num_qubits = 5;
 qc.reset(num_qubits);
 
 let setConditional = (probability, control, target, from_zero) => {
-    // debugger
+
     let theta = undefined
     if(from_zero){
         probability = 1-probability
@@ -29,7 +19,7 @@ let setConditional = (probability, control, target, from_zero) => {
     }else{
         theta = theta1to1(probability)
     }
-    // console.log(theta)
+
     qc.cry(theta, control.bits(0x1), target.bits(0x1))
 }
 
