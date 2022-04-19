@@ -66,7 +66,7 @@ export default class QCEngine {
     export()
     {
         var qasm = this.circuit.exportToQASM({comment:"test"}, false);
-        
+        return qasm;    
     }
 
     // We always begin by specifying how many qubits we want to associate with our QPU using the qc.reset() method. For example, we could prepare ourselves for a simulation of an 8-qubit QPU as follows:
