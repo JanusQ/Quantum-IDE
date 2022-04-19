@@ -4,7 +4,7 @@ import { Button, Form, Input, Result, Checkbox, message } from 'antd'
 import { getCookie, isAuth, delCookie, setCookie } from '../../helpers/auth'
 // import { Redirect } from 'react-router-dom'
 import '../styles/SignIn.css'
-import { Link } from 'react-router-dom'
+import { Link, Redirect } from 'react-router-dom'
 import { login } from '../../api/auth'
 import { useHistory } from 'react-router-dom'
 
@@ -17,24 +17,13 @@ const SignIn = () => {
 			setCookie('email', value.email, 7)
 			setCookie('password', value.password, 7)
 		}
+		localStorage.setItem('jwt', JSON.stringify({ name: '123' }))
 		history.push('/home')
 	}
-	// const showError = () => {
-	// 	if (auth.signin.loaded && !auth.signin.success) {
-	// 		return <Result status='error' title='登录失败' subTitle={auth.signin.message} />
-	// 	}
-	// }
 	const redirectToDashboard = () => {
 		const auth = isAuth()
 		if (auth) {
-			const {
-				user: { role },
-			} = auth
-			if (role === 0) {
-				// return <Redirect to='/user/dashboard'></Redirect>
-			} else {
-				// return <Redirect to='/admin/dashboard'></Redirect>
-			}
+			return <Redirect to='/home'></Redirect>
 		}
 	}
 	// 记住密码
@@ -110,9 +99,7 @@ const SignIn = () => {
 	}, [])
 	return (
 		<SignLayout>
-			{/* {showError()} */}
-			{/* {redirectToDashboard()} */}
-
+			{redirectToDashboard()}
 			<div className='sign_in_div'>{signinForm()}</div>
 		</SignLayout>
 	)

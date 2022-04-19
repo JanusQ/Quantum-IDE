@@ -28,7 +28,7 @@ const Routes = () => {
 					<Route path='/notice' component={NoticeList} exact />
 					<Route path='/noticedetail' component={NoticeDetail} exact />
 					<Route path='/project' component={Project} exact />
-					<Route path='/usercenter' component={UserCenter} exact />
+					<Route path='/usercenter' component={UserCenter}/>
 					<Route path='/test' component={Test} exact />
 				</Switch>
 			</HashRouter>
