@@ -2035,6 +2035,7 @@ export default class d3Draw {
 	// 绘制C视图下半
 	drawCdownStackedBar(data) {
 		const chart_down_svg = d3.select('#chart_down_svg')
+		chart_down_svg.attr('height','303px')
 		chart_down_svg.selectAll('*').remove()
 		const keyArr = Object.keys(data)
 		const dataArr = []
@@ -3260,8 +3261,8 @@ export default class d3Draw {
 			.append('div')
 			.classed('save_svg', true)
 			.append('svg')
-			.attr('width', 130)
-			.attr('height', 107)
+			.attr('width', '100%')
+			.attr('height', 'calc(100% - 22px)')
 			.attr('viewBox', `0,0,${width},${height}`)
 		saveSvg.html(elm)
 

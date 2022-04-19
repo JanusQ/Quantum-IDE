@@ -1,0 +1,23 @@
+.message_div {
+	width: 99%;
+    margin: auto;
+    margin-top: 30px;
+    height: calc(100% - 180px);
+    overflow: auto;
+	background: #fff;
+	box-shadow: rgb(0 0 0 / 35%) 0px 0px 5px;
+    padding: 10px;
+}
+.message_title{
+    font-size: 18px;
+    text-align: center;
+    font-weight: 700;
+    margin: 15px 0;
+}
+.message_operation{
+    height: 40px;
+    line-height: 40px;
+    width: 100%;
+    border: 1px solid rgba(233, 233, 233, 1);
+    padding: 0 10px;
+}

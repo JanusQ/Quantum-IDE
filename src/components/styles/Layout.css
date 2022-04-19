@@ -53,23 +53,23 @@
 	height: 18px;
 	display: inline-block;
 	background: url('../../images/lingdang.svg') no-repeat;
-    position: absolute;
-    top: 26px;
+	position: absolute;
+	top: 26px;
 }
-.front_tip_num{
-    width: 16px;
-    height: 16px;
-    color: #fff;
-    background: red;
-    border-radius: 50%;
-    position: absolute;
-    line-height: 14px;
-    font-size: 12px;
-    top: 22px;
-    right: 13px;
+.front_tip_num {
+	width: 16px;
+	height: 16px;
+	color: #fff;
+	background: red;
+	border-radius: 50%;
+	position: absolute;
+	line-height: 14px;
+	font-size: 12px;
+	top: 22px;
+	right: 13px;
 }
 .front_menu_list .front_menu_user {
-    position: relative;
+	position: relative;
 	width: 200px;
 }
 .front_menu_list .front_menu_user a {
@@ -85,11 +85,15 @@
 	white-space: nowrap;
 	vertical-align: top;
 }
-.front_content{
-    width: 82%;
+.front_content {
+	width: 82%;
 	height: calc(100% - 70px);
-    min-width: 1200px;
-    margin: 0 auto;
+	min-width: 1200px;
+	margin: 0 auto;
 	overflow: hidden;
-
+}
+.computer_content {
+	width: 100%;
+	height: calc(100% - 70px);
+	display: flex;
 }

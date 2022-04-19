@@ -29,8 +29,23 @@
 	cursor: pointer;
 }
 .user_center_left_menu_list li.active{
-    
     background:rgba(233, 233, 233, .5) ;
     border-bottom: 1px solid rgba(233, 233, 233, 1);
     color: rgb(64, 158, 255);
+}
+.user_center_right_menu{
+	flex: 1;
+	margin-left: 30px;
+	border: 1px solid rgba(233, 233, 233, 1);
+	height: 100%;
+	background: #fff;
+	padding: 0 10px;
+	overflow: hidden;
+}
+.user_info_name{
+	display: inline-block;
+	height: 20px;
+	line-height: 20px;
+	border-left: 5px solid rgba(64, 158, 255, 1);
+	padding-left: 10px;
 }

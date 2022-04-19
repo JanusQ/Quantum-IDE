@@ -35,10 +35,10 @@ const Navigation = () => {
 	const menu = (
 		<Menu>
 			<Menu.Item>
-				<Link>个人中心</Link>
+				<Link to='/usercenter/userInfo'>个人中心</Link>
 			</Menu.Item>
 			<Menu.Item>
-				<Link>修改密码</Link>
+				<Link to='/usercenter/resetPassword'>修改密码</Link>
 			</Menu.Item>
 			<Menu.Item>
 				<Link>退出登录</Link>

@@ -13,7 +13,7 @@ import {
 import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, alt_tensor, calibrate, getExp, linear_entropy, binary2int, average, spec} from './simulator/CommonFunction'
 // import MathJax from 'mathJax'
 import {getDirac} from './components/Mathjax'
-
+import Layout from './components/core/Layout'
 // import QCEngine from './simulator/MyQCEngine'
 // import './test/meausre'
 // import './test/reset'
@@ -116,8 +116,16 @@ function App() {
 
 
 	// console.log(getDirac(1))
-	
+	const leftOperations = ()=>{
+		return (
+			<div className='computer_left_operation'>
+				
+			</div>
+		)
+	}
 	return (
+		<Layout isComputer={true}>
+		{leftOperations()}
 		<div className='App'>
 			<div className='left-div'>
 				<Ace
@@ -132,6 +140,7 @@ function App() {
 				<Right></Right>
 			</div>
 		</div>
+		</Layout>
 	)
 }
 

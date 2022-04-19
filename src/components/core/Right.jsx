@@ -35,7 +35,12 @@ const Right = () => {
 						<div className='title'>
 							<span className='title_name'>
 								Evolution
-								<Tooltip placement='right' title={'Here is the panel to interpret the evolution of sub-quantum circuits by matrix representation or sankey diagram.'}>
+								<Tooltip
+									placement='right'
+									title={
+										'Here is the panel to interpret the evolution of sub-quantum circuits by matrix representation or sankey diagram.'
+									}
+								>
 									<span className='tip_svg'></span>
 								</Tooltip>
 							</span>
@@ -63,7 +68,10 @@ const Right = () => {
 					<div className='title'>
 						<span className='title_name'>
 							Variable State
-							<Tooltip placement='right' title={'Here is the panel to inspect the intermediate variable state.'}>
+							<Tooltip
+								placement='right'
+								title={'Here is the panel to inspect the intermediate variable state.'}
+							>
 								<span className='tip_svg'></span>
 							</Tooltip>
 						</span>
@@ -77,7 +85,10 @@ const Right = () => {
 					<div className='title'>
 						<span className='title_name'>
 							System State
-							<Tooltip placement='right' title={'Here is the panel to inspect the global quantum system state.'}>
+							<Tooltip
+								placement='right'
+								title={'Here is the panel to inspect the global quantum system state.'}
+							>
 								<span className='tip_svg'></span>
 							</Tooltip>
 						</span>
