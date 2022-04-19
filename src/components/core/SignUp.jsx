@@ -10,10 +10,7 @@ import { register } from '../../api/auth'
 const SignUp = () => {
 	const { Option } = Select
 	const [form] = Form.useForm()
-
 	const history = useHistory()
-	// 获取dispath
-
 	const onFinish = async (value) => {
 		await register(value)
 		message.success('注册成功')
@@ -154,8 +151,6 @@ const SignUp = () => {
 	}
 	return (
 		<SignLayout>
-			{/* {showSuccess()}
-			{showError()} */}
 			<div className='sign_up_div'>{signupForm()}</div>
 		</SignLayout>
 	)
