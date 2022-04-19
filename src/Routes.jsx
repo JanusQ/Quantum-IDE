@@ -12,6 +12,7 @@ import { ConfigProvider } from 'antd'
 import NoticeDetail from './components/core/NoticeDetail'
 import Project from './components/core/Project'
 import UserCenter from './components/core/UserCenter'
+import Test from './components/test/Test'
 const Routes = () => {
 	return (
 		<ConfigProvider locale={zhCN}>
@@ -28,6 +29,7 @@ const Routes = () => {
 					<Route path='/noticedetail' component={NoticeDetail} exact />
 					<Route path='/project' component={Project} exact />
 					<Route path='/usercenter' component={UserCenter} exact />
+					<Route path='/test' component={Test} exact />
 				</Switch>
 			</HashRouter>
 		</ConfigProvider>

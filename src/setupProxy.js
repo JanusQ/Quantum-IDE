@@ -2,13 +2,10 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 
 module.exports = function(app) {
   app.use(
-    '/series',
+    '/circuit',
     createProxyMiddleware({
-      target: '/localhost', // 请求的地址域名
-      changeOrigin: true,
-      pathRewrite:{
-          '^/series':""
-      }
+      target: 'http://192.168.23.178:8080', // 请求的地址域名
+      changeOrigin: true
     })
   );
 };

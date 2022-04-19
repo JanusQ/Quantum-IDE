@@ -1,51 +1,26 @@
 import SignLayout from './SignLayout'
 import React, { useEffect } from 'react'
-import { Button, Form, Input, Result, Select } from 'antd'
-import { useDispatch, useSelector } from 'react-redux'
+import { Button, Form, Input, message, Result, Select } from 'antd'
 import { resetSignup, signup } from '../../store/actions/auth.actions'
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import { json } from 'd3'
 import '../styles/Signup.css'
+import { register } from '../../api/auth'
+
 const SignUp = () => {
 	const { Option } = Select
-	// 获取dispath
-	const dispath = useDispatch()
-	const auth = useSelector((state) => state.auth)
-	const onFinish = (value) => {
-		dispath(signup(value))
-	}
 	const [form] = Form.useForm()
-	const showSuccess = () => {
-		if (auth.signup.loaded && auth.signup.success) {
-			return (
-				<Result
-					status='success'
-					title='注册成功'
-					extra={[
-						<Button type='primary'>
-							<Link to='/signin'>登录</Link>
-						</Button>,
-					]}
-				/>
-			)
-		}
-	}
-	const showError = () => {
-		if (auth.signup.loaded && !auth.signup.success) {
-			return <Result status='error' title='注册失败' subTitle={auth.signup.message} />
-		}
+
+	const history = useHistory()
+	// 获取dispath
+
+	const onFinish = async (value) => {
+		await register(value)
+		message.success('注册成功')
+		form.resetFields()
+		history.push('/signIn')
 	}
 
-	useEffect(() => {
-		if (auth.signup.loaded && auth.signup.success) {
-			form.resetFields()
-		}
-	}, [auth])
-	useEffect(() => {
-		return () => {
-			dispath(resetSignup())
-		}
-	}, [])
 	const signupForm = () => {
 		return (
 			<div className='sign_up_form'>
@@ -122,6 +97,10 @@ const SignUp = () => {
 									required: true,
 									message: '请输入电子邮箱',
 								},
+								{
+									type: 'email',
+									message: '邮箱格式错误',
+								},
 							]}
 						>
 							<Input />
@@ -151,7 +130,11 @@ const SignUp = () => {
 								<Option value='4'>其它</Option>
 							</Select>
 						</Form.Item>
-						<Form.Item label='单位地址：' name='company_address' rules={[{ required: true, message: '请输入单位地址' }]}>
+						<Form.Item
+							label='单位地址：'
+							name='company_address'
+							rules={[{ required: true, message: '请输入单位地址' }]}
+						>
 							<Input />
 						</Form.Item>
 						<Form.Item wrapperCol={{ offset: 5, span: 19 }}>
