@@ -1411,7 +1411,7 @@ export default class d3Draw {
 		// d3.min(data, (d) => d.entropy)
 		const scaleY = d3
 			.scaleLinear()
-			.domain([-0.02, d3.max(data, (d) => d.entropy)])
+			.domain([-0.02, d3.max(data, (d) => d.entropy)+0.02])
 			// .range([transformY + this.svgItemHeight * 4, transformY + this.svgItemHeight * 3])
 			.range([this.svgItemHeight, 0])
 		// 渲染线条
