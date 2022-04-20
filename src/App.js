@@ -13,6 +13,7 @@ import {
 import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, alt_tensor, calibrate, getExp, linear_entropy, binary2int, average, spec} from './simulator/CommonFunction'
 // import MathJax from 'mathJax'
 import {getDirac} from './components/Mathjax'
+import {send_to_real, recieve_from_real} from './api/test_circuit'
 
 // import QCEngine from './simulator/MyQCEngine'
 // import './test/meausre'
@@ -52,7 +53,7 @@ function App() {
 	// 选择改变编辑器的内容
 	const selectChange = (value) => {
 		// 自定义
-		if (value === 'about:black') {
+		if (value === 'about:blank') {
 			setEditorValue('//please')
 		} else {
 			axios
@@ -100,7 +101,25 @@ function App() {
 		if (noBug) {
 			exportSVG(qc)
 		}
+
+		// 暂时测试一下
+		
+		//testfunc(qc)
+
 	}
+	async function testfunc(qc)
+	{
+		console.log(qc.export())
+		let data = {}
+		data['qasm'] = qc.export();
+		data['sample'] = 1000;
+		var id;
+		id = await send_to_real(data);
+		console.log(id['data']);
+		let res = await recieve_from_real(id['data'])
+		console.log(res)
+	}
+
 	// 处理console
 	const consoleContent = (isTure, message) => {
 		if (isTure) {
