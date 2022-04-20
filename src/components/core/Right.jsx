@@ -2,10 +2,16 @@ import React, { useState, useEffect } from 'react'
 import '../styles/Right.css'
 import { Button, Tooltip } from 'antd'
 import { restore } from '../../simulator/CommonFunction'
-const Right = () => {
+const Right = (props) => {
 	return (
 		<div id='right_div_box'>
-			<div id='circuit_view'>
+			<div
+				id='circuit_view'
+				style={{
+					display: props.isShowBMode ? 'block' : 'none',
+					height: !props.isShowCMode && !props.isShowDMode ? '100%' : '40%',
+				}}
+			>
 				<div className='title'>
 					Circuit
 					<Tooltip placement='right' title={'Here is the panel to visualize the quantum circuit.'}>
@@ -29,8 +35,22 @@ const Right = () => {
 					</div>
 				</div>
 			</div>
-			<div id='right_down_div'>
-				<div className='scroll_div'>
+			<div
+				id='right_down_div'
+				style={{
+					height: props.isShowBMode ? 'calc(60% - 5px)' : '100%',
+					marginTop: props.isShowBMode ? '5px' : '0',
+					display: !props.isShowCMode && !props.isShowDMode ? 'none' : 'flex',
+				}}
+			>
+				<div
+					className='scroll_div'
+					style={{
+						width: props.isShowCMode ? '60%' : '100%',
+						marginRight: props.isShowCMode ? '5px' : '0',
+						display: props.isShowDMode ? 'block' : 'none',
+					}}
+				>
 					<div className='d_component'>
 						<div className='title'>
 							<span className='title_name'>
@@ -64,7 +84,13 @@ const Right = () => {
 						<div id='d_draw_div'></div>
 					</div>
 				</div>
-				<div className='c_component'>
+				<div
+					className='c_component'
+					style={{
+						display: props.isShowCMode ? 'block' : 'none',
+						width: props.isShowDMode ? 'calc(40% - 5px)' : '100%',
+					}}
+				>
 					<div className='title'>
 						<span className='title_name'>
 							Variable State

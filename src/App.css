@@ -94,4 +94,30 @@ ul li {
 	width: 50px;
 	height: 100%;
 	background: #28619D;
+	text-align: center;
+}
+.computer_left_operation ul li {
+	height: 49px;
+	line-height: 49px;
+}
+.computer_left_operation_item{
+	display: inline-block;
+	width: 25px;
+	height: 25px;
+	margin-top: 12px;
+	cursor: pointer;
+}
+.computer_left_operation ul li:nth-of-type(1) .computer_left_operation_item{
+	background: url('./images/ide_save.svg') no-repeat;
+}
+.computer_left_operation ul li:nth-of-type(2) .computer_left_operation_item{
+	background: url('./images/ide_change_mode.svg') no-repeat;
+}
+.computer_left_operation ul li:nth-of-type(3) .computer_left_operation_item{
+	background: url('./images/ide_shitu.svg') no-repeat;
+	background-size: 100% 100%;
+	
+}
+.ace_operation .ant-btn-primary{
+	border: 0;
 }
