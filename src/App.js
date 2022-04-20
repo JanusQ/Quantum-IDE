@@ -4,7 +4,7 @@ import Ace from './components/core/Ace'
 import Right from './components/core/Right'
 import ConsoleComponent from './components/core/ConsoleComponent'
 import axios from 'axios'
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { exportSVG } from './simulator/CommonFunction'
 import QCEngine from './simulator/MyQCEngine'
 import { cos, sin, round, pi, complex, create, all, max, sparse } from 'mathjs'
@@ -28,8 +28,9 @@ import {
 // import MathJax from 'mathJax'
 import { getDirac } from './components/Mathjax'
 import Layout from './components/core/Layout'
-import { Modal, Checkbox, message, Input, Radio } from 'antd'
-import {send_to_real, recieve_from_real} from './api/test_circuit'
+import { Modal, Checkbox, message, Input, Radio, Form, Select } from 'antd'
+import { send_to_real, recieve_from_real } from './api/test_circuit'
+import { values } from 'lodash'
 // import QCEngine from './simulator/MyQCEngine'
 // import './test/meausre'
 // import './test/reset'
@@ -80,8 +81,16 @@ function App() {
 				})
 		}
 	}
+	// 分发事件
+	const dispathRun = () => {
+		if (runValue === 1) {
+			setSubmitModalVisible(true)
+		} else {
+			runProgram()
+		}
+	}
 	// 运行
-	const runProgram = () => {
+	const runProgram = (sample) => {
 		let noBug = false
 		let qc = new QCEngine()
 		const { qint } = qc
@@ -105,10 +114,6 @@ function App() {
 			spec,
 		} = require('./simulator/CommonFunction')
 		const { tensor, groundState, tensorState } = require('./simulator/MatrixOperation')
-
-		// console.log(groundState(4, [7, 8]))
-		// console.log()
-
 		try {
 			eval(editorValue)
 			// showInDebuggerArea(qc.circuit)
@@ -131,22 +136,17 @@ function App() {
 			exportSVG(qc)
 		}
 
-		// 暂时测试一下
-		
-		testfunc(qc)
-
+		if (runValue === 1) {
+			realRun(qc, sample)
+		}
 	}
-	async function testfunc(qc)
-	{
-		console.log(qc.export())
+	const realRun = async (qc, sample) => {
+		setSubmitModalVisible(false)
 		let data = {}
-		data['qasm'] = qc.export();
-		data['sample'] = 1000;
-		var id;
-		id = await send_to_real(data);
-		console.log(id['data']);
-		let res = await recieve_from_real(id['data'])
-		console.log(res)
+		data['qasm'] = qc.export()
+		data['sample'] = sample
+		await send_to_real(data)
+		message.success('已提交')
 	}
 
 	// 处理console
@@ -281,6 +281,7 @@ function App() {
 		setIsSaveCaseModalVisible(true)
 	}
 	// 真机 模拟器切换
+	const [runProgramName, setRunProgramName] = useState('Run Program')
 	const [isSelectRunModalVisible, setIsSelectRunModalVisible] = useState(false)
 	const [runValue, setRunValue] = React.useState(2)
 	const onSelectRunChange = (e) => {
@@ -299,6 +300,11 @@ function App() {
 	}
 
 	const isSelectRunOk = () => {
+		if (runValue === 1) {
+			setRunProgramName('Submit Task')
+		} else {
+			setRunProgramName('Run Program')
+		}
 		setIsSelectRunModalVisible(false)
 	}
 	const selectRun = () => {
@@ -307,6 +313,36 @@ function App() {
 	const isSelectRunCancel = () => {
 		setIsSelectRunModalVisible(false)
 	}
+	// 提交任务modal
+	const [submitModalVisible, setSubmitModalVisible] = useState(false)
+	const [form] = Form.useForm()
+	const { Option } = Select
+	const submitTaskModal = () => {
+		return (
+			<Modal visible={submitModalVisible} onOk={isSubmitOk} onCancel={isSubmitCancel} title='运行项目'>
+				<Form form={form} layout='vertical' autoComplete='off'>
+					<Form.Item name='sample' label='采样次数' rules={[{ required: true }]}>
+						<Input />
+					</Form.Item>
+					<Form.Item name='computer' label='选择计算机（假数据，暂时不必选）'>
+						<Select placeholder='请选择计算机' allowClear>
+							<Option value='A'>A</Option>
+						</Select>
+					</Form.Item>
+				</Form>
+			</Modal>
+		)
+	}
+	const isSubmitOk = () => {
+		form.validateFields().then((value) => {
+			runProgram(Number(value.sample))
+		})
+	}
+	const isSubmitCancel = () => {
+		form.resetFields()
+		setSubmitModalVisible(false)
+	}
+
 	return (
 		<Layout isComputer={true}>
 			{leftOperations()}
@@ -320,7 +356,8 @@ function App() {
 					}}
 				>
 					<Ace
-						runProgram={runProgram}
+						runProgram={dispathRun}
+						runProgramName={runProgramName}
 						selectChange={selectChange}
 						onChange={onChange}
 						editorValue={editorValue}
@@ -340,6 +377,7 @@ function App() {
 			{selectShowModal()}
 			{saveCaseModal()}
 			{selectRunModal()}
+			{submitTaskModal()}
 		</Layout>
 	)
 }

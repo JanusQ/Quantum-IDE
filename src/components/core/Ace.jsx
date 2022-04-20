@@ -27,7 +27,29 @@ const Ace = (props) => {
 
 	// 多个选择框
 	const { Option } = Select
-	const optionList = ['FOR TEST','Quantum Conditional Execution', 'Gate Teleportation', 'Simon\'s Algorithm', 'Shor\'s Algorithm', 'Phase estimation', 'Grover\'s Algorithm', 'Adding two quantum intergers', 'Entangled Qubits', 'Bernstein-Vazirani Algorithm', 'Quantum Fourier Transform', 'Deutsch-Jozsa Algorithm', 'user_study', 'into_evolution','case 1', 'bell_state', 'all gates', 'ex7-7', 'ex7-1', 'Markov Process', 'about:black'] // case的列表，public\js中需要存对应的文件
+	const optionList = [
+		'FOR TEST',
+		'Quantum Conditional Execution',
+		'Gate Teleportation',
+		"Simon's Algorithm",
+		"Shor's Algorithm",
+		'Phase estimation',
+		"Grover's Algorithm",
+		'Adding two quantum intergers',
+		'Entangled Qubits',
+		'Bernstein-Vazirani Algorithm',
+		'Quantum Fourier Transform',
+		'Deutsch-Jozsa Algorithm',
+		'user_study',
+		'into_evolution',
+		'case 1',
+		'bell_state',
+		'all gates',
+		'ex7-7',
+		'ex7-1',
+		'Markov Process',
+		'about:black',
+	] // case的列表，public\js中需要存对应的文件
 	// const optionList = ['Quantum Fourier Transform', 'Grover\'s Algorithm', 'Shor\'s Algorithm', 'Deutsch-Jozsa Algorithm', 'Simon\'s Algorithm', 'Bernstein-Vazirani Algorithm','Quantum Supersampling','Entangled Qubits','Adding two quantum intergers','Repeated iterations','Phase estimation','about:black']
 	const optionChildren = []
 	for (let i = 0; i < optionList.length; i++) {
@@ -107,14 +129,17 @@ const Ace = (props) => {
 			<div className='ace_div'>
 				<div className='title'>
 					QuCode
-					<Tooltip placement='right' title={'Here is the code editor to write a program and execute a quantum circuit.'}>
+					<Tooltip
+						placement='right'
+						title={'Here is the code editor to write a program and execute a quantum circuit.'}
+					>
 						<span className='tip_svg'></span>
 					</Tooltip>
 				</div>
 				{/* 操作按钮 */}
 				<div className='ace_operation'>
-					<Button type='primary' onClick={props.runProgram} style={{background: '#649FAE'}}>
-						Run Program
+					<Button type='primary' onClick={props.runProgram} style={{ background: '#649FAE' }}>
+						{props.runProgramName}
 					</Button>
 					<Select
 						style={{ width: '30%', marginLeft: '10px' }}
@@ -127,7 +152,7 @@ const Ace = (props) => {
 						Export
 					</Button>
 					<ZoomInOutlined
-						style={{ marginLeft: '10%', cursor: 'pointer', fontSize: '18px' }}
+						style={{ marginLeft: '5%', cursor: 'pointer', fontSize: '18px' }}
 						onClick={() => {
 							controlFontSize('add')
 						}}
