@@ -1,0 +1,4 @@
+qc.reset(3)
+qc.had()
+qc.cnot(0x1,0x2)
+qc.not(0x4)

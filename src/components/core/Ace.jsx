@@ -27,7 +27,7 @@ const Ace = (props) => {
 
 	// 多个选择框
 	const { Option } = Select
-	const optionList = ['Quantum Conditional Execution', 'Gate Teleportation', 'Simon\'s Algorithm', 'Shor\'s Algorithm', 'Phase estimation', 'Grover\'s Algorithm', 'Adding two quantum intergers', 'Entangled Qubits', 'Bernstein-Vazirani Algorithm', 'Quantum Fourier Transform', 'Deutsch-Jozsa Algorithm', 'user_study', 'into_evolution','case 1', 'bell_state', 'all gates', 'ex7-7', 'ex7-1', 'Markov Process', 'about:black'] // case的列表，public\js中需要存对应的文件
+	const optionList = ['FOR TEST','Quantum Conditional Execution', 'Gate Teleportation', 'Simon\'s Algorithm', 'Shor\'s Algorithm', 'Phase estimation', 'Grover\'s Algorithm', 'Adding two quantum intergers', 'Entangled Qubits', 'Bernstein-Vazirani Algorithm', 'Quantum Fourier Transform', 'Deutsch-Jozsa Algorithm', 'user_study', 'into_evolution','case 1', 'bell_state', 'all gates', 'ex7-7', 'ex7-1', 'Markov Process', 'about:black'] // case的列表，public\js中需要存对应的文件
 	// const optionList = ['Quantum Fourier Transform', 'Grover\'s Algorithm', 'Shor\'s Algorithm', 'Deutsch-Jozsa Algorithm', 'Simon\'s Algorithm', 'Bernstein-Vazirani Algorithm','Quantum Supersampling','Entangled Qubits','Adding two quantum intergers','Repeated iterations','Phase estimation','about:black']
 	const optionChildren = []
 	for (let i = 0; i < optionList.length; i++) {

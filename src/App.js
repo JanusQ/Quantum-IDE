@@ -133,7 +133,7 @@ function App() {
 
 		// 暂时测试一下
 		
-		//testfunc(qc)
+		testfunc(qc)
 
 	}
 	async function testfunc(qc)
