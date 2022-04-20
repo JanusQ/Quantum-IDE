@@ -15,6 +15,8 @@ import UserCenter from './components/core/UserCenter'
 import Test from './components/test/Test'
 import MessageList from './components/core/MessageList'
 import messageDetail from './components/core/MessageDetail'
+import ReferenceDoc from './components/core/ReferenceDoc'
+import AdminHome from './components/admin/AdminHome'
 const Routes = () => {
 	return (
 		<ConfigProvider locale={zhCN}>
@@ -34,6 +36,8 @@ const Routes = () => {
 					<Route path='/test' component={Test} exact />
 					<Route path='/message' component={MessageList} exact />
 					<Route path='/messageDetail' component={messageDetail} exact />
+					<Route path='/referenceDoc' component={ReferenceDoc} exact />
+					<Route path='/admin' component={AdminHome} exact />
 				</Switch>
 			</HashRouter>
 		</ConfigProvider>

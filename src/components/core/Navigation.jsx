@@ -19,6 +19,7 @@ const Navigation = () => {
 	const isNotice = useActive(pathname, '/notice')
 	const isNoticeDetail = useActive(pathname, '/noticedetail')
 	const isProject = useActive(pathname, '/project')
+	const isReferenceDoc = useActive(pathname,'/referenceDoc')
 	function getDashboarUrl() {
 		let url = '/user/dashboard'
 		if (isAuth()) {
@@ -56,8 +57,8 @@ const Navigation = () => {
 			<li className={isProject}>
 				<Link to='/project'>项目管理</Link>
 			</li>
-			<li>
-				<Link to='/'>参考文档</Link>
+			<li className={isReferenceDoc}>
+				<Link to='/referenceDoc'>参考文档</Link>
 			</li>
 			<li className='front_menu_user'>
 				<Dropdown overlay={menu}>

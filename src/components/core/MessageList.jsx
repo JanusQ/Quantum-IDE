@@ -3,38 +3,44 @@ import React, { useState } from 'react'
 import '../styles/MessageList.css'
 import { Table, Button, message, Modal } from 'antd'
 import { Link } from 'react-router-dom'
+import { FolderOutlined, FolderOpenOutlined } from '@ant-design/icons'
 const MessageList = () => {
 	const columns = [
 		{
-			title: '序号',
-			dataIndex: 'index',
-			render: (text, record, index) => {
-				return (pagination.current - 1) * pagination.pageSize + index + 1
+			title: '状态',
+			dataIndex: 'name',
+			key: 'name',
+			render: (text, record) => {
+				if (true) {
+					return <FolderOpenOutlined />
+				} else {
+					return <FolderOutlined />
+				}
 			},
 		},
 		{
-			title: 'Name',
-			dataIndex: 'name',
-			key: 'name',
+			title: '发件人',
+			dataIndex: 'age',
+			key: 'age',
+		},
+		{
+			title: '主题',
+			dataIndex: 'address',
+			key: 'address',
 			render: (text, record) => {
 				return <Link to='/'>{text}</Link>
 			},
 		},
 		{
-			title: 'Age',
-			dataIndex: 'age',
-			key: 'age',
-		},
-		{
-			title: 'Address',
-			dataIndex: 'address',
-			key: 'address',
+			title: '时间',
+			dataIndex: 'time',
+			key: 'tiem',
 		},
 		{
 			title: '操作',
 			dataIndex: 'address',
 			key: 'address',
-			render: (text,record) => {
+			render: (text, record) => {
 				return <a onClick={() => deleteItem(record.key)}>删除</a>
 			},
 		},

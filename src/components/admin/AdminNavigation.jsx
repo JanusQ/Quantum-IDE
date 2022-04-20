@@ -11,12 +11,15 @@ function useActive(currentPath, path) {
 const AdminNavigation = () => {
 	const router = useSelector((state) => state.router)
 	const pathname = router.location.pathname
-	const isHome = useActive(pathname, '/home')
-	const isShop = useActive(pathname, '/shop')
+	const isHome = useActive(pathname, '/admin')
+	const isComputer = useActive(pathname, '/computer')
 	const isApp = useActive(pathname, '/app')
 	const isSignIn = useActive(pathname, '/signIn')
 	const isSignUp = useActive(pathname, '/signUp')
-	const isDashboard = useActive(pathname, getDashboarUrl())
+	const isNotice = useActive(pathname, '/notice')
+	const isNoticeDetail = useActive(pathname, '/noticedetail')
+	const isProject = useActive(pathname, '/project')
+	const isReferenceDoc = useActive(pathname,'/referenceDoc')
 	function getDashboarUrl() {
 		let url = '/user/dashboard'
 		if (isAuth()) {
@@ -33,10 +36,10 @@ const AdminNavigation = () => {
 	const menu = (
 		<Menu>
 			<Menu.Item>
-				<Link>个人中心</Link>
+				<Link to='/usercenter/userInfo'>个人中心</Link>
 			</Menu.Item>
 			<Menu.Item>
-				<Link>修改密码</Link>
+				<Link to='/usercenter/resetPassword'>修改密码</Link>
 			</Menu.Item>
 			<Menu.Item>
 				<Link>退出登录</Link>
@@ -46,29 +49,27 @@ const AdminNavigation = () => {
 	return (
 		<ul className='front_menu_list'>
 			<li className={isHome}>
-				<Link to='/home'>首页</Link>
+				<Link to='/admin'>首页</Link>
 			</li>
-			<li>
-				<Link to='/'>计算机列表</Link>
+			<li className={isComputer}>
+				<Link to='/computer'>计算机列表</Link>
 			</li>
-			<li>
-				<Link to='/'>项目管理</Link>
+			<li className={isProject}>
+				<Link to='/project'>项目管理</Link>
 			</li>
-			<li>
-				<Link to='/'>参考文档</Link>
+			<li className={isReferenceDoc}>
+				<Link to='/referenceDoc'>参考文档</Link>
 			</li>
 			<li className='front_menu_user'>
 				<Dropdown overlay={menu}>
 					<a className='ant-dropdown-link' onClick={(e) => e.preventDefault()}>
-						<span className='front_user_name'>
-							aaa
-						</span>
+						<span className='front_user_name'>aaa</span>
 						<DownOutlined />
-						
 					</a>
 				</Dropdown>
+				<span className='front_ling_dang'></span>
+				<span className='front_tip_num'>{1}</span>
 			</li>
-			
 		</ul>
 	)
 }
