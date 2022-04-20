@@ -103,7 +103,7 @@ const Ace = (props) => {
 	}, [])
 
 	return (
-		<div>
+		<div className='left_top_div'>
 			<div className='ace_div'>
 				<div className='title'>
 					QuCode
@@ -147,7 +147,7 @@ const Ace = (props) => {
 					onLoad={complete}
 					name='ACE-EDITOR'
 					width='100%'
-					height='576px'
+					height='70%'
 					value={props.editorValue}
 					showGutter={false}
 					style={{ fontSize: fontSize + 'px' }}

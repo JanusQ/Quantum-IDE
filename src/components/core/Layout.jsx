@@ -2,7 +2,7 @@ import React from 'react'
 import Navigation from './Navigation'
 import { PageHeader } from 'antd'
 import '../styles/Layout.css'
-const Layout = ({ children }) => {
+const Layout = ({ children, isComputer }) => {
 	return (
 		<div style={{ height: '100%' }}>
 			<div className='front_header'>
@@ -11,7 +11,7 @@ const Layout = ({ children }) => {
 					<Navigation />
 				</div>
 			</div>
-			<div className='front_content'>{children}</div>
+			<div className={isComputer ? 'computer_content' : 'front_content'}>{children}</div>
 		</div>
 	)
 }

@@ -1,6 +1,6 @@
 @import url('./AntDesign.css');
 #circuit_view {
-	height: 367px;
+	height: 40%;
 	width: 100%;
 	background: #fff;
 	cursor: auto;
@@ -31,12 +31,13 @@
 	overflow: auto;
 }
 #right_down_div {
-	height: 698px;
+	width: 100%;
+	height: calc(60% - 5px);
 	display: flex;
 	margin-top: 5px;
 }
 #right_down_div .scroll_div {
-	width: 803px;
+	width: 60%;
 	height: 100%;
 	margin-right: 5px;
 	background: #fff;
@@ -49,7 +50,7 @@
 	overflow-x: visible;
 }
 #right_down_div .c_component {
-	width: 510px;
+	width: calc(40% - 5px);
 	height: 100%;
 	background: #fff;
 	padding: 10px;
@@ -77,8 +78,8 @@
 }
 #right_down_div .c_component .c_up_draw {
 	width: 100%;
-	height: 303px;
-	overflow-y: hidden;
+	height: calc(50% - 32px);
+	overflow-y: auto;
 	overflow-x: auto;
 }
 #right_down_div .c_component #chart_svg {
@@ -86,11 +87,11 @@
 }
 #right_down_div .c_component .c_down_draw {
 	width: 100%;
-	height: 312px;
+	height: calc(50% - 32px);
+	overflow: auto;
 }
 #right_down_div .c_component .c_down_draw #chart_down_svg {
 	width: 100%;
-	height: 303px;
 }
 #right_down_div .c_component .title .title_name,
 #right_down_div .d_component .title .title_name {
@@ -213,6 +214,9 @@
 }
 .show_circle_div p {
 	margin: 0;
+}
+#right_div_box{
+	height: 100%;
 }
 #right_div_box .tip_svg {
 	display: inline-block;

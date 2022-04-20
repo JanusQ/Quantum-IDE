@@ -13,6 +13,8 @@ import NoticeDetail from './components/core/NoticeDetail'
 import Project from './components/core/Project'
 import UserCenter from './components/core/UserCenter'
 import Test from './components/test/Test'
+import MessageList from './components/core/MessageList'
+import messageDetail from './components/core/MessageDetail'
 const Routes = () => {
 	return (
 		<ConfigProvider locale={zhCN}>
@@ -28,8 +30,10 @@ const Routes = () => {
 					<Route path='/notice' component={NoticeList} exact />
 					<Route path='/noticedetail' component={NoticeDetail} exact />
 					<Route path='/project' component={Project} exact />
-					<Route path='/usercenter' component={UserCenter}/>
+					<Route path='/usercenter' component={UserCenter} />
 					<Route path='/test' component={Test} exact />
+					<Route path='/message' component={MessageList} exact />
+					<Route path='/messageDetail' component={messageDetail} exact />
 				</Switch>
 			</HashRouter>
 		</ConfigProvider>

@@ -14,13 +14,13 @@ img{
 	display: inline-block;
 }
 .App {
-	width: 1914px;
+	width: calc(100% - 50px);
 	padding: 5px;
 	background: #000;
 	display: flex;
 	font-family: 'Ubuntu-R';
 	position: relative;
-	height: 1080px;
+	height: 100%
 }
 .App .expand_div{
 	width: 100%;
@@ -35,11 +35,11 @@ img{
 	z-index: 999;
 }
 .App .right-div {
-	width: 1318px;
+	width:calc(72% - 5px);
 	flex-shrink: 0;
 }
 .App .left-div {
-	width: 580px;
+	width: 28%;
 	margin-right: 5px;
 	flex-shrink: 0;
 }
@@ -89,24 +89,35 @@ img{
 ul li {
 	list-style: none;
 }
-/* 设置滚动条整体部分的样式 */ 
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
 
-/* 滚动槽--外层轨道 */
-::-webkit-scrollbar-track {
-	background: none;
+.computer_left_operation{
+	width: 50px;
+	height: 100%;
+	background: #28619D;
+	text-align: center;
 }
-
-/* 内层轨道（不包含滚动块部分） */
-::-webkit-scrollbar-track-piece {
-  opacity: 0;   /* 透明度设置为全透明，使得滚动条背景色为网页颜色 */
+.computer_left_operation ul li {
+	height: 49px;
+	line-height: 49px;
 }
-
-/* 滚动条滑块 */
-::-webkit-scrollbar-thumb {
-  border-radius: 3px;
-  background: #ECECEC;
+.computer_left_operation_item{
+	display: inline-block;
+	width: 25px;
+	height: 25px;
+	margin-top: 12px;
+	cursor: pointer;
+}
+.computer_left_operation ul li:nth-of-type(1) .computer_left_operation_item{
+	background: url('./images/ide_save.svg') no-repeat;
+}
+.computer_left_operation ul li:nth-of-type(2) .computer_left_operation_item{
+	background: url('./images/ide_change_mode.svg') no-repeat;
+}
+.computer_left_operation ul li:nth-of-type(3) .computer_left_operation_item{
+	background: url('./images/ide_shitu.svg') no-repeat;
+	background-size: 100% 100%;
+	
+}
+.ace_operation .ant-btn-primary{
+	border: 0;
 }

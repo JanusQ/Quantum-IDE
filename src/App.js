@@ -7,14 +7,29 @@ import axios from 'axios'
 import React, { useState, useRef } from 'react'
 import { exportSVG } from './simulator/CommonFunction'
 import QCEngine from './simulator/MyQCEngine'
+import { cos, sin, round, pi, complex, create, all, max, sparse } from 'mathjs'
 import {
-    cos, sin, round, pi, complex, create, all, max, sparse,
-} from 'mathjs'
-import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, alt_tensor, calibrate, getExp, linear_entropy, binary2int, average, spec} from './simulator/CommonFunction'
+	pow2,
+	binary,
+	binary2qubit1,
+	range,
+	toPI,
+	qubit12binary,
+	unique,
+	sum,
+	alt_tensor,
+	calibrate,
+	getExp,
+	linear_entropy,
+	binary2int,
+	average,
+	spec,
+} from './simulator/CommonFunction'
 // import MathJax from 'mathJax'
-import {getDirac} from './components/Mathjax'
+import { getDirac } from './components/Mathjax'
+import Layout from './components/core/Layout'
+import { Modal, Checkbox, message, Input, Radio } from 'antd'
 import {send_to_real, recieve_from_real} from './api/test_circuit'
-
 // import QCEngine from './simulator/MyQCEngine'
 // import './test/meausre'
 // import './test/reset'
@@ -40,7 +55,6 @@ import {send_to_real, recieve_from_real} from './api/test_circuit'
 // import './test/canShow_test.js'
 
 function App() {
-
 	// 编辑器内容
 	const [editorValue, setEditorValue] = useState('')
 	// console的内容
@@ -72,13 +86,28 @@ function App() {
 		let qc = new QCEngine()
 		const { qint } = qc
 		// TODO: 这些也要写在文档里面
-		const {cos, sin, round, pi, complex, create, all, max, sparse, acos, asin, sqrt} =  require('mathjs')
-		const { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, alt_tensor, calibrate, getExp, linear_entropy, binary2int, average, spec} = require('./simulator/CommonFunction')
-		const {tensor, groundState, tensorState} = require('./simulator/MatrixOperation')
+		const { cos, sin, round, pi, complex, create, all, max, sparse, acos, asin, sqrt } = require('mathjs')
+		const {
+			pow2,
+			binary,
+			binary2qubit1,
+			range,
+			toPI,
+			qubit12binary,
+			unique,
+			sum,
+			alt_tensor,
+			calibrate,
+			getExp,
+			linear_entropy,
+			binary2int,
+			average,
+			spec,
+		} = require('./simulator/CommonFunction')
+		const { tensor, groundState, tensorState } = require('./simulator/MatrixOperation')
 
 		// console.log(groundState(4, [7, 8]))
 		// console.log()
-
 
 		try {
 			eval(editorValue)
@@ -133,24 +162,185 @@ function App() {
 		}
 	}
 
-
 	// console.log(getDirac(1))
-	
+	const leftOperations = () => {
+		return (
+			<div className='computer_left_operation'>
+				<ul>
+					<li>
+						<span className='computer_left_operation_item' onClick={saveCase}></span>
+					</li>
+					<li>
+						<span className='computer_left_operation_item' onClick={selectRun}></span>
+					</li>
+					<li>
+						<span className='computer_left_operation_item' onClick={selectShow}></span>
+					</li>
+				</ul>
+			</div>
+		)
+	}
+	// 控制显示视图
+	const [isSelectShowModalVisible, setIsSelectModalVisible] = useState(false)
+	const options = [
+		{
+			label: 'B视图',
+			value: 'B',
+		},
+		{
+			label: 'C视图',
+			value: 'C',
+		},
+		{
+			label: 'D视图',
+			value: 'D',
+		},
+	]
+	const [checkedModeList, setCheckedModeList] = useState(['B', 'C', 'D'])
+	const onModeChange = (list) => {
+		setCheckedModeList(list)
+	}
+	const selectShowModal = () => {
+		return (
+			<Modal
+				visible={isSelectShowModalVisible}
+				onOk={isSelectShowOk}
+				onCancel={isSelectShowCancel}
+				title='选择视图'
+			>
+				<p>选择视图展示</p>
+				<Checkbox.Group options={options} value={checkedModeList} onChange={onModeChange}></Checkbox.Group>
+			</Modal>
+		)
+	}
+	const selectShow = () => {
+		setIsSelectModalVisible(true)
+	}
+	const isSelectShowOk = () => {
+		setIsSelectModalVisible(false)
+		isShowRight()
+		// isShowA()
+		isShowB()
+		isShowC()
+		isShowD()
+	}
+	const isSelectShowCancel = () => {
+		setIsSelectModalVisible(false)
+	}
+	const [isShowAMode, setIsShowAMode] = useState(true)
+	const [isShowBMode, setIsShowBMode] = useState(true)
+	const [isShowCMode, setIsShowCMode] = useState(true)
+	const [isShowDMode, setIsShowDMode] = useState(true)
+	const [isShowRightMode, setIsShowRightMode] = useState(true)
+	const isShowA = () => {
+		return setIsShowAMode(checkedModeList.includes('A'))
+	}
+	const isShowB = () => {
+		return setIsShowBMode(checkedModeList.includes('B'))
+	}
+	const isShowC = () => {
+		return setIsShowCMode(checkedModeList.includes('C'))
+	}
+	const isShowD = () => {
+		return setIsShowDMode(checkedModeList.includes('D'))
+	}
+	const isShowRight = () => {
+		if (!checkedModeList.includes('C') && !checkedModeList.includes('B') && !checkedModeList.includes('D')) {
+			setIsShowRightMode(false)
+		} else {
+			setIsShowRightMode(true)
+		}
+	}
+	// 保存项目
+	const [isSaveCaseModalVisible, setIsSaveCaseModalVisible] = useState(false)
+	const [caseName, setCaseName] = useState('')
+	const onSaveChange = (e) => {
+		setCaseName(e.target.value)
+	}
+	const saveCaseModal = () => {
+		return (
+			<Modal visible={isSaveCaseModalVisible} onOk={isSaveOk} onCancel={isSaveCancel} title='保存项目'>
+				<p>项目名称</p>
+				<Input value={caseName} onChange={onSaveChange}></Input>
+			</Modal>
+		)
+	}
+	const isSaveOk = () => {
+		if (!caseName) {
+			message.error('请输入项目名称')
+			return
+		}
+		console.log(caseName)
+		setIsSaveCaseModalVisible(false)
+	}
+	const isSaveCancel = () => {
+		setIsSaveCaseModalVisible(false)
+		setCaseName('')
+	}
+	const saveCase = () => {
+		setIsSaveCaseModalVisible(true)
+	}
+	// 真机 模拟器切换
+	const [isSelectRunModalVisible, setIsSelectRunModalVisible] = useState(false)
+	const [runValue, setRunValue] = React.useState(2)
+	const onSelectRunChange = (e) => {
+		setRunValue(e.target.value)
+	}
+	const selectRunModal = () => {
+		return (
+			<Modal visible={isSelectRunModalVisible} onOk={isSelectRunOk} onCancel={isSelectRunCancel} title='切换模式'>
+				<p>请选择模式</p>
+				<Radio.Group onChange={onSelectRunChange} value={runValue}>
+					<Radio value={1}>真机</Radio>
+					<Radio value={2}>模拟器</Radio>
+				</Radio.Group>
+			</Modal>
+		)
+	}
+
+	const isSelectRunOk = () => {
+		setIsSelectRunModalVisible(false)
+	}
+	const selectRun = () => {
+		setIsSelectRunModalVisible(true)
+	}
+	const isSelectRunCancel = () => {
+		setIsSelectRunModalVisible(false)
+	}
 	return (
-		<div className='App'>
-			<div className='left-div'>
-				<Ace
-					runProgram={runProgram}
-					selectChange={selectChange}
-					onChange={onChange}
-					editorValue={editorValue}
-				></Ace>
-				<ConsoleComponent consoleValue={consoleValue}></ConsoleComponent>
+		<Layout isComputer={true}>
+			{leftOperations()}
+			<div className='App'>
+				<div
+					className='left-div'
+					style={{
+						display: isShowAMode ? 'block' : 'none',
+						width: isShowRightMode ? '28%' : '100%',
+						marginRight: isShowRightMode ? '5px' : '0',
+					}}
+				>
+					<Ace
+						runProgram={runProgram}
+						selectChange={selectChange}
+						onChange={onChange}
+						editorValue={editorValue}
+					></Ace>
+					<ConsoleComponent consoleValue={consoleValue}></ConsoleComponent>
+				</div>
+				<div
+					className='right-div'
+					style={{
+						width: isShowAMode ? 'calc(72% - 5px)' : '100%',
+						display: isShowRightMode ? 'block' : 'none',
+					}}
+				>
+					<Right isShowBMode={isShowBMode} isShowCMode={isShowCMode} isShowDMode={isShowDMode}></Right>
+				</div>
 			</div>
-			<div className='right-div'>
-				<Right></Right>
-			</div>
-		</div>
+			{selectShowModal()}
+			{saveCaseModal()}
+			{selectRunModal()}
+		</Layout>
 	)
 }
 
