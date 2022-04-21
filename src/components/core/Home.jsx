@@ -1,11 +1,18 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import Layout from './Layout'
 import '../styles/Home.css'
 import { Button } from 'antd'
 import { Link } from 'react-router-dom'
+import { getNoticeList } from '../../api/notice'
 const Home = () => {
 	const state = useSelector((state) => state)
+	const getNoticeListFn = async () => {
+		await getNoticeList()
+	}
+	useEffect(() => {
+		getNoticeListFn()
+	}, [])
 	return (
 		<Layout>
 			<div className='home_div'>
@@ -32,14 +39,13 @@ const Home = () => {
 								<span className='home_notice_list_circle'></span>
 								<span className='home_notice_list_name'>年后你好</span>
 							</div>
-							<div className='home_notice_list_content'>
-							年后你好年后你好年后你好
-							</div>
+							<div className='home_notice_list_content'>年后你好年后你好年后你好</div>
 							<div className='home_notice_list_footer'>
-								<span>2012-04-12</span><span style={{margin:'0 10px',display:'inline-block' }}>|</span><span>查看更多</span>
+								<span>2012-04-12</span>
+								<span style={{ margin: '0 10px', display: 'inline-block' }}>|</span>
+								<span>查看更多</span>
 							</div>
 						</li>
-						
 					</ul>
 				</div>
 			</div>

@@ -1,8 +1,14 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import AdminLayout from './AdminLayout'
 import '../adminStyles/AdminHome.css'
 import { DatePicker, Button } from 'antd'
 import moment from 'moment'
+import * as echarts from 'echarts/core'
+import { GridComponent, TooltipComponent } from 'echarts/components'
+import { BarChart } from 'echarts/charts'
+import { CanvasRenderer } from 'echarts/renderers'
+
+echarts.use([GridComponent, BarChart, CanvasRenderer, TooltipComponent])
 const AdminHome = () => {
 	const { RangePicker } = DatePicker
 	const staticDiv = () => {
@@ -50,11 +56,72 @@ const AdminHome = () => {
 			</div>
 		)
 	}
-	const staticEcharts = () => {}
+	const staticEcharts = () => {
+		return (
+			<div className='admin_home_echarts_div'>
+				<div className='admin_home_echarts'>
+					<div className='admin_home_echarts_header'>任务数量</div>
+					<div id='admin_tesk_number' className='admin_home_echarts_content'></div>
+				</div>
+				<div className='admin_home_echarts'>
+					<div className='admin_home_echarts_header'>用户注册量</div>
+					<div id='admin_user_number' className='admin_home_echarts_content'></div>
+				</div>
+			</div>
+		)
+	}
+	const createChart = (id) => {
+		const chartDom = document.getElementById(id)
+		const myChart = echarts.init(chartDom)
+
+		const option = {
+			tooltip: {
+				trigger: 'axis',
+				axisPointer: {
+					type: 'shadow',
+				},
+			},
+			grid: {
+				left: '3%',
+				right: '4%',
+				bottom: '3%',
+				containLabel: true,
+			},
+			xAxis: [
+				{
+					type: 'category',
+					data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+					axisTick: {
+						alignWithLabel: true,
+					},
+				},
+			],
+			yAxis: [
+				{
+					type: 'value',
+				},
+			],
+			series: [
+				{
+					name: 'Direct',
+					type: 'bar',
+					barWidth: '60%',
+					data: [10, 52, 200, 334, 390, 330, 220],
+				},
+			],
+		}
+
+		option && myChart.setOption(option)
+	}
+	useEffect(() => {
+		createChart('admin_tesk_number')
+		createChart('admin_user_number')
+	}, [])
 	return (
 		<AdminLayout>
 			{staticDiv()}
 			{selectTime()}
+			{staticEcharts()}
 		</AdminLayout>
 	)
 }

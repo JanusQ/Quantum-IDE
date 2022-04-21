@@ -1,0 +1,19 @@
+.admin_user_div {
+	width: 100%;
+	height: calc(100% - 200px);
+	border: 1px solid rgba(215, 215, 215, 1);
+	overflow: auto;
+	padding: 10px;
+	border-top: 0;
+}
+.admin_user_search_div {
+    height: 120px;
+    width: 100%;
+    margin-top: 15px;
+    border: 1px solid rgba(215, 215, 215, 1);
+    padding: 0 10px;
+}
+.admin_user_search_div .ant-row{
+    height: 60px;
+    line-height: 60px;
+}

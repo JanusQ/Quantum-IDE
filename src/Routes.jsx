@@ -17,6 +17,11 @@ import MessageList from './components/core/MessageList'
 import messageDetail from './components/core/MessageDetail'
 import ReferenceDoc from './components/core/ReferenceDoc'
 import AdminHome from './components/admin/AdminHome'
+import AdminProject from './components/admin/AdminProject'
+import Task from './components/core/Task'
+import AdminUser from './components/admin/AdminUser'
+import AdminNotice from './components/admin/AdminNotice'
+import AdminReferenceDoc from './components/admin/AdminReferenceDoc'
 const Routes = () => {
 	return (
 		<ConfigProvider locale={zhCN}>
@@ -32,12 +37,17 @@ const Routes = () => {
 					<Route path='/notice' component={NoticeList} exact />
 					<Route path='/noticedetail' component={NoticeDetail} exact />
 					<Route path='/project' component={Project} exact />
+					<Route path='/task' component={Task} exact />
 					<Route path='/usercenter' component={UserCenter} />
 					<Route path='/test' component={Test} exact />
 					<Route path='/message' component={MessageList} exact />
 					<Route path='/messageDetail' component={messageDetail} exact />
 					<Route path='/referenceDoc' component={ReferenceDoc} exact />
 					<Route path='/admin' component={AdminHome} exact />
+					<Route path='/admin/project' component={AdminProject} exact />
+					<Route path='/admin/user' component={AdminUser} exact />
+					<Route path='/admin/notice' component={AdminNotice} exact />
+					<Route path='/admin/referenceDoc' component={AdminReferenceDoc} exact />
 				</Switch>
 			</HashRouter>
 		</ConfigProvider>

@@ -12,14 +12,10 @@ const AdminNavigation = () => {
 	const router = useSelector((state) => state.router)
 	const pathname = router.location.pathname
 	const isHome = useActive(pathname, '/admin')
-	const isComputer = useActive(pathname, '/computer')
-	const isApp = useActive(pathname, '/app')
-	const isSignIn = useActive(pathname, '/signIn')
-	const isSignUp = useActive(pathname, '/signUp')
-	const isNotice = useActive(pathname, '/notice')
-	const isNoticeDetail = useActive(pathname, '/noticedetail')
-	const isProject = useActive(pathname, '/project')
-	const isReferenceDoc = useActive(pathname,'/referenceDoc')
+	const isProject = useActive(pathname, '/admin/project')
+	const isAdminUser = useActive(pathname, '/admin/user')
+	const isAdminNotice = useActive(pathname, '/admin/notice')
+	const isAdminReferenceDoc = useActive(pathname, '/admin/referenceDoc')
 	function getDashboarUrl() {
 		let url = '/user/dashboard'
 		if (isAuth()) {
@@ -51,14 +47,20 @@ const AdminNavigation = () => {
 			<li className={isHome}>
 				<Link to='/admin'>首页</Link>
 			</li>
-			<li className={isComputer}>
+			{/* <li className={isComputer}>
 				<Link to='/computer'>计算机列表</Link>
-			</li>
+			</li> */}
 			<li className={isProject}>
-				<Link to='/project'>项目管理</Link>
+				<Link to='/admin/project'>项目管理</Link>
 			</li>
-			<li className={isReferenceDoc}>
-				<Link to='/referenceDoc'>参考文档</Link>
+			<li className={isAdminUser}>
+				<Link to='/admin/user'>用户管理</Link>
+			</li>
+			<li className={isAdminNotice}>
+				<Link to='/admin/notice'>通知管理</Link>
+			</li>
+			<li className={isAdminReferenceDoc}>
+				<Link to='/admin/referenceDoc'>文档管理</Link>
 			</li>
 			<li className='front_menu_user'>
 				<Dropdown overlay={menu}>

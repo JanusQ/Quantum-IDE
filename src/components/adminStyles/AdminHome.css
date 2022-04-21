@@ -2,7 +2,7 @@
 	height: 223px;
 	width: 80%;
 	margin: 0 auto;
-	border: 1px solid rgba(215, 215, 215, 1);
+	border: 1px solid rgba(240, 240, 240, 1);
 	margin-top: 15px;
 	display: flex;
 	justify-content: space-around;
@@ -12,40 +12,62 @@
 	width: 20%;
 	margin-top: 26px;
 }
-.admin_home_static_item:nth-of-type(1){
-    background: rgba(51, 204, 153, 1);
+.admin_home_static_item:nth-of-type(1) {
+	background: rgba(51, 204, 153, 1);
 }
-.admin_home_static_item:nth-of-type(2){
-    background: rgba(102, 153, 255, 1);
+.admin_home_static_item:nth-of-type(2) {
+	background: rgba(102, 153, 255, 1);
 }
-.admin_home_static_item:nth-of-type(3){
-    background: rgba(255, 153, 51, 1);
+.admin_home_static_item:nth-of-type(3) {
+	background: rgba(255, 153, 51, 1);
 }
-.admin_home_static_item:nth-of-type(4){
-    background: rgba(204, 102, 153, 1);
+.admin_home_static_item:nth-of-type(4) {
+	background: rgba(204, 102, 153, 1);
 }
 .admin_home_static_number {
 	font-weight: 400;
 	font-style: normal;
 	font-size: 28px;
 	color: #ffffff;
-    text-align: center;
-    margin-top: 38px;
-    margin-bottom: 18px;
+	text-align: center;
+	margin-top: 38px;
+	margin-bottom: 18px;
 }
 .admin_home_static_name {
 	font-weight: 400;
 	font-style: normal;
-    font-size: 18px;
+	font-size: 18px;
 	color: #ffffff;
-    text-align: center;
+	text-align: center;
 }
-.admin_home_select_time{
-   
-    width: 80%;
+.admin_home_select_time {
+	width: 80%;
 	margin: 0 auto;
-	border: 1px solid rgba(215, 215, 215, 1);
+	border: 1px solid rgba(240, 240, 240, 1);
 	margin-top: 15px;
-    height: 50px;
-    padding: 9px 10px;
+	height: 50px;
+	padding: 9px 10px;
+}
+.admin_home_echarts_div {
+	width: 80%;
+	margin: 0 auto;
+	margin-top: 15px;
+	height: 374px;
+	display: flex;
+	justify-content: space-between;
+}
+.admin_home_echarts {
+	width: 49%;
+	height: 100%;
+	border: 1px solid rgba(240, 240, 240, 1);
+}
+.admin_home_echarts_header {
+	height: 40px;
+	line-height: 40px;
+	border-bottom: 1px solid rgba(240, 240, 240, 1);
+	padding: 0 10px;
+}
+.admin_home_echarts_content{
+	height: calc(100% - 40px);
+	width: 100%;
 }

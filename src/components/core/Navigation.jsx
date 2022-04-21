@@ -19,7 +19,7 @@ const Navigation = () => {
 	const isNotice = useActive(pathname, '/notice')
 	const isNoticeDetail = useActive(pathname, '/noticedetail')
 	const isProject = useActive(pathname, '/project')
-	const isReferenceDoc = useActive(pathname,'/referenceDoc')
+	const isReferenceDoc = useActive(pathname, '/referenceDoc')
 	function getDashboarUrl() {
 		let url = '/user/dashboard'
 		if (isAuth()) {
@@ -42,7 +42,7 @@ const Navigation = () => {
 				<Link to='/usercenter/resetPassword'>修改密码</Link>
 			</Menu.Item>
 			<Menu.Item>
-				<Link>退出登录</Link>
+				{/* <Link>退出登录</Link> */}
 			</Menu.Item>
 		</Menu>
 	)

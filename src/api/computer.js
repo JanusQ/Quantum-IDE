@@ -1,6 +1,6 @@
-import instance from "./http"
+// 计算机相关接口
+import instance from './http'
 // 获取计算机列表
-export const getComList = (data)=>{
-    return instance.post('/circuit/getComList',data)
+export const getComList = (data) => {
+	return instance.post('/circuit/getComList', data)
 }
-

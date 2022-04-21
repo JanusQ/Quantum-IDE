@@ -4,8 +4,7 @@ import { Table, Input, Select, Drawer } from 'antd'
 import { Link } from 'react-router-dom'
 import { SearchOutlined } from '@ant-design/icons'
 import '../styles/Project.css'
-import { drawGraphChart } from '../../helpers/graphEcharts'
-const Project = () => {
+const AdminTask = () => {
 	const columns = [
 		{
 			title: '序号',
@@ -111,9 +110,6 @@ const Project = () => {
 	const [visible, setVisible] = useState(false)
 	const lookResult = () => {
 		setVisible(true)
-		setTimeout(() => {
-			drawGraphChart('computer_params_graph')
-		}, 1000)
 	}
 	const onClose = () => {
 		setVisible(false)
@@ -166,14 +162,13 @@ const Project = () => {
 						</div>
 					</div>
 				</div>
-				{/* <div className='computer_number_div'>
+				<div className='computer_number_div'>
 					<p className='computer_number_title'>数据矫正</p>
 					<Table columns={columns} dataSource={data} bordered pagination={false} />
-				</div> */}
-				<div id='computer_params_graph' style={{ height: '300px', width: '100%' }}></div>
+				</div>
 			</Drawer>
 		</Layout>
 	)
 }
 
-export default Project
+export default AdminTask

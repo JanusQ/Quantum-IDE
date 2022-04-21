@@ -20,11 +20,11 @@ const SignIn = () => {
 		localStorage.setItem('jwt', JSON.stringify({ name: '123' }))
 		history.push('/home')
 	}
-	const redirectToDashboard = () => {
+	const redirectToHome = () => {
 		const auth = isAuth()
-		if (auth) {
-			return <Redirect to='/home'></Redirect>
-		}
+		// if (auth) {
+		// 	return <Redirect to='/home'></Redirect>
+		// }
 	}
 	// 记住密码
 	const cookiePassword = getCookie('password')
@@ -99,7 +99,7 @@ const SignIn = () => {
 	}, [])
 	return (
 		<SignLayout>
-			{redirectToDashboard()}
+			{redirectToHome()}
 			<div className='sign_in_div'>{signinForm()}</div>
 		</SignLayout>
 	)

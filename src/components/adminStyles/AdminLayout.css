@@ -1,0 +1,100 @@
+.admin_header {
+	height: 70px;
+	width: 100%;
+	background: rgba(58, 142, 230, 1);
+	line-height: 70px;
+	min-width: 1200px;
+}
+.admin_menu_div {
+	width: 82%;
+	margin: 0 auto;
+	height: 100%;
+	min-width: 1200px;
+}
+.admin_logo_title {
+	font-weight: 700;
+	font-style: normal;
+	font-size: 18px;
+	color: #ffffff;
+}
+.admin_menu_list {
+	height: 70px;
+	margin-bottom: 0;
+	float: right;
+}
+.admin_menu_list li {
+	height: 69px;
+	box-sizing: border-box;
+	float: left;
+	width: 104px;
+	font-style: normal;
+	font-size: 16px;
+	color: #ffffff;
+	text-align: center;
+	user-select: none;
+}
+.admin_menu_list li:hover {
+	cursor: pointer;
+}
+.admin_menu_list li.active {
+	border-bottom: 2px solid #fff;
+}
+.admin_menu_list li a {
+	color: #fff;
+	width: 100%;
+	height: 100%;
+	display: inline-block;
+}
+.admin_menu_list li a:hover {
+	color: #fff;
+}
+.admin_ling_dang {
+	width: 17px;
+	height: 18px;
+	display: inline-block;
+	background: url('../../images/lingdang.svg') no-repeat;
+	position: absolute;
+	top: 26px;
+}
+.admin_tip_num {
+	width: 16px;
+	height: 16px;
+	color: #fff;
+	background: red;
+	border-radius: 50%;
+	position: absolute;
+	line-height: 14px;
+	font-size: 12px;
+	top: 22px;
+	right: 13px;
+}
+.admin_menu_list .admin_menu_user {
+	position: relative;
+	width: 200px;
+}
+.admin_menu_list .admin_menu_user a {
+	width: 100px;
+}
+.admin_menu_list .admin_menu_user .admin_user_name {
+	display: inline-block;
+	margin: 0;
+	padding: 0;
+	width: 50px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	vertical-align: top;
+}
+.admin_content {
+	width: 82%;
+	height: 100%;
+	min-width: 1200px;
+	margin: 0 auto;
+	overflow: hidden;
+	background: #fff;
+}
+.admin_min{
+	width: 100%;
+	background: #fff;
+	height: calc(100% - 70px);
+}
