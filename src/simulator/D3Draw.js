@@ -1496,7 +1496,6 @@ export default class d3Draw {
 		// 连线的数据 放在这个方法里 计算图标Y轴整体向下移动的距离
 		const heightStep = 10
 		const lineData = qc.getPmiIndex(index, 0.25)
-
 		const config = {
 			barPadding: 0.1,
 			margins: { top: 20, left: 50, bottom: 120, right: 40 },
@@ -1505,7 +1504,6 @@ export default class d3Draw {
 			gridColor: 'gray',
 			hoverColor: 'gray',
 		}
-
 		const barWidth = 26
 		const chart_svg = d3.select('#chart_svg')
 		chart_svg.selectAll('*').remove()

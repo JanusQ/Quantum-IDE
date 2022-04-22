@@ -1,6 +1,6 @@
 import SignLayout from './SignLayout'
 import React, { useState, useEffect } from 'react'
-import { Button, Form, Input, Result, Checkbox, message } from 'antd'
+import { Button, Form, Input, Checkbox, message } from 'antd'
 import { getCookie, isAuth, delCookie, setCookie } from '../../helpers/auth'
 // import { Redirect } from 'react-router-dom'
 import '../styles/SignIn.css'
@@ -11,20 +11,20 @@ import { useHistory } from 'react-router-dom'
 const SignIn = () => {
 	const history = useHistory()
 	const onFinish = async (value) => {
-		await login(value)
+		const { data } = await login(value)
 		message.success('登录成功')
 		if (isRember) {
 			setCookie('email', value.email, 7)
 			setCookie('password', value.password, 7)
 		}
-		localStorage.setItem('jwt', JSON.stringify({ name: '123' }))
+		localStorage.setItem('jwt', JSON.stringify(data))
 		history.push('/home')
 	}
 	const redirectToHome = () => {
 		const auth = isAuth()
-		// if (auth) {
-		// 	return <Redirect to='/home'></Redirect>
-		// }
+		if (auth) {
+			return <Redirect to='/home'></Redirect>
+		}
 	}
 	// 记住密码
 	const cookiePassword = getCookie('password')

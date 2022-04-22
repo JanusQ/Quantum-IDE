@@ -19,6 +19,7 @@ const Home = () => {
 				<div className='home_left_div'>
 					<div className='home_title'>Welcome,IBM</div>
 					<div className='home_banner'>
+						
 						<Button type='primary' className='home_banner_btn'>
 							<Link to='/'>Launch Quantum IDE</Link>
 						</Button>

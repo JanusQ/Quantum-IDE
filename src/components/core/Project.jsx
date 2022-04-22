@@ -5,7 +5,9 @@ import { Link } from 'react-router-dom'
 import { SearchOutlined } from '@ant-design/icons'
 import '../styles/Project.css'
 import { drawGraphChart } from '../../helpers/graphEcharts'
+import { useHistory } from 'react-router-dom'
 const Project = () => {
+	const history = useHistory()
 	const columns = [
 		{
 			title: '序号',
@@ -16,48 +18,40 @@ const Project = () => {
 		},
 		{
 			title: '项目编号',
-			dataIndex: 'name',
-			key: 'name',
+			dataIndex: 'num',
+			key: 'num',
 		},
 		{
 			title: '项目名称',
-			dataIndex: 'age',
-			key: 'age',
+			dataIndex: 'name',
+			key: 'name',
 			render: (text, record) => {
 				return <Link to='/'>{text}</Link>
 			},
 		},
 		{
-			title: '计算机名称',
-			dataIndex: 'address',
-			key: 'address',
-		},
-		{
-			title: '项目阶段',
-			dataIndex: 'step',
-			key: 'step',
-		},
-		{
-			title: '运行状态',
-			dataIndex: 'step',
-			key: 'step',
-		},
-		{
-			title: '运行时长',
-			dataIndex: 'step',
-			key: 'step',
+			title: '任务个数',
+			dataIndex: 'age',
+			key: 'age',
 		},
 		{
 			title: '创建时间',
-			dataIndex: 'step',
-			key: 'step',
+			dataIndex: 'time',
+			key: 'time',
 		},
 		{
 			title: '操作',
 			dataIndex: 'step',
 			key: 'step',
 			render: (text, record) => {
-				return <a onClick={lookResult}>查看结果</a>
+				return (
+					<span>
+						<a onClick={lookTask} style={{ marginRight: '5px' }}>
+							查看任务详情
+						</a>
+						<a>删除</a>
+					</span>
+				)
 			},
 		},
 	]
@@ -65,24 +59,10 @@ const Project = () => {
 	const data = [
 		{
 			key: '1',
-			name: 'John Brown',
-			age: 32,
-			address: 'New York No. 1 Lake Park',
-			tags: ['nice', 'developer'],
-		},
-		{
-			key: '2',
-			name: 'Jim Green',
-			age: 42,
-			address: 'London No. 1 Lake Park',
-			tags: ['loser'],
-		},
-		{
-			key: '3',
-			name: 'Joe Black',
-			age: 32,
-			address: 'Sidney No. 1 Lake Park',
-			tags: ['cool', 'teacher'],
+			name: 'test',
+			num: '1',
+			age: 1,
+			time: '2022-04-22',
 		},
 	]
 	const { Search } = Input
@@ -109,11 +89,12 @@ const Project = () => {
 		showQuickJumper: true,
 	}
 	const [visible, setVisible] = useState(false)
-	const lookResult = () => {
-		setVisible(true)
-		setTimeout(() => {
-			drawGraphChart('computer_params_graph')
-		}, 1000)
+	const lookTask = () => {
+		// setVisible(true)
+		// setTimeout(() => {
+		// 	drawGraphChart('computer_params_graph')
+		// }, 1000)
+		history.push('/task')
 	}
 	const onClose = () => {
 		setVisible(false)

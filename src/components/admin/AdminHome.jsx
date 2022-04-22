@@ -6,9 +6,9 @@ import moment from 'moment'
 import * as echarts from 'echarts/core'
 import { GridComponent, TooltipComponent } from 'echarts/components'
 import { BarChart } from 'echarts/charts'
-import { CanvasRenderer } from 'echarts/renderers'
+import { SVGRenderer } from 'echarts/renderers'
 
-echarts.use([GridComponent, BarChart, CanvasRenderer, TooltipComponent])
+echarts.use([GridComponent, BarChart, SVGRenderer, TooltipComponent])
 const AdminHome = () => {
 	const { RangePicker } = DatePicker
 	const staticDiv = () => {

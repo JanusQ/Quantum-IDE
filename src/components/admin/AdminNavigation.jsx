@@ -16,18 +16,7 @@ const AdminNavigation = () => {
 	const isAdminUser = useActive(pathname, '/admin/user')
 	const isAdminNotice = useActive(pathname, '/admin/notice')
 	const isAdminReferenceDoc = useActive(pathname, '/admin/referenceDoc')
-	function getDashboarUrl() {
-		let url = '/user/dashboard'
-		if (isAuth()) {
-			const {
-				user: { role },
-			} = isAuth()
-			if (role === 1) {
-				url = '/admin/dashboard'
-			}
-		}
-		return url
-	}
+	const auth = isAuth()
 	// 下拉菜单
 	const menu = (
 		<Menu>
@@ -37,9 +26,9 @@ const AdminNavigation = () => {
 			<Menu.Item>
 				<Link to='/usercenter/resetPassword'>修改密码</Link>
 			</Menu.Item>
-			<Menu.Item>
+			{/* <Menu.Item>
 				<Link>退出登录</Link>
-			</Menu.Item>
+			</Menu.Item> */}
 		</Menu>
 	)
 	return (
@@ -65,7 +54,7 @@ const AdminNavigation = () => {
 			<li className='front_menu_user'>
 				<Dropdown overlay={menu}>
 					<a className='ant-dropdown-link' onClick={(e) => e.preventDefault()}>
-						<span className='front_user_name'>aaa</span>
+						<span className='front_user_name'>{auth.username}</span>
 						<DownOutlined />
 					</a>
 				</Dropdown>

@@ -16,8 +16,10 @@
 .home_banner {
 	width: 90%;
 	height: calc(100% - 230px);
-	background: red;
 	position: relative;
+	background: url('../../images/homeBanner.jpg') no-repeat;
+	background-size: contain;
+	background-position: 50%;
 }
 .home_notice {
 	width: 315px;

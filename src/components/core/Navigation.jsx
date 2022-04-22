@@ -20,30 +20,20 @@ const Navigation = () => {
 	const isNoticeDetail = useActive(pathname, '/noticedetail')
 	const isProject = useActive(pathname, '/project')
 	const isReferenceDoc = useActive(pathname, '/referenceDoc')
-	function getDashboarUrl() {
-		let url = '/user/dashboard'
-		if (isAuth()) {
-			const {
-				user: { role },
-			} = isAuth()
-			if (role === 1) {
-				url = '/admin/dashboard'
-			}
-		}
-		return url
-	}
+	const auth = isAuth()
 	// 下拉菜单
 	const menu = (
 		<Menu>
-			<Menu.Item>
+			<Menu.Item key='1'>
 				<Link to='/usercenter/userInfo'>个人中心</Link>
 			</Menu.Item>
-			<Menu.Item>
+			<Menu.Item key='2'>
 				<Link to='/usercenter/resetPassword'>修改密码</Link>
 			</Menu.Item>
-			<Menu.Item>
-				{/* <Link>退出登录</Link> */}
+			<Menu.Item key='3'>
+				<Link to='/admin'>后台管理</Link>
 			</Menu.Item>
+			<Menu.Item key='4'>{/* <Link>退出登录</Link> */}</Menu.Item>
 		</Menu>
 	)
 	return (
@@ -63,7 +53,7 @@ const Navigation = () => {
 			<li className='front_menu_user'>
 				<Dropdown overlay={menu}>
 					<a className='ant-dropdown-link' onClick={(e) => e.preventDefault()}>
-						<span className='front_user_name'>aaa</span>
+						<span className='front_user_name'>{auth.username}</span>
 						<DownOutlined />
 					</a>
 				</Dropdown>

@@ -1,9 +1,9 @@
 import * as echarts from 'echarts/core'
 import { TitleComponent, TooltipComponent } from 'echarts/components'
 import { GraphChart } from 'echarts/charts'
-import { CanvasRenderer } from 'echarts/renderers'
+import { SVGRenderer } from 'echarts/renderers'
 
-echarts.use([TitleComponent, TooltipComponent, GraphChart, CanvasRenderer])
+echarts.use([TitleComponent, TooltipComponent, GraphChart, SVGRenderer])
 export const drawGraphChart = (element) => {
 	const chartDom = document.getElementById(element)
 	const myChart = echarts.init(chartDom)

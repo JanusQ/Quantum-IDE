@@ -4,6 +4,8 @@ import { Table, Input, Select, Drawer } from 'antd'
 import { Link } from 'react-router-dom'
 import { SearchOutlined } from '@ant-design/icons'
 import '../styles/Project.css'
+import { recieve_from_real } from '../../api/test_circuit'
+import { barChart } from '../../helpers/echartFn'
 const Task = () => {
 	const columns = [
 		{
@@ -31,11 +33,7 @@ const Task = () => {
 			dataIndex: 'address',
 			key: 'address',
 		},
-		{
-			title: '项目阶段',
-			dataIndex: 'step',
-			key: 'step',
-		},
+
 		{
 			title: '运行状态',
 			dataIndex: 'step',
@@ -64,24 +62,10 @@ const Task = () => {
 	const data = [
 		{
 			key: '1',
-			name: 'John Brown',
+			name: '123',
 			age: 32,
-			address: 'New York No. 1 Lake Park',
+			address: '111',
 			tags: ['nice', 'developer'],
-		},
-		{
-			key: '2',
-			name: 'Jim Green',
-			age: 42,
-			address: 'London No. 1 Lake Park',
-			tags: ['loser'],
-		},
-		{
-			key: '3',
-			name: 'Joe Black',
-			age: 32,
-			address: 'Sidney No. 1 Lake Park',
-			tags: ['cool', 'teacher'],
 		},
 	]
 	const { Search } = Input
@@ -108,8 +92,41 @@ const Task = () => {
 		showQuickJumper: true,
 	}
 	const [visible, setVisible] = useState(false)
-	const lookResult = () => {
+	const [computerChart, setComputerChart] = useState(null)
+	const compare = (property) => {
+		return function (a, b) {
+			const value1 = a[property]
+			const value2 = b[property]
+			return value1 - value2
+		}
+	}
+
+	const lookResult = async () => {
 		setVisible(true)
+		const params = {}
+		params.result_id = '528aa9a89f05409faa28d03970a22039'
+		const { data } = await recieve_from_real(params)
+		const echartsData = {
+			yData: [],
+			xData: [],
+		}
+		const dataKeys = Object.keys(data)
+		const arr = []
+		dataKeys.forEach((item) => {
+			arr.push({ form: item, to: parseInt(item, 2) })
+		})
+		arr.sort(compare('to'))
+
+		// dataKeys.sort
+		arr.forEach((item) => {
+			echartsData.yData.push(data[item.form])
+			echartsData.xData.push(item.form)
+		})
+		if (!computerChart) {
+			setComputerChart(barChart('computer_params_chart', echartsData, true))
+		} else {
+			barChart(computerChart, echartsData, false)
+		}
 	}
 	const onClose = () => {
 		setVisible(false)
@@ -118,7 +135,7 @@ const Task = () => {
 		<Layout>
 			<div className='project_div'>
 				<div className='project_search_div'>
-					<Search style={{ width: 200 }} placeholder='请输入项目名称' onSearch={onSearch}></Search>
+					<Search style={{ width: 200 }} placeholder='请输入任务名称' onSearch={onSearch}></Search>
 					<Select
 						placeholder='请选择运行状态'
 						style={{ width: 200, marginLeft: '20px' }}
@@ -126,45 +143,21 @@ const Task = () => {
 					>
 						<Option value='1'>等待中</Option>
 					</Select>
-					<Select
+					{/* <Select
 						placeholder='请选择项目阶段'
 						style={{ width: 200, marginLeft: '20px' }}
 						onChange={statusChange}
 					>
 						<Option value='1'>已启动</Option>
-					</Select>
+					</Select> */}
 				</div>
 				<Table columns={columns} dataSource={data} pagination={pagination} />
 			</div>
 			<Drawer title='quantum computer name' placement='right' onClose={onClose} visible={visible} width={900}>
-				<div className='computer_params_div'>
-					<p style={{ fontSize: '16px' }}>参数</p>
-					<div className='computer_params_detail'>
-						<div className='computer_params_detail_div'>
-							<div className='computer_params_detail_item'>
-								<div className='computer_params_detail_num'>127</div>
-								<div className='computer_params_detail_name'>Qubits</div>
-							</div>
-							<div className='computer_params_detail_item'>
-								<div className='computer_params_detail_num'>64</div>
-								<div className='computer_params_detail_name'>QV</div>
-							</div>
-							<div className='computer_params_detail_item'>
-								<div className='computer_params_detail_num'>850</div>
-								<div className='computer_params_detail_name'>CLOPS</div>
-							</div>
-						</div>
-						<div>
-							<div className='computer_params_right_item'>status:online</div>
-							<div className='computer_params_right_item'>number of qubits: 40</div>
-							<div className='computer_params_right_item'>Avg.T1: xxx us</div>
-							<div className='computer_params_right_item'>Avg.T2: xxx us</div>
-						</div>
-					</div>
-				</div>
+				<div className='computer_params_div' id='computer_params_chart'></div>
 				<div className='computer_number_div'>
 					<p className='computer_number_title'>数据矫正</p>
-					<Table columns={columns} dataSource={data} bordered pagination={false} />
+					{/* <Table columns={columns} dataSource={data} bordered pagination={false} /> */}
 				</div>
 			</Drawer>
 		</Layout>
