@@ -35,9 +35,8 @@ export const barChart = (element, data, isNeedInit) => {
 				axisLabel: {
 					formatter: function (value, idx) {
 						const svg = getDirac(value)
-                        console.log(svg)
-                        const z = new XMLSerializer()
-                        return value
+						const z = new XMLSerializer()
+						return value
 						// return `<foreignObject>z.serializeToString(svg)</foreignObject>`
 					},
 				},
