@@ -65,8 +65,206 @@ export default class QCEngine {
     }
     export()
     {
-        var qasm = this.circuit.exportToQASM({comment:"test"}, false);
-        return qasm;    
+        var qasm = this.circuit.exportToQASM({}, false);
+        console.log(this.circuit);
+        return qasm;
+    }
+    //import from QASM to a empty qcengine
+    import(QASM)
+    {
+        //QASM = "OPENQASM 2.0;\ninclude \"qelib1.inc\";\nqreg q[3];\nh q[0];\ncz q[0],q[1];\nry(pi/2) q[0];\nh q[1];\nrz(pi/4) q[1];\nry(pi/2) q[2];\n";
+        const circuit = new QuantumCircuit();
+        this.circuit = circuit
+        this.circuit.importQASM(QASM, function(errors) {
+            console.log(errors);
+        });
+        // config qcEngine parameters
+        this.qubit_number = circuit.numQubits;
+        console.log(this.circuit)
+        const {gates} = this.circuit;
+        console.log(gates);
+        let qlen = this.qubit_number;
+        //let op;
+        
+        for(let i=0; i<gates[0].length; i++)
+        {
+            let j=0;
+            
+            let ops ={};
+            while(j<qlen)
+            {
+                if(gates[j][i]!=null){
+                    let id =gates[j][i]['id'];
+                    let nam = gates[j][i]['name'];
+                    if(id in ops){
+
+                    }
+                    else{
+                        ops[id] = {};
+                        ops[id]['name']=nam;
+                        ops[id]['qubits'] = [];
+                        ops[id]['target'] = [];
+                        ops[id]['control'] = [];                     
+                    }
+                    ops[id]['qubits'].push(j);
+                    let control_set = ['cx','cry', 'cu1', 'cz'];
+                    if(control_set.includes(nam))
+                    {
+                        if(gates[j][i]['connector'] == 1)
+                        {
+                            ops[id]['target'].push(j);
+                        }
+                        else if(gates[j][i]['connector'] == 0)
+                        {
+                            ops[id]['control'].push(j);
+                        }
+                    }
+                }
+                j++;
+            }
+            
+            if(ops.length == 0)
+                continue;
+            
+            let newops = {};
+            let names =[];
+            for(let id in ops)
+            {
+                if(names.includes(ops[id]['name']))
+                {
+                    let merge_set = ['x', 'rx', 'ry', 'rz', 'h'];
+                    let aux = ops[id]['name'];
+                    if(merge_set.includes(aux))
+                    {
+                        for(let newid in newops)
+                        {
+                            if(newops[newid]['name'] == aux)
+                                newops[newid]['qubits'].push(ops[id]['qubits'][0]);
+                        }
+                        
+                    }
+                    else
+                    {
+                        newops[id] = ops[id];
+                    }
+
+                }
+                else
+                {
+                    newops[id] = ops[id];
+                    names.push(ops[id]['name']);
+                }
+            }
+            console.log(ops)
+            console.log(newops)
+            for(let id in newops){
+                let op = newops[id]['name'];
+                let qubits = newops[id]['qubits'];
+                let target = newops[id]['target'];
+                let control = newops[id]['control'];
+                if(op == 'h' || op =='x')
+                {
+                    if( op == 'x')
+                        op = 'not';
+                    this._addGate({
+                        'qubits': qubits,
+                        'operation': op,
+                        'columns': this.nextColumn()
+                    })
+                }
+                else if(op == 'rz')
+                {
+                    let rotation = gates[qubits[0]][i]['options']['params']['phi'];
+                    rotation = this.parseRotation(rotation)
+                    this._addGate({
+                        'qubits': qubits,
+                        'operation': 'phase',
+                        'rotation': rotation,  // TODO: °还是π得确定一下
+                        'columns': this.nextColumn()
+                    })
+                }
+                else if(op == 'ry' || op == 'rx')
+                {
+                    let rotation = gates[qubits[0]][i]['options']['params']['theta'];
+                    rotation = this.parseRotation(rotation)
+                    this._addGate({
+                        'qubits': qubits,
+                        'operation': op,
+                        rotation,
+                        'columns': this.nextColumn()
+                    })
+
+                }
+                else if(op == 'cx')
+                {
+                    this._addGate({
+                        'controls': control,
+                        'target': target,
+                        'operation': 'ccnot',
+                        'columns': this.nextColumn()
+                    })
+
+                }
+                else if(op == 'cry')
+                {
+                    let rotation = gates[qubits[0]][i]['options']['params']['phi'];
+                    rotation = this.parseRotation(rotation)
+                    this._addGate({
+                        control,
+                        target,
+                        rotation,
+                        'operation': 'cry',
+                        'columns': this.nextColumn()
+                    })
+                }
+                else if(op == 'cu1' || op == 'cz')
+                {
+                    let rotation;
+                    if(op == 'cu1'){
+                        rotation = gates[qubits[0]][i]['options']['params']['lambda'];
+                        rotation = this.parseRotation(rotation)
+                    }
+                    else
+                        rotation = this.parseRotation('pi');
+                    this._addGate({
+                        rotation,
+                        'qubits': qubits,
+                        'operation': 'ccphase',
+                        'columns': this.nextColumn()
+                    })
+
+                }
+                else if(op =='swap')
+                {
+                    this._addGate({
+                        // qubits1, qubits2实际上只有一个，现在是暂时为之
+                        'qubits1': [qubits[0]],
+                        'qubits2': [qubits[1]],
+                        'operation': 'swap',
+                        'columns': this.nextColumn()
+                    })
+
+                }
+                else
+                {
+                    console.log("unkown gates"+op);
+                }
+            }
+        
+        }
+        console.log(this.operations);
+        return{
+            'operations':this.operations,
+            'qubit_number':this.qubit_number,
+        }
+
+    }
+
+    parseRotation(rot)
+    {
+        rot = rot.replace('pi', '180');
+        //parseInt(eval(rot));
+        return parseInt(eval(rot));
     }
 
     // We always begin by specifying how many qubits we want to associate with our QPU using the qc.reset() method. For example, we could prepare ourselves for a simulation of an 8-qubit QPU as follows:
@@ -365,6 +563,32 @@ export default class QCEngine {
         // debugger
     }
 
+    rx(rotation, binary_qubits = undefined) {
+        const { circuit, operations, now_column } = this
+        const qubits = this.parseBinaryQubits(binary_qubits)
+
+        let phi = 0
+        if (rotation !== 0) {
+            phi = rotation > 0 ? "pi/" + (180 / rotation) : "-pi/" + (180 / -rotation)
+        }
+
+
+        qubits.forEach(qubit => {
+            circuit.addGate("rx", now_column, qubit, {
+                params: {
+                    theta: phi
+                }
+            });
+        })
+
+        this._addGate({
+            'qubits': qubits,
+            'operation': 'rx',
+            rotation,
+            'columns': this.nextColumn()
+        })
+    }
+
     ry(rotation, binary_qubits = undefined) {
         const { circuit, operations, now_column } = this
         const qubits = this.parseBinaryQubits(binary_qubits)
@@ -439,13 +663,21 @@ export default class QCEngine {
         // });
 
         // console.log(control, target)
-        circuit.addGate("ncphase", now_column, qubits, {
-            params: {
-                qubit_number: qubits.length,
-                phi: toPI(rotation)
-            }
-        });
-
+        if(qubits.length == 2){
+            circuit.addGate("cu1", now_column, qubits,{
+                params: {
+                    lambda: toPI(rotation),
+                }
+            });
+        }
+        else{
+            circuit.addGate("ncphase", now_column, qubits, {
+                params: {
+                    qubit_number: qubits.length,
+                    phi: toPI(rotation)
+                }
+            });
+        }
         // TODO: 允许多个控制或者多个被控吗
         this._addGate({
             rotation,
@@ -515,7 +747,7 @@ export default class QCEngine {
             target = [target[0]]
         }
 
-        circuit.addGate("ccnot", now_column, qubits, {
+        circuit.addGate("ncnot", now_column, qubits, {
             params: {
                 qubit_number: qubits.length,
                 controls: controls,
@@ -574,7 +806,7 @@ export default class QCEngine {
             this._addGate({
                 'controls': control,
                 'target': target,
-                'operation': 'ccnot',
+                'operation': 'ncnot',
                 'columns': this.nextColumn()
             })
         }
@@ -624,7 +856,7 @@ export default class QCEngine {
         const qubit1 = this.parseBinaryQubits(binary_qubit1)
         const qubit2 = this.parseBinaryQubits(binary_qubit2)
         const c_qubit = this.parseBinaryQubits(control_qubit)
-        if (qubit1.length != 1 || qubit2.length != 1 || c_qubit != 1) {
+        if (qubit1.length != 1 || qubit2.length != 1 || c_qubit.length != 1) {
             console.error(qubit1, 'or', qubit2, 'or', c_qubit, 'has more than one qubit, which can not be swapped')
             debugger
         }

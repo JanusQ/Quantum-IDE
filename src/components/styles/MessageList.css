@@ -1,12 +1,8 @@
 .message_div {
-	width: 99%;
-    margin: auto;
-    margin-top: 30px;
-    height: calc(100% - 180px);
+	width: 1200px;
     overflow: auto;
-	background: #fff;
-	box-shadow: rgb(0 0 0 / 35%) 0px 0px 5px;
     padding: 10px;
+    margin-bottom: 40px;
 }
 .message_title{
     font-size: 18px;

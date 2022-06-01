@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import '../styles/Right.css'
 import { Button, Tooltip } from 'antd'
 import { restore } from '../../simulator/CommonFunction'
+
 const Right = (props) => {
 	return (
 		<div id='right_div_box'>
@@ -122,6 +123,68 @@ const Right = (props) => {
 					<div className='c_down_draw'>
 						<svg id='chart_down_svg'></svg>
 					</div>
+				</div>
+			</div>
+			<div
+				className='real_top_div'
+				style={{
+					display: props.isShowRealB ? 'block' : 'none',
+					height: props.isShowCMode || props.isShowRealD ? '226px' : '678px',
+				}}
+			>
+				<div className='real_params_btn'>
+					{/* <Button onClick={() => changeType(false)} type='primary'>
+					{isSimple ? 'Corrected' : 'Raw'}
+				</Button>
+				<Button onClick={() => downloadFn()} type='primary' style={{ float: 'right', marginTop: '9px' }}>
+					Download
+				</Button> */}
+				</div>
+				<div className='real_params_div' id='real_params_chart'>
+					<svg id='real_params_chart_svg'></svg>
+				</div>
+			</div>
+
+			<div
+				className='real_number_div'
+				style={{
+					display: props.isShowRealC ? 'block' : 'none',
+					marginTop: props.isShowRealB ? '5px' : '0',
+					height: props.isShowRealB
+						? props.isShowRealD
+							? '221px'
+							: '447px'
+						: props.isShowRealD
+						? '336.5px'
+						: '678px',
+				}}
+			>
+				<div className='real_number_title'>编译前电路</div>
+				<div className='real_before_chart'>
+					<svg id='real_before_chart_svg'>
+						<g id='real_before_chart_g'></g>
+					</svg>
+				</div>
+			</div>
+			<div
+				className='real_number_div'
+				style={{
+					display: props.isShowRealD ? 'block' : 'none',
+					marginTop: props.isShowRealB || props.isShowRealC ? '5px' : '0',
+					height: props.isShowRealB
+						? props.isShowRealC
+							? '221px'
+							: '447px'
+						: props.isShowRealC
+						? '336.5px'
+						: '678px',
+				}}
+			>
+				<div className='real_number_title'>编译后电路</div>
+				<div className='real_after_chart'>
+					<svg id='real_after_chart_svg'>
+						<g id='real_after_chart_g'></g>
+					</svg>
 				</div>
 			</div>
 		</div>

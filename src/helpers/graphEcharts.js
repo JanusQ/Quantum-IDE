@@ -1,77 +1,43 @@
 import * as echarts from 'echarts/core'
 import { TitleComponent, TooltipComponent } from 'echarts/components'
 import { GraphChart } from 'echarts/charts'
-import { SVGRenderer } from 'echarts/renderers'
+import { CanvasRenderer } from 'echarts/renderers'
 
-echarts.use([TitleComponent, TooltipComponent, GraphChart, SVGRenderer])
-export const drawGraphChart = (element) => {
+echarts.use([TitleComponent, TooltipComponent, GraphChart, CanvasRenderer])
+export const drawGraphChart = (element, data, linksData) => {
 	const chartDom = document.getElementById(element)
 	const myChart = echarts.init(chartDom)
 	const option = {
-		tooltip: {},
+		tooltip: {
+			formatter: function (params) {
+				if (params.dataType === 'node') {
+					return params.name
+				}
+				if (params.dataType === 'edge') {
+					return `${params.data.source} — ${params.data.target}`
+				}
+			},
+		},
 		animationDurationUpdate: 1500,
 		animationEasingUpdate: 'quinticInOut',
 		series: [
 			{
+				scaleLimit: {
+					min: 1,
+					max: 1,
+				},
 				type: 'graph',
 				layout: 'none',
-				symbolSize: 50,
-				roam: true,
+				symbolSize: 30,
 				label: {
 					show: true,
+					fontSize: 8,
+					color: '#fff',
+
 				},
-				edgeSymbol: ['circle'],
-				edgeSymbolSize: [4, 10],
-				edgeLabel: {
-					fontSize: 20,
-				},
-				data: [
-					{
-						color: 'red',
-						name: '1',
-						x: 300,
-						y: 300,
-					},
-					{
-						color: 'blue',
-						name: '2',
-						x: 500,
-						y: 300,
-					},
-					{
-						name: '3',
-						x: 600,
-						y: 300,
-					},
-					{
-						name: '4',
-						x: 300,
-						y: 500,
-					},
-				],
+				data: data,
 				// links: [],
-				links: [
-					{
-						color: 'red',
-						source: '1',
-						target: '3',
-					},
-					{
-						color: 'blue',
-						source: '2',
-						target: '3',
-					},
-					{
-						color: 'yellow',
-						source: '1',
-						target: '4',
-					},
-					{
-                        color: 'black',
-						source: '1',
-						target: '4',
-					},
-				],
+				links: linksData,
 				lineStyle: {
 					opacity: 0.9,
 					width: 2,

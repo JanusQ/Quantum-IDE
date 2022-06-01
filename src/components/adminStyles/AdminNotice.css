@@ -1,17 +1,16 @@
 .admin_notice_div {
 	width: 100%;
-   
-    height: calc(100% - 200px);
     overflow: auto;
-	background: #fff;
-	border: 1px solid rgba(215, 215, 215, 1);
-    padding: 10px;
     border-top: 0;
+    margin-bottom: 40px;
+    min-height: 500px;
+    margin-top: 26px;
 }
 .admin_notice_operation{
     width: 100%;
     margin: auto;
-    border: 1px solid rgba(215, 215, 215, 1);
+    background: #fff;
+    border-radius: 20px;
     height: 50px;
     line-height: 50px;
     margin-top: 30px;

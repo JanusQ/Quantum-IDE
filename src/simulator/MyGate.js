@@ -63,7 +63,31 @@ function getRawGateNcphase(options) {
     return matrix.data
 }
 
-function getRawGateCCNOT(options)
+function getRawGatecphase(options) {
+    // debugger
+    const {phi} = options
+
+    if(phi instanceof String){
+        console.error(phi, 'should be numerical')
+        debugger
+    }
+
+    const state_num = pow2(2)
+    let matrix = new QObject(state_num, state_num)
+
+    range(0, state_num).forEach(i=>{
+        matrix.data[i][i] = complex(1,0); //getComplex({r:1, phi: -phi/2})
+    })
+    
+    matrix.data[state_num-1][state_num-1] = getComplex({r:1, phi})
+    
+    // let value = getComplex({r:1, phi})
+    // console.log(value.toPolar())
+    return matrix.data
+}
+
+
+function getRawGateNCNOT(options)
 {
     const {qubit_number, controls, target} = options;
 
@@ -165,8 +189,9 @@ export {
     // ncphase,
 
     getRawGateNcphase,
-    getRawGateCCNOT,
+    getRawGateNCNOT,
     getRawGateIdentity,
     getRawGateState,
+    getRawGatecphase,
     // write,
 }

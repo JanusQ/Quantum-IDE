@@ -1,43 +1,50 @@
 .front_header {
-	height: 70px;
+	height: 80px;
 	width: 100%;
-	background: rgba(58, 142, 230, 1);
-	line-height: 70px;
+	background: #08121b;
+	line-height: 80px;
 	min-width: 1200px;
 }
 .front_menu_div {
-	width: 82%;
-	margin: 0 auto;
 	height: 100%;
-	min-width: 1200px;
+	width: 1200px;
+	margin: 0 auto;
 }
 .front_logo_title {
-	font-weight: 700;
 	font-style: normal;
-	font-size: 18px;
+	font-size: 26px;
 	color: #ffffff;
+	user-select: none;
+	cursor: pointer;
+	float: left;
 }
 .front_menu_list {
-	height: 70px;
+	height: 80px;
 	margin-bottom: 0;
-	float: right;
+	float: left;
+	padding-top: 15px;
 }
 .front_menu_list li {
-	height: 69px;
+	height: 50px;
+	line-height: 50px;
 	box-sizing: border-box;
 	float: left;
-	width: 104px;
 	font-style: normal;
 	font-size: 16px;
 	color: #ffffff;
 	text-align: center;
 	user-select: none;
+	font-size: 18px;
+	margin-left: 85px;
 }
 .front_menu_list li:hover {
 	cursor: pointer;
 }
 .front_menu_list li.active {
-	border-bottom: 2px solid #fff;
+	border-bottom: 4px solid #003f88;
+}
+.front_menu_list_second {
+	float: right;
 }
 .front_menu_list li a {
 	color: #fff;
@@ -48,13 +55,19 @@
 .front_menu_list li a:hover {
 	color: #fff;
 }
+.front_menu_list .menu_notice_li {
+	margin-left: 0;
+	width: 44px;
+	padding-top: 10px;
+}
 .front_ling_dang {
-	width: 17px;
-	height: 18px;
+	width: 28px;
+	height: 30px;
 	display: inline-block;
+	border-radius: 4px;
 	background: url('../../images/lingdang.svg') no-repeat;
-	position: absolute;
-	top: 26px;
+	background-color: #474747;
+	background-position: center;
 }
 .front_tip_num {
 	width: 16px;
@@ -62,15 +75,11 @@
 	color: #fff;
 	background: red;
 	border-radius: 50%;
-	position: absolute;
+	vertical-align: top;
 	line-height: 14px;
 	font-size: 12px;
-	top: 22px;
-	right: 13px;
 }
 .front_menu_list .front_menu_user {
-	position: relative;
-	width: 200px;
 }
 .front_menu_list .front_menu_user a {
 	width: 100px;
@@ -85,15 +94,24 @@
 	white-space: nowrap;
 	vertical-align: top;
 }
+
 .front_content {
-	width: 82%;
-	height: calc(100% - 70px);
+	width: 100%;
 	min-width: 1200px;
 	margin: 0 auto;
-	overflow: hidden;
 }
 .computer_content {
 	width: 100%;
 	height: calc(100% - 70px);
 	display: flex;
+}
+.common_content {
+	width: 1200px;
+	margin: 0 auto;
+	min-height: calc(100% - 400px);
+}
+.admin_user_content {
+	width: 100%;
+	min-width: 1200px;
+	margin: 0 auto;
 }

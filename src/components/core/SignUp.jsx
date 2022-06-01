@@ -5,20 +5,25 @@ import { resetSignup, signup } from '../../store/actions/auth.actions'
 import { Link, useHistory } from 'react-router-dom'
 import { json } from 'd3'
 import '../styles/Signup.css'
-import { register } from '../../api/auth'
+import { register,registerDiscuz } from '../../api/auth'
 
 const SignUp = () => {
 	const { Option } = Select
 	const [form] = Form.useForm()
 	const history = useHistory()
 	const onFinish = async (value) => {
-		await register(value)
-		message.success('注册成功')
-		form.resetFields()
-		history.push('/signIn')
+		const params = {}
+		params.username = value.username
+		params.password = value.password
+		// await register(value)
+		await registerDiscuz(params)
+		// message.success('注册成功')
+		// form.resetFields()
+		// history.push('/signin/1')
 	}
 
 	const signupForm = () => {
+
 		return (
 			<div className='sign_up_form'>
 				<div className='sign_up_form_item'></div>
@@ -140,7 +145,7 @@ const SignUp = () => {
 						<Form.Item wrapperCol={{ offset: 5, span: 19 }}>
 							<div>
 								<span style={{ float: 'right' }} className='signup_to_in'>
-									<Link to='/signIn'>已经有账户了？点击登录</Link>
+									<Link to='/signin/1'>已经有账户了？点击登录</Link>
 								</span>
 							</div>
 						</Form.Item>

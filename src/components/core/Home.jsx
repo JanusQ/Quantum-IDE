@@ -2,26 +2,349 @@ import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import Layout from './Layout'
 import '../styles/Home.css'
-import { Button } from 'antd'
-import { Link } from 'react-router-dom'
+import { Button, Modal, Input, message } from 'antd'
+import { Link, Router } from 'react-router-dom'
 import { getNoticeList } from '../../api/notice'
+import { createPro } from '../../api/test_circuit'
+import { useHistory } from 'react-router-dom'
+import { isAuth } from '../../helpers/auth'
+import moment from 'moment'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Navigation, Pagination, A11y } from 'swiper'
+import 'swiper/css'
+import 'swiper/css/navigation'
+import 'swiper/css/pagination'
+import 'swiper/css/scrollbar'
 const Home = () => {
+	const history = useHistory()
 	const state = useSelector((state) => state)
+	const [noticeList, setNoticeList] = useState([])
 	const getNoticeListFn = async () => {
-		await getNoticeList()
+		const { data } = await getNoticeList()
+		setNoticeList(data.notice_list)
 	}
+	const lookDetail = (id) => {
+		history.push(`/noticedetail/${id}`)
+	}
+	const noticeLi = noticeList.map((item) => (
+		<li className='home_notice_list' key={item.notice_id}>
+			<div className='home_notice_list_title'>
+				<span className='home_notice_list_circle'></span>
+				<span className='home_notice_list_name'>{item.notice_title}</span>
+			</div>
+			<div className='home_notice_list_content'></div>
+			<div className='home_notice_list_footer'>
+				<span>{moment(item.update_time).format('YYYY-MM-DD')}</span>
+				<span style={{ margin: '0 10px', display: 'inline-block' }}>|</span>
+				<a onClick={() => lookDetail(item.notice_id)}>查看更多</a>
+			</div>
+		</li>
+	))
+
 	useEffect(() => {
 		getNoticeListFn()
 	}, [])
+	// 创建项目
+	const [isSaveCaseModalVisible, setIsSaveCaseModalVisible] = useState(false)
+	const auth = isAuth()
+	const [caseName, setCaseName] = useState('')
+	const gotoComputer = () => {
+		if (!auth) {
+			message.error('请先登录')
+			history.push('/signin/1')
+			return
+		}
+		setIsSaveCaseModalVisible(true)
+	}
+	const gotoRouter = (router) => {
+		if (!auth) {
+			message.error('请先登录')
+			history.push('/signin/1')
+			return
+		}
+		history.push(router)
+	}
+	const onSaveChange = (e) => {
+		setCaseName(e.target.value)
+	}
+	const saveCaseModal = () => {
+		return (
+			<Modal visible={isSaveCaseModalVisible} onOk={isSaveOk} onCancel={isSaveCancel} title='保存项目'>
+				<p>项目名称</p>
+				<Input value={caseName} onChange={onSaveChange}></Input>
+			</Modal>
+		)
+	}
+
+	const isSaveOk = async () => {
+		if (!caseName) {
+			message.error('请输入项目名称')
+			return
+		}
+		const formdata = new FormData()
+		formdata.append('user_id', auth.user_id)
+		formdata.append('project_name', caseName)
+		const { data } = await createPro(formdata)
+		history.push({ pathname: `/aceComputer/${caseName}/${data.project_id}` })
+		setIsSaveCaseModalVisible(false)
+	}
+	const isSaveCancel = () => {
+		setIsSaveCaseModalVisible(false)
+		setCaseName('')
+	}
+	const [bannerSwiper, setBannerSwiper] = useState(null)
+	const homeBanner = () => {
+		return (
+			<div className='home_banner'>
+				<Swiper
+					// install Swiper modules
+					modules={[Navigation, Pagination, A11y]}
+					loop={true}
+					onSwiper={setBannerSwiper}
+					navigation
+					pagination={{ clickable: true }}
+					style={{ width: '100%', height: '100%' }}
+				>
+					<SwiperSlide>
+						<div className='home_banner_item home_banner_item_1'>
+							<div className='home_banner_text'>
+								<div className='home_banner_title'>量子云平台</div>
+								<div className='home_banner_content'>
+									提供实时的量子计算服务
+								</div>
+								<div className='home_banner_btn common_btn' onClick={gotoComputer}>
+									BUTTON
+								</div>
+							</div>
+						</div>
+					</SwiperSlide>
+					<SwiperSlide>
+						<div className='home_banner_item home_banner_item_2'>
+							<div className='home_banner_text'>
+								<div className='home_banner_title'>量子云平台</div>
+								<div className='home_banner_content'>
+									提供实时的量子计算服务
+								</div>
+								<div className='home_banner_btn common_btn' onClick={gotoComputer}>
+									BUTTON
+								</div>
+							</div>
+						</div>
+					</SwiperSlide>
+				</Swiper>
+			</div>
+		)
+	}
+	const [productionSwiper, setProductionSwiper] = useState(null)
+	const productionMessage = () => {
+		return (
+			<div className='home_production_div'>
+				<div className='home_production_content'>
+					<Swiper
+						// install Swiper modules
+						modules={[Navigation, Pagination, A11y]}
+						loop={true}
+						onSwiper={setProductionSwiper}
+						navigation
+						pagination={{ clickable: true }}
+						style={{ width: '100%', height: '100%' }}
+					>
+						<SwiperSlide>
+							<div className='home_production_item'>
+								<div className='home_production_pic home_production_pic_1'></div>
+								<div className='home_production_border'></div>
+								<div className='home_production_contet'>
+									<div className='home_production_title'>产品介绍</div>
+									<div className='home_production_title_2'>PRODUCTION INTRODUCTION</div>
+									<div className='home_production_name'>美番1号</div>
+									<div className='home_production_detail'>
+										芯片面向通用量子计算，采用了较易扩展的近邻连通架构。为执行相对复杂的量子门电路算法，“天目1号”上共集成36个具备更长比特寿命的超导量子比特（退相干时间约50
+										微秒），实现了高保真度的通用量子门（受控相位门，精度优于98%）。“天目1号”具备更高的编程灵活度，以执行更多种类的量子算法，可以应用于更多研究领域。
+									</div>
+									<div className='home_banner_btn common_btn'>BUTTON</div>
+								</div>
+								{/* <div className=''></div> */}
+							</div>
+						</SwiperSlide>
+						<SwiperSlide>
+							<div className='home_production_item'>
+								<div className='home_production_item'>
+									<div className='home_production_pic home_production_pic_1'></div>
+									<div className='home_production_border'></div>
+									<div className='home_production_contet'>
+										<div className='home_production_title'>产品介绍</div>
+										<div className='home_production_title_2'>PRODUCTION INTRODUCTION</div>
+										<div className='home_production_name'>美番2号</div>
+										<div className='home_production_detail'>
+											芯片面向通用量子计算，采用了较易扩展的近邻连通架构。为执行相对复杂的量子门电路算法，“天目1号”上共集成36个具备更长比特寿命的超导量子比特（退相干时间约50
+											微秒），实现了高保真度的通用量子门（受控相位门，精度优于98%）。“天目1号”具备更高的编程灵活度，以执行更多种类的量子算法，可以应用于更多研究领域。
+										</div>
+										<div className='home_banner_btn common_btn'>BUTTON</div>
+									</div>
+									{/* <div className=''></div> */}
+								</div>
+							</div>
+						</SwiperSlide>
+					</Swiper>
+				</div>
+			</div>
+		)
+	}
+	const thirdDiv = () => {
+		return (
+			<div className='home_third_div'>
+				<div className='home_third_div_content'>
+					<div className='home_third_div_border'></div>
+					<div className='home_third_div_text'>
+						<div className='home_third_div_title'>量子服务</div>
+						<div className='home_third_div_title_2'>QUANTUM SERVICE</div>
+						<div className='home_third_div_name'>标题内容字数大致</div>
+						<div className='home_third_div_name_2'>副标题内容字数大致</div>
+						<div className='home_third_div_btn_g'>
+							<div className='common_btn'>BUTTON1</div>
+							<div className='common_btn'>BUTTON2</div>
+						</div>
+					</div>
+					<div className='home_third_router'>
+						<div className='home_third_router_item home_third_router_item_1' onClick={gotoComputer}>
+							<div className='home_third_router_icon'></div>
+							<div className='home_third_content'>
+								<div className='home_third_name'>
+									启动<span style={{ fontSize: '24px' }}>IDE</span>
+								</div>
+								<div className='home_third_border'></div>
+								<div className='home_third_detail'>
+									启动量子IDE,
+									<br />
+									编写程序并提交任务
+								</div>
+							</div>
+							<div className='home_third_trow_icon'></div>
+						</div>
+						<div
+							className='home_third_router_item home_third_router_item_2'
+							onClick={() => gotoRouter('/project')}
+						>
+							<div className='home_third_router_icon'></div>
+							<div className='home_third_content'>
+								<div className='home_third_name'>项目状态</div>
+								<div className='home_third_border'></div>
+								<div className='home_third_detail'>
+									编辑与查看项目状态,
+									<br />
+									并获取已提交任务的
+									<br />
+									运行结果
+								</div>
+							</div>
+							<div className='home_third_trow_icon'></div>
+						</div>
+						<div
+							className='home_third_router_item home_third_router_item_3'
+							onClick={() => gotoRouter('/computer')}
+						>
+							<div className='home_third_router_icon'></div>
+							<div className='home_third_content'>
+								<div className='home_third_name'>服务状态</div>
+								<div className='home_third_border'></div>
+								<div className='home_third_detail'>
+									查看当前量子计算机
+									<br />
+									的服务状态与详细信息
+								</div>
+							</div>
+							<div className='home_third_trow_icon'></div>
+						</div>
+						<div
+							className='home_third_router_item home_third_router_item_4'
+							onClick={() => gotoRouter('/referenceDoc/all')}
+						>
+							<div className='home_third_router_icon'></div>
+							<div className='home_third_content'>
+								<div className='home_third_name'>教程与文档</div>
+								<div className='home_third_border'></div>
+								<div className='home_third_detail'>
+									查看介绍、教程
+									<br />
+									与API文档等信息
+								</div>
+							</div>
+							<div className='home_third_trow_icon'></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		)
+	}
+	const [fourthSwiper, setFourthSwiper] = useState(null)
+	const fourthDiv = () => {
+		return (
+			<div className='home_fourth_div'>
+				<div className='home_fourth_content'>
+					<div className='home_fourth_title'>第四部分</div>
+					<div className='home_fourth_second_title'>
+						<span>物理系的PAPER</span>
+						<span style={{ marginLeft: '6px' }}>物理系的PAPER</span>
+					</div>
+					<div className='home_fourth_switch'>
+						<Swiper
+							// install Swiper modules
+							modules={[Navigation, Pagination, A11y]}
+							loop={true}
+							onSwiper={setFourthSwiper}
+							slidesPerView={3}
+							spaceBetween={30}
+							centeredSlides={true}
+							navigation
+							pagination={{ clickable: true }}
+							style={{ width: '100%', height: '100%' }}
+						>
+							<SwiperSlide>
+								<div className='home_meng_ban'></div>
+								<img
+									src={require('../../images/banner_1.png')}
+									style={{ width: '316px', height: '240px' }}
+								/>
+								<div className='home_swiper_title'>标题内容标题内容</div>
+								<div className='common_btn'>BUTTON</div>
+							</SwiperSlide>
+							<SwiperSlide>
+								<div className='home_meng_ban'></div>
+								<img
+									src={require('../../images/banner_1.png')}
+									style={{ width: '316px', height: '240px' }}
+								/>
+								<div className='home_swiper_title'>标题内容标题内容</div>
+								<div className='common_btn'>BUTTON</div>
+							</SwiperSlide>
+							<SwiperSlide>
+								<div className='home_meng_ban'></div>
+								<img
+									src={require('../../images/banner_1.png')}
+									style={{ width: '316px', height: '240px' }}
+								/>
+								<div className='home_swiper_title'>标题内容标题内容</div>
+								<div className='common_btn'>BUTTON</div>
+							</SwiperSlide>
+						</Swiper>
+					</div>
+				</div>
+			</div>
+		)
+	}
 	return (
-		<Layout>
+		<Layout isHome={true}>
 			<div className='home_div'>
-				<div className='home_left_div'>
-					<div className='home_title'>Welcome,IBM</div>
+				{homeBanner()}
+				{productionMessage()}
+				{thirdDiv()}
+				{fourthDiv()}
+				{saveCaseModal()}
+				{/* <div className='home_left_div'>
+					<div className='home_title'>Welcome</div>
 					<div className='home_banner'>
-						
-						<Button type='primary' className='home_banner_btn'>
-							<Link to='/'>Launch Quantum IDE</Link>
+						<Button type='primary' className='home_banner_btn' onClick={gotoComputer}>
+							Launch Quantum IDE
 						</Button>
 					</div>
 				</div>
@@ -30,25 +353,12 @@ const Home = () => {
 					<div className='home_notice_head'>
 						<span className='home_notice_title'>通知</span>
 						<span style={{ float: 'right' }}>
-							{' '}
-							<Link to='/'>查看全部</Link>
+							<Link to='/notice'>查看全部</Link>
 						</span>
 					</div>
-					<ul className='home_notice_list_ul'>
-						<li className='home_notice_list'>
-							<div className='home_notice_list_title'>
-								<span className='home_notice_list_circle'></span>
-								<span className='home_notice_list_name'>年后你好</span>
-							</div>
-							<div className='home_notice_list_content'>年后你好年后你好年后你好</div>
-							<div className='home_notice_list_footer'>
-								<span>2012-04-12</span>
-								<span style={{ margin: '0 10px', display: 'inline-block' }}>|</span>
-								<span>查看更多</span>
-							</div>
-						</li>
-					</ul>
+					<ul className='home_notice_list_ul'>{noticeLi}</ul>
 				</div>
+				 */}
 			</div>
 		</Layout>
 	)

@@ -1,19 +1,145 @@
 .admin_user_div {
-	width: 100%;
-	height: calc(100% - 200px);
-	border: 1px solid rgba(215, 215, 215, 1);
+	width: 1200px;
 	overflow: auto;
 	padding: 10px;
 	border-top: 0;
+	margin: 0 auto;
+	margin-bottom: 40px;
 }
 .admin_user_search_div {
-    height: 120px;
-    width: 100%;
-    margin-top: 15px;
-    border: 1px solid rgba(215, 215, 215, 1);
-    padding: 0 10px;
+	height: 62px;
+	width: 100%;
+	border: 1px solid rgba(215, 215, 215, 1);
+	background: #f6f9fb;
+	position: relative;
 }
-.admin_user_search_div .ant-row{
+.admin_user_search_title_div {
+	width: 100%;
     height: 60px;
-    line-height: 60px;
+}
+.admin_user_search_div .ant-row {
+	height: 60px;
+	line-height: 60px;
+}
+.admin_user_search_title {
+	width: 1200px;
+	height: 60px;
+	line-height: 60px;
+	margin: 0 auto;
+	background: #f6f9fb;
+
+}
+.admin_user_search_title span {
+	font-size: 18px;
+}
+.admin_user_search_menu {
+	float: right;
+	cursor: pointer;
+	user-select: none;
+}
+.admin_user_search_content {
+	height: 128px;
+	width: 100%;
+	background: #f6f9fb;
+	position: absolute;
+	/* z-index: 999; */
+	transition: all 0.3s;
+    top: 62px;
+   
+}
+.admin_user_search_form {
+	width: 1200px;
+	margin: auto;
+}
+
+.admin_user_search_form .ant-input {
+	border: 0;
+
+	background: #ffffff;
+	border-radius: 6px;
+}
+.admin_user_search_form .ant-input:focus {
+	border: 0;
+	box-shadow: none;
+}
+.admin_user_search_form .ant-input-password {
+	/* padding: 0 11px; */
+	border: 0;
+	background: #ffffff;
+	border-radius: 6px;
+}
+.admin_user_search_form .ant-btn {
+	border-radius: 6px;
+	border: 0;
+}
+.admin_user_search_form .ant-input-password-icon {
+}
+.admin_user_search_form .sign_in_to_signup {
+	text-align: center;
+	user-select: none;
+	cursor: pointer;
+	font-size: 16px;
+}
+.admin_user_search_form
+	.ant-form-item-has-error
+	:not(.ant-input-affix-wrapper-disabled):not(.ant-input-affix-wrapper-borderless).ant-input-affix-wrapper,
+.admin_user_search_form .ant-form-item-has-error :not(.ant-input-disabled):not(.ant-input-borderless).ant-input {
+	background: #ffffff;
+}
+
+.admin_user_search_form .ant-form-item-has-error :not(.ant-input-disabled):not(.ant-input-borderless).ant-input:focus,
+.admin_user_search_form
+	.ant-form-item-has-error
+	:not(.ant-input-affix-wrapper-disabled):not(.ant-input-affix-wrapper-borderless).ant-input-affix-wrapper:focus,
+.admin_user_search_form
+	.ant-form-item-has-error
+	:not(.ant-input-number-affix-wrapper-disabled):not(.ant-input-number-affix-wrapper-borderless).ant-input-number-affix-wrapper:focus,
+.admin_user_search_form .ant-form-item-has-error :not(.ant-input-disabled):not(.ant-input-borderless).ant-input-focused,
+.admin_user_search_form
+	.ant-form-item-has-error
+	:not(.ant-input-affix-wrapper-disabled):not(.ant-input-affix-wrapper-borderless).ant-input-affix-wrapper-focused,
+.admin_user_search_form
+	.ant-form-item-has-error
+	:not(.ant-input-number-affix-wrapper-disabled):not(.ant-input-number-affix-wrapper-borderless).ant-input-number-affix-wrapper-focused {
+	border: 0;
+	box-shadow: none;
+}
+.admin_user_search_form .ant-input-affix-wrapper-focused,
+.admin_user_search_form .ant-input-affix-wrapper:focus {
+	box-shadow: none;
+}
+.admin_user_search_form .ant-input-affix-wrapper {
+	border: 0;
+}
+/* .sign */
+.admin_user_search_form .ant-form-item-label > label {
+	/* color: #fff; */
+}
+.admin_user_search_form a {
+	color: #337df7;
+}
+.admin_user_search_form
+	.ant-form-item-has-error
+	.ant-select:not(.ant-select-disabled):not(.ant-select-customize-input)
+	.ant-select-selector {
+	border: 0;
+	background-color: #ffffff;
+}
+.admin_user_search_form .ant-select:not(.ant-select-customize-input) .ant-select-selector {
+	background-color: #ffffff;
+	border: 0;
+	border-radius: 6px;
+}
+.admin_user_search_form
+	.ant-select-single:not(.ant-select-customize-input)
+	.ant-select-selector
+	.ant-select-selection-search-input {
+}
+.admin_user_search_form .ant-select-single .ant-select-selector .ant-select-selection-item,
+.admin_user_search_form .ant-select-single .ant-select-selector .ant-select-selection-placeholder {
+}
+.admin_user_search_form
+	.ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input)
+	.ant-select-selector {
+	box-shadow: none;
 }

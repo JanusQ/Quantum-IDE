@@ -12,6 +12,12 @@
 .ace_operation {
 	margin-bottom: 8px;
 }
+.ace_operation .ant-select-selector{
+	border-radius: 10px !important;
+}
+.ace_operation .ant-select {
+	border-radius: 10px;
+}
 .ace_div .title {
 	font-size: 28px;
 	font-weight: bold;

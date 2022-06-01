@@ -1,0 +1,21 @@
+.breadcrumb_div {
+	font-size: 17px;
+	height: 80px;
+	line-height: 80px;
+	user-select: none;
+}
+.breadcrumb_icon {
+	display: inline-block;
+	margin-right: 9px;
+	height: 20px;
+	width: 23px;
+	background: url('../../images/mianbaoxie.png') no-repeat;
+}
+.admin_user_breadcrumb_div {
+	width: 1200px;
+	margin: 0 auto;
+	font-size: 17px;
+	height: 80px;
+	line-height: 80px;
+	user-select: none;
+}

@@ -1,3 +1,4 @@
+import { message } from 'antd'
 import React from 'react'
 import { Redirect, Route, RouteProps } from 'react-router-dom'
 import { isAuth } from '../../helpers/auth'
@@ -11,7 +12,8 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
 				if (auth) {
 					return <Component {...props} />
 				}
-				return <Redirect to='/signin' />
+				message.error('请先登录')
+				return <Redirect to='/signin/1' />
 			}}
 		/>
 	)

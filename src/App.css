@@ -14,13 +14,12 @@ img{
 	display: inline-block;
 }
 .App {
-	width: calc(100% - 50px);
-	padding: 5px;
+	width: 100%;
 	background: #000;
 	display: flex;
 	font-family: 'Ubuntu-R';
 	position: relative;
-	height: 100%
+	height: 800px;
 }
 .App .expand_div{
 	width: 100%;
@@ -111,13 +110,47 @@ ul li {
 	background: url('./images/ide_save.svg') no-repeat;
 }
 .computer_left_operation ul li:nth-of-type(2) .computer_left_operation_item{
-	background: url('./images/ide_change_mode.svg') no-repeat;
+	background: url('./images/icon_add.svg') no-repeat;
+	background-size: 100%;
 }
 .computer_left_operation ul li:nth-of-type(3) .computer_left_operation_item{
+	background: url('./images/ide_change_mode.svg') no-repeat;
+}
+.computer_left_operation ul li:nth-of-type(4) .computer_left_operation_item{
 	background: url('./images/ide_shitu.svg') no-repeat;
 	background-size: 100% 100%;
 	
 }
 .ace_operation .ant-btn-primary{
 	border: 0;
+}
+.ide_title{
+	text-align: center;
+	font-size: 38px;
+	color: #003f88;
+	font-weight: bold;
+	margin-bottom: 51px;
+	user-select: none;
+}
+.ide_top_menu{
+	height: 33px;
+	width: 100%;
+	border-radius: 0px;
+	background-color: #003f88;
+	line-height: 33px;
+	padding: 0 12px;
+}
+.ide_top_menu span{
+	display: inline-block;
+	width: 66px;
+	height: 25px;
+	line-height: 25px;
+	text-align: center;
+	user-select: none;
+	color: #fff;
+	border-radius: 6px;
+	cursor: pointer;
+}
+.ide_top_menu span:hover{
+	background-color: #1857bf;
 }

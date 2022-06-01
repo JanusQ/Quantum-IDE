@@ -1,44 +1,91 @@
 .doc_div {
-	width: 80%;
+	width: 1200px;
 	margin: auto;
-	height: calc(100% - 150px);
+	height: 1195px;
 	margin-top: 30px;
 	display: flex;
+	border-top-left-radius: 40px;
+	border-top-right-radius: 40px;
+	border-bottom-right-radius: 40px;
+	margin-bottom: 40px;
+	box-shadow: 0 1px 2px -2px #00000029, 0 3px 6px #0000001f, 0 5px 12px 4px #00000017;
 }
 .doc_left_menu {
 	width: 200px;
 	background: #fff;
 	height: 100%;
-	border: 1px solid rgba(233, 233, 233, 1);
+	border-top-left-radius: 40px;
+	transition: all 0.3s;
 }
 .doc_left_menu_title {
-	height: 45px;
+	height: 90px;
 	line-height: 45px;
-	padding-left: 35px;
+	padding-left: 32px;
 	color: #999;
-	border-bottom: 1px solid rgba(233, 233, 233, 1);
 }
 .doc_left_menu_list {
 	user-select: none;
+	background: #e9f0f5;
+	height: calc(100% - 90px);
+	border-top-right-radius: 70px;
+	padding-top: 60px;
+	width: 200px;
+	transition: all 0.3s;
+	overflow: auto;
 }
 .doc_left_menu_list li {
-	height: 45px;
-	line-height: 45px;
-	padding-left: 50px;
-	color: #333;
+	margin-bottom: 10px;
+	height: 47px;
+	border: 0;
+	padding-left: 7px;
+	border-left: 4px solid #e9f0f5;
+}
+.doc_left_menu_list li .content_text {
 	cursor: pointer;
+	color: #b8bfca;
+	display: inline-block;
+	border-radius: 30px;
+	font-size: 26px;
+	height: 47px;
+	line-height: 46px;
+	width: 176px;
+	position: relative;
+}
+.doc_left_menu_list li .content_text .content_icon {
+	position: absolute;
+	left: 17px;
+}
+.doc_left_menu_list li .content_text .content_text_detail {
+	position: absolute;
+	display: inline-block;
+	width: 110px;
+	left: 60px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 .doc_left_menu_list li.active {
-	background: rgba(233, 233, 233, 0.5);
-	border-bottom: 1px solid rgba(233, 233, 233, 1);
-	color: rgb(64, 158, 255);
+	border-left: 4px solid #003f88;
+}
+.doc_left_menu_list li.active .content_text {
+	background: #003f88;
+	border: 0;
+	color: #fff;
 }
 .doc_content {
 	flex: 1;
-	margin-left: 30px;
-	border: 1px solid rgba(233, 233, 233, 1);
 	height: 100%;
 	background: #fff;
-	padding: 0 10px;
+	padding: 10px 30px;
 	overflow: auto;
+	border-top-right-radius: 40px;
+	border-bottom-right-radius: 40px;
+}
+.doc_left_menu_title_icon {
+	display: inline-block;
+	width: 32px;
+	height: 32px;
+	background: url('../../images/menu_doc.png') no-repeat;
+	margin-top: 28px;
+	cursor: pointer;
 }

@@ -1,18 +1,26 @@
 import React from 'react'
 import AdminNavigation from './AdminNavigation'
-import '../adminStyles/AdminLayout.css'
-const AdminLayout = ({ children, isComputer }) => {
+import { PageHeader } from 'antd'
+import '../styles/Layout.css'
+import { useHistory } from 'react-router-dom'
+import Footer from '../core/Footer'
+const AdminLayout = ({ children, isAdminUser }) => {
+	const history = useHistory()
+	const backHome = () => {
+		return history.push('/')
+	}
 	return (
-		<div style={{ height: '100%' }}>
-			<div className='admin_header'>
-				<div className='admin_menu_div'>
-					<span className='admin_logo_title'>量子计算</span>
+		<div style={{ background: '#eaeff5' }}>
+			<div className='front_header'>
+				<div className='front_menu_div'>
+					<span className='front_logo_title' onClick={backHome}>
+						量子计算
+					</span>
 					<AdminNavigation />
 				</div>
 			</div>
-			<div className='admin_min'>
-				<div className='admin_content'>{children}</div>
-			</div>
+			<div className={isAdminUser ? 'admin_user_content' : 'common_content'}>{children}</div>
+			<Footer />
 		</div>
 	)
 }

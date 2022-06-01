@@ -1,77 +1,101 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Layout from './Layout'
-import { Table, Input, Select, Drawer } from 'antd'
+import { Table, Input, Select, Drawer, message, Button, Modal } from 'antd'
 import { Link } from 'react-router-dom'
 import { SearchOutlined } from '@ant-design/icons'
 import '../styles/Project.css'
 import { drawGraphChart } from '../../helpers/graphEcharts'
 import { useHistory } from 'react-router-dom'
+import { getProList, delPro } from '../../api/project'
+import { isAuth } from '../../helpers/auth'
+import moment from 'moment'
+import '../styles/CommonAntDesign.css'
+import ComponentTitle from './ComponentTitle'
 const Project = () => {
+	const auth = isAuth()
 	const history = useHistory()
 	const columns = [
 		{
 			title: '序号',
 			dataIndex: 'index',
+			width: 150,
 			render: (text, record, index) => {
 				return (pagination.current - 1) * pagination.pageSize + index + 1
 			},
-		},
-		{
-			title: '项目编号',
-			dataIndex: 'num',
-			key: 'num',
+			ellipsis:true
 		},
 		{
 			title: '项目名称',
-			dataIndex: 'name',
-			key: 'name',
-			render: (text, record) => {
-				return <Link to='/'>{text}</Link>
-			},
+			dataIndex: 'project_name',
+			key: 'project_name',
+			ellipsis:true
+			// render: (text, record) => {
+			// 	return <a onClick={() => loadPro(record)}>{text}</a>
+			// },
 		},
 		{
 			title: '任务个数',
-			dataIndex: 'age',
-			key: 'age',
+			dataIndex: 'task_num',
+			key: 'task_num',
+			ellipsis:true
 		},
 		{
 			title: '创建时间',
-			dataIndex: 'time',
-			key: 'time',
+			dataIndex: 'created_time',
+			key: 'created_time',
+			render: (text) => {
+				return moment(text).format('YYYY-MM-DD HH:MM:SS')
+			},
+			ellipsis:true
 		},
 		{
 			title: '操作',
 			dataIndex: 'step',
 			key: 'step',
+			width: 300,
 			render: (text, record) => {
 				return (
 					<span>
-						<a onClick={lookTask} style={{ marginRight: '5px' }}>
+						<Button
+							type='link'
+							onClick={() => {
+								loadPro(record)
+							}}
+							style={{ marginRight: '39px', padding: '0' }}
+						>
+							编辑项目
+						</Button>
+						<Button
+							type='link'
+							onClick={() => {
+								lookTask(record)
+							}}
+							style={{ marginRight: '39px', padding: '0' }}
+							disabled={record.task_num === 0}
+						>
 							查看任务详情
-						</a>
-						<a>删除</a>
+						</Button>
+						<a onClick={() => deleteTask(record.project_id)}>删除</a>
 					</span>
 				)
 			},
 		},
 	]
-
-	const data = [
-		{
-			key: '1',
-			name: 'test',
-			num: '1',
-			age: 1,
-			time: '2022-04-22',
-		},
-	]
+	const loadPro = (record) => {
+		history.push({ pathname: `/aceComputer/${record.project_name}/${record.project_id}` })
+	}
+	const [projectList, setProjectList] = useState([])
 	const { Search } = Input
 	const { Option } = Select
-	const onSearch = (value) => {
-		console.log(value)
+	const [searchValue, setSearchValue] = useState('')
+	const searchValueChange = (e) => {
+		setSearchValue(e.target.value)
+	}
+	const onSearch = () => {
+		getProListFn()
 	}
 	const statusChange = (value) => {
-		console.log(value)
+		// console.log(value)
 	}
 	const [current, setCurrent] = useState(1)
 	const [total, setTotal] = useState(100)
@@ -89,22 +113,64 @@ const Project = () => {
 		showQuickJumper: true,
 	}
 	const [visible, setVisible] = useState(false)
-	const lookTask = () => {
-		// setVisible(true)
-		// setTimeout(() => {
-		// 	drawGraphChart('computer_params_graph')
-		// }, 1000)
-		history.push('/task')
+	const lookTask = (record) => {
+		if (record.task_num) {
+			history.push(`/task/${record.project_id}/${record.project_name}`)
+		} else {
+			message.error('所选项目暂无任务提交')
+		}
+	}
+	// 删除
+	const deleteTask = (id) => {
+		Modal.confirm({
+			title: '确认删除？',
+			okText: '确认',
+			cancelText: '取消',
+			onOk: async () => {
+				const formData = new FormData()
+				formData.append('project_id', id)
+				formData.append('user_id', auth.user_id)
+				await delPro(formData)
+				message.success('已删除')
+				getProListFn()
+			},
+		})
 	}
 	const onClose = () => {
 		setVisible(false)
 	}
+	// 获取项目列表
+	const getProListFn = async () => {
+		const formData = new FormData()
+		formData.append('user_id', auth.user_id)
+		if (searchValue) {
+			formData.append(
+				'filter',
+				JSON.stringify({
+					project_name: searchValue,
+				})
+			)
+		}
+		const { data } = await getProList(formData)
+		setProjectList(data.project_list.reverse())
+	}
+	useEffect(() => {
+		getProListFn()
+	}, [])
 	return (
 		<Layout>
+			<ComponentTitle name={'项目列表'}></ComponentTitle>
 			<div className='project_div'>
 				<div className='project_search_div'>
-					<Search style={{ width: 200 }} placeholder='请输入项目名称' onSearch={onSearch}></Search>
-					<Select
+					<Search
+						placeholder='请输入项目名称'
+						onSearch={onSearch}
+						value={searchValue}
+						onChange={searchValueChange}
+						enterButton
+						style={{ marginBottom: '40px' }}
+					/>
+					{/* <Select
 						placeholder='请选择运行状态'
 						style={{ width: 200, marginLeft: '20px' }}
 						onChange={statusChange}
@@ -117,9 +183,9 @@ const Project = () => {
 						onChange={statusChange}
 					>
 						<Option value='1'>已启动</Option>
-					</Select>
+					</Select> */}
 				</div>
-				<Table columns={columns} dataSource={data} pagination={pagination} />
+				<Table columns={columns} dataSource={projectList} pagination={false} style={{ marginBottom: '20px' }} rowKey="project_id"/>
 			</div>
 			<Drawer title='quantum computer name' placement='right' onClose={onClose} visible={visible} width={900}>
 				<div className='computer_params_div'>

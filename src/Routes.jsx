@@ -22,33 +22,37 @@ import Task from './components/core/Task'
 import AdminUser from './components/admin/AdminUser'
 import AdminNotice from './components/admin/AdminNotice'
 import AdminReferenceDoc from './components/admin/AdminReferenceDoc'
-// import PrivateRoute from './components/admin/PrivateRoute'
+import AdminNoticeDetail from './components/admin/AdminNoticeDetail'
+import PrivateRoute from './components/admin/PrivateRoute'
+import AdminTask from './components/admin/AdminTask'
 const Routes = () => {
 	return (
 		<ConfigProvider locale={zhCN}>
 			<HashRouter>
 				<Switch>
-					<Route path='/' component={App} exact />
-					<Route path='/home' component={Home} exact />
+					<PrivateRoute path='/aceComputer/:projectName/:projectId' component={App} />
+					<Route path='/' component={Home} exact />
 					{/* <Route path='/computer' component={App} exact /> */}
-					<Route path='/signIn' component={SignIn} exact />
+					<Route path='/signin/:type' component={SignIn} exact />
 					<Route path='/signUp' component={SignUp} exact />
 					<Route path='/findPassword' component={FindPassword} exact />
-					<Route path='/computer' component={Computer} exact />
-					<Route path='/notice' component={NoticeList} exact />
-					<Route path='/noticedetail' component={NoticeDetail} exact />
-					<Route path='/project' component={Project} exact />
-					<Route path='/task' component={Task} exact />
-					<Route path='/usercenter' component={UserCenter} />
-					<Route path='/test' component={Test} exact />
-					<Route path='/message' component={MessageList} exact />
-					<Route path='/messageDetail' component={messageDetail} exact />
-					<Route path='/referenceDoc' component={ReferenceDoc} exact />
-					<Route path='/admin' component={AdminHome} exact />
-					<Route path='/admin/project' component={AdminProject} exact />
-					<Route path='/admin/user' component={AdminUser} exact />
-					<Route path='/admin/notice' component={AdminNotice} exact />
-					<Route path='/admin/referenceDoc' component={AdminReferenceDoc} exact />
+					<PrivateRoute path='/computer' component={Computer} exact />
+					<PrivateRoute path='/notice' component={NoticeList} exact />
+					<PrivateRoute path='/noticedetail/:noticeId' component={NoticeDetail} exact />
+					<PrivateRoute path='/project' component={Project} exact />
+					<PrivateRoute path='/task/:taskId/:projectName' component={Task} exact />
+					<PrivateRoute path='/usercenter/:type' component={UserCenter} />
+					<PrivateRoute path='/test' component={Test} exact />
+					<PrivateRoute path='/message' component={MessageList} exact />
+					<PrivateRoute path='/messageDetail' component={messageDetail} exact />
+					<PrivateRoute path='/referenceDoc/:docId' component={ReferenceDoc} exact />
+					<PrivateRoute path='/admin' component={AdminHome} exact />
+					<PrivateRoute path='/admin/project' component={AdminProject} exact />
+					<PrivateRoute path='/admin/user' component={AdminUser} exact />
+					<PrivateRoute path='/admin/notice' component={AdminNotice} exact />
+					<PrivateRoute path='/admin/referenceDoc' component={AdminReferenceDoc} exact />
+					<PrivateRoute path='/admin/noticeDetail/:noticeId' component={AdminNoticeDetail} exact />
+					<PrivateRoute path='/admin/adminTask/:taskId/:projectName' component={AdminTask} exact />
 				</Switch>
 			</HashRouter>
 		</ConfigProvider>

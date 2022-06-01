@@ -1,15 +1,49 @@
-.sign_in_div{
+.sign_in_div {
 	width: 100%;
-    height: 100%;
-    background: linear-gradient(180deg, rgba(90, 143, 255, 1) 0%, rgba(90, 143, 255, 1) 35%, rgba(85, 136, 245, 1) 50%, rgba(22, 29, 110, 1) 80%, rgba(8, 6, 81, 1) 100%, rgba(8, 6, 81, 1) 100%);
-    background-size: 100% 100%;
-    overflow: hidden;
-    position: relative;
+	height: 100%;
+	/* background: linear-gradient(180deg, rgba(90, 143, 255, 1) 0%, rgba(90, 143, 255, 1) 35%, rgba(85, 136, 245, 1) 50%, rgba(22, 29, 110, 1) 80%, rgba(8, 6, 81, 1) 100%, rgba(8, 6, 81, 1) 100%); */
+	background: url('../../images/banner_1.png') no-repeat;
+	background-size: 100% 100%;
+	overflow: hidden;
+	position: relative;
+}
+.sign_box_div {
+	width: 600px;
+	background: #fff;
+	position: absolute;
+	top: 5%;
+	left: 50%;
+	transform: translateX(-50%);
+	border-radius: 20px;
+	padding: 33px 66px;
+}
+.sign_tabs_div {
+	width: 100%;
+	display: flex;
+	border: 1px solid #e8e8e9;
+	height: 32px;
+	line-height: 24px;
+	border-radius: 6px;
+	padding: 3px;
+	margin-bottom: 36px;
+}
+.sign_tabs_div div {
+	flex: 1;
+	text-align: center;
+	user-select: none;
+	cursor: pointer;
+	border-radius: 6px;
+}
+.sign_tabs_div div:nth-of-type(1) {
+	margin-right: 3px;
+}
+.sign_tabs_div div.active {
+	background: #edf2f5;
+}
+.sign_tabs_div div:hover {
+	background: #edf2f5;
 }
 .sign_in_form {
-	width: 260px;
-	margin-left: 70%;
-	margin-top: 10%;
 }
 .sign_in_form .sign_in_title {
 	width: 100%;
@@ -20,49 +54,104 @@
 	color: #f2f2f2;
 }
 .sign_in_form_operation span {
-	color: #fff;
 	user-select: none;
 	cursor: pointer;
 }
 .sign_in_form .ant-input {
 	border: 0;
 	height: 40px;
-	background: rgba(33, 49, 160, 1);
-	color: #fff;
+	background: #f5f5f5;
+	border-radius: 6px;
 }
-.sign_in_form .ant-input::-webkit-input-placeholder {
-	color: rgb(255, 255, 255);
+.sign_in_form .ant-input:focus {
+	border: 0;
+	box-shadow: none;
 }
 .sign_in_form .ant-input-password {
 	padding: 0 11px;
-	background: rgba(33, 49, 160, 1);
 	border: 0;
+	background: #f5f5f5;
+	border-radius: 6px;
 }
 .sign_in_form .ant-btn {
 	height: 40px;
-	background: rgba(33, 49, 160, 1);
 	border: 0;
-	color: #fff;
 }
 .sign_in_form .ant-input-password-icon {
-	color: #fff;
 }
 .sign_in_form .sign_in_to_signup {
 	text-align: center;
 	user-select: none;
 	cursor: pointer;
 	font-size: 16px;
-	color: #ffffff;
 }
 .sign_in_form
 	.ant-form-item-has-error
 	:not(.ant-input-affix-wrapper-disabled):not(.ant-input-affix-wrapper-borderless).ant-input-affix-wrapper,
 .sign_in_form .ant-form-item-has-error :not(.ant-input-disabled):not(.ant-input-borderless).ant-input {
-	background: rgba(33, 49, 160, 1);
+	background: #f5f5f5;
 }
-.sign_in_form .ant-form-item-label > label{
-    color: #fff;
+
+.sign_in_form .ant-form-item-has-error :not(.ant-input-disabled):not(.ant-input-borderless).ant-input:focus,
+.sign_in_form
+	.ant-form-item-has-error
+	:not(.ant-input-affix-wrapper-disabled):not(.ant-input-affix-wrapper-borderless).ant-input-affix-wrapper:focus,
+.sign_in_form
+	.ant-form-item-has-error
+	:not(.ant-input-number-affix-wrapper-disabled):not(.ant-input-number-affix-wrapper-borderless).ant-input-number-affix-wrapper:focus,
+.sign_in_form .ant-form-item-has-error :not(.ant-input-disabled):not(.ant-input-borderless).ant-input-focused,
+.sign_in_form
+	.ant-form-item-has-error
+	:not(.ant-input-affix-wrapper-disabled):not(.ant-input-affix-wrapper-borderless).ant-input-affix-wrapper-focused,
+.sign_in_form
+	.ant-form-item-has-error
+	:not(.ant-input-number-affix-wrapper-disabled):not(.ant-input-number-affix-wrapper-borderless).ant-input-number-affix-wrapper-focused {
+	border: 0;
+	box-shadow: none;
 }
-.sign_in_form a{
-    color: #fff;
+.sign_in_form .ant-input-affix-wrapper-focused,
+.sign_in_form .ant-input-affix-wrapper:focus {
+	box-shadow: none;
+}
+.sign_in_form .ant-input-affix-wrapper {
+	border: 0;
+}
+/* .sign */
+.sign_in_form .ant-form-item-label > label {
+	color: #fff;
+}
+.sign_in_form a {
+	color: #337df7;
+}
+.sign_in_form
+	.ant-form-item-has-error
+	.ant-select:not(.ant-select-disabled):not(.ant-select-customize-input)
+	.ant-select-selector {
+	border: 0;
+	background-color: #f5f5f5;
+}
+.sign_in_form .ant-select:not(.ant-select-customize-input) .ant-select-selector {
+	background-color: #f5f5f5;
+	border: 0;
+	border-radius: 6px;
+	height: 40px;
+}
+.sign_in_form
+	.ant-select-single:not(.ant-select-customize-input)
+	.ant-select-selector
+	.ant-select-selection-search-input {
+	height: 40px;
+	line-height: 40px;
+}
+.sign_in_form .ant-select-single .ant-select-selector .ant-select-selection-item,
+.sign_in_form .ant-select-single .ant-select-selector .ant-select-selection-placeholder {
+	line-height: 40px;
+}
+.sign_in_form
+	.ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input)
+	.ant-select-selector {
+	box-shadow: none;
+}
+.sign_in_div  .ant-btn-primary:focus{
+	background: #003f88;
 }

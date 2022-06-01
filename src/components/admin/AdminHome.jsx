@@ -6,9 +6,10 @@ import moment from 'moment'
 import * as echarts from 'echarts/core'
 import { GridComponent, TooltipComponent } from 'echarts/components'
 import { BarChart } from 'echarts/charts'
-import { SVGRenderer } from 'echarts/renderers'
-
-echarts.use([GridComponent, BarChart, SVGRenderer, TooltipComponent])
+import { CanvasRenderer } from 'echarts/renderers'
+import ComponentTitle from '../core/ComponentTitle'
+import '../styles/CommonAntDesign.css'
+echarts.use([GridComponent, BarChart, CanvasRenderer, TooltipComponent])
 const AdminHome = () => {
 	const { RangePicker } = DatePicker
 	const staticDiv = () => {
@@ -75,6 +76,26 @@ const AdminHome = () => {
 		const myChart = echarts.init(chartDom)
 
 		const option = {
+			color: [
+				{
+					type: 'linear',
+					x: 0,
+					y: 0,
+					x2: 0,
+					y2: 1,
+					colorStops: [
+						{
+							offset: 0,
+							color: '#225fff', // 0% 处的颜色
+						},
+						{
+							offset: 1,
+							color: '#29cfcc', // 100% 处的颜色
+						},
+					],
+					global: false, // 缺省为 false
+				},
+			],
 			tooltip: {
 				trigger: 'axis',
 				axisPointer: {
@@ -105,8 +126,11 @@ const AdminHome = () => {
 				{
 					name: 'Direct',
 					type: 'bar',
-					barWidth: '60%',
+					barWidth: 22,
 					data: [10, 52, 200, 334, 390, 330, 220],
+					itemStyle: {
+						borderRadius: 10,
+					},
 				},
 			],
 		}
@@ -119,6 +143,7 @@ const AdminHome = () => {
 	}, [])
 	return (
 		<AdminLayout>
+			<ComponentTitle name='后台数据'></ComponentTitle>
 			{staticDiv()}
 			{selectTime()}
 			{staticEcharts()}

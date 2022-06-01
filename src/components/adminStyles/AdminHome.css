@@ -1,73 +1,81 @@
 .admin_home_static_div {
-	height: 223px;
-	width: 80%;
-	margin: 0 auto;
+	width: 1200px;
 	border: 1px solid rgba(240, 240, 240, 1);
-	margin-top: 15px;
 	display: flex;
-	justify-content: space-around;
+	justify-content: space-between;
 }
 .admin_home_static_item {
-	height: 170px;
-	width: 20%;
-	margin-top: 26px;
+	height: 186px;
+	width: 241px;
+	border-radius: 10px;
 }
 .admin_home_static_item:nth-of-type(1) {
-	background: rgba(51, 204, 153, 1);
+	background-image: linear-gradient(0deg, #ee6765 0%, #ed5d4c 25%, #eb5232 50%, #f85f22 100%),
+		linear-gradient(#003f88, #003f88);
 }
 .admin_home_static_item:nth-of-type(2) {
-	background: rgba(102, 153, 255, 1);
+	background-image: linear-gradient(245deg, #eb5232 0%, #8d7e92 0%, #2ea9f2 0%, #315aea 100%),
+		linear-gradient(#003f88, #003f88);
 }
 .admin_home_static_item:nth-of-type(3) {
-	background: rgba(255, 153, 51, 1);
+	background-image: linear-gradient(193deg, #eb5232 0%, #ed3f8d 0%, #ee2bef 0%, #a135f0 100%),
+		linear-gradient(#003f88, #003f88);
 }
 .admin_home_static_item:nth-of-type(4) {
-	background: rgba(204, 102, 153, 1);
+	background-image: linear-gradient(0deg, #49d59c 0%, #29cfcc 100%), linear-gradient(#003f88, #003f88);
 }
 .admin_home_static_number {
 	font-weight: 400;
 	font-style: normal;
-	font-size: 28px;
+	font-size: 55px;
 	color: #ffffff;
 	text-align: center;
-	margin-top: 38px;
-	margin-bottom: 18px;
+	margin-top: 22px;
+	margin-bottom: 0px;
 }
 .admin_home_static_name {
 	font-weight: 400;
 	font-style: normal;
-	font-size: 18px;
+	font-size: 25px;
 	color: #ffffff;
 	text-align: center;
 }
 .admin_home_select_time {
-	width: 80%;
+	width: 1200;
 	margin: 0 auto;
 	border: 1px solid rgba(240, 240, 240, 1);
 	margin-top: 15px;
-	height: 50px;
-	padding: 9px 10px;
+	background: #fff;
+	line-height: 58px;
+	border-radius: 10px;
+	height: 60px;
+	margin-top: 50px;
+	padding: 13px 10px;
 }
 .admin_home_echarts_div {
-	width: 80%;
-	margin: 0 auto;
-	margin-top: 15px;
-	height: 374px;
+	width: 1200px;
+	margin-top: 26px;
+	height: 458px;
+	margin-bottom: 40px;
+	background: #fff;
+	border-radius: 10px;
 	display: flex;
 	justify-content: space-between;
+	
 }
 .admin_home_echarts {
 	width: 49%;
 	height: 100%;
-	border: 1px solid rgba(240, 240, 240, 1);
+
 }
 .admin_home_echarts_header {
-	height: 40px;
-	line-height: 40px;
-	border-bottom: 1px solid rgba(240, 240, 240, 1);
-	padding: 0 10px;
+	height: 50px;
+	line-height: 50px;
+	padding: 0 20px;
+	font-size: 20px;
+	font-weight: 600;
 }
-.admin_home_echarts_content{
-	height: calc(100% - 40px);
+.admin_home_echarts_content {
+	height: calc(100% - 50px);
 	width: 100%;
 }

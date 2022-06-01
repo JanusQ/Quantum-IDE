@@ -16,6 +16,8 @@
 	font-style: normal;
 	font-size: 18px;
 	color: #ffffff;
+	user-select: none;
+	cursor: pointer;
 }
 .admin_menu_list {
 	height: 70px;

@@ -1,5 +1,6 @@
 import logo from './logo.svg'
 import './App.css'
+import './components/styles/CommonAntDesign.css'
 import Ace from './components/core/Ace'
 import Right from './components/core/Right'
 import ConsoleComponent from './components/core/ConsoleComponent'
@@ -7,7 +8,9 @@ import axios from 'axios'
 import React, { useState, useRef, useEffect } from 'react'
 import { exportSVG } from './simulator/CommonFunction'
 import QCEngine from './simulator/MyQCEngine'
-import { cos, sin, round, pi, complex, create, all, max, sparse } from 'mathjs'
+import QuantumCircuit from './simulator/QuantumCircuit'
+import { cos, sin, round, pi, complex, create, all, max, sparse, hartreeEnergyDependencies } from 'mathjs'
+import ComponentTitle from '../src/components/core/ComponentTitle'
 import {
 	pow2,
 	binary,
@@ -28,9 +31,13 @@ import {
 // import MathJax from 'mathJax'
 import { getDirac } from './components/Mathjax'
 import Layout from './components/core/Layout'
-import { Modal, Checkbox, message, Input, Radio, Form, Select } from 'antd'
-import { send_to_real, recieve_from_real } from './api/test_circuit'
+import { Modal, Checkbox, message, Input, Radio, Form, Select, AutoComplete } from 'antd'
+import { send_to_real, recieve_from_real, saveProject, submitTask, loadPro } from './api/test_circuit'
 import { values } from 'lodash'
+import { getComList } from './api/computer'
+import { useParams } from 'react-router-dom'
+import { isAuth } from './helpers/auth'
+import { computerParamsChat, computerD3 } from './helpers/computerParamsChart'
 // import QCEngine from './simulator/MyQCEngine'
 // import './test/meausre'
 // import './test/reset'
@@ -56,6 +63,71 @@ import { values } from 'lodash'
 // import './test/canShow_test.js'
 
 function App() {
+	// 提供的case列表
+	const initCaseList = [
+		{
+			value: 'FOR TEST',
+		},
+		{
+			value: 'Quantum Conditional Execution',
+		},
+		{
+			value: 'Gate Teleportation',
+		},
+		{
+			value: "Simon's Algorithm",
+		},
+		{
+			value: "Shor's Algorithm",
+		},
+		{
+			value: 'Phase estimation',
+		},
+		{
+			value: "Grover's Algorithm",
+		},
+		{
+			value: 'Adding two quantum intergers',
+		},
+		{
+			value: 'Entangled Qubits',
+		},
+		{
+			value: 'Bernstein-Vazirani Algorithm',
+		},
+		{
+			value: 'Quantum Fourier Transform',
+		},
+		{
+			value: 'Deutsch-Jozsa Algorithm',
+		},
+		{
+			value: 'user_study',
+		},
+		{
+			value: 'into_evolution',
+		},
+		{
+			value: 'case 1',
+		},
+		{
+			value: 'bell_state',
+		},
+		{
+			value: 'all gates',
+		},
+		{
+			value: 'ex7-7',
+		},
+		{
+			value: 'ex7-1',
+		},
+		{
+			value: 'Markov Process',
+		},
+	]
+	const [optionList, setOptionList] = useState([])
+
 	// 编辑器内容
 	const [editorValue, setEditorValue] = useState('')
 	// console的内容
@@ -64,23 +136,9 @@ function App() {
 	function onChange(newValue) {
 		setEditorValue(newValue)
 	}
+	const auth = isAuth()
+	const { projectName, projectId } = useParams()
 
-	// 选择改变编辑器的内容
-	const selectChange = (value) => {
-		// 自定义
-		if (value === 'about:blank') {
-			setEditorValue('//please')
-		} else {
-			axios
-				.get('/js/' + value + '.js')
-				.then((res) => {
-					setEditorValue(res.data)
-				})
-				.catch((error) => {
-					setEditorValue('Not Found')
-				})
-		}
-	}
 	// 分发事件
 	const dispathRun = () => {
 		if (runValue === 1) {
@@ -93,6 +151,7 @@ function App() {
 	const runProgram = (sample) => {
 		let noBug = false
 		let qc = new QCEngine()
+
 		const { qint } = qc
 		// TODO: 这些也要写在文档里面
 		const { cos, sin, round, pi, complex, create, all, max, sparse, acos, asin, sqrt } = require('mathjs')
@@ -114,8 +173,33 @@ function App() {
 			spec,
 		} = require('./simulator/CommonFunction')
 		const { tensor, groundState, tensorState } = require('./simulator/MatrixOperation')
+
+		//bind function
+		// let gates = ['cx','cy','cz','ch','csrn','cr2','cr4','cr8','crx','cry','crz','cu1','cu2',
+        // 'cu3','cs','ct','csdg','ctdg','ccx','id','x','y','z','h','srn','srndg','r2','r4','r8','s','t','sdg','tdg',
+        // 'rx','ry','rz','u1','u2','u3','swap','iswap','srswap','xy','ms','yy','zz','had','hadamard','not',];
+		var cx,cy,cz,ch,csrn,cr2,cr4,cr8,crx,cry,crz,cu1,cu2,cu3,cs,ct,csdg,ctdg,ccx,id,x,y,z,h,srn,srndg,r2,r4,r8,s,t,sdg,
+		tdg,rx,ry,rz,u1,u2,u3,swap,iswap,srswap,xy,ms,yy,zz,had,hadamard,not;
+		let gates =['had']
+		let bind_str = 'gate_name = qc.gate_name.bind(qc);\n ';
+		let bind_str_all = '';
+		for(let ind=0; ind<gates.length; ind++)
+		{
+			let gate = gates[ind];
+			bind_str_all += bind_str.replace(/gate_name/g, gate);
+
+		}
+
+		eval(bind_str_all)
+
 		try {
 			eval(editorValue)
+			// qc.circuit = new QuantumCircuit();
+			// let qubits = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40]//binary2qubit1(0xFFFFFFFF+1)
+			// qubits.forEach(qubit => {
+			// 	qc.circuit.addGate('h', 0, qubit);
+			// })
+			// console.log(qc.export())
 			// showInDebuggerArea(qc.circuit)
 
 			// siwei: 两个函数的案例
@@ -132,21 +216,52 @@ function App() {
 			noBug = false
 			console.error(error)
 		}
-		if (noBug) {
+		qc.export()
+		// let qc1 = new QCEngine()
+		//testfunc(qc);
+		if (noBug && runValue !== 1) {
 			exportSVG(qc)
 		}
-
+		//console.log(qc.circuit);
 		if (runValue === 1) {
 			realRun(qc, sample)
 		}
 	}
-	const realRun = async (qc, sample) => {
-		setSubmitModalVisible(false)
+	async function testfunc(qc) {
+		//qc.import(0);
 		let data = {}
 		data['qasm'] = qc.export()
-		data['sample'] = sample
-		await send_to_real(data)
-		message.success('已提交')
+		console.log(data['qasm'])
+		data['sample'] = 1000
+		data['type'] = 'sqcg'
+		console.log(data)
+		var id
+		id = await send_to_real(data)
+		const params = {}
+		params.result_id = id['data']['result_id']
+		params.type = 'sqcg'
+		console.log(params)
+		let res = await recieve_from_real(params)
+		console.log(res)
+	}
+
+	const realRun = async (qc, sample) => {
+		setIsSubmitModalLoading(true)
+		try {
+			const formData = new FormData()
+			formData.append('project_id', projectId)
+			formData.append('sample', sample)
+			formData.append('export_qasm', qc.export())
+			formData.append('computer_name', form.getFieldsValue(['comName']).comName)
+			formData.append('run_type', 'sqcg')
+			formData.append('user_id', auth.user_id)
+			await submitTask(formData)
+			setIsSubmitModalLoading(false)
+			message.success('已提交')
+			setSubmitModalVisible(false)
+		} catch {
+			setIsSubmitModalLoading(false)
+		}
 	}
 
 	// 处理console
@@ -161,28 +276,166 @@ function App() {
 			setConsoleValue(<div className='error_content'>{message}</div>)
 		}
 	}
+	// 保存项目
+	const saveCase = async (caseName, caseValue) => {
+		const formData = new FormData()
+		const obj = {}
+		newFile[initOption] = editorValue
+		for (const key in newFile) {
+			obj[key] = newFile[key]
+		}
+		formData.append('user_id', auth.user_id)
+		formData.append('project_id', projectId)
+		formData.append('code', JSON.stringify(obj))
+		await saveProject(formData)
+		message.success('已保存')
+	}
+	// 添加新空白页面
 
-	// console.log(getDirac(1))
-	const leftOperations = () => {
+	const [newFile, setNewFile] = useState({})
+	const [initOption, setInitOption] = useState('')
+
+	// 选择改变编辑器的内容
+	const selectChange = (value) => {
+		setInitOption(value)
+		if (newFile[value]) {
+			setEditorValue(newFile[value])
+		} else if (initCaseList.includes(value)) {
+			axios
+				.get('/js/' + value + '.js')
+				.then((res) => {
+					setEditorValue(res.data)
+				})
+				.catch((error) => {
+					setEditorValue('//please')
+				})
+		} else {
+			setEditorValue('//please')
+		}
+
+		// }
+	}
+	const addNew = () => {
+		setIsNewCaseModalVisible(true)
+	}
+	const [isNewCaseModalVisible, setIsNewCaseModalVisible] = useState(false)
+	const [caseName, setCaseName] = useState('')
+	const onSaveChange = (value) => {
+		setCaseName(value)
+	}
+	const newCaseModal = () => {
 		return (
-			<div className='computer_left_operation'>
-				<ul>
-					<li>
-						<span className='computer_left_operation_item' onClick={saveCase}></span>
-					</li>
-					<li>
-						<span className='computer_left_operation_item' onClick={selectRun}></span>
-					</li>
-					<li>
-						<span className='computer_left_operation_item' onClick={selectShow}></span>
-					</li>
-				</ul>
+			<Modal visible={isNewCaseModalVisible} onOk={isSaveOk} onCancel={isSaveCancel} title='添加文件'>
+				<p>文件名称</p>
+				<AutoComplete
+					options={initCaseList}
+					value={caseName}
+					onChange={onSaveChange}
+					style={{ width: '100%' }}
+				/>
+			</Modal>
+		)
+	}
+	const isSaveOk = async () => {
+		if (!caseName) {
+			message.error('请输入文件名称')
+			return
+		}
+		optionList.unshift(caseName)
+		setOptionList(optionList)
+		selectChange(optionList[0])
+		let isHasCase = false
+		initCaseList.forEach((item) => {
+			if (item.value === caseName) {
+				isHasCase = true
+				axios
+					.get('/js/' + caseName + '.js')
+					.then((res) => {
+						setEditorValue(res.data)
+						newFile[caseName] = res.data
+						saveCase()
+						setCaseName('')
+						setIsNewCaseModalVisible(false)
+					})
+					.catch((error) => {
+						setEditorValue('//please')
+						newFile[caseName] = '//please'
+						saveCase()
+						setCaseName('')
+						setIsNewCaseModalVisible(false)
+					})
+			}
+		})
+		if (!isHasCase) {
+			setEditorValue('//please')
+			newFile[caseName] = '//please'
+			saveCase()
+			setCaseName('')
+			setIsNewCaseModalVisible(false)
+		}
+	}
+	const isSaveCancel = () => {
+		setIsNewCaseModalVisible(false)
+		setCaseName('')
+	}
+	// 删除一个文件
+	const deleteItem = async (e, name) => {
+		e.preventDefault()
+		e.stopPropagation()
+		const arr = JSON.parse(JSON.stringify(optionList))
+		delete newFile[name]
+		const formData = new FormData()
+		const obj = {}
+		for (const key in newFile) {
+			obj[key] = newFile[key]
+		}
+		formData.append('user_id', auth.user_id)
+		formData.append('project_id', projectId)
+		formData.append('code', JSON.stringify(obj))
+		await saveProject(formData)
+		message.success('已移除')
+		arr.splice(arr.indexOf(name), 1)
+		setOptionList(arr)
+		selectChange(arr[0])
+	}
+	// console.log(getDirac(1))
+	const aceRef = useRef(null)
+	const exportFn = () => {
+		aceRef.current.exportFile()
+	}
+	const leftOperations = () => {
+		// return (
+		// 	<div className='computer_left_operation'>
+		// 		<ul>
+		// 			<li>
+		// 				<span className='computer_left_operation_item' onClick={saveCase}></span>
+		// 			</li>
+		// 			<li>
+		// 				<span className='computer_left_operation_item' onClick={addNew}></span>
+		// 			</li>
+		// 			<li>
+		// 				<span className='computer_left_operation_item' onClick={selectRun}></span>
+		// 			</li>
+		// 			<li>
+		// 				<span className='computer_left_operation_item' onClick={selectShow}></span>
+		// 			</li>
+		// 		</ul>
+		// 	</div>
+		// )
+		return (
+			<div className='ide_top_menu'>
+				<span onClick={addNew}>新建</span>
+				<span onClick={saveCase}>保存</span>
+				<span onClick={selectShow}>窗口</span>
+				<span onClick={exportFn}>导出</span>
+				<span onClick={selectRun}>模式</span>
+				{/* <span>提交</span> */}
 			</div>
 		)
 	}
 	// 控制显示视图
 	const [isSelectShowModalVisible, setIsSelectModalVisible] = useState(false)
-	const options = [
+	const [options, setOptions] = useState([
 		{
 			label: 'B视图',
 			value: 'B',
@@ -195,7 +448,7 @@ function App() {
 			label: 'D视图',
 			value: 'D',
 		},
-	]
+	])
 	const [checkedModeList, setCheckedModeList] = useState(['B', 'C', 'D'])
 	const onModeChange = (list) => {
 		setCheckedModeList(list)
@@ -223,6 +476,9 @@ function App() {
 		isShowB()
 		isShowC()
 		isShowD()
+		isShowRealB()
+		isShowRealC()
+		isShowRealD()
 	}
 	const isSelectShowCancel = () => {
 		setIsSelectModalVisible(false)
@@ -232,6 +488,9 @@ function App() {
 	const [isShowCMode, setIsShowCMode] = useState(true)
 	const [isShowDMode, setIsShowDMode] = useState(true)
 	const [isShowRightMode, setIsShowRightMode] = useState(true)
+	const [isShowRealBmode, setShowRealBmode] = useState(false)
+	const [isShowRealCmode, setShowRealCmode] = useState(false)
+	const [isShowRealDmode, setShowRealDmode] = useState(false)
 	const isShowA = () => {
 		return setIsShowAMode(checkedModeList.includes('A'))
 	}
@@ -244,42 +503,30 @@ function App() {
 	const isShowD = () => {
 		return setIsShowDMode(checkedModeList.includes('D'))
 	}
+	const isShowRealB = () => {
+		return setShowRealBmode(checkedModeList.includes('BarChart'))
+	}
+	const isShowRealC = () => {
+		return setShowRealCmode(checkedModeList.includes('编译前'))
+	}
+	const isShowRealD = () => {
+		return setShowRealDmode(checkedModeList.includes('编译后'))
+	}
 	const isShowRight = () => {
-		if (!checkedModeList.includes('C') && !checkedModeList.includes('B') && !checkedModeList.includes('D')) {
+		if (
+			!checkedModeList.includes('C') &&
+			!checkedModeList.includes('B') &&
+			!checkedModeList.includes('D') &&
+			!checkedModeList.includes('BarChart') &&
+			!checkedModeList.includes('编译前') &&
+			!checkedModeList.includes('编译后')
+		) {
 			setIsShowRightMode(false)
 		} else {
 			setIsShowRightMode(true)
 		}
 	}
-	// 保存项目
-	const [isSaveCaseModalVisible, setIsSaveCaseModalVisible] = useState(false)
-	const [caseName, setCaseName] = useState('')
-	const onSaveChange = (e) => {
-		setCaseName(e.target.value)
-	}
-	const saveCaseModal = () => {
-		return (
-			<Modal visible={isSaveCaseModalVisible} onOk={isSaveOk} onCancel={isSaveCancel} title='保存项目'>
-				<p>项目名称</p>
-				<Input value={caseName} onChange={onSaveChange}></Input>
-			</Modal>
-		)
-	}
-	const isSaveOk = () => {
-		if (!caseName) {
-			message.error('请输入项目名称')
-			return
-		}
-		console.log(caseName)
-		setIsSaveCaseModalVisible(false)
-	}
-	const isSaveCancel = () => {
-		setIsSaveCaseModalVisible(false)
-		setCaseName('')
-	}
-	const saveCase = () => {
-		setIsSaveCaseModalVisible(true)
-	}
+
 	// 真机 模拟器切换
 	const [runProgramName, setRunProgramName] = useState('Run Program')
 	const [isSelectRunModalVisible, setIsSelectRunModalVisible] = useState(false)
@@ -302,9 +549,52 @@ function App() {
 	const isSelectRunOk = () => {
 		if (runValue === 1) {
 			setRunProgramName('Submit Task')
+			setIsShowBMode(false)
+			setIsShowCMode(false)
+			setIsShowDMode(false)
+			setShowRealBmode(true)
+			setShowRealCmode(true)
+			setShowRealDmode(true)
+			setCheckedModeList(['BarChart', '编译前', '编译后'])
+			setOptions([
+				{
+					label: 'BarChart',
+					value: 'BarChart',
+				},
+				{
+					label: '编译前',
+					value: '编译前',
+				},
+				{
+					label: '编译后',
+					value: '编译后',
+				},
+			])
 		} else {
 			setRunProgramName('Run Program')
+			setIsShowBMode(true)
+			setIsShowCMode(true)
+			setIsShowDMode(true)
+			setShowRealBmode(false)
+			setShowRealCmode(false)
+			setShowRealDmode(false)
+			setCheckedModeList(['B', 'C', 'D'])
+			setOptions([
+				{
+					label: 'B视图',
+					value: 'B',
+				},
+				{
+					label: 'C视图',
+					value: 'C',
+				},
+				{
+					label: 'D视图',
+					value: 'D',
+				},
+			])
 		}
+
 		setIsSelectRunModalVisible(false)
 	}
 	const selectRun = () => {
@@ -315,18 +605,65 @@ function App() {
 	}
 	// 提交任务modal
 	const [submitModalVisible, setSubmitModalVisible] = useState(false)
+	const [isSubmitModalLoading, setIsSubmitModalLoading] = useState(false)
 	const [form] = Form.useForm()
 	const { Option } = Select
+	// 获取计算机列表
+	const [computerList, setComputerList] = useState([])
+	const getComListFn = async () => {
+		const formData = new FormData()
+		formData.append('filter',JSON.stringify({update_code:-1}))
+		const { data } = await getComList(formData)
+		setComputerList(data.com_list)
+	}
+	const getComListOpts = computerList.map((item) => (
+		<Option value={item.chip_name} key={item.chip_id}>
+			{item.chip_name}
+		</Option>
+	))
+	// 加载项目
+	const loadProFn = async () => {
+		if (!optionList.length) {
+			const arr = [projectName]
+			setOptionList(arr)
+			selectChange(arr[0])
+		}
+		const formData = new FormData()
+		formData.append('project_id', projectId)
+		const { data } = await loadPro(formData)
+		if (JSON.stringify(data.code) !== '{}') {
+			const arr = JSON.parse(JSON.stringify(optionList))
+			for (const key in data.code) {
+				arr.unshift(key)
+				newFile[key] = data.code[key]
+			}
+			setOptionList(arr)
+			selectChange(arr[0])
+		}
+	}
+	useEffect(() => {
+		getComListFn()
+		if (projectId) {
+			loadProFn()
+		}
+	}, [])
+
 	const submitTaskModal = () => {
 		return (
-			<Modal visible={submitModalVisible} onOk={isSubmitOk} onCancel={isSubmitCancel} title='运行项目'>
+			<Modal
+				visible={submitModalVisible}
+				onOk={isSubmitOk}
+				onCancel={isSubmitCancel}
+				title='提交任务'
+				confirmLoading={isSubmitModalLoading}
+			>
 				<Form form={form} layout='vertical' autoComplete='off'>
-					<Form.Item name='sample' label='采样次数' rules={[{ required: true }]}>
+					<Form.Item name='sample' label='采样次数' rules={[{ required: true, message: '请输入采样次数' }]}>
 						<Input />
 					</Form.Item>
-					<Form.Item name='computer' label='选择计算机（假数据，暂时不必选）'>
+					<Form.Item name='comName' label='选择计算机' rules={[{ required: true, message: '请选择计算机' }]}>
 						<Select placeholder='请选择计算机' allowClear>
-							<Option value='A'>A</Option>
+							{getComListOpts}
 						</Select>
 					</Form.Item>
 				</Form>
@@ -344,7 +681,8 @@ function App() {
 	}
 
 	return (
-		<Layout isComputer={true}>
+		<Layout isHome={true}>
+			{/* <ComponentTitle name={'IDE'}></ComponentTitle> */}
 			{leftOperations()}
 			<div className='App'>
 				<div
@@ -361,6 +699,10 @@ function App() {
 						selectChange={selectChange}
 						onChange={onChange}
 						editorValue={editorValue}
+						optionList={optionList}
+						initOption={initOption}
+						deleteItem={deleteItem}
+						ref={aceRef}
 					></Ace>
 					<ConsoleComponent consoleValue={consoleValue}></ConsoleComponent>
 				</div>
@@ -371,13 +713,21 @@ function App() {
 						display: isShowRightMode ? 'block' : 'none',
 					}}
 				>
-					<Right isShowBMode={isShowBMode} isShowCMode={isShowCMode} isShowDMode={isShowDMode}></Right>
+					<Right
+						isShowBMode={isShowBMode}
+						isShowCMode={isShowCMode}
+						isShowDMode={isShowDMode}
+						isShowRealB={isShowRealBmode}
+						isShowRealC={isShowRealCmode}
+						isShowRealD={isShowRealDmode}
+					></Right>
 				</div>
 			</div>
 			{selectShowModal()}
-			{saveCaseModal()}
+
 			{selectRunModal()}
 			{submitTaskModal()}
+			{newCaseModal()}
 		</Layout>
 	)
 }

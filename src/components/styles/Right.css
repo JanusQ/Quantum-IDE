@@ -242,3 +242,24 @@
 #circuit_svg{
 	min-height: 280px;
 }
+.real_number_div{
+	height: 221px;
+	background: #fff;
+	margin-top: 5px;
+	padding: 8px;
+}
+.real_top_div{
+	height: 226px;
+	background: #fff;
+
+}
+.real_number_title{
+	font-size: 18px;
+	height: 29px;
+	line-height: 29px;
+}
+.real_before_chart,.real_after_chart{
+	height: calc(100% - 29px);
+	overflow: auto;
+	width: 100%;
+}

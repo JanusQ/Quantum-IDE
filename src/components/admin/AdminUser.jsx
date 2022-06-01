@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import AdminLayout from './AdminLayout'
 import '../adminStyles/AdminUser.css'
-import { Input, Table, Select, Form, Row, Col, Button, Modal } from 'antd'
+import { Input, Table, Select, Form, Row, Col, Button, Modal, message } from 'antd'
 import { Link } from 'react-router-dom'
 import {
 	userTypeArr,
@@ -11,18 +11,23 @@ import {
 	companyName,
 	userStatusName,
 } from '../../helpers/auth'
-import { getUserList } from '../../api/adminAuth'
+import '../styles/CommonAntDesign.css'
+import ComponentTitle from '../core/ComponentTitle'
+import { RightOutlined, DownOutlined } from '@ant-design/icons'
+import '../styles/CommonAntDesign.css'
+import { getUserList, adminUserDetailedInfo, updateUserAdmin, userDelete } from '../../api/adminAuth'
 const AdminUser = () => {
 	const { Option } = Select
-	const getUserListFn = async (filter) => {
+	const getUserListFn = async () => {
 		const params = {
-			filter: {},
+			filter: form.getFieldsValue(),
+			page_num: current,
+			page_size: pageSizeNum,
 		}
-		if (filter) {
-			params.filter = filter
-		}
+
 		const { data } = await getUserList(params)
 		setUserData(JSON.parse(data.userlist))
+		setTotal(data.userCount)
 	}
 	const columns = [
 		{
@@ -37,7 +42,7 @@ const AdminUser = () => {
 			dataIndex: 'username',
 			key: 'username',
 			render: (text, record) => {
-				return <a onClick={showDetail}>{text}</a>
+				return <a onClick={() => showDetail(record.user_id)}>{text}</a>
 			},
 		},
 		{
@@ -87,10 +92,10 @@ const AdminUser = () => {
 			render: (text, record) => {
 				return (
 					<span>
-						<a style={{ marginRight: '10px' }} onClick={edit}>
+						<a style={{ marginRight: '10px' }} onClick={() => edit(record.user_id)}>
 							编辑
 						</a>
-						<a onClick={deleteUser}>删除</a>
+						<a onClick={() => deleteUser(record.user_id)}>删除</a>
 					</span>
 				)
 			},
@@ -98,27 +103,31 @@ const AdminUser = () => {
 	]
 	const [userData, setUserData] = useState([])
 	const [current, setCurrent] = useState(1)
-	const [total, setTotal] = useState(100)
-	const [pageSize, setPageSize] = useState(10)
+	const [total, setTotal] = useState(0)
+	const [pageSizeNum, setPageSize] = useState(10)
 	const onChange = (page, pageSize) => {
-		setPageSize(pageSize)
 		setCurrent(page)
+		setPageSize(pageSize)
 	}
+	useEffect(() => {
+		getUserListFn()
+	}, [pageSizeNum, current])
 	const pagination = {
 		current: current,
 		total: total,
-		pageSize: pageSize,
+		pageSize: pageSizeNum,
 		onChange: onChange,
-		showTotal: (total) => `共 ${total} 条数据`,
-		showQuickJumper: true,
+		size: 'small',
+		pageSizeOptions: [10, 20, 30],
 	}
-	const onFinish = (value) => {
-		console.log(value)
-		getUserListFn(value)
+	const onFinish = () => {
+		setCurrent(1)
+		getUserListFn()
 	}
 	const [form] = Form.useForm()
 	const reset = () => {
 		form.resetFields()
+		setCurrent(1)
 		getUserListFn()
 	}
 	const userTypeOperations = userTypeArr.map((item) => (
@@ -136,63 +145,91 @@ const AdminUser = () => {
 			{item.name}
 		</Option>
 	))
+	const [visible, setVisible] = useState(false)
+	const showSearch = () => {
+		setVisible(!visible)
+	}
 	const searchDiv = () => {
 		const layout = {
-			labelCol: { span: 5 },
-			wrapperCol: { span: 19 },
+			labelCol: { span: 6 },
+			wrapperCol: { span: 18 },
 		}
 		return (
 			<div className='admin_user_search_div'>
-				<Form {...layout} onFinish={onFinish} form={form}>
-					<Row gutter={24}>
-						<Col span={6}>
-							<Form.Item name='id' label='用户ID'>
-								<Input placeholder='请输入用户id'></Input>
-							</Form.Item>
-						</Col>
-						<Col span={6}>
-							<Form.Item name='username' label='用户名称'>
-								<Input placeholder='请输入用户名称'></Input>
-							</Form.Item>
-						</Col>
-						<Col span={6}>
-							<Form.Item name='company_name' label='单位名称'>
-								<Input placeholder='请输入单位名称'></Input>
-							</Form.Item>
-						</Col>
-						<Col span={6}>
-							<Form.Item name='user_status' label='用户状态'>
-								<Select placeholder='请选择用户状态'>{userStatusOperations}</Select>
-							</Form.Item>
-						</Col>
-					</Row>
-					<Row gutter={24}>
-						<Col span={6}>
-							<Form.Item name='user_type' label='用户类型'>
-								<Select placeholder='请选择用户类型'>{userTypeOperations}</Select>
-							</Form.Item>
-						</Col>
-						<Col span={6}>
-							<Form.Item name='company_type' label='单位类型'>
-								<Select placeholder='请选择单位类型'>{companyTypeOperations}</Select>
-							</Form.Item>
-						</Col>
-						<Col span={6}>
-							<Button htmlType='submit' style={{ marginRight: '10px', width: '88px' }} type='primary'>
-								查询
-							</Button>
-							<Button style={{ width: '88px' }} onClick={reset}>
-								重置
-							</Button>
-						</Col>
-					</Row>
-				</Form>
+				<div className='admin_user_search_title_div'>
+					<div className='admin_user_search_title'>
+						<span>搜索</span>
+						<span className='admin_user_search_menu' onClick={showSearch}>
+							填写信息
+							<RightOutlined style={{ marginLeft: '7px', display: visible ? 'none' : 'inline-block' }} />
+							<DownOutlined style={{ marginLeft: '7px', display: visible ? 'inline-block' : 'none' }} />
+						</span>
+					</div>
+				</div>
+
+				<div className='admin_user_search_content' style={{ display: visible ? 'block' : 'none' }}>
+					<div className='admin_user_search_form'>
+						<Form {...layout} onFinish={onFinish} form={form}>
+							<Row gutter={24}>
+								<Col span={6}>
+									<Form.Item name='id' label='用户ID'>
+										<Input placeholder='请输入用户id'></Input>
+									</Form.Item>
+								</Col>
+								<Col span={6}>
+									<Form.Item name='username' label='用户名称'>
+										<Input placeholder='请输入用户名称'></Input>
+									</Form.Item>
+								</Col>
+								<Col span={6}>
+									<Form.Item name='company_name' label='单位名称'>
+										<Input placeholder='请输入单位名称'></Input>
+									</Form.Item>
+								</Col>
+								<Col span={6}>
+									<Form.Item name='user_status' label='用户状态'>
+										<Select placeholder='请选择用户状态'>{userStatusOperations}</Select>
+									</Form.Item>
+								</Col>
+							</Row>
+							<Row gutter={24}>
+								<Col span={6}>
+									<Form.Item name='usertype' label='用户类型'>
+										<Select placeholder='请选择用户类型'>{userTypeOperations}</Select>
+									</Form.Item>
+								</Col>
+								<Col span={6}>
+									<Form.Item name='company_type' label='单位类型'>
+										<Select placeholder='请选择单位类型'>{companyTypeOperations}</Select>
+									</Form.Item>
+								</Col>
+								<Col span={6}>
+									<Button
+										htmlType='submit'
+										style={{ marginRight: '10px', width: '88px' }}
+										type='primary'
+									>
+										查询
+									</Button>
+									<Button style={{ width: '88px' }} onClick={reset}>
+										重置
+									</Button>
+								</Col>
+							</Row>
+						</Form>
+					</div>
+				</div>
 			</div>
 		)
 	}
 	// 用户详情
 	const [isUserDetailVisible, setIsUserDetailVisible] = useState(false)
-	const showDetail = () => {
+	const [userDetail, setUserDetail] = useState({})
+	const showDetail = async (id) => {
+		const params = {}
+		params.user_id = id
+		const { data } = await adminUserDetailedInfo(params)
+		setUserDetail(data)
 		setIsUserDetailVisible(true)
 	}
 	const userDetailCancel = () => {
@@ -201,25 +238,36 @@ const AdminUser = () => {
 	const userDetailModal = () => {
 		return (
 			<Modal visible={isUserDetailVisible} footer={null} onCancel={userDetailCancel} title='用户信息'>
-				<p>用户名称：aaa</p>
-				<p>单位类型：aaa</p>
-				<p>联系方式：aaa</p>
-				<p>邮箱地址：aaa</p>
+				<p>用户名称：{userDetail.username}</p>
+				<p>单位类型：{userDetail.company_name}</p>
+				<p>联系方式：{userDetail.telephone}</p>
+				<p>邮箱地址：{userDetail.email}</p>
 			</Modal>
 		)
 	}
 	// 编辑
 	const [editForm] = Form.useForm()
 	const [isEditModalVisible, setIsEditModalVisible] = useState(false)
-	const edit = () => {
+	const [editid, setEditId] = useState(0)
+	const edit = async (id) => {
 		setIsEditModalVisible(true)
+		const params = {}
+		params.user_id = id
+		const { data } = await adminUserDetailedInfo(params)
+		setEditId(id)
+		editForm.setFieldsValue(data)
 	}
+
 	const editCancel = () => {
 		editForm.resetFields()
 		setIsEditModalVisible(false)
 	}
 	const editOk = () => {
-		editForm.validateFields().then((value) => {
+		editForm.validateFields().then(async (value) => {
+			value.user_id = editid
+			await updateUserAdmin(value)
+			message.success('修改成功')
+			getUserListFn()
 			setIsEditModalVisible(false)
 		})
 	}
@@ -231,7 +279,7 @@ const AdminUser = () => {
 					<Row gutter={24}>
 						<Col span={12}>
 							<Form.Item
-								name='userName'
+								name='username'
 								label='用户名称:'
 								rules={[
 									{
@@ -245,7 +293,7 @@ const AdminUser = () => {
 						</Col>
 						<Col span={12}>
 							<Form.Item
-								name='conutName'
+								name='user_type'
 								label='用户类型:'
 								rules={[
 									{
@@ -254,16 +302,14 @@ const AdminUser = () => {
 									},
 								]}
 							>
-								<Select>
-									<Option>正常</Option>
-								</Select>
+								<Select>{userTypeOperations}</Select>
 							</Form.Item>
 						</Col>
 					</Row>
 					<Row gutter={24}>
 						<Col span={12}>
 							<Form.Item
-								name='userName'
+								name='password'
 								label='密码:'
 								rules={[
 									{
@@ -277,7 +323,7 @@ const AdminUser = () => {
 						</Col>
 						<Col span={12}>
 							<Form.Item
-								name='conutName'
+								name='user_status'
 								label='用户状态:'
 								rules={[
 									{
@@ -286,16 +332,14 @@ const AdminUser = () => {
 									},
 								]}
 							>
-								<Select>
-									<Option>正常</Option>
-								</Select>
+								<Select>{userStatusOperations}</Select>
 							</Form.Item>
 						</Col>
 					</Row>
 					<Row gutter={24}>
 						<Col span={12}>
 							<Form.Item
-								name='userName'
+								name='telephone'
 								label='联系方式:'
 								rules={[
 									{
@@ -309,7 +353,7 @@ const AdminUser = () => {
 						</Col>
 						<Col span={12}>
 							<Form.Item
-								name='userName'
+								name='company_name'
 								label='单位名称:'
 								rules={[
 									{
@@ -325,7 +369,7 @@ const AdminUser = () => {
 					<Row gutter={24}>
 						<Col span={12}>
 							<Form.Item
-								name='userName'
+								name='email'
 								label='邮箱地址:'
 								rules={[
 									{
@@ -339,7 +383,7 @@ const AdminUser = () => {
 						</Col>
 						<Col span={12}>
 							<Form.Item
-								name='conutName'
+								name='company_type'
 								label='单位类型:'
 								rules={[
 									{
@@ -348,16 +392,14 @@ const AdminUser = () => {
 									},
 								]}
 							>
-								<Select>
-									<Option>正常</Option>
-								</Select>
+								<Select>{companyTypeOperations}</Select>
 							</Form.Item>
 						</Col>
 					</Row>
 					<Row gutter={24}>
 						<Col span={12}>
 							<Form.Item
-								name='userName'
+								name='company_address'
 								label='单位地址:'
 								rules={[
 									{
@@ -375,22 +417,28 @@ const AdminUser = () => {
 		)
 	}
 	// 删除
-	const deleteUser = () => {
+	const deleteUser = (id) => {
 		Modal.confirm({
 			title: '确认删除？',
 			okText: '确认',
 			cancelText: '取消',
-			onOk: () => {},
+			onOk: async () => {
+				const params = {
+					user_id: id,
+				}
+				await userDelete(params)
+				message.success('已删除')
+				getUserListFn()
+			},
 		})
 	}
-	useEffect(() => {
-		getUserListFn()
-	}, [])
 	return (
-		<AdminLayout>
+		<AdminLayout isAdminUser={true}>
 			{searchDiv()}
+			<ComponentTitle name={'用户管理'}></ComponentTitle>
+
 			<div className='admin_user_div'>
-				<Table columns={columns} dataSource={userData} pagination={pagination} />
+				<Table columns={columns} dataSource={userData} pagination={pagination} rowKey='user_id' />
 			</div>
 			{userDetailModal()}
 			{editModal()}

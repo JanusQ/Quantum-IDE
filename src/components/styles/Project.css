@@ -1,12 +1,9 @@
-.project_div{
-    width: 100%;
-    margin: auto;
-    margin-top: 30px;
-    height: calc(100% - 180px);
-    overflow: auto;
-	background: #fff;
-    padding: 10px;
+.project_div {
+	width: 100%;
+	margin: 0 auto;
+	height: calc(100% - 180px);
+	overflow: auto;
 }
-.project_search_div{
-    margin-bottom: 10px;
+.project_search_div {
+	margin-bottom: 10px;
 }

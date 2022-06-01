@@ -1,9 +1,9 @@
 import * as echarts from 'echarts/core'
 import { TooltipComponent, GridComponent } from 'echarts/components'
 import { BarChart } from 'echarts/charts'
-import { SVGRenderer } from 'echarts/renderers'
+import { CanvasRenderer } from 'echarts/renderers'
 import { getDirac } from '../components/Mathjax'
-echarts.use([TooltipComponent, GridComponent, BarChart, SVGRenderer])
+echarts.use([TooltipComponent, GridComponent, BarChart, CanvasRenderer])
 export const barChart = (element, data, isNeedInit) => {
 	const chartDom = document.getElementById(element)
 	let myChart
@@ -34,10 +34,7 @@ export const barChart = (element, data, isNeedInit) => {
 				},
 				axisLabel: {
 					formatter: function (value, idx) {
-						const svg = getDirac(value)
-						const z = new XMLSerializer()
-						return value
-						// return `<foreignObject>z.serializeToString(svg)</foreignObject>`
+						return  `${value}`
 					},
 				},
 			},

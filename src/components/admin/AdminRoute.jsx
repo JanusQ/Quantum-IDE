@@ -12,7 +12,7 @@ const AdminRoute = ({ component: Component, ...rest }) => {
 					const { user_type } = auth
 					if (user_type === 1) return <Component {...props} />
 				}
-				return <Redirect to='/signin' />
+				return <Redirect to='/signin/1' />
 			}}
 		/>
 	)

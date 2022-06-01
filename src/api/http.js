@@ -18,7 +18,6 @@ const errorHandle = (status, other) => {
 var instance = axios.create({
   timeout: 1000 * 50
 })
-instance.defaults.headers.post['Content-Type'] = 'application/json'
 // // 请求拦截器
 instance.interceptors.request.use(
   config => {
@@ -46,6 +45,7 @@ instance.interceptors.response.use(
         errorHandle(res.data.status, res.data.msg)
         return Promise.reject(res.data)
       }
+    // return Promise.resolve(res.data)
   },
   error => {
     if (error.message.includes('timeout')) {

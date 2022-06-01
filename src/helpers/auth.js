@@ -56,6 +56,25 @@ export const companyTypeArr = [
 		name: '其它',
 	},
 ]
+// 任务状态 
+export const taskTypeArr = [
+	{
+		code: -1,
+		name: '全部'
+	},
+	{
+		code: 0,
+		name: '等待中',
+	},
+	{
+		code: 1,
+		name: '已完成',
+	},
+	{
+		code: 2,
+		name: '已失败',
+	}
+]
 // 映射单位类型
 export const companyName = (type) => {
 	let str = ''
@@ -80,6 +99,16 @@ export const userStatusName = (type) => {
 export const userTypeName = (type) => {
 	let str = ''
 	userTypeArr.forEach((item) => {
+		if (item.code === type) {
+			str = item.name
+		}
+	})
+	return str
+}
+// 映射任务类型
+export const taskTypeName = (type) => {
+	let str = ''
+	taskTypeArr.forEach((item) => {
 		if (item.code === type) {
 			str = item.name
 		}

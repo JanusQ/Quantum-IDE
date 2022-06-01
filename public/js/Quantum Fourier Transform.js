@@ -6,7 +6,7 @@ var sender = qint.new(3, 'S')
 var receiver = qint.new(3, 'R')
 var a = qint.new(1, 'A')
 
-qc.write(0x0)
+//qc.write(0x0)
 
 let label = 'GenInfo'
 qc.startlabel(label)
@@ -39,23 +39,23 @@ qc.endlabel(label)
 
 qc.nop()
 
-label = 'A = R>=4'
-qc.startlabel(label)
-qc.cnot(receiver.bits(0x4), a.bits(0x1))
-qc.endlabel(label)
+// label = 'A = R>=4'
+// qc.startlabel(label)
+// qc.cnot(receiver.bits(0x4), a.bits(0x1))
+// qc.endlabel(label)
 
-qc.nop()
-
-
-label = 'High freq++'
-qc.startlabel(label)
-receiver.add(1, a.bits(0x1))
-qc.endlabel(label)
+// qc.nop()
 
 
-let results = receiver.sample(4)
-results.forEach(result=>{
-    qc.print('QFT Frequency: ' + result)
-})
+// label = 'High freq++'
+// qc.startlabel(label)
+// receiver.add(1, a.bits(0x1))
+// qc.endlabel(label)
+
+
+// let results = receiver.sample(4)
+// results.forEach(result=>{
+//     qc.print('QFT Frequency: ' + result)
+// })
 
 // results = receiver.read()

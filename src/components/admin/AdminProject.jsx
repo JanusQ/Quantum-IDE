@@ -1,78 +1,103 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import AdminLayout from './AdminLayout'
-import '../adminStyles/AdminProject.css'
-import { Input, Table } from 'antd'
+import { Table, Input, Select, Drawer, message, Button, Modal } from 'antd'
 import { Link } from 'react-router-dom'
+import { SearchOutlined } from '@ant-design/icons'
+import '../styles/Project.css'
+import { drawGraphChart } from '../../helpers/graphEcharts'
+import { useHistory } from 'react-router-dom'
+import { getProList, delPro } from '../../api/project'
+import { isAuth } from '../../helpers/auth'
+import moment from 'moment'
+import ComponentTitle from '../core/ComponentTitle'
+import '../styles/CommonAntDesign.css'
+
 const AdminProject = () => {
+	const auth = isAuth()
+	const history = useHistory()
 	const columns = [
 		{
 			title: '序号',
 			dataIndex: 'index',
+			width: 150,
 			render: (text, record, index) => {
 				return (pagination.current - 1) * pagination.pageSize + index + 1
 			},
-		},
-		{
-			title: '项目编号',
-			dataIndex: 'name',
-			key: 'name',
+			ellipsis:true
 		},
 		{
 			title: '项目名称',
-			dataIndex: 'age',
-			key: 'age',
-			render: (text, record) => {
-				return <Link to='/'>{text}</Link>
-			},
+			dataIndex: 'project_name',
+			key: 'project_name',
+			ellipsis:true
+			// render: (text, record) => {
+			// 	return <a onClick={() => loadPro(record)}>{text}</a>
+			// },
 		},
 		{
 			title: '任务个数',
-			dataIndex: 'address',
-			key: 'address',
+			dataIndex: 'task_num',
+			key: 'task_num',
+			ellipsis:true
 		},
 		{
 			title: '创建时间',
-			dataIndex: 'step',
-			key: 'step',
+			dataIndex: 'created_time',
+			key: 'created_time',
+			render: (text) => {
+				return moment(text).format('YYYY-MM-DD HH:MM:SS')
+			},
+			ellipsis:true
 		},
 		{
 			title: '操作',
 			dataIndex: 'step',
 			key: 'step',
+			width: 300,
 			render: (text, record) => {
 				return (
 					<span>
-						<a>查看任务详情</a>
-						<a>删除</a>
+						<Button
+							type='link'
+							onClick={() => {
+								loadPro(record)
+							}}
+							style={{ marginRight: '39px', padding: '0' }}
+						>
+							编辑项目
+						</Button>
+						<Button
+							type='link'
+							onClick={() => {
+								lookTask(record)
+							}}
+							style={{ marginRight: '39px', padding: '0' }}
+							disabled={record.task_num === 0}
+						>
+							查看任务详情
+						</Button>
+						<a onClick={() => deleteTask(record.project_id)}>删除</a>
 					</span>
 				)
 			},
 		},
 	]
-
-	const data = [
-		{
-			key: '1',
-			name: 'John Brown',
-			age: 32,
-			address: 'New York No. 1 Lake Park',
-			tags: ['nice', 'developer'],
-		},
-		{
-			key: '2',
-			name: 'Jim Green',
-			age: 42,
-			address: 'London No. 1 Lake Park',
-			tags: ['loser'],
-		},
-		{
-			key: '3',
-			name: 'Joe Black',
-			age: 32,
-			address: 'Sidney No. 1 Lake Park',
-			tags: ['cool', 'teacher'],
-		},
-	]
+	const loadPro = (record) => {
+		history.push({ pathname: `/aceComputer/${record.project_name}/${record.project_id}` })
+	}
+	const [projectList, setProjectList] = useState([])
+	const { Search } = Input
+	const { Option } = Select
+	const [searchValue, setSearchValue] = useState('')
+	const searchValueChange = (e) => {
+		setSearchValue(e.target.value)
+	}
+	const onSearch = () => {
+		getProListFn()
+	}
+	const statusChange = (value) => {
+		// console.log(value)
+	}
 	const [current, setCurrent] = useState(1)
 	const [total, setTotal] = useState(100)
 	const [pageSize, setPageSize] = useState(10)
@@ -88,12 +113,113 @@ const AdminProject = () => {
 		showTotal: (total) => `共 ${total} 条数据`,
 		showQuickJumper: true,
 	}
+	const [visible, setVisible] = useState(false)
+	const lookTask = (record) => {
+		if (record.task_num) {
+			history.push(`/admin/adminTask/${record.project_id}/${record.project_name}`)
+		} else {
+			message.error('所选项目暂无任务提交')
+		}
+	}
+	// 删除
+	const deleteTask = (id) => {
+		Modal.confirm({
+			title: '确认删除？',
+			okText: '确认',
+			cancelText: '取消',
+			onOk: async () => {
+				const formData = new FormData()
+				formData.append('project_id', id)
+				formData.append('user_id', auth.user_id)
+				await delPro(formData)
+				message.success('已删除')
+				getProListFn()
+			},
+		})
+	}
+	const onClose = () => {
+		setVisible(false)
+	}
+	// 获取项目列表
+	const getProListFn = async () => {
+		const formData = new FormData()
+		formData.append('user_id', auth.user_id)
+		if (searchValue) {
+			formData.append(
+				'filter',
+				JSON.stringify({
+					project_name: searchValue,
+				})
+			)
+		}
+		const { data } = await getProList(formData)
+		setProjectList(data.project_list.reverse())
+	}
+	useEffect(() => {
+		getProListFn()
+	}, [])
 	return (
 		<AdminLayout>
-			<div className='admin_project_div'>
-				<Input.Search style={{ width: '300px' }} placeholder='请输入项目名称' />
-				<Table columns={columns} dataSource={data} pagination={pagination} />
+			<ComponentTitle name={'项目列表'}></ComponentTitle>
+			<div className='project_div'>
+				<div className='project_search_div'>
+					<Search
+						placeholder='请输入项目名称'
+						onSearch={onSearch}
+						value={searchValue}
+						onChange={searchValueChange}
+						enterButton
+						style={{ marginBottom: '40px' }}
+					/>
+					{/* <Select
+						placeholder='请选择运行状态'
+						style={{ width: 200, marginLeft: '20px' }}
+						onChange={statusChange}
+					>
+						<Option value='1'>等待中</Option>
+					</Select>
+					<Select
+						placeholder='请选择项目阶段'
+						style={{ width: 200, marginLeft: '20px' }}
+						onChange={statusChange}
+					>
+						<Option value='1'>已启动</Option>
+					</Select> */}
+				</div>
+				<Table columns={columns} dataSource={projectList} pagination={false} style={{ marginBottom: '20px' }} rowKey="project_id"/>
 			</div>
+			<Drawer title='quantum computer name' placement='right' onClose={onClose} visible={visible} width={900}>
+				<div className='computer_params_div'>
+					<p style={{ fontSize: '16px' }}>参数</p>
+					<div className='computer_params_detail'>
+						<div className='computer_params_detail_div'>
+							<div className='computer_params_detail_item'>
+								<div className='computer_params_detail_num'>127</div>
+								<div className='computer_params_detail_name'>Qubits</div>
+							</div>
+							<div className='computer_params_detail_item'>
+								<div className='computer_params_detail_num'>64</div>
+								<div className='computer_params_detail_name'>QV</div>
+							</div>
+							<div className='computer_params_detail_item'>
+								<div className='computer_params_detail_num'>850</div>
+								<div className='computer_params_detail_name'>CLOPS</div>
+							</div>
+						</div>
+						<div>
+							<div className='computer_params_right_item'>status:online</div>
+							<div className='computer_params_right_item'>number of qubits: 40</div>
+							<div className='computer_params_right_item'>Avg.T1: xxx us</div>
+							<div className='computer_params_right_item'>Avg.T2: xxx us</div>
+						</div>
+					</div>
+				</div>
+				{/* <div className='computer_number_div'>
+					<p className='computer_number_title'>数据矫正</p>
+					<Table columns={columns} dataSource={data} bordered pagination={false} />
+				</div> */}
+				<div id='computer_params_graph' style={{ height: '300px', width: '100%' }}></div>
+			</Drawer>
 		</AdminLayout>
 	)
 }

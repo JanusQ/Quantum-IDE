@@ -1,3 +1,4 @@
+import axios from 'axios'
 import instance from './http'
 // 注册
 export const register = (data) => {
@@ -18,4 +19,8 @@ export const updateUserInfo = (data) => {
 // 修改密码
 export const updateUserPassword = (data) => {
 	return instance.post('/user/updateUserPassword', data)
+}
+// 注册论坛
+export const registerDiscuz = (data)=>{
+	return axios.post('/api/v3/users/username.register', data)
 }

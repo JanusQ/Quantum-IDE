@@ -1,9 +1,12 @@
 .user_center {
-	width: 80%;
+	width: 512px;
 	margin: auto;
-	height: calc(100% - 150px);
-	margin-top: 30px;
-	display: flex;
+	background: #fff;
+	border-radius: 20px;
+	/* height: 600px; */
+	padding: 10px 49px;
+	margin-bottom: 40px;
+	/* display: flex; */
 }
 .user_center_left_menu {
 	width: 200px;
@@ -28,12 +31,12 @@
 	color: #333;
 	cursor: pointer;
 }
-.user_center_left_menu_list li.active{
-    background:rgba(233, 233, 233, .5) ;
-    border-bottom: 1px solid rgba(233, 233, 233, 1);
-    color: rgb(64, 158, 255);
+.user_center_left_menu_list li.active {
+	background: rgba(233, 233, 233, 0.5);
+	border-bottom: 1px solid rgba(233, 233, 233, 1);
+	color: rgb(64, 158, 255);
 }
-.user_center_right_menu{
+.user_center_right_menu {
 	flex: 1;
 	margin-left: 30px;
 	border: 1px solid rgba(233, 233, 233, 1);
@@ -42,10 +45,131 @@
 	padding: 0 10px;
 	overflow: hidden;
 }
-.user_info_name{
+.user_info_name {
 	display: inline-block;
 	height: 20px;
 	line-height: 20px;
 	border-left: 5px solid rgba(64, 158, 255, 1);
 	padding-left: 10px;
+}
+.user_tabs_div {
+	width: 100%;
+	display: flex;
+	border: 1px solid #e8e8e9;
+	height: 32px;
+	line-height: 24px;
+	border-radius: 6px;
+	padding: 3px;
+	margin-bottom: 36px;
+}
+.user_tabs_div div {
+	flex: 1;
+	text-align: center;
+	user-select: none;
+	cursor: pointer;
+	border-radius: 6px;
+}
+.user_tabs_div div:nth-of-type(1) {
+	margin-right: 3px;
+}
+.user_tabs_div div.active {
+	background: #edf2f5;
+}
+.user_tabs_div div:hover {
+	background: #edf2f5;
+}
+
+.usercenter_form .ant-input {
+	border: 0;
+
+	background: #f5f5f5;
+	border-radius: 6px;
+}
+.usercenter_form .ant-input:focus {
+	border: 0;
+	box-shadow: none;
+}
+.usercenter_form .ant-input-password {
+	/* padding: 0 11px; */
+	border: 0;
+	background: #f5f5f5;
+	border-radius: 6px;
+}
+.usercenter_form .ant-btn {
+	border-radius: 6px;
+	border: 0;
+}
+.usercenter_form .ant-input-password-icon {
+}
+.usercenter_form .sign_in_to_signup {
+	text-align: center;
+	user-select: none;
+	cursor: pointer;
+	font-size: 16px;
+}
+.usercenter_form
+	.ant-form-item-has-error
+	:not(.ant-input-affix-wrapper-disabled):not(.ant-input-affix-wrapper-borderless).ant-input-affix-wrapper,
+.usercenter_form .ant-form-item-has-error :not(.ant-input-disabled):not(.ant-input-borderless).ant-input {
+	background: #f5f5f5;
+}
+
+.usercenter_form .ant-form-item-has-error :not(.ant-input-disabled):not(.ant-input-borderless).ant-input:focus,
+.usercenter_form
+	.ant-form-item-has-error
+	:not(.ant-input-affix-wrapper-disabled):not(.ant-input-affix-wrapper-borderless).ant-input-affix-wrapper:focus,
+.usercenter_form
+	.ant-form-item-has-error
+	:not(.ant-input-number-affix-wrapper-disabled):not(.ant-input-number-affix-wrapper-borderless).ant-input-number-affix-wrapper:focus,
+.usercenter_form .ant-form-item-has-error :not(.ant-input-disabled):not(.ant-input-borderless).ant-input-focused,
+.usercenter_form
+	.ant-form-item-has-error
+	:not(.ant-input-affix-wrapper-disabled):not(.ant-input-affix-wrapper-borderless).ant-input-affix-wrapper-focused,
+.usercenter_form
+	.ant-form-item-has-error
+	:not(.ant-input-number-affix-wrapper-disabled):not(.ant-input-number-affix-wrapper-borderless).ant-input-number-affix-wrapper-focused {
+	border: 0;
+	box-shadow: none;
+}
+.usercenter_form .ant-input-affix-wrapper-focused,
+.usercenter_form .ant-input-affix-wrapper:focus {
+	box-shadow: none;
+}
+.usercenter_form .ant-input-affix-wrapper {
+	border: 0;
+}
+/* .sign */
+.usercenter_form .ant-form-item-label > label {
+	/* color: #fff; */
+}
+.usercenter_form a {
+	color: #337df7;
+}
+.usercenter_form
+	.ant-form-item-has-error
+	.ant-select:not(.ant-select-disabled):not(.ant-select-customize-input)
+	.ant-select-selector {
+	border: 0;
+	background-color: #f5f5f5;
+}
+.usercenter_form .ant-select:not(.ant-select-customize-input) .ant-select-selector {
+	background-color: #f5f5f5;
+	border: 0;
+	border-radius: 6px;
+
+}
+.usercenter_form
+	.ant-select-single:not(.ant-select-customize-input)
+	.ant-select-selector
+	.ant-select-selection-search-input {
+	
+}
+.usercenter_form .ant-select-single .ant-select-selector .ant-select-selection-item,
+.usercenter_form .ant-select-single .ant-select-selector .ant-select-selection-placeholder {
+
+}
+.usercenter_form
+	.ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input)
+	.ant-select-selector {
+	box-shadow: none;
 }

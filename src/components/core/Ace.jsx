@@ -1,15 +1,19 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'react'
 import AceEditor from 'react-ace'
 import '../styles/Ace.css'
 import 'ace-builds/src-noconflict/mode-javascript'
 import 'ace-builds/src-noconflict/theme-github'
 import 'ace-builds/src-min-noconflict/ext-language_tools'
+import '../styles/CommonAntDesign.css'
 import { Button, Select, Modal, Tooltip } from 'antd'
-import { ZoomInOutlined, ZoomOutOutlined } from '@ant-design/icons'
+import { ZoomInOutlined, ZoomOutOutlined, CloseOutlined } from '@ant-design/icons'
 import { createFile } from '../../simulator/CommonFunction'
 import QCEngine from '../../simulator/MyQCEngine'
 
-const Ace = (props) => {
+const Ace = forwardRef((props, ref) => {
+	useImperativeHandle(ref, () => ({
+		exportFile,
+	}))
 	// 初始化字体
 	const [fontSize, setFontSize] = useState(12)
 	// 控制字体
@@ -27,35 +31,23 @@ const Ace = (props) => {
 
 	// 多个选择框
 	const { Option } = Select
-	const optionList = [
-		'FOR TEST',
-		'Quantum Conditional Execution',
-		'Gate Teleportation',
-		"Simon's Algorithm",
-		"Shor's Algorithm",
-		'Phase estimation',
-		"Grover's Algorithm",
-		'Adding two quantum intergers',
-		'Entangled Qubits',
-		'Bernstein-Vazirani Algorithm',
-		'Quantum Fourier Transform',
-		'Deutsch-Jozsa Algorithm',
-		'user_study',
-		'into_evolution',
-		'case 1',
-		'bell_state',
-		'all gates',
-		'ex7-7',
-		'ex7-1',
-		'Markov Process',
-		'about:black',
-	] // case的列表，public\js中需要存对应的文件
+
+	// case的列表，public\js中需要存对应的文件
 	// const optionList = ['Quantum Fourier Transform', 'Grover\'s Algorithm', 'Shor\'s Algorithm', 'Deutsch-Jozsa Algorithm', 'Simon\'s Algorithm', 'Bernstein-Vazirani Algorithm','Quantum Supersampling','Entangled Qubits','Adding two quantum intergers','Repeated iterations','Phase estimation','about:black']
 	const optionChildren = []
-	for (let i = 0; i < optionList.length; i++) {
+	for (let i = 0; i < props.optionList.length; i++) {
 		optionChildren.push(
-			<Option key={i} value={optionList[i]}>
-				{optionList[i]}
+			<Option key={i} value={props.optionList[i]} label={props.optionList[i]} title={props.optionList[i]}>
+				{props.optionList[i]}
+				<CloseOutlined
+					style={{
+						position: 'absolute',
+						top: '30%',
+						right: '7%',
+						display: props.optionList.length > 1 ? 'inline-block' : 'none',
+					}}
+					onClick={(e) => props.deleteItem(e, props.optionList[i])}
+				></CloseOutlined>
 			</Option>
 		)
 	}
@@ -65,6 +57,7 @@ const Ace = (props) => {
 	const exportFile = () => {
 		setIsModalVisible(true)
 	}
+
 	// 多个类型
 	const typeArr = [
 		{ name: 'SVG', type: 'svg' },
@@ -120,9 +113,6 @@ const Ace = (props) => {
 			},
 		})
 	}
-	useEffect(() => {
-		props.selectChange(optionList[0])
-	}, [])
 
 	return (
 		<div className='left_top_div'>
@@ -144,13 +134,11 @@ const Ace = (props) => {
 					<Select
 						style={{ width: '30%', marginLeft: '10px' }}
 						onChange={props.selectChange}
-						defaultValue={optionList[0]}
+						value={props.initOption}
+						optionLabelProp='label'
 					>
 						{optionChildren}
 					</Select>
-					<Button style={{ marginLeft: '10px' }} onClick={exportFile} className='export_btn'>
-						Export
-					</Button>
 					<ZoomInOutlined
 						style={{ marginLeft: '5%', cursor: 'pointer', fontSize: '18px' }}
 						onClick={() => {
@@ -200,5 +188,5 @@ const Ace = (props) => {
 			</div>
 		</div>
 	)
-}
+})
 export default Ace

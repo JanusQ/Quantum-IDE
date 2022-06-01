@@ -1,8 +1,10 @@
 import Layout from './Layout'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import '../styles/NoticeList.css'
 import { Table } from 'antd'
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
+import { getNoticeList } from '../../api/notice'
+import moment from 'moment'
 const NoticeList = () => {
 	const columns = [
 		{
@@ -13,48 +15,40 @@ const NoticeList = () => {
 			},
 		},
 		{
-			title: 'Name',
-			dataIndex: 'name',
-			key: 'name',
+			title: '公告标题',
+			dataIndex: 'notice_title',
+			key: 'notice_title',
 			render: (text, record) => {
-				return <Link to='/'>{text}</Link>
+				return <a onClick={()=>lookDetail(record.notice_id)}>{text}</a>
 			},
 		},
 		{
-			title: 'Age',
-			dataIndex: 'age',
-			key: 'age',
+			title: '发布人',
+			dataIndex: 'author',
+			key: 'author',
 		},
 		{
-			title: 'Address',
-			dataIndex: 'address',
-			key: 'address',
+			title: '发布时间',
+			dataIndex: 'update_time',
+			key: 'update_time',
+			render:(text)=>{
+				return moment(text).format('YYYY-MM-DD HH:MM:SS')
+			}
 		},
 	]
-
-	const data = [
-		{
-			key: '1',
-			name: 'John Brown',
-			age: 32,
-			address: 'New York No. 1 Lake Park',
-			tags: ['nice', 'developer'],
-		},
-		{
-			key: '2',
-			name: 'Jim Green',
-			age: 42,
-			address: 'London No. 1 Lake Park',
-			tags: ['loser'],
-		},
-		{
-			key: '3',
-			name: 'Joe Black',
-			age: 32,
-			address: 'Sidney No. 1 Lake Park',
-			tags: ['cool', 'teacher'],
-		},
-	]
+	const history = useHistory()
+	const lookDetail = (id)=>{
+		history.push(`/noticedetail/${id}`)
+	}
+	useEffect(()=>{
+		getNoticeListFn()
+	},[])
+	
+	const [ noticeList,setNoticeList ] = useState([])
+	const getNoticeListFn = async ()=>{
+		const { data } = await getNoticeList()
+		setNoticeList(data.notice_list)
+	}
 	const [current, setCurrent] = useState(1)
 	const [total, setTotal] = useState(100)
 	const [pageSize, setPageSize] = useState(10)
@@ -74,7 +68,7 @@ const NoticeList = () => {
 		<Layout>
 			<div className='notice_div'>
 				<div className='notice_title'>通知列表</div>
-				<Table columns={columns} dataSource={data} pagination={pagination} />
+				<Table columns={columns} dataSource={noticeList} pagination={false} />
 			</div>
 		</Layout>
 	)

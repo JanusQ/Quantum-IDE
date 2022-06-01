@@ -6,6 +6,7 @@ import createSagaMiddleware from 'redux-saga'
 import rootSage from './sagas'
 export const history = createHashHistory()
 const sageMiddleware = createSagaMiddleware()
-const store = createStore(createRootReducer(history),applyMiddleware(routerMiddleware(history),sageMiddleware))
+const store = createStore(createRootReducer(history), applyMiddleware(routerMiddleware(history), sageMiddleware))
 sageMiddleware.run(rootSage)
 export default store
+

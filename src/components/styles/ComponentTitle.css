@@ -1,0 +1,8 @@
+.common_component_title{
+	text-align: center;
+	font-size: 38px;
+	color: #003f88;
+	font-weight: bold;
+	margin:20px 0px;
+    user-select: none;
+}

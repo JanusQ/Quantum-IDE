@@ -2,75 +2,195 @@
 	margin: 20px 0;
 	box-shadow: 2px 2px 5px rgb(0 0 0 / 35%);
 }
+
 .computer_list {
 	display: flex;
 	width: 100%;
 	flex-wrap: wrap;
 	overflow: auto;
-	height: calc(100% - 247px);
+	min-height: 500px;
+	padding: 10px 10px;
 }
+
 .computer_item {
-	flex: 0 0 24%;
+	width: 543px;
 	margin-right: calc(4% / 3);
-	height: 186px;
+	height: 330px;
 	background: #fff;
-	margin-bottom: calc(4% / 3);
+	margin-bottom: 34px;
+	margin-right: 34px;
 	padding: 10px;
 	cursor: pointer;
+	box-shadow: 0 1px 2px -2px #00000029, 0 3px 6px #0000001f, 0 5px 12px 4px #00000017;
+	border-radius: 20px;
+	display: flex;
 }
-.computer_item:nth-child(4n) {
+.computer_name_title{
+	font-size: 18px;
+	font-weight: bold;
+}
+.computer_border{
+	width: 30px;
+	height: 4px;
+	background: #003f88;
+}
+.computer_item_flex:nth-of-type(1){
+	flex: 1;
+}
+.computer_item_flex:nth-of-type(2){
+	width: 250px;
+	margin-left: 20px;
+}
+.computer_item:hover{
+	background: #e6e9eb;
+}
+.computer_item:nth-child(2n) {
 	margin-right: 0;
 }
+
 /* 使最后一个元素的边距填满剩余空间 */
 .computer_item:last-child {
 	margin-right: auto;
 }
-.computer_name {
-	font-size: 18px;
-	margin-bottom: 14px;
+.computer_message{
+	display: flex;
+	flex-wrap: wrap;
+	margin-top: 50px;
 }
+.computer_message_item{
+	width: 50%;
+	height: 80px;
+	/* background: red; */
+}
+.computer_message_item_title{
+	/* text-align: center; */
+	font-weight: bold;
+	font-size: 18px;
+	
+}
+.computer_message_item_content{
+	/* text-align: center; */
+	font-size: 12px;
+}
+.computer_name {
+	font-size: 28px;
+	color: #003f88;
+	font-weight: bold;
+	margin-bottom: 18px;
+}
+
 .computer_number {
 	display: flex;
 }
+
 .computer_number_item {
 	width: 80px;
 	height: 59px;
 }
+
 .compuer_number_name {
 	font-size: 16px;
 }
+
 .compuer_number_contet {
 	font-size: 28px;
 }
-.computer_params_div{
-    width: 100%;
-    height: 270px;
-    border-bottom: 1px solid rgba(215, 215, 215, 1);
-}
-.computer_params_detail{
-    display: flex;
 
+.computer_params_div {
+	width: 100%;
+	height: 270px;
 }
-.computer_params_detail_num{
-    font-size: 28px;
 
+.computer_params_detail {
+	display: flex;
 }
-.computer_params_detail_name{
-    font-size: 14px;
-    text-indent: 2px;
+
+.computer_params_detail_num {
+	font-size: 28px;
 }
-.computer_params_detail_item{
-    margin-bottom: 5px;
+
+.computer_params_detail_name {
+	font-size: 14px;
+	text-indent: 2px;
 }
-.computer_params_detail_div{
-    margin-right: 100px;
+
+.computer_params_detail_item {
+	margin-bottom: 5px;
 }
-.computer_params_right_item{
-    line-height: 50px;
+
+.computer_params_detail_div {
+	margin-right: 100px;
 }
-.computer_number_div{
-    padding-top: 24px;
+
+.computer_params_right_item {
+	line-height: 50px;
 }
-.computer_number_title{
-    font-size: 16px;
+
+.computer_number_div {
+	height: 370px;
+	border-bottom: 1px solid rgba(215, 215, 215, 1);
+}
+
+.computer_number_title {
+	font-size: 16px;
+	height: 50px;
+	line-height: 50px;
+	border-bottom: 1px solid rgba(215, 215, 215, 1);
+}
+
+.computer_after_chart,
+.computer_before_chart {
+	height: calc(100% - 50px);
+	width: 100%;
+	overflow: auto;
+}
+
+.computer_table_div {
+	height: 300px;
+	overflow: auto;
+	flex: 1;
+}
+
+.computer_table_father {
+	width: 100%;
+	display: flex;
+}
+
+.computer_table_div:nth-of-type(1) {
+	margin-right: 20px;
+}
+.computer_graph_div{
+	height: 800px;
+	width: 100%;
+}
+#computer_graph_echarts{
+	height: 100%;
+	width: 100%;
+}
+.computer_detail_modal .ant-table-content{
+	background: #fff;
+}
+.computer_detail_modal .ant-table-container table > tbody > tr td:last-child{
+	border-radius: 0;
+}
+.computer_detail_modal .ant-table-tbody > tr > td{
+	border-top: 0;
+}
+.computer_detail_modal .ant-table-container table > thead > tr:first-child th:last-child{
+	border-radius: 0;
+	background-color: #003f88;
+}
+.computer_detail_modal .ant-table-container table > thead > tr:first-child th:first-child{
+	border-radius: 0;
+	background-color: #818ff2;
+}
+.computer_detail_modal .ant-modal-body{
+	padding: 46px;
+	border-radius: 20px;
+}
+.computer_detail_modal .ant-modal-content{
+	border-radius: 20px;
+}
+.computer_detail_modal .ant-table-thead > tr > th{
+	padding: 10px 16px;
 }

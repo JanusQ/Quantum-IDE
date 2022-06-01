@@ -22,7 +22,7 @@ const FindPassword = () => {
 					title='注册成功'
 					extra={[
 						<Button type='primary'>
-							<Link to='/signin'>登录</Link>
+							<Link to='/signin/1'>登录</Link>
 						</Button>,
 					]}
 				/>
@@ -157,7 +157,7 @@ const FindPassword = () => {
 						<Form.Item wrapperCol={{ offset: 5, span: 19 }}>
 							<div>
 								<span style={{ float: 'right' }} className='signup_to_in'>
-									<Link to='/signIn'>返回登录</Link>
+									<Link to='/signin/1'>返回登录</Link>
 								</span>
 							</div>
 						</Form.Item>
