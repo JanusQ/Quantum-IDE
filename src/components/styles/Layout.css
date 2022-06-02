@@ -109,7 +109,7 @@
 .common_content {
 	width: 1200px;
 	margin: 0 auto;
-	min-height: calc(100% - 400px);
+	min-height: 700px
 }
 .admin_user_content {
 	width: 100%;
