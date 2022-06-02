@@ -14,7 +14,7 @@ export const drawGraphChart = (element, data, linksData) => {
 					return params.name
 				}
 				if (params.dataType === 'edge') {
-					return `${params.data.source} — ${params.data.target}`
+					return `${params.data.selfDefine}`
 				}
 			},
 		},
@@ -33,7 +33,7 @@ export const drawGraphChart = (element, data, linksData) => {
 					show: true,
 					fontSize: 8,
 					color: '#fff',
-
+					
 				},
 				data: data,
 				// links: [],

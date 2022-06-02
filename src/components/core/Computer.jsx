@@ -87,7 +87,7 @@ const Computer = () => {
 				})
 			}
 			arrGraphNode.push({
-				color: validQubits.includes(qubits[key].bit_name) ? '#003FFF' : '#003f88',
+				color: validQubits.includes(qubits[key].bit_name) ? '#003f88' : '#f5f5f5',
 				name: qubits[key].bit_name,
 				x: qubits[key].position_x,
 				y: qubits[key].position_y,
@@ -104,12 +104,15 @@ const Computer = () => {
 				color: 'red',
 				source: couplers[key].qubit1_name,
 				target: couplers[key].qubit2_name,
+				selfDefine:couplers[key].coupler_name,
 				label: {
 					show: isShowLineLabel,
+					shadowOffsetY:20,
 					formatter: (obj) => {
-						return `${obj.data.source}-${obj.data.target}`
+						console.log(obj)
+						return `${obj.data.selfDefine}`
 					},
-					fontSize: 8,
+					fontSize: 12,
 				},
 			})
 		}
@@ -223,77 +226,9 @@ const Computer = () => {
 	}
 	return (
 		<Layout>
-			{/* <Search
-				placeholder='请输入量子计算机名称进行检索'
-				onSearch={onSearch}
-				size='large'
-				className='computer_search'
-				value={searchValue}
-				onChange={searchValueChange}
-			/> */}
 			<ComponentTitle name={'计算机列表'}></ComponentTitle>
 			<div className='computer_list'>{computerListDom}</div>
 			{computerDetailModal()}
-			{/* <Drawer title={computerDetail.chip_name} placement='right' onClose={onClose} visible={visible} width={900}>
-				<div className='computer_params_div'>
-					<p style={{ fontSize: '16px' }}>参数</p>
-					<div className='computer_params_detail'>
-						<div className='computer_params_detail_div'>
-							<div className='computer_params_detail_item'>
-								<div className='computer_params_detail_num'>{computerDetail.qubits_number}</div>
-								<div className='computer_params_detail_name'>Qubits</div>
-							</div>
-							<div className='computer_params_detail_item'>
-								<div className='computer_params_detail_num'>64</div>
-								<div className='computer_params_detail_name'>QV</div>
-							</div>
-							<div className='computer_params_detail_item'>
-								<div className='computer_params_detail_num'>850</div>
-								<div className='computer_params_detail_name'>CLOPS</div>
-							</div>
-						</div>
-						<div>
-							<div className='computer_params_right_item'>
-								status:
-								<span style={{ marginLeft: '5px' }}>
-									{computerDetail.com_status === 1 ? 'offline' : 'online'}
-								</span>
-							</div>
-							<div className='computer_params_right_item'>
-								number of qubits: {computerDetail.qubits_number}
-							</div>
-							<div className='computer_params_right_item'>Avg.T1: {computerDetail.Avg_T1}</div>
-							<div className='computer_params_right_item'>Avg.T2: {computerDetail.Avg_T2}</div>
-						</div>
-					</div>
-				</div>
-				<div className='computer_number_div'>
-					<p className='computer_number_title'>数据校正</p>
-					<div className='computer_table_father'>
-						<div className='computer_table_div'>
-							<Table
-								columns={columns}
-								dataSource={computerTable}
-								bordered
-								pagination={false}
-								rowKey='com_name'
-							/>
-						</div>
-						<div className='computer_table_div'>
-							<Table
-								columns={columns1}
-								dataSource={computerTable1}
-								bordered
-								pagination={false}
-								rowKey='com_name'
-							/>
-						</div>
-					</div>
-				</div>
-				<div className='computer_graph_div'>
-					<div id='computer_graph_echarts'></div>
-				</div>
-			</Drawer> */}
 		</Layout>
 	)
 }
