@@ -19,7 +19,7 @@ img{
 	display: flex;
 	font-family: 'Ubuntu-R';
 	position: relative;
-	height: 800px;
+	height: calc(100% - 33px);
 }
 .App .expand_div{
 	width: 100%;
@@ -153,4 +153,10 @@ ul li {
 }
 .ide_top_menu span:hover{
 	background-color: #1857bf;
+}
+.real_top_div .ant-switch-checked{
+	background: #508084;
+}
+.real_top_div .ant-switch-checked:focus{
+	box-shadow: none;
 }

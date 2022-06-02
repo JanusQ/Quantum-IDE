@@ -4,13 +4,13 @@ import { PageHeader } from 'antd'
 import '../styles/Layout.css'
 import { useHistory } from 'react-router-dom'
 import Footer from './Footer'
-const Layout = ({ children, isHome, isLogin }) => {
+const Layout = ({ children, isHome, isLogin, isIde }) => {
 	const history = useHistory()
 	const backHome = () => {
 		return history.push('/')
 	}
 	return (
-		<div style={{ background: '#eaeff5', height: isLogin ? 'calc(100% - 80px)' : 'auto' }}>
+		<div style={{ background: '#eaeff5', height: isLogin ? 'calc(100% - 80px)' : isIde ? '100%' : 'auto' }}>
 			<div className='front_header'>
 				<div className='front_menu_div'>
 					<span className='front_logo_title' onClick={backHome}>
@@ -20,8 +20,8 @@ const Layout = ({ children, isHome, isLogin }) => {
 				</div>
 			</div>
 			<div
-				className={isHome || isLogin ? 'front_content' : 'common_content'}
-				style={{ height: isLogin ? '100%' : 'auto', marginBottom: isHome ? '0' : '100px' }}
+				className={isHome || isLogin || isIde ? 'front_content' : 'common_content'}
+				style={{ height: isLogin  ? '100%' : isIde?'calc(100% - 80px)':'auto', marginBottom: isHome || isIde ? '0' : '100px' }}
 			>
 				{children}
 			</div>

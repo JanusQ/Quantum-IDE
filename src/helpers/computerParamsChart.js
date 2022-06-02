@@ -96,7 +96,6 @@ export const computerParamsChat = (data, element, svgEle, isProbs) => {
 	chart.renderAxis = function () {
 		chart.renderY()
 		chart.renderX()
-
 	}
 	chart.addMouseOn = function () {
 		svg.selectAll('.bar')
@@ -109,8 +108,10 @@ export const computerParamsChat = (data, element, svgEle, isProbs) => {
 					tipG = svg
 						.append('g')
 						.classed('tip', true)
-						.attr('transform', `translate(${position[0] - String(d.xValue).length * 10 - 5},${position[1] - 10})`)
-
+						.attr(
+							'transform',
+							`translate(${position[0] - String(d.xValue).length * 10 - 5},${position[1] - 10})`
+						)
 				} else {
 					tipG = svg
 						.append('g')
@@ -157,7 +158,6 @@ export const computerParamsChat = (data, element, svgEle, isProbs) => {
 						.attr('y', 40)
 						.html('probs:' + d.yValue)
 				}
-
 			})
 			.on('mouseleave', function (e, d) {
 				svg.select('.tip').remove()
@@ -165,12 +165,13 @@ export const computerParamsChat = (data, element, svgEle, isProbs) => {
 			.on('mousemove', function (e, d) {
 				const position = d3.pointer(e)
 				if (position[0] + String(d.xValue).length * 10 + 52 > 780) {
-					svg.select('.tip').attr('transform', `translate(${position[0] - String(d.xValue).length * 10 - 5},${position[1] - 10})`)
+					svg.select('.tip').attr(
+						'transform',
+						`translate(${position[0] - String(d.xValue).length * 10 - 5},${position[1] - 10})`
+					)
 				} else {
 					svg.select('.tip').attr('transform', `translate(${position[0] + 55},${position[1] - 10})`)
 				}
-
-
 			})
 	}
 
@@ -202,11 +203,11 @@ export const computerParamsChat = (data, element, svgEle, isProbs) => {
 
 	chart.renderChart()
 }
-export const computerD3 = (data, svgEle, gEle) => {
-	console.log(data)
+export const computerD3 = (data, svgEle, gEle, svgWidthData) => {
+	const initSvgWidth = svgWidthData || 840
 	const operation = {
-		svgItemHeight:34,
-		svgItemWidth:40
+		svgItemHeight: 34,
+		svgItemWidth: 40,
 	}
 	const d3Fn = new d3Draw(operation)
 	const svg = d3.select(`#${svgEle}`)
@@ -217,8 +218,7 @@ export const computerD3 = (data, svgEle, gEle) => {
 	// 列数
 	const row = gates[0].length
 	const col = gates.length
-	const svgWidth =
-		(row + d3Fn.scaleNum) * d3Fn.svgItemWidth > 840 ? (row + d3Fn.scaleNum) * d3Fn.svgItemWidth : 840
+	const svgWidth = (row + d3Fn.scaleNum) * d3Fn.svgItemWidth > initSvgWidth ? (row + d3Fn.scaleNum) * d3Fn.svgItemWidth : initSvgWidth
 	// 设置SVG宽高 高度整体下移了一行
 	svg.attr('width', svgWidth)
 	svg.attr('height', (col + 4) * d3Fn.svgItemHeight - 50)
@@ -230,7 +230,7 @@ export const computerD3 = (data, svgEle, gEle) => {
 			drawG,
 			d3Fn.firstX,
 			d3Fn.svgItemHeight * (i + 2),
-			(row + 3) * d3Fn.svgItemWidth > 846 ? (row + 3) * d3Fn.svgItemWidth : 846,
+			(row + 3) * d3Fn.svgItemWidth > initSvgWidth ? (row + 3) * d3Fn.svgItemWidth : initSvgWidth,
 			d3Fn.svgItemHeight * (i + 2)
 		)
 		d3Fn.drawName(drawG, d3Fn.svgItemWidth * 2 + 5, d3Fn.svgItemHeight * (i + 2), 'Q' + i)

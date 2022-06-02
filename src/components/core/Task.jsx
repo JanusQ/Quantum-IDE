@@ -218,7 +218,7 @@ const Task = () => {
 		qc.import(data.origin_circuit)
 		computerD3(qc.circuit, `task_before_chart_svg_${id}`, `task_before_chart_g_${id}`)
 		let qcAfter = new QCEngine()
-		qcAfter.import(data.origin_circuit)
+		qcAfter.import(data.compiled_circuit)
 		computerD3(qcAfter.circuit, `task_after_chart_svg_${id}`, `task_after_chart_g_${id}`)
 	}
 	// 导出

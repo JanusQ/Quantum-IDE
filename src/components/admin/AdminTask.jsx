@@ -214,9 +214,9 @@ const AdminTask = () => {
 	const drawFn = (data, id) => {
 		let qc = new QCEngine()
 		qc.import(data.origin_circuit)
-		console.log(qc.circuit)
 		computerD3(qc.circuit, `task_before_chart_svg_${id}`, `task_before_chart_g_${id}`)
 		let qcAfter = new QCEngine()
+		qcAfter.import(data.compiled_circuit)
 		computerD3(qcAfter.import(data.compiled_circuit), `task_after_chart_svg_${id}`, `task_after_chart_g_${id}`)
 	}
 	// 导出

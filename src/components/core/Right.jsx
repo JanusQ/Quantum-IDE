@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import '../styles/Right.css'
-import { Button, Tooltip } from 'antd'
+import { Button, Tooltip, Switch } from 'antd'
 import { restore } from '../../simulator/CommonFunction'
 
 const Right = (props) => {
@@ -129,19 +129,22 @@ const Right = (props) => {
 				className='real_top_div'
 				style={{
 					display: props.isShowRealB ? 'block' : 'none',
-					height: props.isShowCMode || props.isShowRealD ? '226px' : '678px',
+					height: props.isShowCMode || props.isShowRealD ? '40%' : '100%',
 				}}
 			>
 				<div className='real_params_btn'>
-					{/* <Button onClick={() => changeType(false)} type='primary'>
-					{isSimple ? 'Corrected' : 'Raw'}
-				</Button>
-				<Button onClick={() => downloadFn()} type='primary' style={{ float: 'right', marginTop: '9px' }}>
-					Download
-				</Button> */}
+					<Switch
+						onChange={(checked) => props.changeType(false)}
+						checked={props.isSimple}
+						style={{ float: 'right', marginTop: '10px' }}
+					/>
 				</div>
-				<div className='real_params_div' id='real_params_chart'>
-					<svg id='real_params_chart_svg'></svg>
+				<div
+					className='real_params_div'
+					id='real_params_chart'
+					style={{ width: '100%', height: '100%', overflow: 'auto' }}
+				>
+					<svg id='real_params_chart_svg' style={{ width: '100%', height: '270px' }}></svg>
 				</div>
 			</div>
 
@@ -152,11 +155,11 @@ const Right = (props) => {
 					marginTop: props.isShowRealB ? '5px' : '0',
 					height: props.isShowRealB
 						? props.isShowRealD
-							? '221px'
-							: '447px'
+							? 'calc(30% - 5px)'
+							: 'calc(60% - 5px)'
 						: props.isShowRealD
-						? '336.5px'
-						: '678px',
+						? 'calc(50% - 2.5px)'
+						: '100%',
 				}}
 			>
 				<div className='real_number_title'>编译前电路</div>
@@ -173,11 +176,11 @@ const Right = (props) => {
 					marginTop: props.isShowRealB || props.isShowRealC ? '5px' : '0',
 					height: props.isShowRealB
 						? props.isShowRealC
-							? '221px'
-							: '447px'
+							? 'calc(30% - 5px)'
+							: 'calc(60% - 5px)'
 						: props.isShowRealC
-						? '336.5px'
-						: '678px',
+						? 'calc(50% - 2.5px)'
+						: '100%',
 				}}
 			>
 				<div className='real_number_title'>编译后电路</div>

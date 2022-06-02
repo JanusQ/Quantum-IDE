@@ -38,6 +38,7 @@ import { getComList } from './api/computer'
 import { useParams } from 'react-router-dom'
 import { isAuth } from './helpers/auth'
 import { computerParamsChat, computerD3 } from './helpers/computerParamsChart'
+import { getTaskResult } from './api/project'
 // import QCEngine from './simulator/MyQCEngine'
 // import './test/meausre'
 // import './test/reset'
@@ -63,6 +64,7 @@ import { computerParamsChat, computerD3 } from './helpers/computerParamsChart'
 // import './test/canShow_test.js'
 
 function App() {
+	const _ = require('lodash')
 	// 提供的case列表
 	const initCaseList = [
 		{
@@ -244,7 +246,69 @@ function App() {
 		let res = await recieve_from_real(params)
 		console.log(res)
 	}
-
+	// 真机运行的画图
+	const [resultData, setResultData] = useState(null)
+	const drawFn = (data) => {
+		let qc = new QCEngine()
+		qc.import(data.origin_circuit)
+		computerD3(qc.circuit, `real_before_chart_svg`, `real_before_chart_g`, 1200)
+		let qcAfter = new QCEngine()
+		qcAfter.import(data.compiled_circuit)
+		computerD3(qcAfter.circuit, `real_after_chart_svg`, `real_after_chart_g`, 1200)
+	}
+	const drawChart = (data) => {
+		if (!data) {
+			data = resultData
+		}
+		if (isSimple) {
+			const echartsData = []
+			const dataKeys = Object.keys(data.result)
+			const arr = []
+			dataKeys.forEach((item) => {
+				arr.push({ form: item, to: parseInt(item, 2) })
+			})
+			arr.sort(compare('to'))
+			// dataKeys.sort
+			arr.forEach((item) => {
+				echartsData.push({
+					yValue: data.result[item.form],
+					xValue: item.form,
+				})
+			})
+			// console.log(qc.import(data.compiled_qc))
+			computerParamsChat(echartsData, 'real_params_chart', 'real_params_chart_svg', false)
+			// if(isSimple)
+		} else {
+			const echartsData = []
+			const dataKeys = Object.keys(data.probs)
+			const arr = []
+			dataKeys.forEach((item) => {
+				arr.push({ form: item, to: item })
+			})
+			arr.sort(compare('to'))
+			// dataKeys.sort
+			arr.forEach((item) => {
+				echartsData.push({
+					yValue: _.parseInt(_.multiply(data.probs[item.form], data.sample)),
+					xValue: item.form,
+				})
+			})
+			computerParamsChat(echartsData, 'real_params_chart', 'real_params_chart_svg', true)
+		}
+	}
+	const compare = (property) => {
+		return function (a, b) {
+			const value1 = a[property]
+			const value2 = b[property]
+			return value1 - value2
+		}
+	}
+	const [isSimple, setIsSimple] = useState(true)
+	const changeType = (isFirst, checked) => {
+		if (!isFirst) {
+			setIsSimple(!isSimple)
+		}
+	}
 	const realRun = async (qc, sample) => {
 		setIsSubmitModalLoading(true)
 		try {
@@ -255,15 +319,32 @@ function App() {
 			formData.append('computer_name', form.getFieldsValue(['comName']).comName)
 			formData.append('run_type', 'sqcg')
 			formData.append('user_id', auth.user_id)
-			await submitTask(formData)
+			const { data } = await submitTask(formData)
+			const taskIdFormData = new FormData()
+			taskIdFormData.append('task_id',data.task_info.task_id)
 			setIsSubmitModalLoading(false)
 			message.success('已提交')
+			
 			setSubmitModalVisible(false)
+			const { data:resultDataObj } = await getTaskResult(taskIdFormData)
+			drawFn(resultDataObj)
+			setResultData(resultDataObj)
+			if (!isSimple) {
+				setIsSimple(true)
+			} else {
+				drawChart(resultDataObj)
+			}
+		
 		} catch {
 			setIsSubmitModalLoading(false)
 		}
+		form.resetFields()
 	}
-
+	useEffect(() => {
+		if (resultData) {
+			drawChart()
+		}
+	}, [isSimple])
 	// 处理console
 	const consoleContent = (isTure, message) => {
 		if (isTure) {
@@ -681,7 +762,7 @@ function App() {
 	}
 
 	return (
-		<Layout isHome={true}>
+		<Layout isIde={true}>
 			{/* <ComponentTitle name={'IDE'}></ComponentTitle> */}
 			{leftOperations()}
 			<div className='App'>
@@ -720,6 +801,8 @@ function App() {
 						isShowRealB={isShowRealBmode}
 						isShowRealC={isShowRealCmode}
 						isShowRealD={isShowRealDmode}
+						changeType={changeType}
+						isSimple={isSimple}
 					></Right>
 				</div>
 			</div>

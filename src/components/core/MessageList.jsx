@@ -21,7 +21,8 @@ const MessageList = () => {
 			dataIndex: 'remainder_time',
 			key: 'remainder_time',
 			render: (text) => {
-				moment(text).format('YYYY-MM-DD HH:MM:SS')
+			
+				return moment(text).format('YYYY-MM-DD HH:MM:SS')
 			},
 		},
 	]
@@ -86,7 +87,6 @@ const MessageList = () => {
 				console.log(selectedRowkeys)
 			},
 		})
-
 	}
 	const deleteItem = (id) => {
 		Modal.confirm({
@@ -102,8 +102,7 @@ const MessageList = () => {
 		<Layout>
 			<ComponentTitle name='消息列表'></ComponentTitle>
 			<div className='message_div'>
-			
-				<Table columns={columns} dataSource={remainList} pagination={false} />
+				<Table columns={columns} dataSource={remainList} pagination={false} rowKey="remainder_id" />
 			</div>
 		</Layout>
 	)
