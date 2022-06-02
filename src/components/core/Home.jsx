@@ -156,12 +156,12 @@ const Home = () => {
 								<div className='home_production_contet'>
 									<div className='home_production_title'>产品介绍</div>
 									<div className='home_production_title_2'>PRODUCTION INTRODUCTION</div>
-									<div className='home_production_name'>美番1号</div>
+									<div className='home_production_name'>天目1号</div>
 									<div className='home_production_detail'>
-										芯片面向通用量子计算，采用了较易扩展的近邻连通架构。为执行相对复杂的量子门电路算法，“天目1号”上共集成36个具备更长比特寿命的超导量子比特（退相干时间约50
-										微秒），实现了高保真度的通用量子门（受控相位门，精度优于98%）。“天目1号”具备更高的编程灵活度，以执行更多种类的量子算法，可以应用于更多研究领域。
+									2021年12月17日，发布“莫干1号”“天目1号”超导量子芯片，宣告浙江量子科技迈向新发展阶段。
+                   “莫干1号”是一款专用量子芯片，采用了全连通架构，适用于实现针对特定问题的量子模拟和量子态的精确调控。“天目1号”芯片则面向通用量子计算，采用较易扩展的近邻连通架构。
 									</div>
-									<div className='home_banner_btn common_btn'>BUTTON</div>
+									<div className='home_banner_btn common_btn'><a href="https://hic.zju.edu.cn/2021/1220/c56173a2452801/page.htm">BUTTON</a> </div>
 								</div>
 								{/* <div className=''></div> */}
 							</div>
@@ -169,18 +169,17 @@ const Home = () => {
 						<SwiperSlide>
 							<div className='home_production_item'>
 								<div className='home_production_item'>
-									<div className='home_production_pic home_production_pic_1'></div>
+									<div className='home_production_pic home_production_pic_2'></div>
 									<div className='home_production_border'></div>
 									<div className='home_production_contet'>
 										<div className='home_production_title'>产品介绍</div>
 										<div className='home_production_title_2'>PRODUCTION INTRODUCTION</div>
-										<div className='home_production_name'>美番2号</div>
+										<div className='home_production_name'>莫干山1号</div>
 										<div className='home_production_detail'>
-											芯片面向通用量子计算，采用了较易扩展的近邻连通架构。为执行相对复杂的量子门电路算法，“天目1号”上共集成36个具备更长比特寿命的超导量子比特（退相干时间约50
-											微秒），实现了高保真度的通用量子门（受控相位门，精度优于98%）。“天目1号”具备更高的编程灵活度，以执行更多种类的量子算法，可以应用于更多研究领域。
+											2021年12月17日，发布“莫干1号”“天目1号”超导量子芯片，宣告浙江量子科技迈向新发展阶段。
+                   “莫干1号”是一款专用量子芯片，采用了全连通架构，适用于实现针对特定问题的量子模拟和量子态的精确调控。“天目1号”芯片则面向通用量子计算，采用较易扩展的近邻连通架构。
 										</div>
-										<div className='home_banner_btn common_btn'>BUTTON</div>
-									</div>
+	               <div className='home_banner_btn common_btn'><a href="https://hic.zju.edu.cn/2021/1220/c56173a2452801/page.htm">BUTTON</a> </div>									</div>
 									{/* <div className=''></div> */}
 								</div>
 							</div>
@@ -302,29 +301,29 @@ const Home = () => {
 							<SwiperSlide>
 								<div className='home_meng_ban'></div>
 								<img
-									src={require('../../images/banner_1.png')}
+									src={require('../../images/banner_3.png')}
 									style={{ width: '316px', height: '240px' }}
 								/>
-								<div className='home_swiper_title'>标题内容标题内容</div>
-								<div className='common_btn'>BUTTON</div>
+								<div className='home_swiper_title'>10-Qubit Entanglement and Parallel Logic Operations with a Superconducting Circuit</div>
+									<div className='common_btn'><a href="https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.119.180511">BUTTON</a></div>
 							</SwiperSlide>
 							<SwiperSlide>
 								<div className='home_meng_ban'></div>
 								<img
-									src={require('../../images/banner_1.png')}
+									src={require('../../images/banner_4.png')}
 									style={{ width: '316px', height: '240px' }}
 								/>
-								<div className='home_swiper_title'>标题内容标题内容</div>
-								<div className='common_btn'>BUTTON</div>
+								<div className='home_swiper_title'>Observation of multi-component atomic Schr ̈odinger cat states of up to 20 qubits</div>
+									<div className='common_btn'><a href=" https://www.science.org/doi/10.1126/science.aay0600">BUTTON</a></div>
 							</SwiperSlide>
 							<SwiperSlide>
 								<div className='home_meng_ban'></div>
 								<img
-									src={require('../../images/banner_1.png')}
+									src={require('../../images/banner_5.png')}
 									style={{ width: '316px', height: '240px' }}
 								/>
-								<div className='home_swiper_title'>标题内容标题内容</div>
-								<div className='common_btn'>BUTTON</div>
+								<div className='home_swiper_title'>Stark Many-Body Localization on a Superconducting Quantum Processor</div>
+										<div className='common_btn'><a href="https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.127.240502">BUTTON</a></div>
 							</SwiperSlide>
 						</Swiper>
 					</div>

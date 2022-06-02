@@ -11,8 +11,8 @@ const Layout = ({ children, isLogin }) => {
 						<li className='footer_menu_title'>
 							<span>关于我们</span>
 						</li>
-						<li>浙江大学物理系</li>
-						<li>浙江大学计算机学院</li>
+						<li> <a href="http://physics.zju.edu.cn/">浙江大学物理学院</a> </li>
+						<li><a href="http://www.cs.zju.edu.cn/">浙江大学计算机学院</a> </li>
 					</ul>
 					<ul>
 						<li className='footer_menu_title'>

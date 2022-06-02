@@ -83,3 +83,9 @@
     background: #1061ee;
     border-color: #1061ee;
 }
+.footer_menu ul li a {
+	color: #fff;
+	width: 100%;
+	height: 100%;
+	display: inline-block;
+}
