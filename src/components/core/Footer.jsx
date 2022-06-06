@@ -1,5 +1,5 @@
 import React from 'react'
-import { useHistory } from 'react-router-dom'
+import { useHistory,Link } from 'react-router-dom'
 import '../styles/Footer.css'
 const Layout = ({ children, isLogin }) => {
 	const history = useHistory()
@@ -9,7 +9,7 @@ const Layout = ({ children, isLogin }) => {
 				<div className='footer_menu'>
 					<ul>
 						<li className='footer_menu_title'>
-							<span>关于我们</span>
+							<span><Link to="/aboutUs">关于我们</Link></span>
 						</li>
 						<li> <a href="http://physics.zju.edu.cn/">浙江大学物理学院</a> </li>
 						<li><a href="http://www.cs.zju.edu.cn/">浙江大学计算机学院</a> </li>
