@@ -104,15 +104,14 @@ const Computer = () => {
 				color: 'red',
 				source: couplers[key].qubit1_name,
 				target: couplers[key].qubit2_name,
-				selfDefine:couplers[key].coupler_name,
+				selfDefine: couplers[key].coupler_name,
 				label: {
 					show: isShowLineLabel,
-					shadowOffsetY:20,
+					fontSize: 12,
+					padding: [0, 0, 4, 0],
 					formatter: (obj) => {
-						console.log(obj)
 						return `${obj.data.selfDefine}`
 					},
-					fontSize: 12,
 				},
 			})
 		}
