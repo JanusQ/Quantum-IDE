@@ -12,7 +12,7 @@ const Layout = ({ children, isHome, isLogin, isIde, isAboutUs }) => {
   return (
     <div
       style={{
-        background: isAboutUs ? "#eaeff5" : "#fff",
+        background: isAboutUs ? "#fff":'#eaeff5',
         height: isLogin ? "calc(100% - 80px)" : isIde ? "100%" : "auto",
       }}
     >
