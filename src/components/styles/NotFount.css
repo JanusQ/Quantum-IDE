@@ -1,16 +1,13 @@
-* {
+.notfound-box {
   margin: 0px;
   padding: 0px;
   font-family: "微软雅黑";
   font-size: 16px;
 }
 
-a {
-  text-decoration: none;
-  color: #1064a0;
-}
 
-h1,
+
+.errorpPage-box h1,
 h2 {
   margin: 0;
   font-weight: normal;
