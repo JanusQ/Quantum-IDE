@@ -6,8 +6,8 @@ export default function NotFound() {
     <div className="box">
       <div className="margin-top"></div>
   	<div className="errorpPage-box">
-		<h1>敬请期待！</h1>
-		<h2>coming soon ！</h2>
+		<h1>项目正在开发中，敬请期待...</h1>
+		<h2>The project is under development, please look forward to...！</h2>
 		<div className="errorpPage-operate">
 			{/* <a href="javascript:window.location.reload()" className="operateBtn" title="刷新试试">刷新试试</a> */}
 			{/* <a href="/404pages/index.html" className="operateBtn" title="返回首页">返回首页</a> */}
