@@ -496,6 +496,42 @@ export default class d3Draw {
 		childG.append('text').attr('x', 4).attr('y', 13).text('rx').classed('svgtext', true)
 		return parentG
 	}
+	//x,y 等传参统一显示
+	// rx
+	drawNameCircle(svg, x, y, name) {
+		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
+		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', '#fff').classed('operation_item', true)
+		const childG = parentG.append('g')
+		childG
+			.append('circle')
+			.attr('cx', 10)
+			.attr('cy', 10)
+			.attr('r', 10)
+			.attr('fill', '#fff')
+			.attr('stroke', '#000')
+			.attr('stroke-width', 1)
+			.classed('operation_item', true)
+
+		childG.append('text').attr('x', 6).attr('y', 13).text(name).classed('svgtext', true)
+		return parentG
+	}
+	drawNameCircletwoLength(svg, x, y, name) {
+		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
+		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', '#fff').classed('operation_item', true)
+		const childG = parentG.append('g')
+		childG
+			.append('circle')
+			.attr('cx', 10)
+			.attr('cy', 10)
+			.attr('r', 10)
+			.attr('fill', '#fff')
+			.attr('stroke', '#000')
+			.attr('stroke-width', 1)
+			.classed('operation_item', true)
+
+		childG.append('text').attr('x', 4).attr('y', 13).text(name).classed('svgtext', true)
+		return parentG
+	}
 	// rz
 	drawRz(svg, x, y) {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
@@ -893,601 +929,6 @@ export default class d3Draw {
 	// col:列数
 	operationX(col) {
 		return (this.svgItemWidth + this.gate_offest) * (col + this.scaleNum)
-	}
-	// 处理操作
-	drawOperations(svg, operations, data) {
-		for (let i = 0; i < operations.length; i++) {
-			let operation = operations[i]
-			const x = (this.svgItemWidth + this.gate_offest) * (i + this.scaleNum)
-			operation.x = x
-			// console.log(x)
-			switch (operations[i].operation) {
-				// write操作
-				case 'write':
-					// 处理数组
-					for (let j = operations[i].value.length - 1; j >= 0; j--) {
-						const writeG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
-						writeG.datum(operation) //绑定数据到dom节点
-						if (operations[i].value[j]) {
-							this.drawWrite1(writeG, x, this.svgItemHeight * (operations[i].qubits[j] + 2))
-						} else {
-							this.drawWrite0(writeG, x, this.svgItemHeight * (operations[i].qubits[j] + 2))
-						}
-						writeG.on('mouseover', function (e) {
-							svg.selectAll('.tip').remove()
-							const position = d3.pointer(e)
-							const tipG = svg
-								.append('g')
-								.classed('tip', true)
-								.attr('transform', `translate(${position[0] + 10},${position[1]})`)
-							tipG.append('rect')
-								.attr('stroke', 'gray')
-								.attr('stroke-width', 1)
-								.attr('height', 26)
-								.attr('width', 42)
-								.attr('fill', '#fff')
-								.attr('rx', 2)
-							const text = tipG
-								.append('text')
-								.attr('fill', '#000')
-								.classed('svgtext', true)
-								.attr('x', 4)
-								.attr('y', 16)
-
-							text.append('tspan').text('write')
-						})
-						writeG.on('mousemove', function (e) {
-							const position = d3.pointer(e)
-							svg.selectAll('.tip').attr('transform', `translate(${position[0] + 10},${position[1]})`)
-						})
-						writeG.on('mouseleave', function (e) {
-							svg.selectAll('.tip').remove()
-						})
-					}
-					break
-				// had操作
-				case 'h':
-					for (let j = 0; j < operations[i].qubits.length; j++) {
-						const hG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
-						hG.datum(operation) //绑定数据到dom节点
-						this.drawH(hG, x, this.svgItemHeight * (operations[i].qubits[j] + 2))
-						hG.on('mouseover', function (e) {
-							svg.selectAll('.tip').remove()
-							const position = d3.pointer(e)
-							const tipG = svg
-								.append('g')
-								.classed('tip', true)
-								.attr('transform', `translate(${position[0] + 20},${position[1]})`)
-							tipG.append('rect')
-								.attr('stroke', 'gray')
-								.attr('stroke-width', 1)
-								.attr('height', 26)
-								.attr('width', 18)
-								.attr('fill', '#fff')
-								.attr('rx', 2)
-							const text = tipG
-								.append('text')
-								.attr('fill', '#000')
-								.classed('svgtext', true)
-								.attr('x', 4)
-								.attr('y', 16)
-
-							text.append('tspan').text('H')
-						})
-						hG.on('mousemove', function (e) {
-							const position = d3.pointer(e)
-							svg.selectAll('.tip').attr('transform', `translate(${position[0] + 10},${position[1]})`)
-						})
-						hG.on('mouseleave', function (e) {
-							svg.selectAll('.tip').remove()
-						})
-					}
-
-					break
-				case 'swap':
-					for (let j = 0; j < operations[i].qubits1.length; j++) {
-						const swapG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
-						swapG.datum(operation) //绑定数据到dom节点
-						this.drawSwap(swapG, x, this.svgItemHeight * (operations[i].qubits1[j] + 2))
-						this.drawSwap(swapG, x, this.svgItemHeight * (operations[i].qubits2[j] + 2))
-						const max = Math.max(operations[i].qubits1[j], operations[i].qubits2[j])
-						const min = Math.min(operations[i].qubits1[j], operations[i].qubits2[j])
-						swapG
-							.append('rect')
-							.attr('height', this.svgItemHeight * (max - min + 1))
-							.attr('width', 22)
-							.attr('fill', 'transparent')
-							.attr('x', x - 10)
-							.attr('y', this.svgItemHeight * (min + 2) - this.svgItemHeight / 2)
-						this.drawLine(
-							swapG,
-							x,
-							this.svgItemHeight * (operations[i].qubits1[j] + 2),
-							x,
-							this.svgItemHeight * (operations[i].qubits2[j] + 2)
-						)
-						swapG.on('mouseover', function (e) {
-							svg.selectAll('.tip').remove()
-							const position = d3.pointer(e)
-							const tipG = svg
-								.append('g')
-								.classed('tip', true)
-								.attr('transform', `translate(${position[0] + 10},${position[1]})`)
-							tipG.append('rect')
-								.attr('stroke', 'gray')
-								.attr('stroke-width', 1)
-								.attr('height', 26)
-								.attr('width', 38)
-								.attr('fill', '#fff')
-								.attr('rx', 2)
-							const text = tipG
-								.append('text')
-								.attr('fill', '#000')
-								.classed('svgtext', true)
-								.attr('x', 4)
-								.attr('y', 16)
-
-							text.append('tspan').text('swap')
-						})
-						swapG.on('mousemove', function (e) {
-							const position = d3.pointer(e)
-							svg.selectAll('.tip').attr('transform', `translate(${position[0] + 10},${position[1]})`)
-						})
-						swapG.on('mouseleave', function (e) {
-							svg.selectAll('.tip').remove()
-						})
-					}
-					break
-				case 'ccnot':
-					const ccnotG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
-					ccnotG.datum(operation) //绑定数据到dom节点
-					// 判断最大值最小值 向两个极端画线
-					const controlsMin = Math.min(...operations[i].controls, ...operations[i].target)
-					const controlsMax = Math.max(...operations[i].controls, ...operations[i].target)
-					ccnotG
-						.append('rect')
-						.attr('height', this.svgItemHeight * (controlsMax - controlsMin + 1))
-						.attr('width', 20)
-						.attr('fill', 'transparent')
-						.attr('x', x - 10)
-						.attr('y', this.svgItemHeight * (controlsMin + 2) - this.svgItemHeight / 2)
-					this.drawLine(
-						ccnotG,
-						x,
-						this.svgItemHeight * (controlsMax + 2),
-						x,
-						this.svgItemHeight * (controlsMin + 2)
-					)
-					for (let j = 0; j < operations[i].controls.length; j++) {
-						this.drawCircle(ccnotG, x, this.svgItemHeight * (operations[i].controls[j] + 2))
-					}
-
-					this.drawCcnot(ccnotG, x, this.svgItemHeight * (operations[i].target[0] + 2))
-					ccnotG.on('mouseover', function (e) {
-						svg.selectAll('.tip').remove()
-						const position = d3.pointer(e)
-						const tipG = svg
-							.append('g')
-							.classed('tip', true)
-							.attr('transform', `translate(${position[0] + 10},${position[1]})`)
-						tipG.append('rect')
-							.attr('stroke', 'gray')
-							.attr('stroke-width', 1)
-							.attr('height', 26)
-							.attr('width', 44)
-							.attr('fill', '#fff')
-							.attr('rx', 2)
-						const text = tipG
-							.append('text')
-							.attr('fill', '#000')
-							.classed('svgtext', true)
-							.attr('x', 4)
-							.attr('y', 16)
-
-						text.append('tspan').text('ccnot')
-					})
-					ccnotG.on('mousemove', function (e) {
-						const position = d3.pointer(e)
-						svg.selectAll('.tip').attr('transform', `translate(${position[0] + 10},${position[1]})`)
-					})
-					ccnotG.on('mouseleave', function (e) {
-						svg.selectAll('.tip').remove()
-					})
-					break
-				case 'ccphase':
-					const ccphaseG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
-					ccphaseG.datum(operation) //绑定数据到dom节点
-					const qubitMax = Math.max(...operations[i].qubits)
-					const qubitMin = Math.min(...operations[i].qubits)
-					ccphaseG
-						.append('rect')
-						.attr('height', this.svgItemHeight * (qubitMax - qubitMin + 1))
-						.attr('width', 20)
-						.attr('fill', 'transparent')
-						.attr('x', x - 10)
-						.attr('y', this.svgItemHeight * (qubitMin + 2) - this.svgItemHeight / 2)
-					this.drawLine(
-						ccphaseG,
-						x,
-						this.svgItemHeight * (qubitMin + 2),
-						x,
-						this.svgItemHeight * (qubitMax + 2)
-					)
-					for (let j = 0; j < operations[i].qubits.length; j++) {
-						this.drawCCPhase(ccphaseG, x, this.svgItemHeight * (operations[i].qubits[j] + 2))
-					}
-					ccphaseG
-						.append('text')
-						.attr('x', x + 2)
-						.attr('y', this.svgItemHeight * (qubitMin + 2) - this.svgItemHeight / 2 + 3)
-						.classed('svgtext', true)
-						.append('tspan')
-						.attr('text-anchor', 'middle')
-						.attr('style', 'font-size:12px;')
-						.text(Math.floor(operations[i].rotation) ? Math.floor(operations[i].rotation) + '°' : '')
-					ccphaseG.on('mouseover', function (e) {
-						svg.selectAll('.tip').remove()
-						const position = d3.pointer(e)
-						const tipG = svg
-							.append('g')
-							.classed('tip', true)
-							.attr('transform', `translate(${position[0] + 10},${position[1]})`)
-						tipG.append('rect')
-							.attr('stroke', 'gray')
-							.attr('stroke-width', 1)
-							.attr('height', 26)
-							.attr('width', 59)
-							.attr('fill', '#fff')
-							.attr('rx', 2)
-						const text = tipG
-							.append('text')
-							.attr('fill', '#000')
-							.classed('svgtext', true)
-							.attr('x', 4)
-							.attr('y', 16)
-
-						text.append('tspan').text('ccphase')
-					})
-					ccphaseG.on('mousemove', function (e) {
-						const position = d3.pointer(e)
-						svg.selectAll('.tip').attr('transform', `translate(${position[0] + 10},${position[1]})`)
-					})
-					ccphaseG.on('mouseleave', function (e) {
-						svg.selectAll('.tip').remove()
-					})
-					break
-				case 'phase':
-					const phaseG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
-					phaseG.datum(operation) //绑定数据到dom节点
-					for (let j = 0; j < operations[i].qubits.length; j++) {
-						const phaseParentG = this.drawCCPhase(
-							phaseG,
-							x,
-							this.svgItemHeight * (operations[i].qubits[j] + 2)
-						)
-						phaseParentG
-							.append('text')
-							.attr('x', 12)
-							.attr('y', -2)
-							.classed('svgtext', true)
-							.append('tspan')
-							.attr('text-anchor', 'middle')
-							.attr('style', 'font-size:12px;')
-							.text((Math.floor(operations[i].rotation) || operations[i].rotation) + '°')
-						phaseG.on('mouseover', function (e) {
-							svg.selectAll('.tip').remove()
-							const position = d3.pointer(e)
-							const tipG = svg
-								.append('g')
-								.classed('tip', true)
-								.attr('transform', `translate(${position[0] + 10},${position[1]})`)
-							tipG.append('rect')
-								.attr('stroke', 'gray')
-								.attr('stroke-width', 1)
-								.attr('height', 26)
-								.attr('width', 46)
-								.attr('fill', '#fff')
-								.attr('rx', 2)
-							const text = tipG
-								.append('text')
-								.attr('fill', '#000')
-								.classed('svgtext', true)
-								.attr('x', 4)
-								.attr('y', 16)
-
-							text.append('tspan').text('phase')
-						})
-						phaseG.on('mousemove', function (e) {
-							const position = d3.pointer(e)
-							svg.selectAll('.tip').attr('transform', `translate(${position[0] + 10},${position[1]})`)
-						})
-						phaseG.on('mouseleave', function (e) {
-							svg.selectAll('.tip').remove()
-						})
-					}
-
-					break
-				case 'read':
-					// TODO: 需要要一个大G,在写绑定
-					for (let j = 0; j < operations[i].qubits.length; j++) {
-						this.drawRead(svg, x, this.svgItemHeight * (operations[i].qubits[j] + 2))
-					}
-					// readG.datum(operation)  //绑定数据到dom节点
-
-					break
-				case 'noop':
-					break
-				case 'not':
-					const notG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
-					notG.datum(operation) //绑定数据到dom节点
-					for (let j = 0; j < operations[i].qubits.length; j++) {
-						this.drawCcnot(notG, x, this.svgItemHeight * (operations[i].qubits[j] + 2))
-						notG.on('mouseover', function (e) {
-							svg.selectAll('.tip').remove()
-							const position = d3.pointer(e)
-							const tipG = svg
-								.append('g')
-								.classed('tip', true)
-								.attr('transform', `translate(${position[0] + 10},${position[1]})`)
-							tipG.append('rect')
-								.attr('stroke', 'gray')
-								.attr('stroke-width', 1)
-								.attr('height', 26)
-								.attr('width', 30)
-								.attr('fill', '#fff')
-								.attr('rx', 2)
-							const text = tipG
-								.append('text')
-								.attr('fill', '#000')
-								.classed('svgtext', true)
-								.attr('x', 4)
-								.attr('y', 16)
-
-							text.append('tspan').text('not')
-						})
-						notG.on('mousemove', function (e) {
-							const position = d3.pointer(e)
-							svg.selectAll('.tip').attr('transform', `translate(${position[0] + 10},${position[1]})`)
-						})
-						notG.on('mouseleave', function (e) {
-							svg.selectAll('.tip').remove()
-						})
-					}
-					break
-				case 'ry':
-					const ryG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
-					ryG.datum(operation) //绑定数据到dom节点
-					for (let j = 0; j < operations[i].qubits.length; j++) {
-						const ryParentG = this.drawRy(ryG, x, this.svgItemHeight * (operations[i].qubits[j] + 2))
-						ryParentG
-							.append('text')
-							.attr('x', 12)
-							.attr('y', -2)
-							.classed('svgtext', true)
-							.append('tspan')
-							.attr('text-anchor', 'middle')
-							.attr('style', 'font-size:12px;')
-							.text((Math.floor(operations[i].rotation) || operations[i].rotation) + '°')
-						ryG.on('mouseover', function (e) {
-							svg.selectAll('.tip').remove()
-							const position = d3.pointer(e)
-							const tipG = svg
-								.append('g')
-								.classed('tip', true)
-								.attr('transform', `translate(${position[0] + 10},${position[1]})`)
-							tipG.append('rect')
-								.attr('stroke', 'gray')
-								.attr('stroke-width', 1)
-								.attr('height', 26)
-								.attr('width', 22)
-								.attr('fill', '#fff')
-								.attr('rx', 2)
-							const text = tipG
-								.append('text')
-								.attr('fill', '#000')
-								.classed('svgtext', true)
-								.attr('x', 4)
-								.attr('y', 16)
-
-							text.append('tspan').text('ry')
-						})
-						ryG.on('mousemove', function (e) {
-							const position = d3.pointer(e)
-							svg.selectAll('.tip').attr('transform', `translate(${position[0] + 10},${position[1]})`)
-						})
-						ryG.on('mouseleave', function (e) {
-							svg.selectAll('.tip').remove()
-						})
-					}
-
-					break
-				case 'cry':
-					const cryG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
-					cryG.datum(operation) //绑定数据到dom节点
-					//operations[i].target = [0, 4, 5]
-					const cryQubits = data.getQubitsInvolved(operations[i])
-					const cryMinQ = Math.min(...cryQubits)
-					const cryMaxQ = Math.max(...cryQubits)
-					cryG.append('rect')
-						.attr('height', this.svgItemHeight * (cryMaxQ - cryMinQ + 1))
-						.attr('width', 20)
-						.attr('fill', 'transparent')
-						.attr('x', x - 10)
-						.attr('y', this.svgItemHeight * (cryMinQ + 2) - this.svgItemHeight / 2)
-					if (cryQubits.length) {
-						this.drawLine(
-							cryG,
-							x,
-							this.svgItemHeight * (cryMinQ + 2),
-							x,
-							this.svgItemHeight * (cryMaxQ + 2)
-						)
-					}
-					for (let j = 0; j < operations[i].target.length; j++) {
-						this.drawRy(cryG, x, this.svgItemHeight * (operations[i].target[j] + 2))
-					}
-					for (let j = 0; j < operations[i].controls.length; j++) {
-						this.drawCircle(cryG, x, this.svgItemHeight * (operations[i].controls[j] + 2))
-					}
-
-					// console.log(data.getQubitsInvolved(operations[i]))
-					cryG.append('text')
-						.attr('x', x + 2)
-						.attr('y', this.svgItemHeight * (cryMinQ + 2) - this.svgItemHeight / 2 + 3)
-						.classed('svgtext', true)
-						.append('tspan')
-						.attr('text-anchor', 'middle')
-						.attr('style', 'font-size:12px;')
-						.text(Math.floor(operations[i].rotation) + '°')
-					cryG.on('mouseover', function (e) {
-						svg.selectAll('.tip').remove()
-						const position = d3.pointer(e)
-						const tipG = svg
-							.append('g')
-							.classed('tip', true)
-							.attr('transform', `translate(${position[0] + 10},${position[1]})`)
-						tipG.append('rect')
-							.attr('stroke', 'gray')
-							.attr('stroke-width', 1)
-							.attr('height', 26)
-							.attr('width', 28)
-							.attr('fill', '#fff')
-							.attr('rx', 2)
-						const text = tipG
-							.append('text')
-							.attr('fill', '#000')
-							.classed('svgtext', true)
-							.attr('x', 4)
-							.attr('y', 16)
-
-						text.append('tspan').text('cry')
-					})
-					cryG.on('mousemove', function (e) {
-						const position = d3.pointer(e)
-						svg.selectAll('.tip').attr('transform', `translate(${position[0] + 10},${position[1]})`)
-					})
-					cryG.on('mouseleave', function (e) {
-						svg.selectAll('.tip').remove()
-					})
-					break
-				case 'rx':
-					const rxG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
-					rxG.datum(operation) //绑定数据到dom节点
-					for (let j = 0; j < operations[i].qubits.length; j++) {
-						const rxParentG = this.drawRx(rxG, x, this.svgItemHeight * (operations[i].qubits[j] + 2))
-						rxParentG
-							.append('text')
-							.attr('x', 12)
-							.attr('y', -2)
-							.classed('svgtext', true)
-							.append('tspan')
-							.attr('text-anchor', 'middle')
-							.attr('style', 'font-size:12px;')
-							.text(Math.floor(operations[i].rotation) || operations[i].rotation + '°')
-						rxG.on('mouseover', function (e) {
-							svg.selectAll('.tip').remove()
-							const position = d3.pointer(e)
-							const tipG = svg
-								.append('g')
-								.classed('tip', true)
-								.attr('transform', `translate(${position[0] + 10},${position[1]})`)
-							tipG.append('rect')
-								.attr('stroke', 'gray')
-								.attr('stroke-width', 1)
-								.attr('height', 26)
-								.attr('width', 22)
-								.attr('fill', '#fff')
-								.attr('rx', 2)
-							const text = tipG
-								.append('text')
-								.attr('fill', '#000')
-								.classed('svgtext', true)
-								.attr('x', 4)
-								.attr('y', 16)
-
-							text.append('tspan').text('rx')
-						})
-						rxG.on('mousemove', function (e) {
-							const position = d3.pointer(e)
-							svg.selectAll('.tip').attr('transform', `translate(${position[0] + 10},${position[1]})`)
-						})
-						rxG.on('mouseleave', function (e) {
-							svg.selectAll('.tip').remove()
-						})
-					}
-					break
-
-				default:
-					const defaultG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
-					//绑定数据到dom节点
-					defaultG.datum(operation)
-					const qubits = this.initQC.getQubitsInvolved(operations[i])
-					// const qubits = data.getQubitsInvolved(operations[i])
-					const defaultMinQ = Math.min(...qubits)
-					const defaultMaxQ = Math.max(...qubits)
-					defaultG
-						.append('rect')
-						.attr('height', this.svgItemHeight * (defaultMaxQ - defaultMinQ + 1))
-						.attr('width', 20)
-						.attr('fill', 'transparent')
-						.attr('x', x - 10)
-						.attr('y', this.svgItemHeight * (defaultMinQ + 2) - this.svgItemHeight / 2)
-					if (qubits.length) {
-						this.drawLine(
-							defaultG,
-							x,
-							this.svgItemHeight * (defaultMinQ + 2),
-							x,
-							this.svgItemHeight * (defaultMaxQ + 2)
-						)
-						for (let i = 0; i < qubits.length; i++) {
-							this.drawSelfDefinedGate(defaultG, x, this.svgItemHeight * (qubits[i] + 2))
-						}
-					}
-
-					defaultG
-						.append('text')
-						.attr('x', x + 2)
-						.attr('y', this.svgItemHeight * (defaultMinQ + 2) - this.svgItemHeight / 2)
-						.classed('svgtext', true)
-						.append('tspan')
-						.attr('text-anchor', 'middle')
-						.attr('style', 'font-size:12px;')
-						.text('self-define')
-					defaultG.on('mouseover', function (e) {
-						svg.selectAll('.tip').remove()
-						const position = d3.pointer(e)
-						const tipG = svg
-							.append('g')
-							.classed('tip', true)
-							.attr('transform', `translate(${position[0] + 10},${position[1]})`)
-						tipG.append('rect')
-							.attr('stroke', 'gray')
-							.attr('stroke-width', 1)
-							.attr('height', 26)
-							.attr('width', 90)
-							.attr('fill', '#fff')
-							.attr('rx', 2)
-						const text = tipG
-							.append('text')
-							.attr('fill', '#000')
-							.classed('svgtext', true)
-							.attr('x', 4)
-							.attr('y', 16)
-
-						text.append('tspan').text('self-define')
-					})
-					defaultG.on('mousemove', function (e) {
-						const position = d3.pointer(e)
-						svg.selectAll('.tip').attr('transform', `translate(${position[0] + 10},${position[1]})`)
-					})
-					defaultG.on('mouseleave', function (e) {
-						svg.selectAll('.tip').remove()
-					})
-
-					break
-			}
-		}
 	}
 	// 2.0处理circuit.gates
 	drawOperations2(svg, gates, data) {
@@ -1926,7 +1367,7 @@ export default class d3Draw {
 						case 'rz':
 							const rzG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
 							rzG.datum(operation) //绑定数据到dom节点
-							const rzParentG = this.drawRx(rzG, this.operationX(j), this.operationY(i))
+							const rzParentG = this.drawRz(rzG, this.operationX(j), this.operationY(i))
 							rzParentG
 								.append('text')
 								.attr('x', 12)
@@ -2091,6 +1532,181 @@ export default class d3Draw {
 								svg.selectAll('.tip').attr('transform', `translate(${position[0] + 10},${position[1]})`)
 							})
 							phaseG.on('mouseleave', function (e) {
+								svg.selectAll('.tip').remove()
+							})
+							break
+						case 'id':
+							const idG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
+							idG.datum(operation) //绑定数据到dom节点
+							const idParentG = this.drawNameCircletwoLength(idG, this.operationX(j), this.operationY(i),'id')
+							idG.on('mouseover', function (e) {
+								svg.selectAll('.tip').remove()
+								const position = d3.pointer(e)
+								const tipG = svg
+									.append('g')
+									.classed('tip', true)
+									.attr('transform', `translate(${position[0] + 10},${position[1]})`)
+								tipG.append('rect')
+									.attr('stroke', 'gray')
+									.attr('stroke-width', 1)
+									.attr('height', 26)
+									.attr('width', 22)
+									.attr('fill', '#fff')
+									.attr('rx', 2)
+								const text = tipG
+									.append('text')
+									.attr('fill', '#000')
+									.classed('svgtext', true)
+									.attr('x', 4)
+									.attr('y', 16)
+
+								text.append('tspan').text('id')
+							})
+							idG.on('mousemove', function (e) {
+								const position = d3.pointer(e)
+								svg.selectAll('.tip').attr('transform', `translate(${position[0] + 10},${position[1]})`)
+							})
+							idG.on('mouseleave', function (e) {
+								svg.selectAll('.tip').remove()
+							})
+							break
+						case 'x':
+							const xG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
+							xG.datum(operation) //绑定数据到dom节点
+							const xParentG = this.drawNameCircle(xG, this.operationX(j), this.operationY(i),'x')
+							xG.on('mouseover', function (e) {
+								svg.selectAll('.tip').remove()
+								const position = d3.pointer(e)
+								const tipG = svg
+									.append('g')
+									.classed('tip', true)
+									.attr('transform', `translate(${position[0] + 10},${position[1]})`)
+								tipG.append('rect')
+									.attr('stroke', 'gray')
+									.attr('stroke-width', 1)
+									.attr('height', 26)
+									.attr('width', 16)
+									.attr('fill', '#fff')
+									.attr('rx', 2)
+								const text = tipG
+									.append('text')
+									.attr('fill', '#000')
+									.classed('svgtext', true)
+									.attr('x', 4)
+									.attr('y', 16)
+
+								text.append('tspan').text('x')
+							})
+							xG.on('mousemove', function (e) {
+								const position = d3.pointer(e)
+								svg.selectAll('.tip').attr('transform', `translate(${position[0] + 10},${position[1]})`)
+							})
+							xG.on('mouseleave', function (e) {
+								svg.selectAll('.tip').remove()
+							})
+							break
+						case 'y':
+							const yG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
+							yG.datum(operation) //绑定数据到dom节点
+							const yParentG = this.drawNameCircle(yG, this.operationX(j), this.operationY(i),'y')
+							yG.on('mouseover', function (e) {
+								svg.selectAll('.tip').remove()
+								const position = d3.pointer(e)
+								const tipG = svg
+									.append('g')
+									.classed('tip', true)
+									.attr('transform', `translate(${position[0] + 10},${position[1]})`)
+								tipG.append('rect')
+									.attr('stroke', 'gray')
+									.attr('stroke-width', 1)
+									.attr('height', 26)
+									.attr('width', 22)
+									.attr('fill', '#fff')
+									.attr('rx', 2)
+								const text = tipG
+									.append('text')
+									.attr('fill', '#000')
+									.classed('svgtext', true)
+									.attr('x', 4)
+									.attr('y', 16)
+
+								text.append('tspan').text('y')
+							})
+							yG.on('mousemove', function (e) {
+								const position = d3.pointer(e)
+								svg.selectAll('.tip').attr('transform', `translate(${position[0] + 10},${position[1]})`)
+							})
+							yG.on('mouseleave', function (e) {
+								svg.selectAll('.tip').remove()
+							})
+							break
+						case 'z':
+							const zG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
+							zG.datum(operation) //绑定数据到dom节点
+							const zParentG = this.drawNameCircle(zG, this.operationX(j), this.operationY(i),'z')
+							zG.on('mouseover', function (e) {
+								svg.selectAll('.tip').remove()
+								const position = d3.pointer(e)
+								const tipG = svg
+									.append('g')
+									.classed('tip', true)
+									.attr('transform', `translate(${position[0] + 10},${position[1]})`)
+								tipG.append('rect')
+									.attr('stroke', 'gray')
+									.attr('stroke-width', 1)
+									.attr('height', 26)
+									.attr('width', 22)
+									.attr('fill', '#fff')
+									.attr('rx', 2)
+								const text = tipG
+									.append('text')
+									.attr('fill', '#000')
+									.classed('svgtext', true)
+									.attr('x', 4)
+									.attr('y', 16)
+
+								text.append('tspan').text('z')
+							})
+							zG.on('mousemove', function (e) {
+								const position = d3.pointer(e)
+								svg.selectAll('.tip').attr('transform', `translate(${position[0] + 10},${position[1]})`)
+							})
+							zG.on('mouseleave', function (e) {
+								svg.selectAll('.tip').remove()
+							})
+							break
+						case 'srn':
+							const srnG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
+							srnG.datum(operation) //绑定数据到dom节点
+							const srnParentG = this.drawNameCircle(srnG, this.operationX(j), this.operationY(i),'√X')
+							srnG.on('mouseover', function (e) {
+								svg.selectAll('.tip').remove()
+								const position = d3.pointer(e)
+								const tipG = svg
+									.append('g')
+									.classed('tip', true)
+									.attr('transform', `translate(${position[0] + 10},${position[1]})`)
+								tipG.append('rect')
+									.attr('stroke', 'gray')
+									.attr('stroke-width', 1)
+									.attr('height', 26)
+									.attr('width', 22)
+									.attr('fill', '#fff')
+									.attr('rx', 2)
+								const text = tipG
+									.append('text')
+									.attr('fill', '#000')
+									.classed('svgtext', true)
+									.attr('x', 4)
+									.attr('y', 16)
+
+								text.append('tspan').text('srn')
+							})
+							srnG.on('mousemove', function (e) {
+								const position = d3.pointer(e)
+								svg.selectAll('.tip').attr('transform', `translate(${position[0] + 10},${position[1]})`)
+							})
+							srnG.on('mouseleave', function (e) {
 								svg.selectAll('.tip').remove()
 							})
 							break

@@ -4,7 +4,7 @@ import Layout from "./Layout";
 import aboutUs from "../../images/aboutUS.png";
 export default function AbuoutUs() {
   return (
-    <Layout isAboutUs={false}>
+    <Layout>
       <div>
         <div className="aboutUs">
           <h2>团队介绍</h2>
