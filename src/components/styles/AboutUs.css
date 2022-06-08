@@ -1,6 +1,6 @@
 a {
   text-decoration: none;
-  color: #232323;
+  color: skyblue;
 }
 h2 {
   font-size: 40px;
@@ -13,7 +13,7 @@ h4{
 }
 .aboutUs {
   width: 70%;
-  background: #eaeff5;
+  background: #fff;
   margin: 0 auto;
   padding: 50px 40px;
   margin-top: 50px;
@@ -29,7 +29,13 @@ h4{
   height: 100%;
 }
 .usComtent p {
-  font-size: 16px;
+  font-size: 15px;
+	line-height: 25px;
+	color: #3a3e42;
+	margin-top: 20px;
+}
+.usComtent{
+  margin-bottom: 100px;
 }
 p span {
   margin-left: 2em;

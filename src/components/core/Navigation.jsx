@@ -69,59 +69,63 @@ const Navigation = () => {
 		</Menu>
 	)
 	return (
-		<>
-			<ul className='front_menu_list'>
-				<li className={isHome}>
-					<Link to='/'>首页</Link>
-				</li>
-				<li className={isComputer}>
-					<Link to='/computer'>计算机列表</Link>
-				</li>
-				<li className={isProject}>
-					<Link to='/project'>项目管理</Link>
-				</li>
-				<li className={isReferenceDoc}>
-					<Link to='/referenceDoc/all'>参考文档</Link>
-				</li>
-				<li>
-					<a href="http://183.129.170.180:10213/">社区论坛</a>
-				</li>
-			</ul>
+    <>
+      <ul className="front_menu_list">
+        <li className={isHome}>
+          <Link to="/">首页</Link>
+        </li>
+        <li className={isComputer}>
+          <Link to="/computer">服务资源</Link>
+        </li>
+        <li className={isProject}>
+          <Link to="/project">项目管理</Link>
+        </li>
+        <li className={isReferenceDoc}>
+          <Link to="/referenceDoc/all">教程与文档</Link>
+        </li>
+        <li>
+          <a href="http://183.129.170.180:10213/">社区论坛</a>
+        </li>
+        <li> <Link to="/notfound">菜单</Link></li>
+      </ul>
 
-			<ul className='front_menu_list front_menu_list_second'>
-				{!isAuth() && (
-					<>
-						<li>
-							<Link to='/signin/1'>登录</Link>
-						</li>
-						<li style={{ marginLeft: '25px' }}>
-							<Link to='/signin/2'>注册</Link>
-						</li>
-					</>
-				)}
-				{isAuth() && (
-					<>
-						<li className='front_menu_user'>
-							<Dropdown overlay={menu}>
-								<a className='ant-dropdown-link' onClick={(e) => e.preventDefault()}>
-									<span className='front_user_name'>{auth.username}</span>
-									<DownOutlined />
-								</a>
-							</Dropdown>
-						</li>
-						<li className='menu_notice_li'>
-							<span className='front_ling_dang' onClick={lookRemainder}></span>
-							<span
-								className='front_tip_num'
-								style={{ display: remainNum > 0 ? 'inline-block' : 'none' }}
-							>
-								{remainNum}
-							</span>
-						</li>
-					</>
-				)}
-			</ul>
-		</>
-	)
+      <ul className="front_menu_list front_menu_list_second">
+        {!isAuth() && (
+          <>
+            <li>
+              <Link to="/signin/1">登录</Link>
+            </li>
+            <li style={{ marginLeft: "25px" }}>
+              <Link to="/signin/2">注册</Link>
+            </li>
+          </>
+        )}
+        {isAuth() && (
+          <>
+            <li className="front_menu_user">
+              <Dropdown overlay={menu}>
+                <a
+                  className="ant-dropdown-link"
+                  onClick={(e) => e.preventDefault()}
+                >
+                  <span className="front_user_name">{auth.username}</span>
+                  <DownOutlined />
+                </a>
+              </Dropdown>
+            </li>
+            <li className="menu_notice_li">
+              <span className="front_ling_dang" onClick={lookRemainder}></span>
+              <span
+                className="front_tip_num"
+                style={{ display: remainNum > 0 ? "inline-block" : "none" }}
+              >
+                {remainNum}
+              </span>
+            </li>
+          </>
+        )}
+      </ul>
+    </>
+  );
 }
 export default Navigation

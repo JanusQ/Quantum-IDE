@@ -26,6 +26,7 @@ import AdminNoticeDetail from './components/admin/AdminNoticeDetail'
 import PrivateRoute from './components/admin/PrivateRoute'
 import AdminTask from './components/admin/AdminTask'
 import AbuoutUs from './components/core/AbuoutUs'
+import NotFound from './components/core/NotFound'
 const Routes = () => {
 	return (
     <ConfigProvider locale={zhCN}>
@@ -41,6 +42,7 @@ const Routes = () => {
           <Route path="/signUp" component={SignUp} exact />
           <Route path="/findPassword" component={FindPassword} exact />
           <Route path="/aboutUs" component={AbuoutUs} exact />
+          <Route path="/notFound" component={NotFound} exact />
           <PrivateRoute path="/computer" component={Computer} exact />
           <PrivateRoute path="/notice" component={NoticeList} exact />
           <PrivateRoute

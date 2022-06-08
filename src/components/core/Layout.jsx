@@ -4,7 +4,7 @@ import { PageHeader } from 'antd'
 import '../styles/Layout.css'
 import { useHistory } from 'react-router-dom'
 import Footer from './Footer'
-const Layout = ({ children, isHome, isLogin, isIde, isAboutUs }) => {
+const Layout = ({ children, isHome, isLogin, isIde }) => {
   const history = useHistory();
   const backHome = () => {
     return history.push("/");
@@ -12,7 +12,7 @@ const Layout = ({ children, isHome, isLogin, isIde, isAboutUs }) => {
   return (
     <div
       style={{
-        background: isAboutUs ? "#eaeff5" : "#fff",
+        background:  "#eaeff5" ,
         height: isLogin ? "calc(100% - 80px)" : isIde ? "100%" : "auto",
       }}
     >
