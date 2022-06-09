@@ -75,7 +75,7 @@ const Navigation = () => {
           <Link to="/">首页</Link>
         </li>
         <li className={isComputer}>
-          <Link to="/computer">服务资源</Link>
+          <Link to="/computer">计算资源</Link>
         </li>
         <li className={isProject}>
           <Link to="/project">项目管理</Link>
@@ -86,7 +86,7 @@ const Navigation = () => {
         <li>
           <a href="http://183.129.170.180:10213/">社区论坛</a>
         </li>
-        <li> <Link to="/notfound">菜单</Link></li>
+        <li> <Link to="/aboutUs">关于我们</Link></li>
       </ul>
 
       <ul className="front_menu_list front_menu_list_second">

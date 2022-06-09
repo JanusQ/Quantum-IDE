@@ -8,9 +8,9 @@ const Layout = ({ children, isLogin }) => {
 			<div className='footer_content'>
 				<div className='footer_menu'>
 					<ul>
-						<li className='footer_menu_title'>
+						{/* <li className='footer_menu_title'>
 							<span><Link to="/aboutUs">关于我们</Link></span>
-						</li>
+						</li> */}
 						<li> <a href="http://physics.zju.edu.cn/">浙江大学物理学院</a> </li>
 						<li><a href="http://www.cs.zju.edu.cn/">浙江大学计算机学院</a> </li>
 					</ul>
@@ -26,6 +26,8 @@ const Layout = ({ children, isLogin }) => {
 							<span>联系方案</span>
 						</li>
 						<li>解决方案</li>
+						<li>菜单</li>
+						<li><Link to="/notFound">NotFoud页面</Link></li>
 					</ul>
 					<div className='footer_phone'>
 						<p className='footer_phone_title'>联系我们</p>

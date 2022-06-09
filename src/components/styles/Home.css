@@ -65,6 +65,7 @@
 }
 .home_banner .home_banner_btn {
 	margin-top: 47px;
+
 }
 .home_production_div .home_banner_btn {
 	margin-top: 29px;
@@ -150,6 +151,7 @@
 }
 .home_production_content .swiper-button-next,
 .home_fourth_switch .swiper-button-next {
+	top: 40%;
 	height: 30px;
 	background: url('../../images/blue_arrow.png') no-repeat;
 }
@@ -211,8 +213,9 @@
 	font-weight: bold;
 }
 .home_third_div_title_2 {
+	font-size: 13px;
 	color: #003f88;
-	font-size: 12px;
+	margin-top: 15px;
 }
 .home_third_div_name {
 	font-size: 38px;
@@ -364,9 +367,12 @@
 	display: none;
 }
 .home_swiper_title {
-	font-size: 14px;
+	font-size: 18px;
 	font-weight: bold;
 	margin-top: 20px;
+}
+.home_swiper_title a{
+color: #3a3e42;
 }
 .home_fourth_title {
 	text-align: center;

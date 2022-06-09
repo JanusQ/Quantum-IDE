@@ -113,7 +113,7 @@ const Home = () => {
 									提供实时的量子计算服务
 								</div>
 								<div className='home_banner_btn common_btn' onClick={gotoComputer}>
-									BUTTON
+									开始
 								</div>
 							</div>
 						</div>
@@ -162,7 +162,7 @@ const Home = () => {
 											2021年12月17日，发布“莫干1号”“天目1号”超导量子芯片，宣告浙江量子科技迈向新发展阶段。
                    “莫干1号”是一款专用量子芯片，采用了全连通架构，适用于实现针对特定问题的量子模拟和量子态的精确调控。“天目1号”芯片则面向通用量子计算，采用较易扩展的近邻连通架构。
 										</div>
-	               <div className='home_banner_btn common_btn'><a href="https://hic.zju.edu.cn/2021/1220/c56173a2452801/page.htm">点击详情</a> </div>									</div>
+	               <div className='home_banner_btn common_btn' style={{float:'right'}}><a href="https://hic.zju.edu.cn/2021/1220/c56173a2452801/page.htm">点击详情</a> </div>									</div>
 									{/* <div className=''></div> */}
 								</div>
 							</div>
@@ -178,10 +178,13 @@ const Home = () => {
 				<div className='home_third_div_content'>
 					<div className='home_third_div_border'></div>
 					<div className='home_third_div_text'>
-						<div className='home_third_div_title'>量子服务</div>
-						<div className='home_third_div_title_2'>QUANTUM SERVICE</div>
-						<div className='home_third_div_name'>量子云计算资源</div>
-						<div className='home_third_div_name_2'>多比特超导量子计算机</div>
+						<div className='home_third_div_title'>量子云</div>
+						<div className='home_third_div_title_2'>QUANTUM CLOUD</div>
+						<div className='home_production_detail'>
+										支持在线构建算法、实时调用多台量子计算机
+										</div>
+						{/* <div className='home_third_div_name'>量子云计算资源</div>
+						<div className='home_third_div_name_2'>多比特超导量子计算机</div> */}
 						{/* <div className='home_third_div_btn_g'>
 							<div className='common_btn'>BUTTON1</div>
 							<div className='common_btn'>BUTTON2</div>
@@ -265,8 +268,7 @@ const Home = () => {
 				<div className='home_fourth_content'>
 					<div className='home_fourth_title'>成果展示</div>
 					<div className='home_fourth_second_title'>
-						<span>近期相关学术成果展示</span>
-						<span style={{ marginLeft: '6px' }}>近期相关学术成果展示</span>
+						<span>2021～2022年的部分论文展示</span>
 					</div>
 					<div className='home_fourth_switch'>
 						<Swiper
@@ -288,7 +290,9 @@ const Home = () => {
 									src={require('../../images/banner_3.png')}
 									style={{ width: '316px', height: '240px' }}
 								/></a>
-								<div className='home_swiper_title'>10-Qubit Entanglement and Parallel Logic Operations with a Superconducting Circuit</div>
+								<div className='home_swiper_title'>
+									<a href="https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.119.180511">
+									10-Qubit Entanglement and Parallel Logic Operations with a Superconducting Circuit</a></div>
 									{/* <div className='common_btn'><a href="https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.119.180511">BUTTON</a></div> */}
 							</SwiperSlide>
 							<SwiperSlide>
@@ -298,7 +302,7 @@ const Home = () => {
 									src={require('../../images/banner_4.png')}
 									style={{ width: '316px', height: '240px' }}
 								/></a>
-								<div className='home_swiper_title'>Observation of multi-component atomic Schr ̈odinger cat states of up to 20 qubits</div>
+								<div className='home_swiper_title'><a href="https://www.science.org/doi/10.1126/science.aay0600"> Observation of multi-component atomic Schr ̈odinger cat states of up to 20 qubits </a></div>
 									{/* <div className='common_btn'><a href=" https://www.science.org/doi/10.1126/science.aay0600">BUTTON</a></div> */}
 							</SwiperSlide>
 							<SwiperSlide>
@@ -308,7 +312,7 @@ const Home = () => {
 									src={require('../../images/banner_5.png')}
 									style={{ width: '316px', height: '240px' }}
 								/></a>
-								<div className='home_swiper_title'>Stark Many-Body Localization on a Superconducting Quantum Processor</div>
+								<div className='home_swiper_title'><a href="https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.127.240502"> Stark Many-Body Localization on a Superconducting Quantum Processor</a></div>
 										{/* <div className='common_btn'><a href="https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.127.240502">BUTTON</a></div> */}
 							</SwiperSlide>
 						</Swiper>
