@@ -1,8 +1,11 @@
 import React from "react";
+import Layout from "./Layout";
 import "../styles/NotFount.css";
 import { Link } from "react-router-dom";
 export default function NotFound() {
   return (
+        <Layout>
+
     <div className="notfound-box">
       <div className="margin-top"></div>
       <div className="errorpPage-box">
@@ -15,5 +18,7 @@ export default function NotFound() {
         </div>
       </div>
     </div>
+        </Layout>
+
   );
 }

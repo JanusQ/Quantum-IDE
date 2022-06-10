@@ -16,12 +16,12 @@ h2 {
 
 .errorpPage-box h1 {
   font-size: 44px;
-  color: #0188de;
+  	color: #003f88;
   padding: 20px 0px 10px;
 }
 
 .errorpPage-box h2 {
-  color: #0188de;
+  	color: #003f88;
   font-size: 16px;
   padding: 10px 0px 40px;
 }
@@ -46,17 +46,14 @@ h2 {
   height: 28px;
   margin-left: 0px;
   margin-top: 10px;
-  background: #009cff;
-  border-bottom: 4px solid #0188de;
+  background: #003f88;
+  border-bottom: 4px solid #003f88;
   text-align: center;
   display: inline-block;
   font-size: 14px;
   color: #fff;
 }
 
-.errorpPage-operate .operateBtn:hover {
-  background: #5bbfff;
-}
 .margin-top{
   width: 100%;
   height: 80px;
