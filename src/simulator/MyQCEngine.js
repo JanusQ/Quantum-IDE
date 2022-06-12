@@ -321,12 +321,12 @@ export default class QCEngine {
         let op_col = 0;
         
         let control_set = ['cx','cy','cz','ch','csrn','cr2','cr4','cr8','crx','cry','crz','cu1','cu2',
-        'cu3','cs','ct','csdg','ctdg','ccx',]//'cswap','csrswap']
+        'cu3','cs','ct','csdg','ctdg','ccx', 'ncnot'];//'cswap','csrswap']
         
         let merge_set = ['id','x','y','z','h','srn','srndg','r2','r4','r8','s','t','sdg','tdg',
-        'rx','ry','rz','u1','u2','u3', ];//'ncnot'
+        'rx','ry','rz','u1','u2','u3', ];
 
-        let rw_set = ['write0','write1','read'];
+        let rw_set = ['write0','write1','measure'];
 
         let gate_set_B = control_set;
 
@@ -366,6 +366,10 @@ export default class QCEngine {
                         else if(gates[j][i]['connector'] == 0)
                         {
                             ops[id]['control'].push(j);
+                        }
+                        else
+                        {
+                            console.error("check the control set");
                         }
                     }
                 }
@@ -484,7 +488,7 @@ export default class QCEngine {
                     })
 
                 }
-                else if(op == 'write'){
+                else if(op == 'write' || op == 'measure'){
                     this._addGate({
                         'qubits': qubits,
                         'operation' : op,
@@ -493,6 +497,7 @@ export default class QCEngine {
                     })
 
                 }
+
                 else
                 {
                     console.log("unkown gates" + op);
@@ -582,6 +587,12 @@ export default class QCEngine {
         if(wires == undefined)
         {
             wires = range(0,this.qubit_number);
+        }
+        else if(typeof(wires)=='number')
+            wires = [wires];
+        else
+        {
+            console.error("unknown wires" + wires);
         }
         return wires;
     }
@@ -883,36 +894,36 @@ export default class QCEngine {
 
 
     // 啥事都不干，就空一格
-    nop() {
-        const { operations, circuit } = this
-        // this._now_label = undefined
-        // this.label('')
-        this._addGate({
-            'operation': 'noop',
-            'columns': undefined, //this.nextColumn()
-        })
-    }
+    // nop() {
+    //     const { operations, circuit } = this
+    //     // this._now_label = undefined
+    //     // this.label('')
+    //     this._addGate({
+    //         'operation': 'noop',
+    //         'columns': undefined, //this.nextColumn()
+    //     })
+    // }
 
 
 
 
 
-    identity(binary_qubits = undefined) {
-        const { circuit, operations, now_column } = this
-        const qubits = this.parseBinaryQubits(binary_qubits)
+    // identity(binary_qubits = undefined) {
+    //     const { circuit, operations, now_column } = this
+    //     const qubits = this.parseBinaryQubits(binary_qubits)
 
-        circuit.addGate('identity', now_column, qubits, {
-            params: {
-                qubit_number: qubits.length,
-            }
-        });
+    //     circuit.addGate('identity', now_column, qubits, {
+    //         params: {
+    //             qubit_number: qubits.length,
+    //         }
+    //     });
 
-        this._addGate({
-            'qubits': qubits,
-            'operation': 'identity',
-            'columns': this.nextColumn(),
-        })
-    }
+    //     this._addGate({
+    //         'qubits': qubits,
+    //         'operation': 'identity',
+    //         'columns': this.nextColumn(),
+    //     })
+    // }
 
     exchange(binary_qubits1, binary_qubits2) {
         const { operations, circuit, now_column } = this
@@ -977,13 +988,13 @@ export default class QCEngine {
         this._circuitStep()
         let result = circuit.getCregValue(reg_name); //返回一个int值, 只考虑new的
 
-        this._addGate({
-            qubits,
-            'operation': 'read',
-            'columns': this.nextColumn(),
-            reg_name,
-            result,
-        })
+        // this._addGate({
+        //     qubits,
+        //     'operation': 'read',
+        //     'columns': this.nextColumn(),
+        //     reg_name,
+        //     result,
+        // })
 
         // read完的state值是不对的
         return result
@@ -1841,7 +1852,7 @@ export default class QCEngine {
         let label_name = this.labels[label_id]['text']
         for (let i = ops[0]; i < ops[1]; i++) {
             let opera = this.operations[i];
-            if (opera['operation'] == 'write' || opera['operation'] == 'read' || this.dont_draw_evo[label_name])
+            if (opera['operation'] == 'write' || opera['operation'] == 'read' || this.dont_draw_evo[label_name] || opera['operation'] == 'measure')
                 return false;
 
         }
@@ -2511,17 +2522,16 @@ class QInt {
         this.ccx(wires,column)
     }
 
-
-
-
-
-    nop() {
-        this.qc.nop()
-    }
-
-    old_cnot(another_qint)
+    ncnot(wires, column = undefined)
     {
-        this.qc.cnot(another_qint.bits(),this.bits())
+        let new_wires = this.bits(wires)
+        this.qc.ncnot(new_wires, column)
+
+    }
+    ncphase(wires, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.ncphase(new_wires, column)
     }
 
     // read的应该不是数组
@@ -2546,19 +2556,33 @@ class QInt {
         qc.exchange(binary_qubits, another_qint.binary_qubits)
     }
 
-    cphase(rotation, another_qint = undefined) {
-        if(another_qint == undefined){
-            let { qc, index, binary_qubits} = this
 
-            qc.cphase(rotation, binary_qubits, undefined);
-           
-        }
-        else{
-            console.warn('this function is not well implemented')
-            let { qc, binary_qubits } = this
-            qc.cphase(rotation, binary_qubits, another_qint.binary_qubits)
-        }
+
+
+    // nop() {
+    //     this.qc.nop()
+    // }
+
+    old_cnot(another_qint)
+    {
+        this.qc.cnot(another_qint.bits(),this.bits())
     }
+
+
+
+    // cphase(rotation, another_qint = undefined) {
+    //     if(another_qint == undefined){
+    //         let { qc, index, binary_qubits} = this
+
+    //         qc.cphase(rotation, binary_qubits, undefined);
+           
+    //     }
+    //     else{
+    //         console.warn('this function is not well implemented')
+    //         let { qc, binary_qubits } = this
+    //         qc.cphase(rotation, binary_qubits, another_qint.binary_qubits)
+    //     }
+    // }
     
 
     // TODO: console要换成throw
