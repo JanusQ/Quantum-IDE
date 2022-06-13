@@ -1342,7 +1342,7 @@ export default class d3Draw {
 								svg.selectAll('.tip').remove()
 							})
 							break
-						case 'cu1':
+						case 'ncphase':
 							const ccphaseG = svg
 								.append('g')
 								.classed('operation_item', true)
@@ -1418,7 +1418,7 @@ export default class d3Draw {
 									.attr('x', 4)
 									.attr('y', 16)
 
-								text.append('tspan').text('cu1')
+								text.append('tspan').text('ncphase')
 							})
 							ccphaseG.on('mousemove', function (e) {
 								const position = d3.pointer(e)
@@ -4170,6 +4170,73 @@ export default class d3Draw {
 								svg.selectAll('.tip').attr('transform', `translate(${position[0] + 10},${position[1]})`)
 							})
 							measureG.on('mouseleave', function (e) {
+								svg.selectAll('.tip').remove()
+							})
+							break
+						case 'ncnot':
+							const ncnotG = svg.append('g').classed('operation_item', true).classed('operation_g', true)
+							ncnotG.datum(operation)
+							if (connector === 0) {
+								this.drawCircle(ncnotG, this.operationX(j), this.operationY(i))
+							} else {
+								const ncnotAllArr = []
+								const connectorArr = []
+								for (let k = 0; k < gates.length; k++) {
+									if (gates[k][j]) {
+										if (gates[k][j].id === operation.id) {
+											ncnotAllArr.push(k)
+											connectorArr.push(gates[k][j].connector)
+										}
+									}
+								}
+								const max = Math.max(...ncnotAllArr)
+								const min = Math.min(...ncnotAllArr)
+								const maxConnector = Math.max(...connectorArr)
+								if (operation.connector === maxConnector) {
+									ncnotG.append('rect')
+										.attr('height', this.svgItemHeight * (max - min + 1))
+										.attr('width', 22)
+										.attr('fill', 'transparent')
+										.attr('x', this.operationX(j) - 10)
+										.attr('y', this.svgItemHeight * (min + 2) - this.svgItemHeight / 2)
+									this.drawLine(
+										ncnotG,
+										this.operationX(j),
+										this.operationY(min),
+										this.operationX(j),
+										this.operationY(max)
+									)
+								}
+
+								this.drawCircle(ncnotG, this.operationX(j), this.operationY(i))
+							}
+							ncnotG.on('mouseover', function (e) {
+								svg.selectAll('.tip').remove()
+								const position = d3.pointer(e)
+								const tipG = svg
+									.append('g')
+									.classed('tip', true)
+									.attr('transform', `translate(${position[0] + 10},${position[1]})`)
+								tipG.append('rect')
+									.attr('stroke', 'gray')
+									.attr('stroke-width', 1)
+									.attr('height', 26)
+									.attr('width', 22)
+									.attr('fill', '#fff')
+									.attr('rx', 2)
+								const text = tipG
+									.append('text')
+									.attr('fill', '#000')
+									.classed('svgtext', true)
+									.attr('x', 4)
+									.attr('y', 16)
+								text.append('tspan').text('ncnot')
+							})
+							ncnotG.on('mousemove', function (e) {
+								const position = d3.pointer(e)
+								svg.selectAll('.tip').attr('transform', `translate(${position[0] + 10},${position[1]})`)
+							})
+							ncnotG.on('mouseleave', function (e) {
 								svg.selectAll('.tip').remove()
 							})
 							break
