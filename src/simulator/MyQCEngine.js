@@ -184,7 +184,7 @@ export default class QCEngine {
         const { columns, operation } = gate
 
         const { state, rawgate } = this._circuitStep()
-        console.log("rawgate",rawgate);
+        //console.log("rawgate",rawgate);
 
         // columns是左闭右开的, 存的是quantum circuit库中的对应关系
         if (columns == undefined && gate.operation !== 'noop') {
@@ -196,7 +196,7 @@ export default class QCEngine {
             console.error(gate, 'not has operation')
             debugger
         }
-
+        //console.log("state_after_opr",state);
         operations.push({
             ...gate,
             'index': index,  //操作的index
@@ -420,8 +420,8 @@ export default class QCEngine {
                     names.push(ops[id]['name']);
                 }
             }
-            console.log(ops)
-            console.log(newops)
+            //console.log(ops)
+            //console.log(newops)
             let mark = -1;
             
             for(let id in newops)
@@ -519,7 +519,7 @@ export default class QCEngine {
         
         }
 
-        console.log("operations",this.operations);
+        //console.log("operations",this.operations);
 
     }    
 
@@ -874,7 +874,7 @@ export default class QCEngine {
         let qubit_number = wires.length;
         let controls = wires.slice(0, wires.length-1);
         let target = [wires[wires.length-1]];
-        console.log("wr",controls)
+        //console.log("wr",controls)
         let pars = {controls, target, qubit_number};
         this._MultinOp('ncnot', wires, column, pars)   
     }
@@ -892,13 +892,14 @@ export default class QCEngine {
         else{
             this.circuit_column++;
         }
-
+        
         if(pars != undefined){
             for (let k in pars)
             {
                 if(k == 'phi' || k == 'theta' || k == 'lambda')
                     if (pars[k] !== 0) {
-                        pars[k] = pars[k] > 0 ? "pi/" + (180 / pars[k]) : "-pi/" + (180 / -pars[k])
+                        
+                        pars[k] = toPI(pars[k])
                     }
             }
             
@@ -1888,7 +1889,7 @@ export default class QCEngine {
     getEvoMatrix(label_id) {
         // debugger
         //console.log(label_id);
-        console.log(this.labels);
+        //console.log(this.labels);
         // console.log(this.operations);
         let gate_mats = [];
         let ops = [this.labels[label_id]['start_operation'], this.labels[label_id]['end_operation']];
@@ -1948,10 +1949,10 @@ export default class QCEngine {
                 options['qubits'] = [];
                 type = 1;
             }
-            console.log("gaste",gate);
+
             if (gate == undefined)
                 continue;
-            console.log("here");
+
             let gate_mat = new QObject(gate.length, gate.length, gate);
             //console.log("gate",gate_mat);
 
@@ -1999,7 +2000,7 @@ export default class QCEngine {
             }
             //console.log(new_index);
             column_res = this._tensorPermute(gate_mat, new_index, qubit_num, options);
-            console.log("column_res",column_res);
+            //console.log("column_res",column_res);
             //all_gate = dot(all_gate, column_res);
             all_gates.push(column_res.copy());
         }
@@ -2553,10 +2554,10 @@ class QInt {
         this.qc.ncnot(new_wires, column)
 
     }
-    ncphase(wires, column = undefined)
+    ncphase(phi, wires, column = undefined)
     {
         let new_wires = this.bits(wires)
-        this.qc.ncphase(new_wires, column)
+        this.qc.ncphase(phi, new_wires, column)
     }
 
     // read的应该不是数组
@@ -2619,7 +2620,7 @@ class QInt {
         const { qc, binary_qubits } = this
         const v_start_qubit = this.index[0], v_end_qubit = this.index[this.index.length - 1]
 
-        const condition_qubits = condition ? qc.parseBinaryQubits(condition) : []
+        const condition_qubits = condition ? condition : []
 
         // debugger
         if (typeof (value) === 'number') {
@@ -2643,7 +2644,10 @@ class QInt {
                     let controls = [...condition_qubits, ...range(qc_qubit_start, qubit)]
                     let target = [qubit]
                     let total =controls.concat(target)
-                    qc.ncnot(total)
+                    if(total.length == 1)
+                        qc.not(total)
+                    else
+                        qc.ncnot(total);
                 })
             })
 
@@ -2666,7 +2670,10 @@ class QInt {
                     let controls = [...self_qubits_involved.filter(elm => elm < self_qubit), value_qubit]
                     //controls = qubit12binary(controls)
                     let total =controls.concat(target)
-                    qc.ncnot(total)
+                    if(total.length == 1)
+                        qc.not(total);
+                    else
+                        qc.ncnot(total)
                 })
             })
 
@@ -2698,7 +2705,11 @@ class QInt {
                     let controls = range(qc_qubit_start, qubit)
                     let target = [qubit]
                     let total =controls.concat(target)
-                    qc.ncnot(total)
+                    console.log(total);
+                    if(total.length == 1)
+                        qc.not(total);
+                    else
+                        qc.ncnot(total)
                 })
             })
 
@@ -2759,11 +2770,13 @@ class QInt {
     Grover(conditional_bits = undefined)
     {
         let { qc, index } = this
-        let qubits = range(...index)
+        //let qubits = range(...index)
+        if(conditional_bits == undefined)
+            conditional_bits = this.bits()
         this.had()
         this.not()
         
-        this.cphase(180, conditional_bits);
+        qc.ncphase(180, conditional_bits);
 
         this.not()
         this.had()
