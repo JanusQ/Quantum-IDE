@@ -324,7 +324,7 @@ export default class QCEngine {
         let op_col = 0;
         
         let control_set = ['cx','cy','cz','ch','csrn','cr2','cr4','cr8','crx','cry','crz','cu1','cu2',
-        'cu3','cs','ct','csdg','ctdg','ccx', 'ncnot'];//'cswap','csrswap']
+        'cu3','cs','ct','csdg','ctdg','ccx', ];//'cswap','csrswap']
         
         let merge_set = ['id','x','y','z','h','srn','srndg','r2','r4','r8','s','t','sdg','tdg',
         'rx','ry','rz','u1','u2','u3', ];
@@ -654,16 +654,18 @@ export default class QCEngine {
         if(pars != undefined){
             for (let k in pars)
             {
-                if (pars[k] !== 0) {
-                    pars[k] = pars[k] > 0 ? "pi/" + (180 / pars[k]) : "-pi/" + (180 / -pars[k])
-                }
-                wires.forEach(wire => {
-                    circuit.addGate(op, nc, wire, {
-                        params: pars
-                    });
-                })
+                if(k == 'phi' || k == 'theta' || k == 'lambda')
+                    if (pars[k] !== 0) {
+                        pars[k] = pars[k] > 0 ? "pi/" + (180 / pars[k]) : "-pi/" + (180 / -pars[k])
+                    }
             }
-
+            
+            wires.forEach(wire => {
+                circuit.addGate(op, nc, wire, {
+                    params: pars
+                });
+            })
+            
         }
         else{
             wires.forEach(wire => {
@@ -834,15 +836,16 @@ export default class QCEngine {
         if(pars != undefined){
             for (let k in pars)
             {
-                if (pars[k] !== 0) {
-                    pars[k] = pars[k] > 0 ? "pi/" + (180 / pars[k]) : "-pi/" + (180 / -pars[k])
-                }
-                
-                circuit.addGate(op, nc, wires, {
-                    params: pars
-                });
+                if(k == 'phi' || k == 'theta' || k == 'lambda')
+                    if (pars[k] !== 0) {
+                        pars[k] = pars[k] > 0 ? "pi/" + (180 / pars[k]) : "-pi/" + (180 / -pars[k])
+                    }
             }
-
+            
+            circuit.addGate(op, nc, wires, {
+                params: pars
+            });
+            
         }
         else{
             circuit.addGate(op, nc, wires);
@@ -882,15 +885,16 @@ export default class QCEngine {
         if(pars != undefined){
             for (let k in pars)
             {
-                if (pars[k] !== 0) {
-                    pars[k] = pars[k] > 0 ? "pi/" + (180 / pars[k]) : "-pi/" + (180 / -pars[k])
-                }
-                
-                circuit.addGate(op, nc, wires, {
-                    params: pars
-                });
+                if(k == 'phi' || k == 'theta' || k == 'lambda')
+                    if (pars[k] !== 0) {
+                        pars[k] = pars[k] > 0 ? "pi/" + (180 / pars[k]) : "-pi/" + (180 / -pars[k])
+                    }
             }
-
+            
+            circuit.addGate(op, nc, wires, {
+                params: pars
+            });
+            
         }
         else{
             circuit.addGate(op, nc, wires);
