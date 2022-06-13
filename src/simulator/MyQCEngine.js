@@ -65,11 +65,13 @@ export default class QCEngine {
         this.dont_draw_evo = {}
 
     }
+    
     export()
     {
         var qasm = this.circuit.exportToQASM({}, false);
         return qasm;
     }
+
     //import from QASM to a empty qcengine
     import(QASM)
     {
@@ -112,6 +114,7 @@ export default class QCEngine {
         for (let i = 0; i < qubit_number; i++) {
             inital_value.push(0)
         }
+        //WAIT: START RUN HERE?
         circuit.myStartRun()
 
         this.now_state = circuit.stateAsArray()
@@ -582,14 +585,47 @@ export default class QCEngine {
         this.rz(phi, wires, column)
     }
 
+    rx(theta, wires = undefined, column = undefined)
+    {
+        let pars = {theta}
+        this._singleOp('rx', wires, column, pars)
+    }   
+    ry(theta, wires = undefined, column = undefined)
+    {
+        let pars = {theta}
+        this._singleOp('ry', wires, column, pars)
+    }
+    rz(phi, wires = undefined, column = undefined)
+    {
+        let pars = {phi}
+        this._singleOp('rz', wires, column, pars)
+    }
+    u1(lambda, wires = undefined, column = undefined)
+    {
+        let pars = {lambda}
+        this._singleOp('u1', wires, column, pars)
+    }
+    u2(phi, lambda, wires = undefined, column = undefined)
+    {
+        let pars = {phi, lambda}
+        this._singleOp('u2', wires, column, pars)
+    }
+    u3(theta, phi, lambda, wires = undefined, column = undefined)
+    {
+        let pars = {theta, phi, lambda}
+        this._singleOp('u3', wires, column, pars)
+    }
+
     _toArray(wires)
     {
         if(wires == undefined)
         {
-            wires = range(0,this.qubit_number);
+            wires = range(0, this.qubit_number);
         }
-        else if(typeof(wires)=='number')
+        else if(typeof(wires) == 'number')
             wires = [wires];
+        else if (Array.isArray(wires))
+            wires = wires;
         else
         {
             console.error("unknown wires" + wires);
@@ -635,36 +671,7 @@ export default class QCEngine {
     }
 
 
-    rx(theta, wires = undefined, column = undefined)
-    {
-        let pars = {theta}
-        this._singleOp('rx', wires, column, pars)
-    }   
-    ry(theta, wires = undefined, column = undefined)
-    {
-        let pars = {theta}
-        this._singleOp('ry', wires, column, pars)
-    }
-    rz(phi, wires = undefined, column = undefined)
-    {
-        let pars = {phi}
-        this._singleOp('rz', wires, column, pars)
-    }
-    u1(lambda, wires = undefined, column = undefined)
-    {
-        let pars = {lambda}
-        this._singleOp('u1', wires, column, pars)
-    }
-    u2(phi, lambda, wires = undefined, column = undefined)
-    {
-        let pars = {phi, lambda}
-        this._singleOp('u2', wires, column, pars)
-    }
-    u3(theta, phi, lambda, wires = undefined, column = undefined)
-    {
-        let pars = {theta, phi, lambda}
-        this._singleOp('u3', wires, column, pars)
-    }
+    
 
 
 
@@ -840,6 +847,21 @@ export default class QCEngine {
         }
     }
 
+    ncphase(phi, wires, column = undefined)
+    {
+        let qubit_number = wires.length;
+        let pars = {phi, qubit_number};
+        this._MultinOp('ncphase', wires, column, pars)
+    }
+
+    ncnot(wires, column = undefined)
+    {
+        let qubit_number = wires.length;
+        let controls = wires.slice(0, wires.length-2);
+        let target = [wires[wires.length-1]];
+        let pars = {controls, target, qubit_number};
+        this._MultinOp('ncnot', wires, column, pars)   
+    }
     
     _MultinOp(op, wires, column = undefined, pars = undefined)
     {        
@@ -852,7 +874,7 @@ export default class QCEngine {
             nc = column;
         }
         else{
-            circuit_column++;
+            this.circuit_column++;
         }
 
         if(pars != undefined){
@@ -874,21 +896,7 @@ export default class QCEngine {
 
     }
 
-    ncphase(phi, wires, column = undefined)
-    {
-        let qubit_number = wires.length;
-        let pars = {phi, qubit_number};
-        this._MultinOp('ncphase', wires, column, pars)
-    }
 
-    ncnot(wires, column = undefined)
-    {
-        let qubit_number = wires.length;
-        let controls = wires.slice(0, wires.length-2);
-        let target = [wires[wires.length-1]];
-        let pars = {controls, target, qubit_number};
-        this._MultinOp('ncnot', wires, column, pars)   
-    }
 
 
 
