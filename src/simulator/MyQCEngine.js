@@ -9,6 +9,7 @@
 // https://oreilly-qc.github.io/?p=2-4
 
 
+
 // TODO:check一下binary有没有prepad
 
 // let QuantumCircuit = require('../resource/js/quantum-circuit.min.js')
@@ -34,6 +35,7 @@ export default class QCEngine {
     constructor() {
         this.circuit = undefined
         this.now_column = 0  // 记录了quantum circuit里面当前的用到的column
+        this.circuit_column = 0
 
         this.qint = new QCIntGenerator(this)
 
@@ -66,7 +68,6 @@ export default class QCEngine {
     export()
     {
         var qasm = this.circuit.exportToQASM({}, false);
-        console.log(this.circuit);
         return qasm;
     }
     //import from QASM to a empty qcengine
@@ -78,186 +79,6 @@ export default class QCEngine {
         this.circuit.importQASM(QASM, function(errors) {
             console.log(errors);
         });
-        // config qcEngine parameters
-        this.qubit_number = circuit.numQubits;
-        console.log(this.circuit)
-        const {gates} = this.circuit;
-        console.log(gates);
-        let qlen = this.qubit_number;
-        //let op;
-        
-        for(let i=0; i<gates[0].length; i++)
-        {
-            let j=0;
-            
-            let ops ={};
-            while(j<qlen)
-            {
-                if(gates[j][i]!=null){
-                    let id =gates[j][i]['id'];
-                    let nam = gates[j][i]['name'];
-                    if(id in ops){
-
-                    }
-                    else{
-                        ops[id] = {};
-                        ops[id]['name']=nam;
-                        ops[id]['qubits'] = [];
-                        ops[id]['target'] = [];
-                        ops[id]['control'] = [];                     
-                    }
-                    ops[id]['qubits'].push(j);
-                    let control_set = ['cx','cry', 'cu1', 'cz'];
-                    if(control_set.includes(nam))
-                    {
-                        if(gates[j][i]['connector'] == 1)
-                        {
-                            ops[id]['target'].push(j);
-                        }
-                        else if(gates[j][i]['connector'] == 0)
-                        {
-                            ops[id]['control'].push(j);
-                        }
-                    }
-                }
-                j++;
-            }
-            
-            if(ops.length == 0)
-                continue;
-            
-            let newops = {};
-            let names =[];
-            for(let id in ops)
-            {
-                if(names.includes(ops[id]['name']))
-                {
-                    let merge_set = ['x', 'rx', 'ry', 'rz', 'h'];
-                    let aux = ops[id]['name'];
-                    if(merge_set.includes(aux))
-                    {
-                        for(let newid in newops)
-                        {
-                            if(newops[newid]['name'] == aux)
-                                newops[newid]['qubits'].push(ops[id]['qubits'][0]);
-                        }
-                        
-                    }
-                    else
-                    {
-                        newops[id] = ops[id];
-                    }
-
-                }
-                else
-                {
-                    newops[id] = ops[id];
-                    names.push(ops[id]['name']);
-                }
-            }
-            console.log(ops)
-            console.log(newops)
-            for(let id in newops){
-                let op = newops[id]['name'];
-                let qubits = newops[id]['qubits'];
-                let target = newops[id]['target'];
-                let control = newops[id]['control'];
-                if(op == 'h' || op =='x')
-                {
-                    if( op == 'x')
-                        op = 'not';
-                    this._addGate({
-                        'qubits': qubits,
-                        'operation': op,
-                        'columns': this.nextColumn()
-                    })
-                }
-                else if(op == 'rz')
-                {
-                    let rotation = gates[qubits[0]][i]['options']['params']['phi'];
-                    rotation = this.parseRotation(rotation)
-                    this._addGate({
-                        'qubits': qubits,
-                        'operation': 'phase',
-                        'rotation': rotation,  // TODO: °还是π得确定一下
-                        'columns': this.nextColumn()
-                    })
-                }
-                else if(op == 'ry' || op == 'rx')
-                {
-                    let rotation = gates[qubits[0]][i]['options']['params']['theta'];
-                    rotation = this.parseRotation(rotation)
-                    this._addGate({
-                        'qubits': qubits,
-                        'operation': op,
-                        rotation,
-                        'columns': this.nextColumn()
-                    })
-
-                }
-                else if(op == 'cx')
-                {
-                    this._addGate({
-                        'controls': control,
-                        'target': target,
-                        'operation': 'ccnot',
-                        'columns': this.nextColumn()
-                    })
-
-                }
-                else if(op == 'cry')
-                {
-                    let rotation = gates[qubits[0]][i]['options']['params']['phi'];
-                    rotation = this.parseRotation(rotation)
-                    this._addGate({
-                        control,
-                        target,
-                        rotation,
-                        'operation': 'cry',
-                        'columns': this.nextColumn()
-                    })
-                }
-                else if(op == 'cu1' || op == 'cz')
-                {
-                    let rotation;
-                    if(op == 'cu1'){
-                        rotation = gates[qubits[0]][i]['options']['params']['lambda'];
-                        rotation = this.parseRotation(rotation)
-                    }
-                    else
-                        rotation = this.parseRotation('pi');
-                    this._addGate({
-                        rotation,
-                        'qubits': qubits,
-                        'operation': 'ccphase',
-                        'columns': this.nextColumn()
-                    })
-
-                }
-                else if(op =='swap')
-                {
-                    this._addGate({
-                        // qubits1, qubits2实际上只有一个，现在是暂时为之
-                        'qubits1': [qubits[0]],
-                        'qubits2': [qubits[1]],
-                        'operation': 'swap',
-                        'columns': this.nextColumn()
-                    })
-
-                }
-                else
-                {
-                    console.log("unkown gates"+op);
-                }
-            }
-        
-        }
-        console.log(this.operations);
-        return{
-            'operations':this.operations,
-            'qubit_number':this.qubit_number,
-        }
-
     }
 
     parseRotation(rot)
@@ -304,39 +125,12 @@ export default class QCEngine {
 
     // SIWEI:现在规定一个qubit只能write一次, 这和原来的不一样，需要改代码
     // binary_qubits指的是二进制表示的qubit位
-    write(value, binary_qubits = undefined) {
-        const { inital_value, qubit_number, now_column } = this
-        // 补齐到应该有的长度
-        // for (let i = inital_value.length; i < qubit_number; i++) {
-        //     inital_value.push(0)
-        // }
 
-        // debugger
-        let qubits = this.parseBinaryQubits(binary_qubits)
-        let qubit_value = binary(value, qubits.length)
 
-        if (Math.max(...qubits) >= qubit_number) {
-            console.error('qubits has unexist qubit', qubits.filter(qubit => qubit >= qubit_number))
-            debugger
-        }
-
-        let column_range = this.nextColumn()
-        qubits.forEach((qubit, index) => {
-            let value = qubit_value[index]
-            inital_value[qubit] = value
-            // this.circuit.addGate()
-            if (value == 0) {
-                this.circuit.addGate('write0', now_column, [qubit])
-            } else {
-                this.circuit.addGate('write1', now_column, [qubit])
-            }
-        })
-        this._addGate({
-            'qubits': qubits,
-            'operation': 'write',
-            'value': qubit_value,
-            'columns': column_range,
-        })
+    nextColumn(column_num = 1) {
+        const { operations, circuit, now_column } = this
+        this.now_column += column_num
+        return [now_column, this.now_column]
     }
 
 
@@ -348,6 +142,36 @@ export default class QCEngine {
         else {
             return range(0, this.qubit_number, true)  // 从0开始的0-qubit number - 1
         }
+    }
+
+    getBinaryValue(qubit_set)
+    {
+        let value = [];
+        let i=0;
+        while(i<this.qubit_number)
+        {
+            if(qubit_set.includes(i))
+                value.push(1)
+            else
+                value.push(0);
+            i++;
+        }
+        return value;
+    }
+
+    new(qubit_number, name = undefined) {
+        let start_index = this.assigned_qubit_number
+        this.assigned_qubit_number += qubit_number
+        let end_index = this.assigned_qubit_number
+        let index = [start_index, end_index]
+
+
+        if (!name)
+            name = String(index)
+        this.name2index[name] = index
+
+        // TODO：需要保证name没有重复, 申请的不会超过
+        return index
     }
 
     // 添加并且执行
@@ -384,6 +208,23 @@ export default class QCEngine {
         return {
             state
         }
+    }
+
+    print() {
+        console.log('qc_console', arguments)
+        // debugger
+        this.console_data.push(
+            [...arguments].map(elm => String(elm)).join('  ')
+        )
+    }
+
+    // TODO: 判断所有控制门的比特会不会重叠，重叠报错
+    checkOverlap(controls, targets) {
+        for (let ele in targets) {
+            if (controls.includes(ele))
+                return true;
+        }
+        return false;
     }
 
     // 跑一步返回并返回当前的状态
@@ -471,346 +312,618 @@ export default class QCEngine {
         labels.push(labelObj)
         return labelObj
     }
-
-
-    // Hadamard Operation
-    had(binary_qubits = undefined) {
-        const { circuit, operations, now_column } = this
-        const qubits = this.parseBinaryQubits(binary_qubits)
-
-        // 未来计算和绘图分开
-        qubits.forEach(qubit => {
-            circuit.addGate('h', now_column, qubit);  // column = -1表示默认插到最后一个,最好不要用，会补到前面去
-        })
-
-        // debugger
-        this._addGate({
-            'qubits': qubits,
-            'operation': 'h',
-            'columns': this.nextColumn(),
-        })
-    }
-
-    hadamard(binary_qubits = undefined) {
-        this.had(binary_qubits)
-    }
-
-    // measure
-    read(binary_qubits = undefined) {
-        const { operations, circuit, now_column } = this
-        let qubits = this.parseBinaryQubits(binary_qubits)
-
-        let reg_name = 'read_' + now_column
-        qubits.forEach((qubit, index) => {
-            circuit.addGate("measure", now_column, qubit, { 'creg': { 'name': reg_name, 'bit': index } })
-        })
-
-        // 这里目前唯一除了_addGate外的执行
-        this._circuitStep()
-        let result = circuit.getCregValue(reg_name); //返回一个int值, 只考虑new的
-
-        this._addGate({
-            qubits,
-            'operation': 'read',
-            'columns': this.nextColumn(),
-            reg_name,
-            result,
-        })
-
-        // read完的state值是不对的
-        return result
-    }
-
-    nextColumn(column_num = 1) {
-        const { operations, circuit, now_column } = this
-        this.now_column += column_num
-        return [now_column, this.now_column]
-    }
-
-    // phase门
-    phase(rotation, binary_qubits = undefined) {
-        const { circuit, operations, now_column } = this
-        const qubits = this.parseBinaryQubits(binary_qubits)
-
-        qubits.forEach(qubit => {
-            circuit.addGate("rz", now_column, qubit, {
-                params: {
-                    phi: "pi/" + (180 / rotation)
-                }
-            });
-        })
-
-        this._addGate({
-            'qubits': qubits,
-            'operation': 'phase',
-            'rotation': rotation,  // TODO: °还是π得确定一下
-            'columns': this.nextColumn()
-        })
-    }
-
-    not(binary_qubits = undefined) {
-        const { circuit, operations, now_column } = this
-        const qubits = this.parseBinaryQubits(binary_qubits)
-        qubits.forEach(qubit => {
-            circuit.addGate("x", now_column, qubit);
-        })
-
-        this._addGate({
-            'qubits': qubits,
-            'operation': 'not',
-            'columns': this.nextColumn()
-        })
-        // debugger
-    }
-
-    rx(rotation, binary_qubits = undefined) {
-        const { circuit, operations, now_column } = this
-        const qubits = this.parseBinaryQubits(binary_qubits)
-
-        let phi = 0
-        if (rotation !== 0) {
-            phi = rotation > 0 ? "pi/" + (180 / rotation) : "-pi/" + (180 / -rotation)
-        }
-
-
-        qubits.forEach(qubit => {
-            circuit.addGate("rx", now_column, qubit, {
-                params: {
-                    theta: phi
-                }
-            });
-        })
-
-        this._addGate({
-            'qubits': qubits,
-            'operation': 'rx',
-            rotation,
-            'columns': this.nextColumn()
-        })
-    }
-
-    ry(rotation, binary_qubits = undefined) {
-        const { circuit, operations, now_column } = this
-        const qubits = this.parseBinaryQubits(binary_qubits)
-
-        let phi = 0
-        if (rotation !== 0) {
-            phi = rotation > 0 ? "pi/" + (180 / rotation) : "-pi/" + (180 / -rotation)
-        }
-
-
-        qubits.forEach(qubit => {
-            circuit.addGate("ry", now_column, qubit, {
-                params: {
-                    theta: phi
-                }
-            });
-        })
-
-        this._addGate({
-            'qubits': qubits,
-            'operation': 'ry',
-            rotation,
-            'columns': this.nextColumn()
-        })
-    }
-
-    print() {
-        console.log('qc_console', arguments)
-        // debugger
-        this.console_data.push(
-            [...arguments].map(elm => String(elm)).join('  ')
-        )
-    }
-
-    // TODO: 判断所有控制门的比特会不会重叠，重叠报错
-    checkOverlap(controls, targets) {
-        for (let ele in targets) {
-            if (controls.includes(ele))
-                return true;
-        }
-        return false;
-    }
-
-
-
-    // TODO: ncphase 之后直接整理到cphase里面
-    cphase(rotation, binary_control, binary_target) {
-        const { operations, circuit, now_column } = this
-        let control = binary_control ? this.parseBinaryQubits(binary_control) : []
-        let target = binary_target ? this.parseBinaryQubits(binary_target) : []
-        console.log("qubits",control, target);
-        let qubits = unique([...control, ...target])
+//-----------------------------------------------------------------------------------------------------
+    runCircuit()
+    {
+        const { gates } = this.circuit;
+        let qlen = this.circuit.numQubits;
+        let cir_len = gates[0].length
+        let op_col = 0;
         
-        if (qubits.length === 0) {
-            console.error('phase\'s qubits number is zero')
-            debugger
+        let control_set = ['cx','cy','cz','ch','csrn','cr2','cr4','cr8','crx','cry','crz','cu1','cu2',
+        'cu3','cs','ct','csdg','ctdg','ccx', 'ncnot'];//'cswap','csrswap']
+        
+        let merge_set = ['id','x','y','z','h','srn','srndg','r2','r4','r8','s','t','sdg','tdg',
+        'rx','ry','rz','u1','u2','u3', ];
+
+        let rw_set = ['write0','write1','measure'];
+
+        let gate_set_B = control_set;
+
+        let gate_set_A = merge_set;
+
+        let gate_set_C = ['swap','iswap','srswap','xy','ms','yy','zz','ncphase']
+        for(let i=0; i<cir_len; i++)
+        {
+            let j=0;
+            
+            let ops ={};
+            while(j<qlen)
+            {
+                if(gates[j][i]!=null){
+                    let id =gates[j][i]['id'];
+                    let nam = gates[j][i]['name'];
+                    let pars = gates[j][j]['options']['params']
+                    if(id in ops){
+
+                    }
+                    else{
+                        ops[id] = {};
+                        ops[id]['name'] = nam;
+                        ops[id]['qubits'] = [];
+                        ops[id]['target'] = [];
+                        ops[id]['control'] = [];
+                        ops[id]['params'] = pars;                    
+                    }
+                    ops[id]['qubits'].push(j);
+
+                    if(control_set.includes(nam))
+                    {
+                        if(gates[j][i]['connector'] == 1)
+                        {
+                            ops[id]['target'].push(j);
+                        }
+                        else if(gates[j][i]['connector'] == 0)
+                        {
+                            ops[id]['control'].push(j);
+                        }
+                        else
+                        {
+                            console.error("check the control set");
+                        }
+                    }
+                }
+                j++;
+            }
+            
+            if(ops.length == 0)
+                continue;
+            
+            let newops = {};
+            let names =[];
+            for(let id in ops)
+            {
+                if(names.includes(ops[id]['name']))
+                {
+                    
+                    let aux = ops[id]['name'];
+                    if(merge_set.includes(aux) || rw_set.includes(aux))
+                    {
+                        for(let newid in newops)
+                        {
+                            if(newops[newid]['name'] == aux)
+                                newops[newid]['qubits'].push(ops[id]['qubits'][0]);
+                        }
+                        
+                    }
+                    else
+                    {
+                        newops[id] = ops[id];
+                    }
+
+                }
+                else
+                {
+                    newops[id] = ops[id];
+                    names.push(ops[id]['name']);
+                }
+            }
+            console.log(ops)
+            console.log(newops)
+            let mark = -1;
+            
+            for(let id in newops)
+            {
+                let na = newops[id]['name'];
+                if(na == 'write0' || na == 'write1')
+                {
+                    if(mark == -1)
+                        mark = id;
+                    
+                    else
+                    {
+                        let value = 0;
+                        if(newops[id]['name'] == 'write1'){
+                            value = this.getBinaryValue(newops[id]['qubits'])
+                        }
+                        else{
+                            value = this.getBinaryValue(newops[mark]['qubits'])
+                        }
+                        newops[mark]['name'] = 'write'
+                        newops[mark]['pars'] = {}
+                        newops[mark]['pars']['value'] = value;
+                        newops[mark]['qubits'].push.apply(newops[mark]['qubits'], newops[id]['qubits']);
+                        delete newops[id];
+                        break;
+
+                    }
+                }
+
+                
+            }
+
+
+            for(let id in newops){
+                let op = newops[id]['name'];
+                let qubits = newops[id]['qubits'];
+                let target = newops[id]['target'];
+                let control = newops[id]['control'];
+                let pars = newops[id]['params'];
+                
+                if(gate_set_A.includes(op))
+                {
+                    this._addGate({
+                        'qubits': qubits,
+                        'operation': op,
+                        ...pars,
+                        'columns': this.nextColumn()
+                    })
+                }
+                else if(gate_set_B.includes(op))
+                {
+                    this._addGate({
+                        'controls': control,
+                        'target': target,
+                        'operation':op,
+                        ...pars,
+                        'columns': this.nextColumn()
+                    })              
+                }
+                else if(gate_set_C.includes(op))
+                {
+                    this._addGate({
+                        'qubits': qubits,
+                        'operation' : op,
+                        ...pars,
+                        'columns': this.nextColumn()
+                    })
+
+                }
+                else if(op == 'ncnot')
+                {
+                    this._addGate({
+                        'operation' : op,
+                        ...pars,
+                        'columns': this.nextColumn()
+                    })
+
+                }
+                else if(op == 'write' || op == 'measure'){
+                    this._addGate({
+                        'qubits': qubits,
+                        'operation' : op,
+                        ...pars,
+                        'columns': this.nextColumn()
+                    })
+
+                }
+
+                else
+                {
+                    console.log("unkown gates" + op);
+                }
+            }
+        
         }
 
-        // if(control.length != 1){
-        //     console.error(control, 'control qubit number is not one')
-        //     debugger
-        // }
-        // if(target.length != 1){
-        //     console.error(target, 'target qubit number is not one')
-        //     debugger
-        // }
+    }    
 
-        // circuit.addGate("cu1",  now_column, qubits,  {
-        //     params: {
-        //         lambda: "pi/" + (180/rotation)
-        //     }
-        // });
 
-        // console.log(control, target)
-        if(qubits.length == 2){
-            circuit.addGate("cu1", now_column, qubits,{
-                params: {
-                    lambda: toPI(rotation),
-                }
-            });
+
+    h(wires = undefined, column = undefined)
+    {
+        this._singleOp('h', wires, column)
+    }
+    id(wires = undefined, column = undefined)
+    {
+        this._singleOp('id', wires, column)
+    }
+    x(wires = undefined, column = undefined)
+    {
+        this._singleOp('x', wires, column)
+    }
+    y(wires = undefined, column = undefined)
+    {
+        this._singleOp('y', wires, column)
+    }
+    z(wires = undefined, column = undefined)
+    {
+        this._singleOp('z', wires, column)
+    }
+    srn(wires = undefined, column = undefined)
+    {
+        this._singleOp('srn', wires, column)
+    }
+    srndg(wires = undefined, column = undefined)
+    {
+        this._singleOp('srndg', wires, column)
+    }
+    r2(wires = undefined, column = undefined)
+    {
+        this._singleOp('r2', wires, column)
+    }
+    r4(wires = undefined, column = undefined)
+    {
+        this._singleOp('r4', wires, column)
+    }
+    r8(wires = undefined, column = undefined)
+    {
+        this._singleOp('r8', wires, column)
+    }   
+    s(wires = undefined, column = undefined)
+    {
+        this._singleOp('s', wires, column)
+    }
+    t(wires = undefined, column = undefined)
+    {
+        this._singleOp('t', wires, column)
+    }
+    sdg(wires = undefined, column = undefined)
+    {
+        this._singleOp('sdg', wires, column)
+    }
+    tdg(wires = undefined, column = undefined)
+    {
+        this._singleOp('tdg', wires, column)
+    }
+
+    had(wires = undefined, column = undefined) {
+        this.h(wires, column);
+    }
+    hadamard(wires = undefined, column = undefined) {
+        this.had(wires, column);
+    }
+    not(wires = undefined, column = undefined)
+    {
+        this.x(wires, column);
+    }
+    phase(phi, wires = undefined, column = undefined)
+    {
+        this.rz(phi, wires, column)
+    }
+
+    _toArray(wires)
+    {
+        if(wires == undefined)
+        {
+            wires = range(0,this.qubit_number);
+        }
+        else if(typeof(wires)=='number')
+            wires = [wires];
+        else
+        {
+            console.error("unknown wires" + wires);
+        }
+        return wires;
+    }
+
+
+    _singleOp(op, wires = undefined, column = undefined, pars = undefined)
+    {
+        const { circuit, circuit_column } = this;
+        
+        let nc = circuit_column;
+        wires = this._toArray(wires);
+
+        if(typeof(column) == 'number')
+        {
+            nc = column;
         }
         else{
-            circuit.addGate("ncphase", now_column, qubits, {
-                params: {
-                    qubit_number: qubits.length,
-                    phi: toPI(rotation)
+            this.circuit_column++;
+        }
+        
+        if(pars != undefined){
+            for (let k in pars)
+            {
+                if (pars[k] !== 0) {
+                    pars[k] = pars[k] > 0 ? "pi/" + (180 / pars[k]) : "-pi/" + (180 / -pars[k])
                 }
-            });
-        }
-        // TODO: 允许多个控制或者多个被控吗
-        this._addGate({
-            rotation,
-            'qubits': [...control, ...target],
-            'operation': 'ccphase',
-            'columns': this.nextColumn()
-        })
-    }
-
-
-
-    cry(rotation, binary_control, binary_target) {
-        const { operations, circuit, now_column } = this
-        let controls = binary_control ? this.parseBinaryQubits(binary_control) : []
-        let target = binary_target ? this.parseBinaryQubits(binary_target) : []
-
-        if (controls.length != 1) {
-            console.error(controls, 'control qubit number of cry is not one')
-            debugger
-        }
-        if (target.length != 1) {
-            console.error(target, 'target qubit number of cry is not one')
-            debugger
-        }
-
-        let phi = 0
-        if (rotation !== 0) {
-            phi = rotation > 0 ? "pi/" + (180 / rotation) : "-pi/" + (180 / -rotation)
-        }
-
-        circuit.addGate("cry", now_column, [...controls, ...target], {
-            params: {
-                theta: phi
+                wires.forEach(wire => {
+                    circuit.addGate(op, nc, wire, {
+                        params: pars
+                    });
+                })
             }
-        });
-        //console.log("controls",controls,"target",target);
-        // TODO: 允许多个控制或者多个被控吗
-        this._addGate({
-            controls,
-            target,
-            rotation,
-            'operation': 'cry',
-            'columns': this.nextColumn()
-        })
-    }
 
-    // TODO: 还没有实现，包括ncnot
-    ccnot(binary_control, binary_target) {
-        const { operations, circuit, now_column } = this;
-        let controls = this.parseBinaryQubits(binary_control);
-        let target = this.parseBinaryQubits(binary_target);
-        let qubits = unique([...controls, ...target]);
-
-        if (controls.length == 0) {
-            this.not(binary_target)
-            return
         }
-
-        if (qubits.length === 0) {
-            console.error('ccnot\'s qubits number is zero')
-            debugger
-        }
-
-        if (target.length != 1) {
-            console.error(target, 'target qubit number is not one')
-            debugger
-            target = [target[0]]
-        }
-
-        circuit.addGate("ncnot", now_column, qubits, {
-            params: {
-                qubit_number: qubits.length,
-                controls: controls,
-                target: target,
-            }
-        });
-
-        this._addGate({
-            'controls': controls,
-            'target': target,
-            'operation': 'ccnot',
-            'columns': this.nextColumn()
-        })
-    }
-
-    identity(binary_qubits = undefined) {
-        const { circuit, operations, now_column } = this
-        const qubits = this.parseBinaryQubits(binary_qubits)
-
-        circuit.addGate('identity', now_column, qubits, {
-            params: {
-                qubit_number: qubits.length,
-            }
-        });
-
-        this._addGate({
-            'qubits': qubits,
-            'operation': 'identity',
-            'columns': this.nextColumn(),
-        })
-    }
-
-    // TODO: ccnot 还没有写
-    cnot(binary_control, binary_target) {
-        const { operations, circuit, now_column } = this
-        let control = this.parseBinaryQubits(binary_control)
-        let target = this.parseBinaryQubits(binary_target)
-
-        //debugger
-        if (target.length != 1) {
-            console.error(target, 'target qubit number is not one')
-            debugger
-            target = [target[0]]
-        }
-
-        // debugger
-        if (control.length == 0) {
-            console.error(control, 'control qubit number should be larger than zero')
-            debugger
-        } else if (control.length > 1) {
-            this.ccnot(binary_control, binary_target)
-        } else {
-            circuit.addGate("cx", now_column, [...control, ...target],);
-            // debugger
-            // TODO: 允许多个吗
-            this._addGate({
-                'controls': control,
-                'target': target,
-                'operation': 'ncnot',
-                'columns': this.nextColumn()
+        else{
+            wires.forEach(wire => {
+                circuit.addGate(op, nc, wire);
             })
         }
     }
+
+
+    rx(theta, wires = undefined, column = undefined)
+    {
+        let pars = {theta}
+        this._singleOp('rx', wires, column, pars)
+    }   
+    ry(theta, wires = undefined, column = undefined)
+    {
+        let pars = {theta}
+        this._singleOp('ry', wires, column, pars)
+    }
+    rz(phi, wires = undefined, column = undefined)
+    {
+        let pars = {phi}
+        this._singleOp('rz', wires, column, pars)
+    }
+    u1(lambda, wires = undefined, column = undefined)
+    {
+        let pars = {lambda}
+        this._singleOp('u1', wires, column, pars)
+    }
+    u2(phi, lambda, wires = undefined, column = undefined)
+    {
+        let pars = {phi, lambda}
+        this._singleOp('u2', wires, column, pars)
+    }
+    u3(theta, phi, lambda, wires = undefined, column = undefined)
+    {
+        let pars = {theta, phi, lambda}
+        this._singleOp('u3', wires, column, pars)
+    }
+
+
+
+    swap(wires, column = undefined)
+    {
+        this._Multi2Op('swap', wires, column);
+    }
+    srswap(wires, column = undefined)
+    {
+        this._Multi2Op('srswap', wires, column);
+    }
+    iswap(wires, column = undefined)
+    {
+        this._Multi2Op('iswap', wires, column);
+    }
+    cx(wires, column = undefined)
+    {
+        this._Multi2Op('cx', wires, column)
+    }
+    cy(wires, column = undefined)
+    {
+        this._Multi2Op('cy', wires, column)
+    }
+    cz(wires, column = undefined)
+    {
+        this._Multi2Op('cz', wires, column)
+    }
+    ch(wires, column = undefined)
+    {
+        this._Multi2Op('ch', wires, column)
+    }
+    csrn(wires, column = undefined)
+    {
+        this._Multi2Op('csrn', wires, column)
+    }
+    cr2(wires, column = undefined)
+    {
+        this._Multi2Op('cr2', wires, column)
+    }
+    cr4(wires, column = undefined)
+    {
+        this._Multi2Op('cr4', wires, column)
+    }
+    cr8(wires, column = undefined)
+    {
+        this._Multi2Op('cr8', wires, column)
+    }
+    cs(wires, column = undefined)
+    {
+        this._Multi2Op('cs', wires, column)
+    }
+    ct(wires, column = undefined)
+    {
+        this._Multi2Op('ct', wires, column)
+    }
+    csdg(wires, column = undefined)
+    {
+        this._Multi2Op('csdg', wires, column)
+    }
+    ctdg(wires, column = undefined)
+    {
+        this._Multi2Op('ctdg', wires, column)
+    }
+
+    crx(theta, wires, column = undefined)
+    {
+        let pars = {theta}
+        this._Multi2Op('crx', wires, column, pars)
+    }
+    cry(theta, wires, column = undefined)
+    {
+        let pars = {theta}
+        this._Multi2Op('cry', wires, column, pars)
+    }
+    crz(phi, wires, column = undefined)
+    {
+        let pars = {phi}
+        this._Multi2Op('crz', wires, column, pars)
+    }
+    cu1(lambda, wires, column = undefined)
+    {
+        let pars = {lambda}
+        this._Multi2Op('cu1', wires, column, pars)
+    }
+    cu2(phi, lambda, wires, column = undefined)
+    {
+        let pars = {phi, lambda}
+        this._Multi2Op('cu2', wires, column, pars)
+    }
+    cu3(theta, phi, lambda, wires, column = undefined)
+    {
+        let pars = {theta, phi, lambda}
+        this._Multi2Op('cu3', wires, column, pars)
+    }
+    xy(phi, wires, column = undefined)
+    {
+        let pars = {phi}
+        this._Multi2Op('xy', wires, column, pars)
+    }
+    ms(theta, wires, column = undefined)
+    {
+        let pars = {theta}
+        this._Multi2Op('ms', wires, column, pars)
+    }
+    yy(theta, wires, column = undefined)
+    {
+        let pars = {theta}
+        this._Multi2Op('yy', wires, column, pars)
+    }
+    zz(theta, wires, column = undefined)
+    {
+        let pars = {theta}
+        this._Multi2Op('zz', wires, column, pars)
+    }
+
+    ccx(wires, column = undefined)
+    {
+        this._Multi2Op('ccx', wires, column)
+    }
+    cswap(wires, column = undefined)
+    {
+        this._Multi2Op('cswap', wires, column)
+    }
+    csrswap(wires, column = undefined)
+    {
+        this._Multi2Op('csrswap', wires, column)
+    }
+    
+
+    cnot(wires, column = undefined)
+    {
+        this.cx(wires,column)
+    }
+    ccnot(wires, column = undefined)
+    {
+        this.ccx(wires,column)
+    }
+
+    _Multi2Op(op, wires, column = undefined, pars = undefined)
+    {
+        if(wires.length != 2 && wires.length != 3)
+        {
+            console.error("wires length not 2 or 3")
+        }
+        
+        const { circuit, circuit_column } = this;
+        
+        let nc = circuit_column;
+
+        if(typeof(column) == 'number')
+        {
+            nc = column;
+        }
+        else{
+            this.circuit_column++;
+        }
+        
+        if(pars != undefined){
+            for (let k in pars)
+            {
+                if (pars[k] !== 0) {
+                    pars[k] = pars[k] > 0 ? "pi/" + (180 / pars[k]) : "-pi/" + (180 / -pars[k])
+                }
+                
+                circuit.addGate(op, nc, wires, {
+                    params: pars
+                });
+            }
+
+        }
+        else{
+            circuit.addGate(op, nc, wires);
+        }
+    }
+
+    
+    _MultinOp(op, wires, column = undefined, pars = undefined)
+    {        
+        const { circuit, circuit_column } = this;
+        
+        let nc = circuit_column;
+        
+        if(typeof(column) == 'number')
+        {
+            nc = column;
+        }
+        else{
+            circuit_column++;
+        }
+
+        if(pars != undefined){
+            for (let k in pars)
+            {
+                if (pars[k] !== 0) {
+                    pars[k] = pars[k] > 0 ? "pi/" + (180 / pars[k]) : "-pi/" + (180 / -pars[k])
+                }
+                
+                circuit.addGate(op, nc, wires, {
+                    params: pars
+                });
+            }
+
+        }
+        else{
+            circuit.addGate(op, nc, wires);
+        }
+
+    }
+
+    ncphase(phi, wires, column = undefined)
+    {
+        let qubit_number = wires.length;
+        let pars = {phi, qubit_number};
+        this._MultinOp('ncphase', wires, column, pars)
+    }
+
+    ncnot(wires, column = undefined)
+    {
+        let qubit_number = wires.length;
+        let controls = wires.slice(0, wires.length-2);
+        let target = [wires[wires.length-1]];
+        let pars = {controls, target, qubit_number};
+        this._MultinOp('ncnot', wires, column, pars)   
+    }
+
+
+
+
+    // 啥事都不干，就空一格
+    // nop() {
+    //     const { operations, circuit } = this
+    //     // this._now_label = undefined
+    //     // this.label('')
+    //     this._addGate({
+    //         'operation': 'noop',
+    //         'columns': undefined, //this.nextColumn()
+    //     })
+    // }
+
+
+
+
+
+    // identity(binary_qubits = undefined) {
+    //     const { circuit, operations, now_column } = this
+    //     const qubits = this.parseBinaryQubits(binary_qubits)
+
+    //     circuit.addGate('identity', now_column, qubits, {
+    //         params: {
+    //             qubit_number: qubits.length,
+    //         }
+    //     });
+
+    //     this._addGate({
+    //         'qubits': qubits,
+    //         'operation': 'identity',
+    //         'columns': this.nextColumn(),
+    //     })
+    // }
 
     exchange(binary_qubits1, binary_qubits2) {
         const { operations, circuit, now_column } = this
@@ -830,117 +943,61 @@ export default class QCEngine {
 
     }
 
+    write(value, binary_qubits = undefined) {
+        const { inital_value, qubit_number, circuit_column } = this
 
-    swap(binary_qubit1, binary_qubit2) {
-        const { operations, circuit, now_column } = this
-        const qubit1 = this.parseBinaryQubits(binary_qubit1)
-        const qubit2 = this.parseBinaryQubits(binary_qubit2)
-        if (qubit1.length != 1 || qubit2.length != 1) {
-            console.error(qubit1, 'or', qubit2, 'has more than one qubit, which can not be swapped')
+        let qubits = this.parseBinaryQubits(binary_qubits)
+        let qubit_value = binary(value, qubits.length)
+
+        if (Math.max(...qubits) >= qubit_number) {
+            console.error('qubits has unexist qubit', qubits.filter(qubit => qubit >= qubit_number))
             debugger
         }
 
-        circuit.addGate("swap", now_column, [...qubit1, ...qubit2]);
-        this._addGate({
-            // qubits1, qubits2实际上只有一个，现在是暂时为之
-            'qubits1': qubit1,
-            'qubits2': qubit2,
-            'operation': 'swap',
-            'columns': this.nextColumn()
+        let nc = circuit_column;
+        circuit_column++;
+        qubits.forEach((qubit, index) => {
+            let value = qubit_value[index]
+            inital_value[qubit] = value
+            // this.circuit.addGate()
+            if (value == 0) {
+                this.circuit.addGate('write0', nc, [qubit])
+            } else {
+                this.circuit.addGate('write1', nc, [qubit])
+            }
         })
+        // this._addGate({
+        //     'qubits': qubits,
+        //     'operation': 'write',
+        //     'value': qubit_value,
+        //     'columns': column_range,
+        // })
     }
 
-    cswap(binary_qubit1, binary_qubit2, control_qubit)
-    {
+    // measure
+    read(binary_qubits = undefined) {
         const { operations, circuit, now_column } = this
-        const qubit1 = this.parseBinaryQubits(binary_qubit1)
-        const qubit2 = this.parseBinaryQubits(binary_qubit2)
-        const c_qubit = this.parseBinaryQubits(control_qubit)
-        if (qubit1.length != 1 || qubit2.length != 1 || c_qubit.length != 1) {
-            console.error(qubit1, 'or', qubit2, 'or', c_qubit, 'has more than one qubit, which can not be swapped')
-            debugger
-        }
+        let qubits = this.parseBinaryQubits(binary_qubits)
 
-        circuit.addGate("cswap", now_column, [...qubit1, ...qubit2, ...c_qubit]);
-        this._addGate({
-            // qubits1, qubits2实际上只有一个，现在是暂时为之
-            'qubits1': qubit1,
-            'qubits2': qubit2,
-            'controls': c_qubit,
-            'operation': 'cswap',
-            'columns': this.nextColumn()
+        let reg_name = 'read_' + now_column
+        qubits.forEach((qubit, index) => {
+            circuit.addGate("measure", now_column, qubit, { 'creg': { 'name': reg_name, 'bit': index } })
         })
 
-    }
+        // 这里目前唯一除了_addGate外的执行
+        this._circuitStep()
+        let result = circuit.getCregValue(reg_name); //返回一个int值, 只考虑new的
 
-    // 啥事都不干，就空一格
-    nop() {
-        const { operations, circuit } = this
-        // this._now_label = undefined
-        // this.label('')
-        this._addGate({
-            'operation': 'noop',
-            'columns': undefined, //this.nextColumn()
-        })
-    }
+        // this._addGate({
+        //     qubits,
+        //     'operation': 'read',
+        //     'columns': this.nextColumn(),
+        //     reg_name,
+        //     result,
+        // })
 
-
-
-    new(qubit_number, name = undefined) {
-        let start_index = this.assigned_qubit_number
-        this.assigned_qubit_number += qubit_number
-        let end_index = this.assigned_qubit_number
-        let index = [start_index, end_index]
-
-
-        if (!name)
-            name = String(index)
-        this.name2index[name] = index
-
-        // TODO：需要保证name没有重复, 申请的不会超过
-        return index
-    }
-
-    // 保存为一个自定义门
-    saveGate(gate_name, operations) {
-        // // export circuit to variable
-        // var obj = someCircuit.save();
-        // // register it as a gate in another circuit
-        // anotherCircuit.registerGate("my_gate", obj);
-        name2gate[gate_name] = operations;
-
-    }
-
-    apply(gate_name, qubits) {
-        // let ops = name2gate[gate_name];
-        // if (ops == undefined) {
-        //     console.error("gatename is not saved:", gate_name);
-        //     debugger
-        // }
-        // for (let i = 0; i < ops.length; i++) {
-        //     let opera = ops[i];
-        //     let op_name = opera['operation']
-        //     let inv_qubit;
-        //     if (op_name == 'h') {
-        //         //remap(qubits)
-        //         this.had(qubits)
-        //     }
-        //     else if (op_name == 'phase') {
-
-        //     }
-        //     else if (op_name == 'not') {
-
-        //     }
-        //     else if (op_name == '')
-
-
-        //         this._addGate({
-        //             'qubits': qubits,
-        //             'operation': gate_name,
-        //             'columns': this.nextColumn()
-        //         })
-
-        // }
+        // read完的state值是不对的
+        return result
     }
 
 
@@ -1795,7 +1852,7 @@ export default class QCEngine {
         let label_name = this.labels[label_id]['text']
         for (let i = ops[0]; i < ops[1]; i++) {
             let opera = this.operations[i];
-            if (opera['operation'] == 'write' || opera['operation'] == 'read' || this.dont_draw_evo[label_name])
+            if (opera['operation'] == 'write' || opera['operation'] == 'read' || this.dont_draw_evo[label_name] || opera['operation'] == 'measure')
                 return false;
 
         }
@@ -2135,6 +2192,7 @@ class QInt {
         this.index = index  //起始到结束的qubit的序号，左闭右开
         this.numBits = index[1]-index[0];
         this.binary_qubits = qubit12binary(range(...index))  // 相对于整个电路的
+        this.true_wires = range(...index)
         // range(...index).reduce((sum, val) => sum | pow2(val), 0)  //TODO:check一下对不对
         // debugger
         // 0 0x1
@@ -2171,7 +2229,7 @@ class QInt {
 
     // 这返回的还是二进制的,将自己内部的换算成全局的二进制
     // TODO: 判断下比特存不存在，有没有溢出
-    bits(binary_qubits) {
+    _old_bits(binary_qubits) {
         if (binary_qubits !== undefined) {
             const qubits = binary2qubit1(binary_qubits).map(qubit => qubit + this.index[0])
             return qubit12binary(qubits)
@@ -2180,17 +2238,307 @@ class QInt {
         }
     }
 
-    nop() {
-        this.qc.nop()
-    }
-
-    cnot(another_qint)
+    bits(wires)
     {
-        this.qc.cnot(another_qint.bits(),this.bits())
+        if( wires !== undefined)
+        {
+            let new_wires = wires.map(wire => wire + this.index[0]);
+            return new_wires;
+        }
+        else
+        {
+            return this.true_wires;
+        }
     }
 
-    hadamard(binary_qubits) {
-        this.had(binary_qubits)
+
+    h(wires = undefined, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.h(new_wires, column)
+    }
+    id(wires = undefined, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.id(new_wires, column)
+    }
+    x(wires = undefined, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.x(new_wires, column)
+    }
+    y(wires = undefined, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.y(new_wires, column)
+    }
+    z(wires = undefined, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.z(new_wires, column)
+    }
+    srn(wires = undefined, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.srn(new_wires, column)
+    }
+    srndg(wires = undefined, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.srndg(new_wires, column)
+    }
+    r2(wires = undefined, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.r2(new_wires, column)
+    }
+    r4(wires = undefined, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.r4(new_wires, column)
+    }
+    r8(wires = undefined, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.r8(new_wires, column)
+    }   
+    s(wires = undefined, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.s(new_wires, column)
+    }
+    t(wires = undefined, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.t(new_wires, column)
+    }
+    sdg(wires = undefined, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.sdg(new_wires, column)
+    }
+    tdg(wires = undefined, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.tdg(new_wires, column)
+    }
+
+    had(wires = undefined, column = undefined) {
+        this.h(wires, column);
+    }
+    hadamard(wires = undefined, column = undefined) {
+        this.had(wires, column);
+    }
+    not(wires = undefined, column = undefined)
+    {
+        this.x(wires, column);
+    }
+    phase(phi, wires = undefined, column = undefined)
+    {
+        this.rz(phi, wires, column)
+    }
+
+    rx(theta, wires = undefined, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.rx(theta, new_wires, column)
+    }   
+    ry(theta, wires = undefined, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.ry(theta, new_wires, column)
+    }
+    rz(phi, wires = undefined, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.rz(phi, new_wires, column)
+    }
+    u1(lambda, wires = undefined, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.u1(lambda, new_wires, column)
+    }
+    u2(phi, lambda, wires = undefined, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.u2(phi, lambda, new_wires, column)
+    }
+    u3(theta, phi, lambda, wires = undefined, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.u3(theta, phi, lambda, new_wires, column)
+    }
+
+    swap(wires, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.swap(new_wires, column)
+    }
+    srswap(wires, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.srswap(new_wires, column)
+    }
+    iswap(wires, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.iswap(new_wires, column)
+    }
+    cx(wires, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.cx(new_wires, column)
+    }
+    cy(wires, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.cy(new_wires, column)
+    }
+    cz(wires, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.cz(new_wires, column)
+    }
+    ch(wires, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.ch(new_wires, column)
+    }
+    csrn(wires, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.csrn(new_wires, column)
+    }
+    cr2(wires, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.cr2(new_wires, column)
+    }
+    cr4(wires, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.cr4(new_wires, column)
+    }
+    cr8(wires, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.cr8(new_wires, column)
+    }
+    cs(wires, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.cs(new_wires, column)
+    }
+    ct(wires, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.ct(new_wires, column)
+    }
+    csdg(wires, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.csdg(new_wires, column)
+    }
+    ctdg(wires, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.ctdg(new_wires, column)
+    }
+
+    crx(theta, wires, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.crx(theta, new_wires, column)
+    }
+    cry(theta, wires, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.cry(theta, new_wires, column)
+    }
+    crz(phi, wires, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.crz(phi, new_wires, column)
+    }
+    cu1(lambda, wires, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.cu1(lambda, new_wires, column)
+    }
+    cu2(phi, lambda, wires, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.cu2(phi, lambda, new_wires, column)
+    }
+    cu3(theta, phi, lambda, wires, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.cu3(theta, phi, lambda, new_wires, column)
+    }
+    xy(phi, wires, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.xy(phi, new_wires, column)
+    }
+    ms(theta, wires, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.ms(theta, new_wires, column)
+    }
+    yy(theta, wires, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.yy(theta, new_wires, column)
+    }
+    zz(theta, wires, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.zz(theta, new_wires, column)
+    }
+
+    ccx(wires, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.ccx(new_wires, column)
+    }
+    cswap(wires, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.cswap(new_wires, column)
+    }
+    csrswap(wires, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.csrswap(new_wires, column)
+    }
+    
+
+    cnot(wires, column = undefined)
+    {
+        this.cx(wires,column)
+    }
+    ccnot(wires, column = undefined)
+    {
+        this.ccx(wires,column)
+    }
+
+    ncnot(wires, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.ncnot(new_wires, column)
+
+    }
+    ncphase(wires, column = undefined)
+    {
+        let new_wires = this.bits(wires)
+        this.qc.ncphase(new_wires, column)
+    }
+
+    // read的应该不是数组
+    read(binary_qubits) {
+        const { qc } = this
+        binary_qubits = this.bits(binary_qubits)
+        return qc.read(binary_qubits)
     }
 
 
@@ -2203,17 +2551,39 @@ class QInt {
         qc.write(value, binary_qubits)
     }
 
-    had(binary_qubits) {
-        const { qc } = this
-        binary_qubits = this.bits(binary_qubits)
-        qc.had(binary_qubits)
+    exchange(another_qint) {
+        let { qc, binary_qubits } = this
+        qc.exchange(binary_qubits, another_qint.binary_qubits)
     }
 
-    ry(rotation, binary_qubits) {
-        const { qc } = this
-        binary_qubits = this.bits(binary_qubits)
-        qc.ry(rotation, binary_qubits)
+
+
+
+    // nop() {
+    //     this.qc.nop()
+    // }
+
+    old_cnot(another_qint)
+    {
+        this.qc.cnot(another_qint.bits(),this.bits())
     }
+
+
+
+    // cphase(rotation, another_qint = undefined) {
+    //     if(another_qint == undefined){
+    //         let { qc, index, binary_qubits} = this
+
+    //         qc.cphase(rotation, binary_qubits, undefined);
+           
+    //     }
+    //     else{
+    //         console.warn('this function is not well implemented')
+    //         let { qc, binary_qubits } = this
+    //         qc.cphase(rotation, binary_qubits, another_qint.binary_qubits)
+    //     }
+    // }
+    
 
     // TODO: console要换成throw
     // TODO: 还没有检查过
@@ -2245,9 +2615,10 @@ class QInt {
                 ranges.reverse()
 
                 ranges.forEach((qubit, index) => {
-                    let controls = qubit12binary([...condition_qubits, ...range(qc_qubit_start, qubit)])
-                    let target = qubit12binary([qubit])
-                    qc.ccnot(controls, target)
+                    let controls = [...condition_qubits, ...range(qc_qubit_start, qubit)]
+                    let target = [qubit]
+                    let total =controls.concat(target)
+                    qc.ncnot(total)
                 })
             })
 
@@ -2266,10 +2637,11 @@ class QInt {
                 })
                 // debugger
                 self_qubits_involved.forEach((self_qubit, self_index) => {
-                    let target = qubit12binary([self_qubit])
+                    let target = [self_qubit]
                     let controls = [...self_qubits_involved.filter(elm => elm < self_qubit), value_qubit]
-                    controls = qubit12binary(controls)
-                    qc.ccnot(controls, target)
+                    //controls = qubit12binary(controls)
+                    let total =controls.concat(target)
+                    qc.ncnot(total)
                 })
             })
 
@@ -2298,9 +2670,10 @@ class QInt {
             qubits_start.forEach((qubit_start, index) => {
                 let qc_qubit_start = qubits[qubit_start]
                 range(qc_qubit_start, v_end_qubit).forEach((qubit, index) => {
-                    let controls = qubit12binary(range(qc_qubit_start, qubit))
-                    let target = qubit12binary([qubit])
-                    qc.ccnot(controls, target)
+                    let controls = range(qc_qubit_start, qubit)
+                    let target = [qubit]
+                    let total =controls.concat(target)
+                    qc.ncnot(total)
                 })
             })
 
@@ -2315,46 +2688,6 @@ class QInt {
 
     }
 
-    // read的应该不是数组
-    read(binary_qubits) {
-        const { qc } = this
-        binary_qubits = this.bits(binary_qubits)
-        return qc.read(binary_qubits)
-    }
-
-
-
-    exchange(another_qint) {
-        let { qc, binary_qubits } = this
-        qc.exchange(binary_qubits, another_qint.binary_qubits)
-    }
-
-    cphase(rotation, another_qint = undefined) {
-        if(another_qint == undefined){
-            let { qc, index, binary_qubits} = this
-
-            qc.cphase(rotation, binary_qubits, undefined);
-           
-        }
-        else{
-            console.warn('this function is not well implemented')
-            let { qc, binary_qubits } = this
-            qc.cphase(rotation, binary_qubits, another_qint.binary_qubits)
-        }
-    }
-
-    phase(rotation, binary_qubits) {
-        let { qc } = this
-
-        binary_qubits = this.bits(binary_qubits)
-        qc.phase(rotation, binary_qubits)
-    }
-
-    not(binary_qubits) {
-        let { qc } = this
-        binary_qubits = this.bits(binary_qubits)
-        qc.not(binary_qubits)
-    }
 
     // https://oreilly-qc.github.io/?p=7-8#
     invQFT() {
@@ -2363,14 +2696,14 @@ class QInt {
 
         for (let start = index[0], end = index[1] - 1; start < end; start++, end--) {
             // debugger
-            qc.swap(pow2(start), pow2(end))
+            qc.swap([start,end])
         }
 
         qubits.forEach((qubits1, index1) => {
-            qc.had(pow2(qubits1))
+            qc.had([qubits1])
             qubits.slice(index1 + 1).forEach((qubits2, index2) => {
                 let phi = 90 / pow2(index2)
-                qc.cphase(phi, pow2(qubits1), pow2(qubits2))
+                qc.ncphase(phi, [qubits1,qubits2])
             })
         })
 
@@ -2383,16 +2716,16 @@ class QInt {
         qubits.reverse()
 
         qubits.forEach((qubits1, index1) => {
-            qc.had(pow2(qubits1))
+            qc.had([qubits1])
             qubits.slice(index1 + 1).forEach((qubits2, index2) => {
                 let phi = - 90 / pow2(index2)
                 // console.log(phi);
-                qc.cphase(phi, pow2(qubits1), pow2(qubits2))
+                qc.ncphase(phi, [qubits1, qubits2])
             })
         })
 
         for (let start = index[0], end = index[1] - 1; start < end; start++, end--) {
-            qc.swap(pow2(start), pow2(end))
+            qc.swap([start,end])
         }
 
         // qc.swap(pow2(qubits[0]), pow2(qubits[qubits.length - 1]))
