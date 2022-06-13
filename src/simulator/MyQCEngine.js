@@ -362,17 +362,26 @@ export default class QCEngine {
 
                     if(control_set.includes(nam))
                     {
-                        if(gates[j][i]['connector'] == 1)
+                        let max = -1
+                        for(let k=0;k<qlen;k++)
+                        {
+                            if(gates[k][i]!=null && control_set.includes(gates[k][i]['name'])){
+                                if(max < gates[k][i]['connector'])
+                                    max = gates[k][i]['connector'];
+                            }
+                        }
+
+                        if(gates[j][i]['connector'] == max)
                         {
                             ops[id]['target'].push(j);
                         }
-                        else if(gates[j][i]['connector'] == 0)
+                        else if(gates[j][i]['connector'] < max)
                         {
                             ops[id]['control'].push(j);
                         }
                         else
                         {
-                            console.error("check the control set");
+                            console.error("check the control set",max,gates[j][i]['connector']);
                         }
                     }
                 }
@@ -484,6 +493,7 @@ export default class QCEngine {
                 }
                 else if(op == 'ncnot')
                 {
+                    console.log("pars",pars);
                     this._addGate({
                         'operation' : op,
                         ...pars,
@@ -862,8 +872,9 @@ export default class QCEngine {
     ncnot(wires, column = undefined)
     {
         let qubit_number = wires.length;
-        let controls = wires.slice(0, wires.length-2);
+        let controls = wires.slice(0, wires.length-1);
         let target = [wires[wires.length-1]];
+        console.log("wr",controls)
         let pars = {controls, target, qubit_number};
         this._MultinOp('ncnot', wires, column, pars)   
     }
