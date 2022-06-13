@@ -94,6 +94,7 @@ export default class d3Draw {
 		svg.attr('width', svgWidth)
 		svg.attr('height', (col + 4) * this.svgItemHeight - 50)
 		// 加Label,先加载label label在最底层
+		console.log(data)
 		for (let i = 0; i < data.labels.length; i++) {
 			if (data.labels[i].text && data.labels[i].end_operation !== undefined) {
 				const obj = data.getLabelUpDown(data.labels[i].id)
