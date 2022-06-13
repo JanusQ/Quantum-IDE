@@ -184,7 +184,7 @@ export default class QCEngine {
         const { columns, operation } = gate
 
         const { state, rawgate } = this._circuitStep()
-
+        console.log("rawgate",rawgate);
 
         // columns是左闭右开的, 存的是quantum circuit库中的对应关系
         if (columns == undefined && gate.operation !== 'noop') {
@@ -278,11 +278,11 @@ export default class QCEngine {
     //  ---------------WARNING: DO NOT USE THIS, USE STARTLABEL & ENDLABEL INSTEAD--------------
 
     startlabel(labelname) {
-        const { _now_label, labels, operations } = this
+        const { _now_label, labels, operations, circuit_column } = this
         let label_id = this.genLabelId();
 
         labels.push({
-            start_operation: operations.length,  //左闭
+            start_operation: circuit_column,//operations.length,  //左闭
             text: labelname,
             id: label_id,
         })
@@ -291,10 +291,10 @@ export default class QCEngine {
     }
 
     endlabel(labelname) {
-        const { _now_label, labels, operations } = this
+        const { _now_label, labels, operations, circuit_column } = this
         for (let key in labels) {
             if (labels[key]['text'] == labelname) {
-                labels[key]['end_operation'] = operations.length;
+                labels[key]['end_operation'] = circuit_column;//operations.length;
                 return;
             }
         }
@@ -346,7 +346,7 @@ export default class QCEngine {
                 if(gates[j][i]!=null){
                     let id =gates[j][i]['id'];
                     let nam = gates[j][i]['name'];
-                    let pars = gates[j][j]['options']['params']
+                    let pars = gates[j][i]['options']['params']
                     if(id in ops){
 
                     }
@@ -508,6 +508,8 @@ export default class QCEngine {
             }
         
         }
+
+        console.log("operations",this.operations);
 
     }    
 
@@ -963,7 +965,7 @@ export default class QCEngine {
         }
 
         let nc = circuit_column;
-        circuit_column++;
+        this.circuit_column++;
         qubits.forEach((qubit, index) => {
             let value = qubit_value[index]
             inital_value[qubit] = value
@@ -1871,7 +1873,7 @@ export default class QCEngine {
     getEvoMatrix(label_id) {
         // debugger
         //console.log(label_id);
-        //console.log(this.labels);
+        console.log(this.labels);
         // console.log(this.operations);
         let gate_mats = [];
         let ops = [this.labels[label_id]['start_operation'], this.labels[label_id]['end_operation']];
@@ -1931,10 +1933,10 @@ export default class QCEngine {
                 options['qubits'] = [];
                 type = 1;
             }
-            // console.log("gaste",gate);
+            console.log("gaste",gate);
             if (gate == undefined)
                 continue;
-
+            console.log("here");
             let gate_mat = new QObject(gate.length, gate.length, gate);
             //console.log("gate",gate_mat);
 
@@ -1982,7 +1984,7 @@ export default class QCEngine {
             }
             //console.log(new_index);
             column_res = this._tensorPermute(gate_mat, new_index, qubit_num, options);
-            //console.log("column_res",column_res);
+            console.log("column_res",column_res);
             //all_gate = dot(all_gate, column_res);
             all_gates.push(column_res.copy());
         }

@@ -105,7 +105,7 @@ QuantumCircuit.prototype.myStepRun = function () {
 		debugger
 	}
 	// 不是加一，应该是跑到现在的所有
-	for (; column < numCols; column++) {
+	for (; column < numCols; ) {
 		for (var wire = 0; wire < decomposed.numQubits; wire++) {
 			var gate = decomposed.getGateAt(column, wire)
 			if (gate && gate.connector == 0) {
@@ -153,6 +153,8 @@ QuantumCircuit.prototype.myStepRun = function () {
 			options.onColumn(column)
 		}
 		//console.log("once");
+		column++;
+		break;
 	}
 
 	my_session['column'] = column
