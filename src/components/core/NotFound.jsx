@@ -10,7 +10,7 @@ export default function NotFound() {
       <div className="margin-top"></div>
       <div className="errorpPage-box">
         <h1>项目正在开发中，敬请期待...</h1>
-        <h2>The project is under development, please look forward to...！</h2>
+        <h2>The project is under development. Stay tuned！</h2>
         <div className="errorpPage-operate">
           <Link to="/">
             <div className="operateBtn">返回首页</div>
