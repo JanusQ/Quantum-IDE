@@ -179,9 +179,9 @@ function App() {
 		//bind function
 		let gates = ['cx','cy','cz','ch','csrn','cr2','cr4','cr8','crx','cry','crz','cu1','cu2',
         'cu3','cs','ct','csdg','ctdg','ccx','id','x','y','z','h','srn','srndg','r2','r4','r8','s','t','sdg','tdg',
-        'rx','ry','rz','u1','u2','u3','swap','iswap','srswap','xy','ms','yy','zz','had','hadamard','not', 'reset','write','cnot','phase','startlabel','endlabel'];
+        'rx','ry','rz','u1','u2','u3','swap','iswap','srswap','xy','ms','yy','zz','had','hadamard','not', 'reset','write','cnot','phase','startlabel','endlabel','ccnot','ncnot','ncphase'];
 		var cx,cy,cz,ch,csrn,cr2,cr4,cr8,crx,cry,crz,cu1,cu2,cu3,cs,ct,csdg,ctdg,ccx,id,x,y,z,h,srn,srndg,r2,r4,r8,s,t,sdg,
-		tdg,rx,ry,rz,u1,u2,u3,swap,iswap,srswap,xy,ms,yy,zz,had,hadamard,not,reset,write,cnot,phase,startlabel,endlabel;
+		tdg,rx,ry,rz,u1,u2,u3,swap,iswap,srswap,xy,ms,yy,zz,had,hadamard,not,reset,write,cnot,phase,startlabel,endlabel,ccnot,ncnot,ncphase;
 		//let gates =['had']
 		let bind_str = 'gate_name = qc.gate_name.bind(qc);\n ';
 		let bind_str_all = '';
@@ -196,21 +196,6 @@ function App() {
 
 		try {
 			eval(editorValue)
-			// qc.circuit = new QuantumCircuit();
-			// let qubits = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40]//binary2qubit1(0xFFFFFFFF+1)
-			// qubits.forEach(qubit => {
-			// 	qc.circuit.addGate('h', 0, qubit);
-			// })
-			// console.log(qc.export())
-			// showInDebuggerArea(qc.circuit)
-
-			// siwei: 两个函数的案例
-			// range(0, qc.qubit_number).forEach((qubit) => {
-			// console.log(qubit, qc.getQubit2Variable(qubit))
-			// })
-			// qc.labels.forEach((label) => {
-			// 	console.log(label, qc.getLabelUpDown(label.id))
-			// })
 			consoleContent(true, qc.console_data)
 			noBug = true
 		} catch (error) {
@@ -218,14 +203,14 @@ function App() {
 			noBug = false
 			console.error(error)
 		}
-		qc.export()
-		// let qc1 = new QCEngine()
-		//testfunc(qc);
+		// 模拟器
 		if (noBug && runValue !== 1) {
+			qc.runCircuit()
 			exportSVG(qc)
 		}
-		//console.log(qc.circuit);
-		if (runValue === 1) {
+		// 真机
+		if (noBug && runValue === 1) {
+			qc.export()
 			realRun(qc, sample)
 		}
 	}

@@ -1,27 +1,25 @@
 // Initialize
 var num_qubits = 6;
-qc.reset(num_qubits);
+reset(num_qubits);
 var a = qint.new(4, 'a');
 var b = qint.new(2, 'b');
 
 // prepare
-qc.startlabel('prepare');
+startlabel('prepare');
 // debugger
-a.write(1);
-a.hadamard(0x4);
-a.phase(45, 0x4);
+write(1);
+hadamard([2]);
+phase(45, [2]);
 b.write(1);
-b.hadamard(0x2);
-b.phase(90, 0x2);
-qc.nop();
+b.hadamard([1]);
+b.phase(90, [1]);
 
-qc.nop();
-qc.endlabel('prepare');
+endlabel('prepare');
 // a += b
-qc.startlabel('a += b');
+startlabel('a += b');
 a.add(b);
-qc.endlabel('a += b');
-qc.nop();
+endlabel('a += b');
+
 
 // qc.operations.forEach((op, i)=>{
 //     const {operation, state_str, result} = op

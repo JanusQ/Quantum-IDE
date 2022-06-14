@@ -65,11 +65,13 @@ export default class QCEngine {
         this.dont_draw_evo = {}
 
     }
+    
     export()
     {
         var qasm = this.circuit.exportToQASM({}, false);
         return qasm;
     }
+
     //import from QASM to a empty qcengine
     import(QASM)
     {
@@ -112,6 +114,7 @@ export default class QCEngine {
         for (let i = 0; i < qubit_number; i++) {
             inital_value.push(0)
         }
+        //WAIT: START RUN HERE?
         circuit.myStartRun()
 
         this.now_state = circuit.stateAsArray()
@@ -181,7 +184,7 @@ export default class QCEngine {
         const { columns, operation } = gate
 
         const { state, rawgate } = this._circuitStep()
-
+        //console.log("rawgate",rawgate);
 
         // columns是左闭右开的, 存的是quantum circuit库中的对应关系
         if (columns == undefined && gate.operation !== 'noop') {
@@ -193,7 +196,7 @@ export default class QCEngine {
             console.error(gate, 'not has operation')
             debugger
         }
-
+        //console.log("state_after_opr",state);
         operations.push({
             ...gate,
             'index': index,  //操作的index
@@ -275,11 +278,11 @@ export default class QCEngine {
     //  ---------------WARNING: DO NOT USE THIS, USE STARTLABEL & ENDLABEL INSTEAD--------------
 
     startlabel(labelname) {
-        const { _now_label, labels, operations } = this
+        const { _now_label, labels, operations, circuit_column } = this
         let label_id = this.genLabelId();
 
         labels.push({
-            start_operation: operations.length,  //左闭
+            start_operation: circuit_column,//operations.length,  //左闭
             text: labelname,
             id: label_id,
         })
@@ -288,10 +291,10 @@ export default class QCEngine {
     }
 
     endlabel(labelname) {
-        const { _now_label, labels, operations } = this
+        const { _now_label, labels, operations, circuit_column } = this
         for (let key in labels) {
             if (labels[key]['text'] == labelname) {
-                labels[key]['end_operation'] = operations.length;
+                labels[key]['end_operation'] = circuit_column;//operations.length;
                 return;
             }
         }
@@ -321,7 +324,7 @@ export default class QCEngine {
         let op_col = 0;
         
         let control_set = ['cx','cy','cz','ch','csrn','cr2','cr4','cr8','crx','cry','crz','cu1','cu2',
-        'cu3','cs','ct','csdg','ctdg','ccx', 'ncnot'];//'cswap','csrswap']
+        'cu3','cs','ct','csdg','ctdg','ccx', ];//'cswap','csrswap']
         
         let merge_set = ['id','x','y','z','h','srn','srndg','r2','r4','r8','s','t','sdg','tdg',
         'rx','ry','rz','u1','u2','u3', ];
@@ -343,7 +346,7 @@ export default class QCEngine {
                 if(gates[j][i]!=null){
                     let id =gates[j][i]['id'];
                     let nam = gates[j][i]['name'];
-                    let pars = gates[j][j]['options']['params']
+                    let pars = gates[j][i]['options']['params']
                     if(id in ops){
 
                     }
@@ -359,17 +362,26 @@ export default class QCEngine {
 
                     if(control_set.includes(nam))
                     {
-                        if(gates[j][i]['connector'] == 1)
+                        let max = -1
+                        for(let k=0;k<qlen;k++)
+                        {
+                            if(gates[k][i]!=null && control_set.includes(gates[k][i]['name'])){
+                                if(max < gates[k][i]['connector'])
+                                    max = gates[k][i]['connector'];
+                            }
+                        }
+
+                        if(gates[j][i]['connector'] == max)
                         {
                             ops[id]['target'].push(j);
                         }
-                        else if(gates[j][i]['connector'] == 0)
+                        else if(gates[j][i]['connector'] < max)
                         {
                             ops[id]['control'].push(j);
                         }
                         else
                         {
-                            console.error("check the control set");
+                            console.error("check the control set",max,gates[j][i]['connector']);
                         }
                     }
                 }
@@ -408,8 +420,8 @@ export default class QCEngine {
                     names.push(ops[id]['name']);
                 }
             }
-            console.log(ops)
-            console.log(newops)
+            //console.log(ops)
+            //console.log(newops)
             let mark = -1;
             
             for(let id in newops)
@@ -481,6 +493,7 @@ export default class QCEngine {
                 }
                 else if(op == 'ncnot')
                 {
+                    console.log("pars",pars);
                     this._addGate({
                         'operation' : op,
                         ...pars,
@@ -505,6 +518,8 @@ export default class QCEngine {
             }
         
         }
+
+        //console.log("operations",this.operations);
 
     }    
 
@@ -582,59 +597,6 @@ export default class QCEngine {
         this.rz(phi, wires, column)
     }
 
-    _toArray(wires)
-    {
-        if(wires == undefined)
-        {
-            wires = range(0,this.qubit_number);
-        }
-        else if(typeof(wires)=='number')
-            wires = [wires];
-        else
-        {
-            console.error("unknown wires" + wires);
-        }
-        return wires;
-    }
-
-
-    _singleOp(op, wires = undefined, column = undefined, pars = undefined)
-    {
-        const { circuit, circuit_column } = this;
-        
-        let nc = circuit_column;
-        wires = this._toArray(wires);
-
-        if(typeof(column) == 'number')
-        {
-            nc = column;
-        }
-        else{
-            this.circuit_column++;
-        }
-        
-        if(pars != undefined){
-            for (let k in pars)
-            {
-                if (pars[k] !== 0) {
-                    pars[k] = pars[k] > 0 ? "pi/" + (180 / pars[k]) : "-pi/" + (180 / -pars[k])
-                }
-                wires.forEach(wire => {
-                    circuit.addGate(op, nc, wire, {
-                        params: pars
-                    });
-                })
-            }
-
-        }
-        else{
-            wires.forEach(wire => {
-                circuit.addGate(op, nc, wire);
-            })
-        }
-    }
-
-
     rx(theta, wires = undefined, column = undefined)
     {
         let pars = {theta}
@@ -665,6 +627,65 @@ export default class QCEngine {
         let pars = {theta, phi, lambda}
         this._singleOp('u3', wires, column, pars)
     }
+
+    _toArray(wires)
+    {
+        if(wires == undefined)
+        {
+            wires = range(0, this.qubit_number);
+        }
+        else if(typeof(wires) == 'number')
+            wires = [wires];
+        else if (Array.isArray(wires))
+            wires = wires;
+        else
+        {
+            console.error("unknown wires" + wires);
+        }
+        return wires;
+    }
+
+
+    _singleOp(op, wires = undefined, column = undefined, pars = undefined)
+    {
+        const { circuit, circuit_column } = this;
+        
+        let nc = circuit_column;
+        wires = this._toArray(wires);
+
+        if(typeof(column) == 'number')
+        {
+            nc = column;
+        }
+        else{
+            this.circuit_column++;
+        }
+        
+        if(pars != undefined){
+            for (let k in pars)
+            {
+                if(k == 'phi' || k == 'theta' || k == 'lambda')
+                    if (pars[k] !== 0) {
+                        pars[k] = pars[k] > 0 ? "pi/" + (180 / pars[k]) : "-pi/" + (180 / -pars[k])
+                    }
+            }
+            
+            wires.forEach(wire => {
+                circuit.addGate(op, nc, wire, {
+                    params: pars
+                });
+            })
+            
+        }
+        else{
+            wires.forEach(wire => {
+                circuit.addGate(op, nc, wire);
+            })
+        }
+    }
+
+
+    
 
 
 
@@ -825,53 +846,20 @@ export default class QCEngine {
         if(pars != undefined){
             for (let k in pars)
             {
-                if (pars[k] !== 0) {
-                    pars[k] = pars[k] > 0 ? "pi/" + (180 / pars[k]) : "-pi/" + (180 / -pars[k])
-                }
-                
-                circuit.addGate(op, nc, wires, {
-                    params: pars
-                });
+                if(k == 'phi' || k == 'theta' || k == 'lambda')
+                    if (pars[k] !== 0) {
+                        pars[k] = pars[k] > 0 ? "pi/" + (180 / pars[k]) : "-pi/" + (180 / -pars[k])
+                    }
             }
-
+            
+            circuit.addGate(op, nc, wires, {
+                params: pars
+            });
+            
         }
         else{
             circuit.addGate(op, nc, wires);
         }
-    }
-
-    
-    _MultinOp(op, wires, column = undefined, pars = undefined)
-    {        
-        const { circuit, circuit_column } = this;
-        
-        let nc = circuit_column;
-        
-        if(typeof(column) == 'number')
-        {
-            nc = column;
-        }
-        else{
-            circuit_column++;
-        }
-
-        if(pars != undefined){
-            for (let k in pars)
-            {
-                if (pars[k] !== 0) {
-                    pars[k] = pars[k] > 0 ? "pi/" + (180 / pars[k]) : "-pi/" + (180 / -pars[k])
-                }
-                
-                circuit.addGate(op, nc, wires, {
-                    params: pars
-                });
-            }
-
-        }
-        else{
-            circuit.addGate(op, nc, wires);
-        }
-
     }
 
     ncphase(phi, wires, column = undefined)
@@ -884,11 +872,49 @@ export default class QCEngine {
     ncnot(wires, column = undefined)
     {
         let qubit_number = wires.length;
-        let controls = wires.slice(0, wires.length-2);
+        let controls = wires.slice(0, wires.length-1);
         let target = [wires[wires.length-1]];
+        //console.log("wr",controls)
         let pars = {controls, target, qubit_number};
         this._MultinOp('ncnot', wires, column, pars)   
     }
+    
+    _MultinOp(op, wires, column = undefined, pars = undefined)
+    {        
+        const { circuit, circuit_column } = this;
+        
+        let nc = circuit_column;
+        
+        if(typeof(column) == 'number')
+        {
+            nc = column;
+        }
+        else{
+            this.circuit_column++;
+        }
+        
+        if(pars != undefined){
+            for (let k in pars)
+            {
+                if(k == 'phi' || k == 'theta' || k == 'lambda')
+                    if (pars[k] !== 0) {
+                        
+                        pars[k] = toPI(pars[k])
+                    }
+            }
+            
+            circuit.addGate(op, nc, wires, {
+                params: pars
+            });
+            
+        }
+        else{
+            circuit.addGate(op, nc, wires);
+        }
+
+    }
+
+
 
 
 
@@ -955,7 +981,7 @@ export default class QCEngine {
         }
 
         let nc = circuit_column;
-        circuit_column++;
+        this.circuit_column++;
         qubits.forEach((qubit, index) => {
             let value = qubit_value[index]
             inital_value[qubit] = value
@@ -1923,7 +1949,7 @@ export default class QCEngine {
                 options['qubits'] = [];
                 type = 1;
             }
-            // console.log("gaste",gate);
+
             if (gate == undefined)
                 continue;
 
@@ -2528,10 +2554,10 @@ class QInt {
         this.qc.ncnot(new_wires, column)
 
     }
-    ncphase(wires, column = undefined)
+    ncphase(phi, wires, column = undefined)
     {
         let new_wires = this.bits(wires)
-        this.qc.ncphase(new_wires, column)
+        this.qc.ncphase(phi, new_wires, column)
     }
 
     // read的应该不是数组
@@ -2594,7 +2620,7 @@ class QInt {
         const { qc, binary_qubits } = this
         const v_start_qubit = this.index[0], v_end_qubit = this.index[this.index.length - 1]
 
-        const condition_qubits = condition ? qc.parseBinaryQubits(condition) : []
+        const condition_qubits = condition ? condition : []
 
         // debugger
         if (typeof (value) === 'number') {
@@ -2618,7 +2644,10 @@ class QInt {
                     let controls = [...condition_qubits, ...range(qc_qubit_start, qubit)]
                     let target = [qubit]
                     let total =controls.concat(target)
-                    qc.ncnot(total)
+                    if(total.length == 1)
+                        qc.not(total)
+                    else
+                        qc.ncnot(total);
                 })
             })
 
@@ -2641,7 +2670,10 @@ class QInt {
                     let controls = [...self_qubits_involved.filter(elm => elm < self_qubit), value_qubit]
                     //controls = qubit12binary(controls)
                     let total =controls.concat(target)
-                    qc.ncnot(total)
+                    if(total.length == 1)
+                        qc.not(total);
+                    else
+                        qc.ncnot(total)
                 })
             })
 
@@ -2673,7 +2705,11 @@ class QInt {
                     let controls = range(qc_qubit_start, qubit)
                     let target = [qubit]
                     let total =controls.concat(target)
-                    qc.ncnot(total)
+                    console.log(total);
+                    if(total.length == 1)
+                        qc.not(total);
+                    else
+                        qc.ncnot(total)
                 })
             })
 
@@ -2734,11 +2770,13 @@ class QInt {
     Grover(conditional_bits = undefined)
     {
         let { qc, index } = this
-        let qubits = range(...index)
+        //let qubits = range(...index)
+        if(conditional_bits == undefined)
+            conditional_bits = this.bits()
         this.had()
         this.not()
         
-        this.cphase(180, conditional_bits);
+        qc.ncphase(180, conditional_bits);
 
         this.not()
         this.had()

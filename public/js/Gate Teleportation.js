@@ -1,70 +1,53 @@
-// Programming Quantum Computers
-//   by Eric Johnston, Nic Harrigan and Mercedes Gimeno-Segovia
-//   O'Reilly Media
-
-// To run this online, go to http://oreilly-qc.github.io?p=14-GT
-
-
-
-qc.reset(4);
+reset(4);
 var alice = qint.new(1, 'alice');
 var epa    = qint.new(1, 'ep-a');
 var epb    = qint.new(1, 'ep-b');
 var bob   = qint.new(1, 'bob');
 
-qc.write(0);
-qc.nop();
-
 
 // Prepare Alice's qubit
-qc.startlabel('prep alice');
+startlabel('prep alice');
 alice.had();
 alice.phase(45);
 alice.had();
-qc.endlabel('prep alice');
-qc.nop();
-
+endlabel('prep alice');
 
 //Prepare Bob's qubit
-qc.startlabel('prep bob');
+startlabel('prep bob');
 bob.had();
 bob.phase(30);
 bob.had();
-qc.endlabel('prep bob');
-qc.nop();
+endlabel('prep bob');
 
 // Prepare standard entangled state that will be shared by Alice and Bob
-qc.startlabel('entangle');
+startlabel('entangle');
 epa.had();
-epb.cnot(epa);
-qc.endlabel('entangle');
-qc.nop();
+cnot([1,2]);
+endlabel('entangle');
 
 // Teleport and apply conditional operation (portrayed here as quantum gates, 
 // but they are acting from classical information)
-qc.startlabel('teleport');
-epa.cnot(alice);
-qc.read(epa.bits());
-epb.cnot(epa);
-bob.cnot(epb);
+startlabel('teleport');
+cnot([0,1]);
+cnot([1,2]);
+cnot([2,3]);
 epb.had();
-qc.read(epb.bits());
-alice.cphase(180, epb);
-qc.endlabel('teleport');
-qc.nop();
+
+ncphase(180, [0,2]);
+endlabel('teleport');
 
 
 //This operation should be equal to applying a CNOT and undoing the preparationg
 // of Alice's and Bob's qubits. We can verify by applying the operations in reverse
-qc.startlabel('verify');
-bob.cnot(alice);
+startlabel('verify');
+cnot([0,3]);
 bob.had();
 bob.phase(-30);
 bob.had();
 alice.had();
 alice.phase(-45);
 alice.had();
-qc.endlabel('verify');
+endlabel('verify');
 //Note that all the outcomes correspond to Alice and Bob's qubits 
 // being zero (first and last digits of the binary representation of the register):
 // If epa=0 and epb=0, then output state is |0000> = |0>

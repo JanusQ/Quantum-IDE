@@ -55,7 +55,6 @@ function getRawGateNcphase(options) {
     range(0, state_num).forEach(i=>{
         matrix.data[i][i] = complex(1,0); //getComplex({r:1, phi: -phi/2})
     })
-    
     matrix.data[state_num-1][state_num-1] = getComplex({r:1, phi})
     
     // let value = getComplex({r:1, phi})
@@ -93,7 +92,7 @@ function getRawGateNCNOT(options)
 
     if(qubit_number < 2){
         console.error("qubit_number < 2");
-        debugger
+        //debugger
     }
 
 
