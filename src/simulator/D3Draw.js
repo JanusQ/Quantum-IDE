@@ -4275,7 +4275,7 @@ export default class d3Draw {
 										this.operationX(j),
 										this.operationY(max)
 									)
-									this.drawCcnot(ccnotG, this.operationX(j), this.operationY(i))
+									this.drawCcnot(ncnotG, this.operationX(j), this.operationY(i))
 								}else{
 									this.drawCircle(ncnotG, this.operationX(j), this.operationY(i))
 								}
@@ -4292,7 +4292,7 @@ export default class d3Draw {
 									.attr('stroke', 'gray')
 									.attr('stroke-width', 1)
 									.attr('height', 26)
-									.attr('width', 22)
+									.attr('width', 44)
 									.attr('fill', '#fff')
 									.attr('rx', 2)
 								const text = tipG
