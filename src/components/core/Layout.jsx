@@ -19,7 +19,7 @@ const Layout = ({ children, isHome, isLogin, isIde }) => {
       <div className="front_header">
         <div className="front_menu_div">
           <span className="front_logo_title" onClick={backHome}>
-            量子计算
+            太元量子计算
           </span>
           <Navigation />
         </div>

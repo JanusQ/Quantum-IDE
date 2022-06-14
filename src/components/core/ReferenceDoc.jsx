@@ -18,7 +18,7 @@ const ReferenceDoc = () => {
 	const { docId } = useParams()
 	const getDocListFn = async () => {
 		const { data } = await getDocList()
-		setDocList(data.doc_list)
+		setDocList(data.doc_list.reverse())
 		if (docId === 'all') {
 			getDocFn(data.doc_list[0].doc_id)
 			setActiveId(data.doc_list[0].doc_id)
@@ -46,6 +46,7 @@ const ReferenceDoc = () => {
 			</span>
 		</li>
 	))
+	
 	const getDocFn = async (id) => {
 		try {
 			setActiveId(id)
