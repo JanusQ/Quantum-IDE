@@ -1091,9 +1091,14 @@ export default class d3Draw {
 	}
 	// 弧度转度数
 	radianToAngle(radian){
-		const num1 = Number(radian.split('/')[1])
-		const num2 = Number(radian.split('/')[0].split('p')[0]) ? Number(radian.split('/')[0].split('p')[0]) : 1
-		return _.round(_.divide(_.multiply(_.divide(_.multiply(num2,Math.PI),num1),180),Math.PI)) + '°'
+		if(typeof(radian) === 'string'){
+			const num1 = Number(radian.split('/')[1])
+			const num2 = Number(radian.split('/')[0].split('p')[0]) ? Number(radian.split('/')[0].split('p')[0]) : 1
+			return _.round(_.divide(_.multiply(_.divide(_.multiply(num2,Math.PI),num1),180),Math.PI)) + '°'
+		}else{
+			return _.round(_.divide(_.multiply(radian,180),Math.PI)) + '°'
+		}
+		
 	}
 	
 	// 2.0处理circuit.gates
@@ -1417,7 +1422,7 @@ export default class d3Draw {
 									.attr('stroke', 'gray')
 									.attr('stroke-width', 1)
 									.attr('height', 26)
-									.attr('width', 33)
+									.attr('width', 60)
 									.attr('fill', '#fff')
 									.attr('rx', 2)
 								const text = tipG
