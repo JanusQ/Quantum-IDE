@@ -179,10 +179,10 @@ function App() {
 		//bind function
 		let gates = ['cx','cy','cz','ch','csrn','cr2','cr4','cr8','crx','cry','crz','cu1','cu2',
         'cu3','cs','ct','csdg','ctdg','ccx','id','x','y','z','h','srn','srndg','r2','r4','r8','s','t','sdg','tdg',
-        'rx','ry','rz','u1','u2','u3','swap','iswap','srswap','xy','ms','yy','zz','had','hadamard','not', 'reset','write','cnot',
+        'rx','ry','rz','u1','u2','u3','swap','iswap','srswap','xy','ms','yy','zz','had','hadamard','not', 'reset','cnot',
 		'phase','startlabel','endlabel','ccnot','ncnot','ncphase','qprint'];
 		var cx,cy,cz,ch,csrn,cr2,cr4,cr8,crx,cry,crz,cu1,cu2,cu3,cs,ct,csdg,ctdg,ccx,id,x,y,z,h,srn,srndg,r2,r4,r8,s,t,sdg,
-		tdg,rx,ry,rz,u1,u2,u3,swap,iswap,srswap,xy,ms,yy,zz,had,hadamard,not,reset,write,cnot,phase,startlabel,endlabel,
+		tdg,rx,ry,rz,u1,u2,u3,swap,iswap,srswap,xy,ms,yy,zz,had,hadamard,not,reset,cnot,phase,startlabel,endlabel,
 		ccnot,ncnot,ncphase,qprint;
 		//let gates =['had']
 		let bind_str = 'gate_name = qc.gate_name.bind(qc);\n ';
