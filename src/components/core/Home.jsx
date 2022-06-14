@@ -108,7 +108,7 @@ const Home = () => {
 					<SwiperSlide>
 						<div className='home_banner_item home_banner_item_1'>
 							<div className='home_banner_text'>
-								<div className='home_banner_title'>量子云平台</div>
+								<div className='home_banner_title'>太元量子云平台</div>
 								<div className='home_banner_content'>
 									提供实时的量子计算服务
 								</div>
