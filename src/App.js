@@ -80,9 +80,6 @@ function App() {
 			value: "Simon's Algorithm",
 		},
 		{
-			value: "Shor's Algorithm",
-		},
-		{
 			value: 'Phase estimation',
 		},
 		{
@@ -103,6 +100,9 @@ function App() {
 		{
 			value: 'Deutsch-Jozsa Algorithm',
 		},
+		// {
+		// 	value: "Shor's Algorithm",
+		// },
 		// {
 		// 	value: 'user_study',
 		// },

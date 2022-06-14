@@ -501,7 +501,7 @@ export default class QCEngine {
                 }
                 else if(op == 'ncnot')
                 {
-                    console.log("pars",pars);
+                    
                     this._addGate({
                         'operation' : op,
                         ...pars,
