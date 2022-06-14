@@ -1,6 +1,6 @@
 // QFT
 
-qc.reset(7);
+reset(7);
 
 var sender = qint.new(3, 'S')
 var receiver = qint.new(3, 'R')
@@ -9,35 +9,32 @@ var a = qint.new(1, 'A')
 //qc.write(0x0)
 
 let label = 'GenInfo'
-qc.startlabel(label)
+startlabel(label)
 // sender.ry(135, 0x2 | 0x4)
-qc.ry(135, 0x2 | 0x4 ) //| 0x8 | 0x16
+ry(135, [1,2] ) //| 0x8 | 0x16
 qc.disableDisplay(label)
-qc.endlabel(label)
+endlabel(label)
 
-
-qc.nop()
 
 label = 'InvQFT'
-qc.startlabel(label)
+startlabel(label)
 sender.invQFT()
-qc.endlabel(label)
+endlabel(label)
 
-qc.nop()
+
 label = 'Send'
-qc.startlabel(label)
+startlabel(label)
 sender.exchange(receiver)
-qc.endlabel(label)
+endlabel(label)
 qc.disableDisplay(label)
-qc.nop()
+
 
 
 label = 'QFT'
-qc.startlabel(label)
+startlabel(label)
 receiver.QFT()
-qc.endlabel(label)
+endlabel(label)
 
-qc.nop()
 
 // label = 'A = R>=4'
 // qc.startlabel(label)

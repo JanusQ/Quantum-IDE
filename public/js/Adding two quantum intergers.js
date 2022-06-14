@@ -7,10 +7,10 @@ var b = qint.new(2, 'b');
 // prepare
 startlabel('prepare');
 // debugger
-write(1);
+a.x([0])
 hadamard([2]);
 phase(45, [2]);
-b.write(1);
+b.x([0]);
 b.hadamard([1]);
 b.phase(90, [1]);
 

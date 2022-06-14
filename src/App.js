@@ -68,7 +68,7 @@ function App() {
 	// 提供的case列表
 	const initCaseList = [
 		{
-			value: 'FOR TEST',
+			value: 'engine_gates debug',
 		},
 		{
 			value: 'Quantum Conditional Execution',
@@ -103,27 +103,27 @@ function App() {
 		{
 			value: 'Deutsch-Jozsa Algorithm',
 		},
-		{
-			value: 'user_study',
-		},
-		{
-			value: 'into_evolution',
-		},
-		{
-			value: 'case 1',
-		},
-		{
-			value: 'bell_state',
-		},
-		{
-			value: 'all gates',
-		},
-		{
-			value: 'ex7-7',
-		},
-		{
-			value: 'ex7-1',
-		},
+		// {
+		// 	value: 'user_study',
+		// },
+		// {
+		// 	value: 'into_evolution',
+		// },
+		// {
+		// 	value: 'case 1',
+		// },
+		// {
+		// 	value: 'bell_state',
+		// },
+		// {
+		// 	value: 'all gates',
+		// },
+		// {
+		// 	value: 'ex7-7',
+		// },
+		// {
+		// 	value: 'ex7-1',
+		// },
 		{
 			value: 'Markov Process',
 		},
@@ -179,9 +179,9 @@ function App() {
 		//bind function
 		let gates = ['cx','cy','cz','ch','csrn','cr2','cr4','cr8','crx','cry','crz','cu1','cu2',
         'cu3','cs','ct','csdg','ctdg','ccx','id','x','y','z','h','srn','srndg','r2','r4','r8','s','t','sdg','tdg',
-        'rx','ry','rz','u1','u2','u3','swap','iswap','srswap','xy','ms','yy','zz','had','hadamard','not', 'reset','write','cnot','phase','startlabel','endlabel','ccnot','ncnot','ncphase'];
+        'rx','ry','rz','u1','u2','u3','swap','iswap','srswap','xy','ms','yy','zz','had','hadamard','not', 'reset','write','cnot','phase','startlabel','endlabel','ccnot','ncnot','ncphase','qprint'];
 		var cx,cy,cz,ch,csrn,cr2,cr4,cr8,crx,cry,crz,cu1,cu2,cu3,cs,ct,csdg,ctdg,ccx,id,x,y,z,h,srn,srndg,r2,r4,r8,s,t,sdg,
-		tdg,rx,ry,rz,u1,u2,u3,swap,iswap,srswap,xy,ms,yy,zz,had,hadamard,not,reset,write,cnot,phase,startlabel,endlabel,ccnot,ncnot,ncphase;
+		tdg,rx,ry,rz,u1,u2,u3,swap,iswap,srswap,xy,ms,yy,zz,had,hadamard,not,reset,write,cnot,phase,startlabel,endlabel,ccnot,ncnot,ncphase,qprint;
 		//let gates =['had']
 		let bind_str = 'gate_name = qc.gate_name.bind(qc);\n ';
 		let bind_str_all = '';

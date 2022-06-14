@@ -166,11 +166,19 @@ export default class QCEngine {
         let start_index = this.assigned_qubit_number
         this.assigned_qubit_number += qubit_number
         let end_index = this.assigned_qubit_number
+        if(this.assigned_qubit_number > this.qubit_number)
+        {
+            this.qprint("WARNING: number exceeds total qubit number")
+        }
         let index = [start_index, end_index]
 
 
         if (!name)
             name = String(index)
+        if(this.name2index[name])
+        {
+            this.qprint("qint already exists: " + name);
+        }
         this.name2index[name] = index
 
         // TODO：需要保证name没有重复, 申请的不会超过
@@ -213,7 +221,7 @@ export default class QCEngine {
         }
     }
 
-    print() {
+    qprint() {
         console.log('qc_console', arguments)
         // debugger
         this.console_data.push(
@@ -951,11 +959,11 @@ export default class QCEngine {
     //     })
     // }
 
-    exchange(binary_qubits1, binary_qubits2) {
+    exchange(qubits1, qubits2) {
         const { operations, circuit, now_column } = this
 
-        const qubits1 = this.parseBinaryQubits(binary_qubits1)
-        const qubits2 = this.parseBinaryQubits(binary_qubits2)
+        //const qubits1 = this.parseBinaryQubits(binary_qubits1)
+        //const qubits2 = this.parseBinaryQubits(binary_qubits2)
 
         if (qubits1.length != qubits2.length) {
             console.error(qubits1, qubits2, 'do not have same length, which can not be swapped')
@@ -964,7 +972,7 @@ export default class QCEngine {
 
         qubits1.forEach((qubit1, index) => {
             const qubit2 = qubits2[index]
-            this.swap(qubit12binary([qubit1]), qubit12binary([qubit2]))
+            this.swap([qubit1,qubit2])
         })
 
     }
@@ -2268,6 +2276,9 @@ class QInt {
     {
         if( wires !== undefined)
         {
+            if(typeof(wires) == 'number'){
+                return [wires +this.index[0]]
+            }
             let new_wires = wires.map(wire => wire + this.index[0]);
             return new_wires;
         }
@@ -2578,8 +2589,8 @@ class QInt {
     }
 
     exchange(another_qint) {
-        let { qc, binary_qubits } = this
-        qc.exchange(binary_qubits, another_qint.binary_qubits)
+        let { qc, true_wires } = this
+        qc.exchange(true_wires, another_qint.true_wires)
     }
 
 
