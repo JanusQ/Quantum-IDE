@@ -47,7 +47,7 @@ const Computer = () => {
 	const getComListFn = async () => {
 		const formData = new FormData()
 		const obj = {
-			update_code: -1,
+			update_code: 0,
 		}
 		if (searchValue) {
 			obj.com_name = searchValue

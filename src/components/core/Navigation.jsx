@@ -13,7 +13,7 @@ function useActive(currentPath, path) {
 function useActiveAct(currentPath, path) {
 	return currentPath.indexOf(path) === -1 ? '' : 'active'
 }
-const Navigation = () => {
+const Navigation = ({isIde}) => {
 	const history = useHistory()
 	const router = useSelector((state) => state.router)
 	const pathname = router.location.pathname
@@ -70,7 +70,7 @@ const Navigation = () => {
 	)
 	return (
     <>
-      <ul className="front_menu_list">
+      <ul className="front_menu_list" style={{paddingTop:isIde?'1px':'15px'}}>
         <li className={isHome}>
           <Link to="/">首页</Link>
         </li>
@@ -89,7 +89,7 @@ const Navigation = () => {
         <li> <Link to="/aboutUs">关于我们</Link></li>
       </ul>
 
-      <ul className="front_menu_list front_menu_list_second">
+      <ul className="front_menu_list front_menu_list_second" style={{paddingTop:isIde?'1px':'15px'}}>
         {!isAuth() && (
           <>
             <li>
