@@ -115,9 +115,9 @@ export default class QCEngine {
             inital_value.push(0)
         }
         //WAIT: START RUN HERE?
-        circuit.myStartRun()
+        // circuit.myStartRun()
 
-        this.now_state = circuit.stateAsArray()
+        // this.now_state = circuit.stateAsArray()
     }
 
     // Considered together these 8 qubits can represent any 8-bit number (or, of course, superpositions of such numbers). Before we begin operating on these qubits we can initialize them to be a binary encoding of some integer value using the qc.write() method:
@@ -326,6 +326,9 @@ export default class QCEngine {
 //-----------------------------------------------------------------------------------------------------
     runCircuit()
     {
+        this.circuit.myStartRun()
+        this.now_state = this.circuit.stateAsArray()
+
         const { gates } = this.circuit;
         let qlen = this.circuit.numQubits;
         let cir_len = gates[0].length

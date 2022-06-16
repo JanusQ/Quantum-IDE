@@ -212,7 +212,7 @@ function App() {
 		}
 		// 真机
 		if (noBug && runValue === 1) {
-			qc.export()
+			console.log(qc.export())
 			realRun(qc, sample)
 		}
 	}
