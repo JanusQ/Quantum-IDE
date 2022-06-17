@@ -1089,6 +1089,18 @@ export default class d3Draw {
 	operationX(col) {
 		return (this.svgItemWidth + this.gate_offest) * (col + this.scaleNum)
 	}
+	// 弧度转度数
+	radianToAngle(radian){
+		if(typeof(radian) === 'string'){
+			const num1 = Number(radian.split('/')[1])
+			const num2 = Number(radian.split('/')[0].split('p')[0]) ? Number(radian.split('/')[0].split('p')[0]) : 1
+			return _.round(_.divide(_.multiply(_.divide(_.multiply(num2,Math.PI),num1),180),Math.PI)) + '°'
+		}else{
+			return _.round(_.divide(_.multiply(radian,180),Math.PI)) + '°'
+		}
+		
+	}
+	
 	// 2.0处理circuit.gates
 	drawOperations2(svg, gates, data) {
 		for (let i = 0; i < gates.length; i++) {
@@ -1308,9 +1320,12 @@ export default class d3Draw {
 										this.operationX(j),
 										this.operationY(max)
 									)
+									this.drawCcnot(ccnotG, this.operationX(j), this.operationY(i))
+								}else{
+									this.drawCircle(ccnotG, this.operationX(j), this.operationY(i))
 								}
 								
-								this.drawCcnot(ccnotG, this.operationX(j), this.operationY(i))
+								
 							}
 							ccnotG.on('mouseover', function (e) {
 								svg.selectAll('.tip').remove()
@@ -1375,8 +1390,7 @@ export default class d3Draw {
 										.attr('text-anchor', 'middle')
 										.attr('style', 'font-size:12px;')
 										.text(
-											(_.round(operation.options.params.lambda, 2) ||
-												operation.options.params.lambda) + '°'
+											this.radianToAngle(operation.options.params.phi)
 										)
 									ccphaseG
 										.append('rect')
@@ -1408,7 +1422,7 @@ export default class d3Draw {
 									.attr('stroke', 'gray')
 									.attr('stroke-width', 1)
 									.attr('height', 26)
-									.attr('width', 33)
+									.attr('width', 60)
 									.attr('fill', '#fff')
 									.attr('rx', 2)
 								const text = tipG
@@ -1440,7 +1454,7 @@ export default class d3Draw {
 								.append('tspan')
 								.attr('text-anchor', 'middle')
 								.attr('style', 'font-size:12px;')
-								.text((_.floor(operation.options.params.theta) || operation.options.params.theta) + '°')
+								.text(this.radianToAngle(operation.options.params.theta))
 
 							ryG.on('mouseover', function (e) {
 								svg.selectAll('.tip').remove()
@@ -1485,7 +1499,7 @@ export default class d3Draw {
 								.append('tspan')
 								.attr('text-anchor', 'middle')
 								.attr('style', 'font-size:12px;')
-								.text(_.floor(operation.options.params.theta) || operation.options.params.theta + '°')
+								.text(this.radianToAngle(operation.options.params.theta))
 							rxG.on('mouseover', function (e) {
 								svg.selectAll('.tip').remove()
 								const position = d3.pointer(e)
@@ -1529,7 +1543,7 @@ export default class d3Draw {
 								.append('tspan')
 								.attr('text-anchor', 'middle')
 								.attr('style', 'font-size:12px;')
-								.text(_.floor(operation.options.params.phi) || operation.options.params.phi + '°')
+								.text(this.radianToAngle(operation.options.params.phi))
 							rzG.on('mouseover', function (e) {
 								svg.selectAll('.tip').remove()
 								const position = d3.pointer(e)
@@ -1591,10 +1605,8 @@ export default class d3Draw {
 										.append('tspan')
 										.attr('text-anchor', 'middle')
 										.attr('style', 'font-size:12px;')
-										.text(
-											(_.floor(operation.options.params.theta) ||
-												operation.options.params.theta) + '°'
-										)
+										.text(this.radianToAngle(operation.options.params.theta))
+										
 									cryG.append('rect')
 										.attr('height', this.svgItemHeight * (crymax - crymin + 1))
 										.attr('width', 22)
@@ -1608,9 +1620,12 @@ export default class d3Draw {
 										this.operationX(j),
 										this.operationY(crymax)
 									)
+									this.drawRy(cryG, this.operationX(j), this.operationY(i))
+								}else{
+									this.drawCircle(cryG, this.operationX(j), this.operationY(i))
 								}
 
-								this.drawRy(cryG, this.operationX(j), this.operationY(i))
+								
 							}
 
 							cryG.on('mouseover', function (e) {
@@ -1656,7 +1671,7 @@ export default class d3Draw {
 								.append('tspan')
 								.attr('text-anchor', 'middle')
 								.attr('style', 'font-size:12px;')
-								.text((_.floor(operation.options.lambda) || operation.options.lambda) + '°')
+								.text(this.radianToAngle(operation.options.lambda))
 							phaseG.on('mouseover', function (e) {
 								svg.selectAll('.tip').remove()
 								const position = d3.pointer(e)
@@ -2016,7 +2031,7 @@ export default class d3Draw {
 								.append('tspan')
 								.attr('text-anchor', 'middle')
 								.attr('style', 'font-size:10px;')
-								.text((_.floor(operation.options.params.phi) || operation.options.params.phi) + '°')
+								.text(this.radianToAngle(operation.options.params.phi))
 							u2ParentG
 								.append('text')
 								.attr('x', 22)
@@ -2026,7 +2041,7 @@ export default class d3Draw {
 								.attr('text-anchor', 'middle')
 								.attr('style', 'font-size:10px;')
 								.text(
-									(_.floor(operation.options.params.lambda) || operation.options.params.lambda) + '°'
+									this.radianToAngle(operation.options.params.lambda)
 								)
 							u2G.on('mouseover', function (e) {
 								svg.selectAll('.tip').remove()
@@ -2071,7 +2086,7 @@ export default class d3Draw {
 								.append('tspan')
 								.attr('text-anchor', 'middle')
 								.attr('style', 'font-size:10px;')
-								.text((_.floor(operation.options.params.theta) || operation.options.params.theta) + '°')
+								.text(this.radianToAngle(operation.options.params.theta))
 							u3ParentG
 								.append('text')
 								.attr('x', 11)
@@ -2080,7 +2095,7 @@ export default class d3Draw {
 								.append('tspan')
 								.attr('text-anchor', 'middle')
 								.attr('style', 'font-size:10px;')
-								.text((_.floor(operation.options.params.phi) || operation.options.params.phi) + '°')
+								.text(this.radianToAngle(operation.options.params.phi))
 							u3ParentG
 								.append('text')
 								.attr('x', 33)
@@ -2090,7 +2105,7 @@ export default class d3Draw {
 								.attr('text-anchor', 'middle')
 								.attr('style', 'font-size:10px;')
 								.text(
-									(_.floor(operation.options.params.lambda) || operation.options.params.lambda) + '°'
+									this.radianToAngle(operation.options.params.lambda)
 								)
 							u3G.on('mouseover', function (e) {
 								svg.selectAll('.tip').remove()
@@ -2517,9 +2532,12 @@ export default class d3Draw {
 										this.operationX(j),
 										this.operationY(max)
 									)
+									this.drawNameCircle(cyG, this.operationX(j), this.operationY(i), 'y')
+								}else{
+									this.drawCircle(cyG, this.operationX(j), this.operationY(i))
 								}
 
-								this.drawNameCircle(cyG, this.operationX(j), this.operationY(i), 'y')
+								
 							}
 							cyG.on('mouseover', function (e) {
 								svg.selectAll('.tip').remove()
@@ -2584,9 +2602,12 @@ export default class d3Draw {
 										this.operationX(j),
 										this.operationY(max)
 									)
+									this.drawCircle(czG, this.operationX(j), this.operationY(i))
+								}else{
+									this.drawCircle(czG, this.operationX(j), this.operationY(i))
 								}
 
-								this.drawCircle(czG, this.operationX(j), this.operationY(i))
+								
 							}
 							czG.on('mouseover', function (e) {
 								svg.selectAll('.tip').remove()
@@ -2651,9 +2672,12 @@ export default class d3Draw {
 										this.operationX(j),
 										this.operationY(max)
 									)
+									this.drawNameCircle(chG, this.operationX(j), this.operationY(i), 'h')
+								}else{
+									this.drawCircle(chG, this.operationX(j), this.operationY(i))
 								}
 
-								this.drawNameCircle(chG, this.operationX(j), this.operationY(i), 'h')
+								
 							}
 							chG.on('mouseover', function (e) {
 								svg.selectAll('.tip').remove()
@@ -2719,9 +2743,12 @@ export default class d3Draw {
 										this.operationX(j),
 										this.operationY(max)
 									)
+									this.drawSrn(srnG, this.operationX(j), this.operationY(i))
+								}else{
+									this.drawCircle(csrnG, this.operationX(j), this.operationY(i))
 								}
 
-								this.drawSrn(srnG, this.operationX(j), this.operationY(i))
+								
 							}
 							csrnG.on('mouseover', function (e) {
 								svg.selectAll('.tip').remove()
@@ -2782,8 +2809,7 @@ export default class d3Draw {
 										.attr('text-anchor', 'middle')
 										.attr('style', 'font-size:12px;')
 										.text(
-											(_.floor(operation.options.params.theta) ||
-												operation.options.params.theta) + '°'
+											this.radianToAngle(operation.options.params.theta)
 										)
 									msG.append('rect')
 										.attr('height', this.svgItemHeight * (cu1max - cu1min + 1))
@@ -2863,8 +2889,7 @@ export default class d3Draw {
 										.attr('text-anchor', 'middle')
 										.attr('style', 'font-size:12px;')
 										.text(
-											(_.floor(operation.options.params.theta) ||
-												operation.options.params.theta) + '°'
+											this.radianToAngle(operation.options.params.theta) 
 										)
 									yyG.append('rect')
 										.attr('height', this.svgItemHeight * (cu1max - cu1min + 1))
@@ -2944,8 +2969,7 @@ export default class d3Draw {
 										.attr('text-anchor', 'middle')
 										.attr('style', 'font-size:12px;')
 										.text(
-											(_.floor(operation.options.params.theta) ||
-												operation.options.params.theta) + '°'
+											this.radianToAngle(operation.options.params.theta )
 										)
 									zzG.append('rect')
 										.attr('height', this.svgItemHeight * (zzmax - zzmin + 1))
@@ -3030,9 +3054,12 @@ export default class d3Draw {
 										this.operationX(j),
 										this.operationY(cr2max)
 									)
+									this.drawRnumber(cr2G, this.operationX(j), this.operationY(i), 'Zπ/2')
+								}else{
+									this.drawCircle(cr2G, this.operationX(j), this.operationY(i))
 								}
 
-								this.drawRnumber(cr2G, this.operationX(j), this.operationY(i), 'Zπ/2')
+								
 							}
 
 							cr2G.on('mouseover', function (e) {
@@ -3100,9 +3127,12 @@ export default class d3Draw {
 										this.operationX(j),
 										this.operationY(cr4max)
 									)
+									this.drawRnumber(cr4G, this.operationX(j), this.operationY(i), 'Zπ/4')
+								}else{
+									this.drawCircle(cr4G, this.operationX(j), this.operationY(i))
 								}
 
-								this.drawRnumber(cr4G, this.operationX(j), this.operationY(i), 'Zπ/4')
+								
 							}
 
 							cr4G.on('mouseover', function (e) {
@@ -3170,9 +3200,12 @@ export default class d3Draw {
 										this.operationX(j),
 										this.operationY(cr8max)
 									)
+									this.drawRnumber(cr8G, this.operationX(j), this.operationY(i), 'Zπ/8')
+								}else{
+									this.drawCircle(cr8G, this.operationX(j), this.operationY(i))
 								}
 
-								this.drawRnumber(cr8G, this.operationX(j), this.operationY(i), 'Zπ/8')
+								
 							}
 
 							cr8G.on('mouseover', function (e) {
@@ -3235,7 +3268,7 @@ export default class d3Draw {
 									.append('tspan')
 									.attr('text-anchor', 'middle')
 									.attr('style', 'font-size:12px;')
-									.text(_.floor(operation.options.params.theta) || operation.options.params.theta + '°')
+									.text(this.radianToAngle(operation.options.params.theta))
 									crxG.append('rect')
 										.attr('height', this.svgItemHeight * (crxmax - crxmin + 1))
 										.attr('width', 22)
@@ -3249,9 +3282,12 @@ export default class d3Draw {
 										this.operationX(j),
 										this.operationY(crxmax)
 									)
+									this.drawRx(rxG, this.operationX(j), this.operationY(i))
+								}else{
+									this.drawCircle(crxG, this.operationX(j), this.operationY(i))
 								}
 
-								this.drawRx(rxG, this.operationX(j), this.operationY(i))
+								
 							}
 
 							crxG.on('mouseover', function (e) {
@@ -3314,7 +3350,7 @@ export default class d3Draw {
 									.append('tspan')
 									.attr('text-anchor', 'middle')
 									.attr('style', 'font-size:12px;')
-									.text(_.floor(operation.options.params.phi) || operation.options.params.phi + '°')
+									.text(this.radianToAngle(operation.options.params.phi))
 									crzG.append('rect')
 										.attr('height', this.svgItemHeight * (crzmax - crzmin + 1))
 										.attr('width', 22)
@@ -3328,9 +3364,12 @@ export default class d3Draw {
 										this.operationX(j),
 										this.operationY(crzmax)
 									)
+									this.drawRz(crzG, this.operationX(j), this.operationY(i))
+								}else{
+									this.drawCircle(crzG, this.operationX(j), this.operationY(i))
 								}
 
-								this.drawCircle(crzG, this.operationX(j), this.operationY(i))
+								
 							}
 
 							crzG.on('mouseover', function (e) {
@@ -3393,7 +3432,7 @@ export default class d3Draw {
 									.append('tspan')
 									.attr('text-anchor', 'middle')
 									.attr('style', 'font-size:12px;')
-									.text(_.floor(operation.options.params.lambda) || operation.options.params.lambda + '°')
+									.text(this.radianToAngle(operation.options.params.lambda))
 									cu1G.append('rect')
 										.attr('height', this.svgItemHeight * (cu1max - cu1min + 1))
 										.attr('width', 22)
@@ -3407,9 +3446,12 @@ export default class d3Draw {
 										this.operationX(j),
 										this.operationY(cu1max)
 									)
+									this.drawNameCirclethreeLength(cu1G, this.operationX(j), this.operationY(i),'cu1')
+								}else{
+									this.drawCircle(cu1G, this.operationX(j), this.operationY(i))
 								}
 
-								this.drawNameCirclethreeLength(cu1G, this.operationX(j), this.operationY(i),'cu1')
+								
 							}
 
 							cu1G.on('mouseover', function (e) {
@@ -3472,7 +3514,7 @@ export default class d3Draw {
 										.append('tspan')
 										.attr('text-anchor', 'middle')
 										.attr('style', 'font-size:10px;')
-										.text((_.floor(operation.options.params.phi) || operation.options.params.phi) + '°')
+										.text(this.radianToAngle(operation.options.params.phi))
 									cu2G
 										.append('text')
 										.attr('x', 22)
@@ -3482,7 +3524,7 @@ export default class d3Draw {
 										.attr('text-anchor', 'middle')
 										.attr('style', 'font-size:10px;')
 										.text(
-											(_.floor(operation.options.params.lambda) || operation.options.params.lambda) + '°'
+											this.radianToAngle(operation.options.params.lambda)
 										)
 									cu2G.append('rect')
 										.attr('height', this.svgItemHeight * (cu2max - cu2min + 1))
@@ -3497,9 +3539,12 @@ export default class d3Draw {
 										this.operationX(j),
 										this.operationY(cu2max)
 									)
+									this.drawNameCirclethreeLength(cu2G, this.operationX(j), this.operationY(i),'cu2')
+								}else{
+									this.drawCircle(cu2G, this.operationX(j), this.operationY(i))
 								}
 
-								this.drawNameCirclethreeLength(cu2G, this.operationX(j), this.operationY(i),'cu2')
+								
 							}
 
 							cu2G.on('mouseover', function (e) {
@@ -3561,7 +3606,7 @@ export default class d3Draw {
 									.append('tspan')
 									.attr('text-anchor', 'middle')
 									.attr('style', 'font-size:10px;')
-									.text((_.floor(operation.options.params.theta) || operation.options.params.theta) + '°')
+									.text(this.radianToAngle(operation.options.params.theta))
 								cu3G
 									.append('text')
 									.attr('x', 11)
@@ -3570,7 +3615,7 @@ export default class d3Draw {
 									.append('tspan')
 									.attr('text-anchor', 'middle')
 									.attr('style', 'font-size:10px;')
-									.text((_.floor(operation.options.params.phi) || operation.options.params.phi) + '°')
+									.text(this.radianToAngle(operation.options.params.phi))
 								cu3G
 									.append('text')
 									.attr('x', 33)
@@ -3580,7 +3625,7 @@ export default class d3Draw {
 									.attr('text-anchor', 'middle')
 									.attr('style', 'font-size:10px;')
 									.text(
-										(_.floor(operation.options.params.lambda) || operation.options.params.lambda) + '°'
+										this.radianToAngle(operation.options.params.lambda)
 									)
 									cu3G.append('rect')
 										.attr('height', this.svgItemHeight * (cu3max - cu3min + 1))
@@ -3595,9 +3640,12 @@ export default class d3Draw {
 										this.operationX(j),
 										this.operationY(cu3max)
 									)
+									this.drawNameCirclethreeLength(cu3G, this.operationX(j), this.operationY(i),'cu3')
+								}else{
+									this.drawCircle(cu3G, this.operationX(j), this.operationY(i))
 								}
 
-								this.drawNameCirclethreeLength(cu3G, this.operationX(j), this.operationY(i),'cu3')
+								
 							}
 
 							cu3G.on('mouseover', function (e) {
@@ -3665,8 +3713,11 @@ export default class d3Draw {
 										this.operationX(j),
 										this.operationY(max)
 									)
+									this.drawNameCircle(csG,this.operationX(j),this.operationY(i),'s')
+								}else{
+									this.drawCircle(csG, this.operationX(j), this.operationY(i))
 								}
-								this.drawNameCircle(csG,this.operationX(j),this.operationY(i),'s')
+								
 							}
 							csG.on('mouseover', function (e) {
 								svg.selectAll('.tip').remove()
@@ -3732,8 +3783,11 @@ export default class d3Draw {
 										this.operationX(j),
 										this.operationY(max)
 									)
+									this.drawNameCircle(ctG,this.operationX(j),this.operationY(i),'t')
+								}else{
+									this.drawCircle(ctG, this.operationX(j), this.operationY(i))
 								}
-								this.drawNameCircle(ctG,this.operationX(j),this.operationY(i),'t')
+								
 							}
 							ctG.on('mouseover', function (e) {
 								svg.selectAll('.tip').remove()
@@ -3799,8 +3853,11 @@ export default class d3Draw {
 										this.operationX(j),
 										this.operationY(max)
 									)
+									this.drawSDg(sdegG, this.operationX(j), this.operationY(i), 's')
+								}else{
+									this.drawCircle(csdgG, this.operationX(j), this.operationY(i))
 								}
-								this.drawSDg(sdegG, this.operationX(j), this.operationY(i), 's')
+								
 							}
 							csdgG.on('mouseover', function (e) {
 								svg.selectAll('.tip').remove()
@@ -3866,8 +3923,11 @@ export default class d3Draw {
 										this.operationX(j),
 										this.operationY(max)
 									)
+									this.drawSDg(sdegG, this.operationX(j), this.operationY(i), 't')
+								}else{
+									this.drawCircle(ctdgG, this.operationX(j), this.operationY(i))
 								}
-								this.drawSDg(sdegG, this.operationX(j), this.operationY(i), 't')
+								
 							}
 							ctdgG.on('mouseover', function (e) {
 								svg.selectAll('.tip').remove()
@@ -3933,9 +3993,12 @@ export default class d3Draw {
 										this.operationX(j),
 										this.operationY(max)
 									)
+									this.drawCcnot(ccxG, this.operationX(j), this.operationY(i))
+								}else{
+									this.drawCircle(ccxG, this.operationX(j), this.operationY(i))
 								}
 								
-								this.drawCcnot(ccxG, this.operationX(j), this.operationY(i))
+								
 							}
 							ccxG.on('mouseover', function (e) {
 								svg.selectAll('.tip').remove()
@@ -3999,8 +4062,11 @@ export default class d3Draw {
 										this.operationX(j),
 										this.operationY(max)
 									)
+									this.drawSwap(cswapG, this.operationX(j), this.operationY(i))
+								}else{
+									this.drawCircle(ccxG, this.operationX(j), this.operationY(i))
 								}
-								this.drawSwap(cswapG, this.operationX(j), this.operationY(i))
+								
 							} else {
 								this.drawCircle(ccxG, this.operationX(j), this.operationY(i))
 							}
@@ -4067,8 +4133,11 @@ export default class d3Draw {
 										this.operationX(j),
 										this.operationY(max)
 									)
+									this.drawSrsswap(srsswapG, this.operationX(j), this.operationY(i), '√swp')
+								}else{
+									this.drawCircle(ccxG, this.operationX(j), this.operationY(i))
 								}
-								this.drawSrsswap(srsswapG, this.operationX(j), this.operationY(i), '√swp')
+								
 							} else {
 								this.drawCircle(ccxG, this.operationX(j), this.operationY(i))
 							}
@@ -4206,9 +4275,11 @@ export default class d3Draw {
 										this.operationX(j),
 										this.operationY(max)
 									)
+									this.drawCcnot(ncnotG, this.operationX(j), this.operationY(i))
+								}else{
+									this.drawCircle(ncnotG, this.operationX(j), this.operationY(i))
 								}
 
-								this.drawCircle(ncnotG, this.operationX(j), this.operationY(i))
 							}
 							ncnotG.on('mouseover', function (e) {
 								svg.selectAll('.tip').remove()
@@ -4221,7 +4292,7 @@ export default class d3Draw {
 									.attr('stroke', 'gray')
 									.attr('stroke-width', 1)
 									.attr('height', 26)
-									.attr('width', 22)
+									.attr('width', 44)
 									.attr('fill', '#fff')
 									.attr('rx', 2)
 								const text = tipG

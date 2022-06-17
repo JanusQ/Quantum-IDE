@@ -129,7 +129,7 @@ const Right = (props) => {
 				className='real_top_div'
 				style={{
 					display: props.isShowRealB ? 'block' : 'none',
-					height: props.isShowCMode || props.isShowRealD ? '40%' : '100%',
+					height: props.isShowRealC || props.isShowRealD ? '40%' : '100%',
 				}}
 			>
 				<div className='real_params_btn'>

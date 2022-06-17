@@ -115,9 +115,9 @@ export default class QCEngine {
             inital_value.push(0)
         }
         //WAIT: START RUN HERE?
-        circuit.myStartRun()
+        // circuit.myStartRun()
 
-        this.now_state = circuit.stateAsArray()
+        // this.now_state = circuit.stateAsArray()
     }
 
     // Considered together these 8 qubits can represent any 8-bit number (or, of course, superpositions of such numbers). Before we begin operating on these qubits we can initialize them to be a binary encoding of some integer value using the qc.write() method:
@@ -326,6 +326,9 @@ export default class QCEngine {
 //-----------------------------------------------------------------------------------------------------
     runCircuit()
     {
+        this.circuit.myStartRun()
+        this.now_state = this.circuit.stateAsArray()
+
         const { gates } = this.circuit;
         let qlen = this.circuit.numQubits;
         let cir_len = gates[0].length
@@ -501,7 +504,7 @@ export default class QCEngine {
                 }
                 else if(op == 'ncnot')
                 {
-                    console.log("pars",pars);
+                    
                     this._addGate({
                         'operation' : op,
                         ...pars,
@@ -977,62 +980,62 @@ export default class QCEngine {
 
     }
 
-    write(value, binary_qubits = undefined) {
-        const { inital_value, qubit_number, circuit_column } = this
+    // write(value, binary_qubits = undefined) {
+    //     const { inital_value, qubit_number, circuit_column } = this
 
-        let qubits = this.parseBinaryQubits(binary_qubits)
-        let qubit_value = binary(value, qubits.length)
+    //     let qubits = this.parseBinaryQubits(binary_qubits)
+    //     let qubit_value = binary(value, qubits.length)
 
-        if (Math.max(...qubits) >= qubit_number) {
-            console.error('qubits has unexist qubit', qubits.filter(qubit => qubit >= qubit_number))
-            debugger
-        }
+    //     if (Math.max(...qubits) >= qubit_number) {
+    //         console.error('qubits has unexist qubit', qubits.filter(qubit => qubit >= qubit_number))
+    //         debugger
+    //     }
 
-        let nc = circuit_column;
-        this.circuit_column++;
-        qubits.forEach((qubit, index) => {
-            let value = qubit_value[index]
-            inital_value[qubit] = value
-            // this.circuit.addGate()
-            if (value == 0) {
-                this.circuit.addGate('write0', nc, [qubit])
-            } else {
-                this.circuit.addGate('write1', nc, [qubit])
-            }
-        })
+    //     let nc = circuit_column;
+    //     this.circuit_column++;
+    //     qubits.forEach((qubit, index) => {
+    //         let value = qubit_value[index]
+    //         inital_value[qubit] = value
+    //         // this.circuit.addGate()
+    //         if (value == 0) {
+    //             this.circuit.addGate('write0', nc, [qubit])
+    //         } else {
+    //             this.circuit.addGate('write1', nc, [qubit])
+    //         }
+    //     })
         // this._addGate({
         //     'qubits': qubits,
         //     'operation': 'write',
         //     'value': qubit_value,
         //     'columns': column_range,
         // })
-    }
+    //}
 
     // measure
-    read(binary_qubits = undefined) {
-        const { operations, circuit, now_column } = this
-        let qubits = this.parseBinaryQubits(binary_qubits)
+    // read(binary_qubits = undefined) {
+    //     const { operations, circuit, now_column } = this
+    //     let qubits = this.parseBinaryQubits(binary_qubits)
 
-        let reg_name = 'read_' + now_column
-        qubits.forEach((qubit, index) => {
-            circuit.addGate("measure", now_column, qubit, { 'creg': { 'name': reg_name, 'bit': index } })
-        })
+    //     let reg_name = 'read_' + now_column
+    //     qubits.forEach((qubit, index) => {
+    //         circuit.addGate("measure", now_column, qubit, { 'creg': { 'name': reg_name, 'bit': index } })
+    //     })
 
-        // 这里目前唯一除了_addGate外的执行
-        this._circuitStep()
-        let result = circuit.getCregValue(reg_name); //返回一个int值, 只考虑new的
+    //     // 这里目前唯一除了_addGate外的执行
+    //     this._circuitStep()
+    //     let result = circuit.getCregValue(reg_name); //返回一个int值, 只考虑new的
 
-        // this._addGate({
-        //     qubits,
-        //     'operation': 'read',
-        //     'columns': this.nextColumn(),
-        //     reg_name,
-        //     result,
-        // })
+    //     // this._addGate({
+    //     //     qubits,
+    //     //     'operation': 'read',
+    //     //     'columns': this.nextColumn(),
+    //     //     reg_name,
+    //     //     result,
+    //     // })
 
-        // read完的state值是不对的
-        return result
-    }
+    //     // read完的state值是不对的
+    //     return result
+    // }
 
 
     // 一下都是用来画图的函数
@@ -2572,21 +2575,21 @@ class QInt {
     }
 
     // read的应该不是数组
-    read(binary_qubits) {
-        const { qc } = this
-        binary_qubits = this.bits(binary_qubits)
-        return qc.read(binary_qubits)
-    }
+    // read(binary_qubits) {
+    //     const { qc } = this
+    //     binary_qubits = this.bits(binary_qubits)
+    //     return qc.read(binary_qubits)
+    // }
 
 
-    write(value, binary_qubits) {
-        const { qc } = this
-        // console.log(binary2qubit1(binary_qubits))
-        binary_qubits = this.bits(binary_qubits)
-        // console.log(binary2qubit1(binary_qubits))
-        // debugger
-        qc.write(value, binary_qubits)
-    }
+    // write(value, binary_qubits) {
+    //     const { qc } = this
+    //     // console.log(binary2qubit1(binary_qubits))
+    //     binary_qubits = this.bits(binary_qubits)
+    //     // console.log(binary2qubit1(binary_qubits))
+    //     // debugger
+    //     qc.write(value, binary_qubits)
+    // }
 
     exchange(another_qint) {
         let { qc, true_wires } = this
