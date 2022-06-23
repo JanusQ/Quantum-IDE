@@ -6,14 +6,14 @@ import {
   addDocAdmin,
   deleteDocAdmin,
   updateDocAdmin,
-  changeDoc,
+  getDoc,
 } from "../../api/doc";
 import { Tree, Button, Modal, Form, Upload, Input, message } from "antd";
-import { UploadOutlined  } from "@ant-design/icons";
+import { UploadOutlined } from "@ant-design/icons";
 import { isAuth } from "../../helpers/auth";
 import { list } from "postcss";
 const { TreeNode } = Tree;
-// 扁平数据转树形结构
+// 树形结构转换
 const TranListToTree = (doc_list) => {
   const treeDate = [];
   const map = {};
@@ -41,11 +41,12 @@ const Test = () => {
   const [fileList, setFileList] = useState([]);
   const [parent_doc_id, setparent_doc_id] = useState(0);
   // 获取列表
-  let [treeData, setTreeData] = useState([]);
-  const getNoticeListFn = async () => {
+    let [treeData, setTreeData] = useState([]);
+    const getNoticeListFn = async () => {
     const { data } = await getDocList();
     const treedata = TranListToTree(data.doc_list);
     setTreeData((treeData = treedata));
+  
   };
   useEffect(() => {
     getNoticeListFn();
@@ -89,69 +90,59 @@ const Test = () => {
       }
       setFileList([]);
     });
-    setIsModalVisible(false);
+     setIsModalVisible(false);
   };
 
   const handleCancel = () => {
-    addForm.resetFields();
     setIsModalVisible(false);
   };
   const beforeUpload = (file) => {
     return false;
   };
-  // 新增文档
-  const addDoc = (id) => {
-    setEditId(-1);
-    setIsModalVisible(true);
-    setparent_doc_id(id);
-  };
   // 在树形结构内添加元素
   const renderTreeNodes = (data) => {
     // 新增文档
-    // const addDoc = (id) => {
-    //   setEditId(-1);
-    //   setIsModalVisible(true);
-    //   setparent_doc_id(id);
-    // };
+    const addDoc = (id) => {
+      setEditId(-1)
+      setIsModalVisible(true);
+      setparent_doc_id(id);
+    }
     // 删除文档
-    const delDoc = (item) => {
-      if (item.children.length !== 0)
-        return message.success("当前文档下还有其他文档");
-      // console.log(item);
-      Modal.confirm({
+    const delDoc = (item) =>{
+      if(item.children.length !==0) return message.success('当前文档下还有其他文档')
+      console.log(item);
+    	Modal.confirm({
         title: "确认删除？",
         okText: "确认",
         cancelText: "取消",
         onOk: async () => {
           const formData = new FormData();
-          formData.append("doc_id", "");
+          formData.append("doc_id", '');
           await deleteDocAdmin(formData);
           message.success("已删除");
           getNoticeListFn();
         },
       });
-    };
+    }
     // 修改文档
-    const editDoc = (id) => {
+    const editDoc =(id)=>{
       setEditId(1);
-      setEditId(id);
+    	setEditId(id);
       setIsModalVisible(true);
-    };
+    }
     let nodeArr = data.map((item) => {
       item.title = (
         <div key={item.doc_id}>
-          <Button type="text">{item.doc_title}</Button>
-          <div style={{float:'right'}}  className="operate">
-          <Button type="text" onClick={() => addDoc(item.doc_id)}>
+          <Button type="primary">{item.doc_title}</Button>
+          <Button type="primary" onClick={() => addDoc(item.doc_id)}>
             新增
           </Button>
-          <Button type="text" onClick={() => editDoc(item.doc_id)}>
+          <Button type="primary" onClick={() => editDoc(item.doc_id)}>
             修改
           </Button>
-          <Button type="text" onClick={() => delDoc(item)}>
+          <Button type="primary" onClick={() => delDoc(item)}>
             删除
           </Button>
-          </div>
         </div>
       );
       if (item.children) {
@@ -165,41 +156,9 @@ const Test = () => {
     });
     return nodeArr;
   };
-  // 拖拽
-  const onDrop = async (info) => {
-  
-    const { dragNode, node } = info;
-    const doc_id = dragNode.doc_id;
-    const parent_doc_id = node.doc_id;
-    const formData = new FormData();
-    formData.append("doc_id", doc_id);
-    formData.append("parent_doc_id", parent_doc_id);
-    const res = await changeDoc(formData);
-    // console.log(res);
-    // console.log(dragNode, 222, node, 666);
-    // console.log(info, "拖动的元素");
-    getNoticeListFn();
-  };
-
   return (
-    <div style={{width:'50%'}}>
-      <div style={{ background: "#fff" }}>
-        <Button style={{ marginLeft: 52 }} type="text">
-          文件名称
-        </Button>
-        <div
-          style={{ float: "right", paddingLeft: 30 }}
-          className="addStairDoc"
-        >
-          <Button style={{width:254}} onClick={() => addDoc(0)} type="text">
-            新增一级文档
-          </Button>
-        </div>
-      </div>
+    <div>
       <Tree
-        autoExpandParent
-        onDrop={onDrop}
-        draggable
         defaultExpandAll
         blockNode
         showLine
@@ -209,7 +168,7 @@ const Test = () => {
         {renderTreeNodes(treeData)}
       </Tree>
       <Modal
-        title={editId === -1 ? "添加文档" : "修改文档"}
+        title={editId===-1 ? "添加文档" : "修改文档"}
         visible={isModalVisible}
         onOk={handleOk}
         onCancel={handleCancel}

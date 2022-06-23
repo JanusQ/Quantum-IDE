@@ -37,6 +37,7 @@ const Routes = () => {
             component={App}
           />
           <Route path="/" component={Home} exact />
+          <Route path="/test" component={Test} exact />
           {/* <Route path='/computer' component={App} exact /> */}
           <Route path="/signin/:type" component={SignIn} exact />
           <Route path="/signUp" component={SignUp} exact />

@@ -9,7 +9,7 @@ import {
   changeDoc,
 } from "../../api/doc";
 import { Tree, Button, Modal, Form, Upload, Input, message } from "antd";
-import { UploadOutlined  } from "@ant-design/icons";
+import { UploadOutlined } from "@ant-design/icons";
 import { isAuth } from "../../helpers/auth";
 import { list } from "postcss";
 const { TreeNode } = Tree;
@@ -141,16 +141,16 @@ const Test = () => {
       item.title = (
         <div key={item.doc_id}>
           <Button type="text">{item.doc_title}</Button>
-          <div style={{float:'right'}}  className="operate">
-          <Button type="text" onClick={() => addDoc(item.doc_id)}>
-            新增
-          </Button>
-          <Button type="text" onClick={() => editDoc(item.doc_id)}>
-            修改
-          </Button>
-          <Button type="text" onClick={() => delDoc(item)}>
-            删除
-          </Button>
+          <div style={{ float: "right" }} className="operate">
+            <Button type="text" onClick={() => addDoc(item.doc_id)}>
+              新增
+            </Button>
+            <Button type="text" onClick={() => editDoc(item.doc_id)}>
+              修改
+            </Button>
+            <Button type="text" onClick={() => delDoc(item)}>
+              删除
+            </Button>
           </div>
         </div>
       );
@@ -167,7 +167,6 @@ const Test = () => {
   };
   // 拖拽
   const onDrop = async (info) => {
-  
     const { dragNode, node } = info;
     const doc_id = dragNode.doc_id;
     const parent_doc_id = node.doc_id;
@@ -182,7 +181,7 @@ const Test = () => {
   };
 
   return (
-    <div style={{width:'50%'}}>
+    <div style={{marginTop:50 }}>
       <div style={{ background: "#fff" }}>
         <Button style={{ marginLeft: 52 }} type="text">
           文件名称
@@ -191,7 +190,7 @@ const Test = () => {
           style={{ float: "right", paddingLeft: 30 }}
           className="addStairDoc"
         >
-          <Button style={{width:254}} onClick={() => addDoc(0)} type="text">
+          <Button style={{ width: 254 }} onClick={() => addDoc(0)} type="text">
             新增一级文档
           </Button>
         </div>

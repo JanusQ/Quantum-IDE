@@ -21,3 +21,6 @@ export const updateDocAdmin = (data) => {
 export const getDoc = (data) => {
 	return axios.post('/doc/getDoc', data)
 }
+export const changeDoc = (data) => {
+	return axios.post('/doc/updateParentDocId', data)
+}

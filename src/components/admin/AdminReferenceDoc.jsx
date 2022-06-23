@@ -9,6 +9,7 @@ import { isAuth } from '../../helpers/auth'
 import moment from 'moment'
 import ComponentTitle from '../core/ComponentTitle'
 import '../styles/CommonAntDesign.css'
+import TreeDocManage from '../core/TreeDocManage'
 // import Editor from 'md-editor-rt'
 // import 'md-editor-rt/lib/style.css'
 const AdminReferenceDoc = () => {
@@ -123,33 +124,43 @@ const AdminReferenceDoc = () => {
 			addForm.resetFields(['file'])
 		}
 	}, [fileList])
-	const addModal = () => {
+	const addModal = () => { 
 		return (
-			<Modal visible={isAddModalVisible} onCancel={addCancel} onOk={addOk} title='添加文档' width={820}>
-				<Form form={addForm} layout='vertical'>
-					<Form.Item
-						name='notice_title'
-						label='文档标题'
-						rules={[{ required: editId === -1, message: '请输入文档标题' }]}
-						style={{ display: editId === -1 ? 'flex' : 'none' }}
-					>
-						<Input></Input>
-					</Form.Item>
-					<Form.Item label='文档上传' name='file' rules={[{ required: true, message: '请上传文档' }]}>
-						<Upload
-							multiple={false}
-							fileList={fileList}
-							onChange={uploadChange}
-							beforeUpload={beforeUpload}
-							onRemove={removeFile}
-							accept='.md'
-						>
-							<Button icon={<UploadOutlined />}>Upload</Button>
-						</Upload>
-					</Form.Item>
-				</Form>
-			</Modal>
-		)
+      <Modal
+        visible={isAddModalVisible}
+        onCancel={addCancel}
+        onOk={addOk}
+        title={editId === -1 ? "添加文档" : "修改文档"}
+        width={820}
+      >
+        <Form form={addForm} layout="vertical">
+          <Form.Item
+            name="notice_title"
+            label="文档标题"
+            rules={[{ required: editId === -1, message: "请输入文档标题" }]}
+            style={{ display: editId === -1 ? "flex" : "none" }}
+          >
+            <Input></Input>
+          </Form.Item>
+          <Form.Item
+            label="文档上传"
+            name="file"
+            rules={[{ required: true, message: "请上传文档" }]}
+          >
+            <Upload
+              multiple={false}
+              fileList={fileList}
+              onChange={uploadChange}
+              beforeUpload={beforeUpload}
+              onRemove={removeFile}
+              accept=".md"
+            >
+              <Button icon={<UploadOutlined />}>Upload</Button>
+            </Upload>
+          </Form.Item>
+        </Form>
+      </Modal>
+    );
 	}
 	const addNotice = () => {
 		setIsAddModalVisible(true)
@@ -190,19 +201,25 @@ const AdminReferenceDoc = () => {
 		history.push(`/referenceDoc/${id}`)
 	}
 	return (
-		<AdminLayout>
-			<ComponentTitle name={'文档管理'}></ComponentTitle>
-			<div className='admin_notice_operation'>
-				<Button type='primary' onClick={addNotice}>
-					添加
-				</Button>
-			</div>
-			<div className='admin_notice_div'>
-				<Table columns={columns} dataSource={noticeList} pagination={false} rowKey='doc_id' />
-			</div>
-			{addModal()}
-		</AdminLayout>
-	)
+    <AdminLayout>
+      <TreeDocManage></TreeDocManage>
+      <ComponentTitle name={"文档管理"}></ComponentTitle>
+      <div className="admin_notice_operation">
+        <Button type="primary" onClick={addNotice}>
+          添加
+        </Button>
+      </div>
+      <div className="admin_notice_div">
+        <Table
+          columns={columns}
+          dataSource={noticeList}
+          pagination={false}
+          rowKey="doc_id"
+        />
+      </div>
+      {addModal()}
+    </AdminLayout>
+  );
 }
 
 export default AdminReferenceDoc
