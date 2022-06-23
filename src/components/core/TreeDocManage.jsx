@@ -124,7 +124,7 @@ const Test = () => {
         cancelText: "取消",
         onOk: async () => {
           const formData = new FormData();
-          formData.append("doc_id", "");
+          formData.append("doc_id", item.doc_id);
           await deleteDocAdmin(formData);
           message.success("已删除");
           getNoticeListFn();
@@ -181,7 +181,7 @@ const Test = () => {
   };
 
   return (
-    <div style={{marginTop:50 }}>
+    <div style={{ marginTop: 50 }}>
       <div style={{ background: "#fff" }}>
         <Button style={{ marginLeft: 52 }} type="text">
           文件名称
@@ -213,14 +213,18 @@ const Test = () => {
         onOk={handleOk}
         onCancel={handleCancel}
       >
-        <Form form={addForm}>
+        <Form form={addForm} layout="vertical">
           <Form.Item name="notice_title">
             <Input
               style={{ display: editId === -1 ? "flex" : "none" }}
               placeholder="请输入文件名称"
+              rules={[{ required: editId === -1, message: "请输入文档标题" }]}
             ></Input>
           </Form.Item>
-          <Form.Item name="file">
+          <Form.Item
+            name="file"
+            rules={[{ required: true, message: "请上传文档" }]}
+          >
             <Upload
               multiple={false}
               fileList={fileList}
