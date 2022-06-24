@@ -5658,14 +5658,18 @@ export default class d3Draw {
 				const scrollTop = chartSvgDiv._groups[0][0].scrollTop
 				chartDiv.selectAll('.show_data_div').remove()
 				// 碰撞检测
-				let initTop = offsetY ? offsetY - scrollTop + 40 : e.offsetY - scrollTop + 36
-				let initLeft =  offsetX ? offsetX + 50 - scrollLeft : e.offsetX - scrollLeft + 10
+				const chartDivOffsetLeft = chartDiv._groups[0][0].offsetLeft
+                const chartDivOffsetTop = chartDiv._groups[0][0].offsetTop
+                const drawDiv = d3.select('#d_draw_div')
+				// 碰撞检测
+				let initTop = offsetY ? offsetY - scrollTop + 40 : e.offsetY - scrollTop + 36 
+				let initLeft = offsetX ? offsetX + 50 - scrollLeft  : e.offsetX - scrollLeft + 10 
 				const initHeight = 32 * (allKeys.length / 2)
-				if(initTop + initHeight > chartDiv._groups[0][0].clientHeight){
+				if (initTop + initHeight + chartDivOffsetTop > drawDiv._groups[0][0].clientHeight) {
 					initTop = offsetY ? offsetY - scrollTop - 40 : e.offsetY - scrollTop - 36
 				}
-				if(initLeft + 200 > chartDiv._groups[0][0].clientWidth){
-					initLeft =  offsetX ? offsetX - 210 - scrollLeft : e.offsetX - scrollLeft - 230
+				if (initLeft + 200 + chartDivOffsetLeft > drawDiv._groups[0][0].clientWidth) {
+					initLeft = offsetX ? offsetX - 220 - scrollLeft : e.offsetX - scrollLeft - 230
 				}
 				const showDataDiv = chartDiv
 					.append('div')
