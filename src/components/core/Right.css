@@ -1,6 +1,6 @@
 @import url('./AntDesign.css');
 #circuit_view {
-	height: 367px;
+	height: 40%;
 	width: 100%;
 	background: #fff;
 	cursor: auto;
@@ -31,69 +31,66 @@
 	overflow: auto;
 }
 #right_down_div {
-	height: 698px;
+	width: 100%;
+	height: calc(60% - 5px);
 	display: flex;
 	margin-top: 5px;
 }
-#right_down_div .scroll_div {
-	width: 803px;
+ .d_component {
+	height: 100%;
+	overflow-x: visible;
+	width: 60%;
 	height: 100%;
 	margin-right: 5px;
 	background: #fff;
 	padding: 10px;
-
-	/* overflow-y: auto; */
 }
-#right_down_div .d_component {
-	height: 100%;
-	overflow-x: visible;
-}
-#right_down_div .c_component {
-	width: 510px;
+ .c_component {
+	width: calc(40% - 5px);
 	height: 100%;
 	background: #fff;
 	padding: 10px;
 }
-#right_down_div .c_component .title,
-#right_down_div .d_component .title {
+ .c_component .title,
+ .d_component .title {
 	height: 32px;
 	line-height: 32px;
 }
-#right_down_div .d_component .title .title_name {
+ .d_component .title .title_name {
 	float: left;
 }
-#right_down_div .d_component .title .pic_tip {
+ .d_component .title .pic_tip {
 	margin-left: 10px;
 	height: 32px;
 	line-height: 32px;
 	float: left;
 	vertical-align: middle;
 }
-#right_down_div .d_component .title .pic_tip img {
+ .d_component .title .pic_tip img {
 	vertical-align: middle;
 }
-#right_down_div .d_component .title .pic_tip .tip_text {
+ .d_component .title .pic_tip .tip_text {
 	margin-left: 5px;
 }
-#right_down_div .c_component .c_up_draw {
+ .c_component .c_up_draw {
 	width: 100%;
-	height: 303px;
-	overflow-y: hidden;
+	height: calc(50% - 32px);
+	overflow-y: auto;
 	overflow-x: auto;
 }
-#right_down_div .c_component #chart_svg {
+ .c_component #chart_svg {
 	/* height: 100%; */
 }
-#right_down_div .c_component .c_down_draw {
+ .c_component .c_down_draw {
 	width: 100%;
-	height: 312px;
+	height: calc(50% - 32px);
+	overflow: auto;
 }
-#right_down_div .c_component .c_down_draw #chart_down_svg {
+ .c_component .c_down_draw #chart_down_svg {
 	width: 100%;
-	height: 303px;
 }
-#right_down_div .c_component .title .title_name,
-#right_down_div .d_component .title .title_name {
+ .c_component .title .title_name,
+ .d_component .title .title_name {
 	font-size: 18px;
 }
 .svgtext {
@@ -214,6 +211,9 @@
 .show_circle_div p {
 	margin: 0;
 }
+#right_div_box{
+	height: 100%;
+}
 #right_div_box .tip_svg {
 	display: inline-block;
 	background: url('../../../public/img/info.png') no-repeat;
@@ -237,4 +237,25 @@
 }
 #circuit_svg{
 	min-height: 280px;
+}
+.real_number_div{
+	height: 40%;
+	background: #fff;
+	margin-top: 5px;
+	padding: 8px;
+}
+.real_top_div{
+	height: 30%;
+	background: #fff;
+
+}
+.real_number_title{
+	font-size: 18px;
+	height: 29px;
+	line-height: 29px;
+}
+.real_before_chart,.real_after_chart{
+	height: calc(100% - 29px);
+	overflow: auto;
+	width: 100%;
 }

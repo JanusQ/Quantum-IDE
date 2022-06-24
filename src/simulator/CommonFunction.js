@@ -24,8 +24,8 @@ function showInDebuggerArea(circuit) {
     container.innerHTML = svg
 }
 function exportSVG(qc) {
-    d3.clear()
-    d3.exportD3SVG(qc)
+    // d3.clear()
+    // d3.exportD3SVG(qc)
 }
 function restore() {
     d3.restore()

@@ -14,13 +14,12 @@ img{
 	display: inline-block;
 }
 .App {
-	width: 1914px;
-	padding: 5px;
+	width: 100%;
 	background: #000;
 	display: flex;
 	font-family: 'Ubuntu-R';
 	position: relative;
-	height: 1080px;
+	height: 100%;
 }
 .App .expand_div{
 	width: 100%;
@@ -35,11 +34,11 @@ img{
 	z-index: 999;
 }
 .App .right-div {
-	width: 1318px;
+	width:calc(72% - 5px);
 	flex-shrink: 0;
 }
 .App .left-div {
-	width: 580px;
+	width: 28%;
 	margin-right: 5px;
 	flex-shrink: 0;
 }
@@ -89,24 +88,61 @@ img{
 ul li {
 	list-style: none;
 }
-/* 设置滚动条整体部分的样式 */ 
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+
+.computer_left_operation{
+	width: 50px;
+	height: 100%;
+	background: #28619D;
+	text-align: center;
+}
+.computer_left_operation ul li {
+	height: 49px;
+	line-height: 49px;
+}
+.computer_left_operation_item{
+	display: inline-block;
+	width: 25px;
+	height: 25px;
+	margin-top: 12px;
+	cursor: pointer;
 }
 
-/* 滚动槽--外层轨道 */
-::-webkit-scrollbar-track {
-	background: none;
+.ace_operation .ant-btn-primary{
+	border: 0;
 }
-
-/* 内层轨道（不包含滚动块部分） */
-::-webkit-scrollbar-track-piece {
-  opacity: 0;   /* 透明度设置为全透明，使得滚动条背景色为网页颜色 */
+.ide_title{
+	text-align: center;
+	font-size: 38px;
+	color: #003f88;
+	font-weight: bold;
+	margin-bottom: 51px;
+	user-select: none;
 }
-
-/* 滚动条滑块 */
-::-webkit-scrollbar-thumb {
-  border-radius: 3px;
-  background: #ECECEC;
+.ide_top_menu{
+	height: 33px;
+	width: 100%;
+	border-radius: 0px;
+	background-color: #003f88;
+	line-height: 33px;
+	padding: 0 12px;
+}
+.ide_top_menu span{
+	display: inline-block;
+	width: 66px;
+	height: 25px;
+	line-height: 25px;
+	text-align: center;
+	user-select: none;
+	color: #fff;
+	border-radius: 6px;
+	cursor: pointer;
+}
+.ide_top_menu span:hover{
+	background-color: #1857bf;
+}
+.real_top_div .ant-switch-checked{
+	background: #508084;
+}
+.real_top_div .ant-switch-checked:focus{
+	box-shadow: none;
 }

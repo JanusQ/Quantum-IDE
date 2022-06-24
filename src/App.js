@@ -7,12 +7,26 @@ import axios from 'axios'
 import React, { useState, useRef } from 'react'
 import { exportSVG } from './simulator/CommonFunction'
 import QCEngine from './simulator/MyQCEngine'
+import { cos, sin, round, pi, complex, create, all, max, sparse } from 'mathjs'
 import {
-    cos, sin, round, pi, complex, create, all, max, sparse,
-} from 'mathjs'
-import { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, alt_tensor, calibrate, getExp, linear_entropy, binary2int, average, spec} from './simulator/CommonFunction'
+	pow2,
+	binary,
+	binary2qubit1,
+	range,
+	toPI,
+	qubit12binary,
+	unique,
+	sum,
+	alt_tensor,
+	calibrate,
+	getExp,
+	linear_entropy,
+	binary2int,
+	average,
+	spec,
+} from './simulator/CommonFunction'
 // import MathJax from 'mathJax'
-import {getDirac} from './components/Mathjax'
+import { getDirac } from './components/Mathjax'
 
 // import QCEngine from './simulator/MyQCEngine'
 // import './test/meausre'
@@ -39,11 +53,11 @@ import {getDirac} from './components/Mathjax'
 // import './test/canShow_test.js'
 
 function App() {
-
 	// 编辑器内容
 	const [editorValue, setEditorValue] = useState('')
 	// console的内容
 	const [consoleValue, setConsoleValue] = useState(null)
+	const [qcGlob, setQcGbol] = useState(null)
 	// 编辑器输入
 	function onChange(newValue) {
 		setEditorValue(newValue)
@@ -66,39 +80,64 @@ function App() {
 		}
 	}
 	// 运行
-	const runProgram = () => {
+	const runProgram = (sample) => {
 		let noBug = false
 		let qc = new QCEngine()
+
 		const { qint } = qc
 		// TODO: 这些也要写在文档里面
-		const {cos, sin, round, pi, complex, create, all, max, sparse, acos, asin, sqrt} =  require('mathjs')
-		const { pow2, binary, binary2qubit1, range, toPI, qubit12binary, unique, sum, alt_tensor, calibrate, getExp, linear_entropy, binary2int, average, spec} = require('./simulator/CommonFunction')
-		const {tensor, groundState, tensorState} = require('./simulator/MatrixOperation')
+		const { cos, sin, round, pi, complex, create, all, max, sparse, acos, asin, sqrt } = require('mathjs')
+		const {
+			pow2,
+			binary,
+			binary2qubit1,
+			range,
+			toPI,
+			qubit12binary,
+			unique,
+			sum,
+			alt_tensor,
+			calibrate,
+			getExp,
+			linear_entropy,
+			binary2int,
+			average,
+			spec,
+		} = require('./simulator/CommonFunction')
+		const { tensor, groundState, tensorState } = require('./simulator/MatrixOperation')
 
-		// console.log(groundState(4, [7, 8]))
-		// console.log()
+		// bind function
+		let gates = ['cx','cy','cz','ch','csrn','cr2','cr4','cr8','crx','cry','crz','cu1','cu2',
+		'cu3','cs','ct','csdg','ctdg','ccx','id','x','y','z','h','srn','srndg','r2','r4','r8','s','t','sdg','tdg',
+		'rx','ry','rz','u1','u2','u3','swap','iswap','srswap','xy','ms','yy','zz','had','hadamard','not', 'reset','cnot',
+		'phase','startlabel','endlabel','ccnot','ncnot','ncphase','qprint'];
+		var cx,cy,cz,ch,csrn,cr2,cr4,cr8,crx,cry,crz,cu1,cu2,cu3,cs,ct,csdg,ctdg,ccx,id,x,y,z,h,srn,srndg,r2,r4,r8,s,t,sdg,
+		tdg,rx,ry,rz,u1,u2,u3,swap,iswap,srswap,xy,ms,yy,zz,had,hadamard,not,reset,cnot,phase,startlabel,endlabel,
+		ccnot,ncnot,ncphase,qprint;
+		//let gates =['had']
+		let bind_str = 'gate_name = qc.gate_name.bind(qc);\n ';
+		let bind_str_all = '';
+		for(let ind=0; ind<gates.length; ind++)
+		{
+			let gate = gates[ind];
+			bind_str_all += bind_str.replace(/gate_name/g, gate);
 
+		}
+		console.log(bind_str_all)
+		eval(bind_str_all)
 
 		try {
 			eval(editorValue)
-			// showInDebuggerArea(qc.circuit)
-
-			// siwei: 两个函数的案例
-			// range(0, qc.qubit_number).forEach((qubit) => {
-			// console.log(qubit, qc.getQubit2Variable(qubit))
-			// })
-			// qc.labels.forEach((label) => {
-			// 	console.log(label, qc.getLabelUpDown(label.id))
-			// })
 			consoleContent(true, qc.console_data)
 			noBug = true
 		} catch (error) {
 			consoleContent(false, error.message)
 			noBug = false
-			console.error(error)
 		}
 		if (noBug) {
-			exportSVG(qc)
+			qc.runCircuit()
+			setQcGbol(qc)
+			
 		}
 	}
 	// 处理console
@@ -114,9 +153,8 @@ function App() {
 		}
 	}
 
-
 	// console.log(getDirac(1))
-	
+
 	return (
 		<div className='App'>
 			<div className='left-div'>
@@ -129,7 +167,7 @@ function App() {
 				<ConsoleComponent consoleValue={consoleValue}></ConsoleComponent>
 			</div>
 			<div className='right-div'>
-				<Right></Right>
+				<Right qc={qcGlob}></Right>
 			</div>
 		</div>
 	)
