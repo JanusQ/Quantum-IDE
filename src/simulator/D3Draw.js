@@ -84,7 +84,6 @@ export default class d3Draw {
 		this.qc = data
 		const { operations, qubit_number, circuit } = data
 		// 列数
-		console.log(circuit)
 		const row = circuit.gates[0].length
 		const col = circuit.gates.length
 
@@ -156,143 +155,14 @@ export default class d3Draw {
 		// 处理操作2.0
 		this.drawOperations2(drawG, circuit.gates, data)
 		// 框选
-		this.brushedFn(svg, brushG, brushLabelG, data)
+		this.brushedFn(svg, brushG, brushLabelG)
 		// 绘制d模块
-		this.drawDChart(data)
+		this.drawDChart()
 		// 加入折线图
-		this.drawLineChart(data, row, svgWidth)
+		this.drawLineChart(row, svgWidth)
 		// 默认最后一个index的C视图
-		this.drawCFn(operations.length - 1, data)
+		this.drawCFn(operations.length - 1)
 		// this.fold(svg, data, drawG, operations, brushLabelG, labelG, col)
-	}
-	// 折叠
-	fold(svg, qc, drawG, operations, brushLabelG, labelG, col) {
-		const self = this
-		svg.on('contextmenu', function (e) {
-			// const position = d3.pointer(e)
-			e.preventDefault()
-			// svg.append('rect')
-			// 	.attr('width', 100)
-			// 	.attr('height', 100)
-			// 	.attr('x', position[0])
-			// 	.attr('y', position[1])
-			// 	.attr('fill', '#fff')
-			// 	.attr('stroke','#fff')
-			if (e.target.classList.contains('brush_label_rect')) {
-				const labelId = Number(e.target.parentNode.classList.value.split('_')[1].split('')[0])
-				if (!self.copyLabels.length) {
-					self.copyLabels = _.cloneDeep(qc.labels)
-				}
-				const clickLabel = self.copyLabels.filter((item) => item.id === labelId)[0]
-				const start_operation = clickLabel.start_operation
-				const end_operation = clickLabel.end_operation
-				if (!self.copyOperations.length) {
-					self.copyOperations = _.cloneDeep(operations)
-					operations.forEach((item, index) => {
-						self.copyOperations[index].backIndex = item.index
-					})
-				}
-				drawG.selectAll('.operation_item').remove()
-				if (self.copyOperations[start_operation].index === start_operation) {
-					const defineObj = {
-						qubits: [],
-						operation: 'define',
-						index: start_operation,
-						backIndex: end_operation,
-					}
-					const spliceArr = self.copyOperations.splice(start_operation, end_operation - start_operation)
-					// defineObj.
-					spliceArr.forEach((item) => {
-						defineObj.qubits.push(...qc.getQubitsInvolved(item))
-					})
-					defineObj.qubits = [...new Set(defineObj.qubits)]
-					self.copyOperations.splice(start_operation, 0, defineObj)
-
-					// 将点击的label修改为折叠后的
-
-					for (let i = 0; i < self.copyLabels.length; i++) {
-						if (self.copyLabels[i].id === labelId) {
-							self.copyLabels[i].start_operation = start_operation
-							self.copyLabels[i].end_operation = start_operation + 1
-						}
-						if (
-							self.copyLabels[i].start_operation >= start_operation &&
-							self.copyLabels[i].start_operation < end_operation &&
-							self.copyLabels[i].id !== labelId
-						) {
-							self.copyLabels.splice(i, 1)
-							i = i - 1
-						}
-					}
-					for (let j = 0; j < self.copyLabels.length; j++) {
-						if (self.copyLabels[j].start_operation > end_operation) {
-							self.copyLabels[j].start_operation =
-								self.copyLabels[j].start_operation - spliceArr.length + 1
-							self.copyLabels[j].end_operation = self.copyLabels[j].end_operation - spliceArr.length + 1
-						}
-					}
-					// 去除所有选中线
-					drawG.selectAll('.select_line').remove()
-					// 归整折叠后的index 和 新加入的选择线
-					for (let k = 0; k < self.copyOperations.length; k++) {
-						self.copyOperations[k].index = k
-
-						self.drawCselectLine(
-							drawG,
-							self.svgItemWidth * (k + 3) + 14,
-							self.svgItemHeight * 2 - 6,
-							self.svgItemHeight * col - 15,
-							self.copyOperations[k].backIndex,
-							qc
-						)
-					}
-					// console.log(self.copyLabels)
-					labelG.selectAll('.label_item').remove()
-					brushLabelG.select(`.label_${labelId}`).remove()
-					// 重新绘制label
-					for (let i = 0; i < self.copyLabels.length; i++) {
-						if (self.copyLabels[i].text && self.copyLabels[i].end_operation !== undefined) {
-							const obj = qc.getDrawLabelUpDown(
-								self.copyLabels[i].id,
-								self.copyOperations,
-								self.copyLabels
-							)
-
-							if (obj.down_qubit !== Infinity && obj.up_qubit !== Infinity) {
-								const lineCol = self.copyLabels[i].end_operation - self.copyLabels[i].start_operation
-								const labelRow = obj.down_qubit - obj.up_qubit
-								if (self.copyLabels[i].id !== labelId) {
-									self.drawLabel(
-										labelG,
-										(self.svgItemWidth + self.gate_offest) * self.copyLabels[i].start_operation +
-											self.labelTranslate,
-										self.svgItemHeight * (obj.up_qubit + 1.5),
-										(self.svgItemWidth + self.gate_offest) * lineCol,
-										self.svgItemHeight * labelRow,
-										self.copyLabels[i].text,
-										self.copyLabels[i].id
-									)
-								} else {
-									self.drawLabel(
-										labelG,
-										(self.svgItemWidth + self.gate_offest) * self.copyLabels[i].start_operation +
-											self.labelTranslate,
-										self.svgItemHeight * (obj.up_qubit + 1.5),
-										(self.svgItemWidth + self.gate_offest) * lineCol,
-										self.svgItemHeight * labelRow,
-										self.copyLabels[i].text,
-										self.copyLabels[i].id,
-										true
-									)
-								}
-							}
-						}
-					}
-					// 重新绘制操作
-					self.drawOperations(drawG, self.copyOperations, qc)
-				}
-			}
-		})
 	}
 	// 清空缓存的值
 	clear() {
@@ -321,7 +191,7 @@ export default class d3Draw {
 		})
 		this.drawCdownStackedBar(drawData)
 		this.charts = []
-		this.drawCFn(this.varstatesIndex, this.qc)
+		this.drawCFn(this.varstatesIndex)
 		d3.selectAll('#chart_svg .brushed_rect').remove()
 	}
 	drawWrite1(svg, x, y, operation) {
@@ -991,7 +861,7 @@ export default class d3Draw {
 					.attr('fill', 'rgb(149, 143, 143)')
 					.attr('class', 'select_path')
 				d3.select(this).select('.select_rect').attr('fill', 'rgb(149, 143, 143)').attr('class', 'select_rect')
-				self.drawCFn(e.target.attributes.operationIndex.value, data)
+				self.drawCFn(e.target.attributes.operationIndex.value)
 			})
 			.on('mouseover', function (e) {
 				d3.selectAll('.no_click').attr('stroke', 'transparent').attr('fill', 'transparent')
@@ -1003,7 +873,7 @@ export default class d3Draw {
 	}
 
 	// b视图框选
-	brushedFn(svg, brushG, labelG, qc) {
+	brushedFn(svg, brushG, labelG) {
 		// Example: https://observablehq.com/@d3/double-click-brush-clear
 
 		let brushed_start = (event) => {
@@ -1037,7 +907,6 @@ export default class d3Draw {
 					const { x } = elm
 					return x <= x1 && x > x0
 				})
-				console.log(operation_notations.data())
 				if (operation_notations.data().length) {
 					// 绘制label
 					const qubitsArr = []
@@ -1052,7 +921,7 @@ export default class d3Draw {
 					const end_operation = Math.max(...indexArr) // end_operation
 					const lineCol = end_operation - start_operation + 1
 					const labelRow = down_qubit - up_qubit + 1
-					const labelObj = qc.createlabel(start_operation, end_operation + 1)
+					const labelObj = self.qc.createlabel(start_operation, end_operation + 1)
 					this.drawLabel(
 						labelG,
 						this.svgItemWidth * start_operation + this.labelTranslate,
@@ -1064,7 +933,7 @@ export default class d3Draw {
 						true
 					)
 					// self.copyLabels.push()
-					self.drawDChart(qc, { labels: [labelObj] })
+					self.drawDChart({ labels: [labelObj] })
 
 					if (self.copyLabels.length) {
 						self.copyLabels.push(labelObj)
@@ -4402,7 +4271,7 @@ export default class d3Draw {
 		}
 	}
 	// 绘制折线图
-	drawLineChart(qc, row, svgWidth) {
+	drawLineChart(row, svgWidth) {
 		const svg = d3.select('#line_chart_svg')
 		// const transformY = (qc.qubit_number + 1) * this.svgItemHeight
 		const lineChartG = svg.select('#lineChart_graph')
@@ -4410,10 +4279,10 @@ export default class d3Draw {
 		svg.attr('width', svgWidth)
 		svg.attr('height', 30)
 		const data = []
-		for (let i = 0; i < qc.operations.length; i++) {
-			const entropy = qc.getEntropy(qc.operations[i].index)
+		for (let i = 0; i < this.qc.operations.length; i++) {
+			const entropy = this.qc.getEntropy(this.qc.operations[i].index)
 			data.push({
-				index: qc.operations[i].index,
+				index: this.qc.operations[i].index,
 				entropy: entropy,
 			})
 		}
@@ -4499,17 +4368,17 @@ export default class d3Draw {
 		}
 	}
 	// 绘制C视图上半
-	drawCFn(index, qc) {
+	drawCFn(index) {
 		let j = 0
-		const barData = qc.getVarState(index, undefined)
+		const barData = this.qc.getVarState(index, undefined)
 		this.varstatesIndex = index
-		this.drawStackedBar(barData, j, qc, index)
-		this.drawCdownStackedBar(qc.getWholeState(index), qc)
+		this.drawStackedBar(barData, j, index)
+		this.drawCdownStackedBar(this.qc.getWholeState(index))
 	}
-	drawStackedBar(data, j, qc, index) {
+	drawStackedBar(data, j,  index) {
 		// 连线的数据 放在这个方法里 计算图标Y轴整体向下移动的距离
 		const heightStep = 10
-		const lineData = qc.getPmiIndex(index, 0.25)
+		const lineData = this.qc.getPmiIndex(index, 0.25)
 		const config = {
 			barPadding: 0.1,
 			margins: { top: 20, left: 50, bottom: 120, right: 40 },
@@ -4549,7 +4418,6 @@ export default class d3Draw {
 				g,
 				width,
 				key,
-				qc,
 				config,
 				barWidth,
 				index,
@@ -4564,7 +4432,7 @@ export default class d3Draw {
 		this.drawCLine(chart_svg, lineData, lineXArr, heightStep)
 	}
 
-	StackedBarChart(data, g, width, name, qc, config, barWidth, index, left, heightStep) {
+	StackedBarChart(data, g, width, name, config, barWidth, index, left, heightStep) {
 		const chart = new Chart()
 		const self = this
 		chart.width(width)
@@ -4691,7 +4559,7 @@ export default class d3Draw {
 		// 绘制粉色方块
 		chart.renderPinkRect = function () {
 			const parentRectHeight = 20
-			const childRectPercent = qc.variableEntropy(index, name)
+			const childRectPercent = self.qc.variableEntropy(index, name)
 			// 减去了stroke的2
 			const childRectHeight = (parentRectHeight - 2) * childRectPercent
 			g.select('.yAxis')
@@ -4817,7 +4685,7 @@ export default class d3Draw {
 						)
 				})
 		}
-		self.chartBrushFn(g, barWidth, config, index, qc, name, chart)
+		self.chartBrushFn(g, barWidth, config, index, name, chart)
 		self.charts.push(chart)
 		// 总体绘制
 		chart.render = function () {
@@ -4940,7 +4808,7 @@ export default class d3Draw {
 		}
 	}
 	// c视图框选
-	chartBrushFn(svg, barWidth, config, index, qc, key, chart) {
+	chartBrushFn(svg, barWidth, config, index, key, chart) {
 		const brushG = svg.append('g')
 		let brushed_start = (event) => {
 			const { selection, type } = event
@@ -4993,10 +4861,10 @@ export default class d3Draw {
 						}
 					}
 
-					const allKeys = Object.keys(qc.name2index)
+					const allKeys = Object.keys(self.qc.name2index)
 					const filterKeys = Object.keys(self.filter)
 					// if (allKeys.length === filterKeys.length) {
-					const filterResult = qc.getIndex(index, JSON.parse(JSON.stringify(self.filter)))
+					const filterResult = self.qc.getIndex(index, JSON.parse(JSON.stringify(self.filter)))
 					const filterData = self.getWholeState.filter((item) => {
 						return filterResult.includes(item.index)
 					})
@@ -5011,7 +4879,7 @@ export default class d3Draw {
 					self.drawCdownStackedBar(drawData)
 
 					// 更新C视图上半
-					const barData = qc.getVarState(index, JSON.parse(JSON.stringify(self.filter)))
+					const barData = self.qc.getVarState(index, JSON.parse(JSON.stringify(self.filter)))
 
 					for (const key in barData) {
 						const dataArr = []
@@ -6164,7 +6032,7 @@ export default class d3Draw {
 			.attr('y', this.dLength / 2)
 	}
 	// 绘制基本结构
-	drawElement(labelName, labelId, qc, circleNum, inputStateNumber, svgWidth, svgHeight) {
+	drawElement(labelName, labelId, circleNum, inputStateNumber, svgWidth, svgHeight) {
 		const self = this
 		let isShowMore = false
 		let isFull = false
@@ -6174,11 +6042,11 @@ export default class d3Draw {
 			if (!obj.classList.contains('d_chart_div')) {
 				getParentNode(obj.parentNode)
 			} else {
-				qc.labels.splice(
-					qc.labels.findIndex((item) => item.id === labelId),
+				self.qc.labels.splice(
+					self.qc.labels.findIndex((item) => item.id === labelId),
 					1
 				)
-				qc.label_count--
+				self.qc.label_count--
 				d3.select(`#circuit_svg  .label_${labelId}`).remove()
 				d3.select(obj).remove()
 			}
@@ -6401,17 +6269,17 @@ export default class d3Draw {
 		).join('')
 	}
 	// 绘制sankey图
-	drawSankey(qc, data) {
+	drawSankey(data) {
 		let filter_unused = false //true;
 
-		const circleData = qc.getEvoMatrix(data.id)
+		const circleData = this.qc.getEvoMatrix(data.id)
 		let circleDataNum = 0
 		if (circleData.length && circleData[0].length) {
 			circleDataNum = circleData[0][0]['max'].toFixed(2)
 		}
 
-		const { input_state: inputStateData, output_state: outStateData } = qc.getState(data.id)
-		const { sankey: sankeyData, permute } = qc.transferSankeyOrdered(
+		const { input_state: inputStateData, output_state: outStateData } = this.qc.getState(data.id)
+		const { sankey: sankeyData, permute } = this.qc.transferSankeyOrdered(
 			data.id,
 			1e-5,
 			false,
@@ -6438,7 +6306,7 @@ export default class d3Draw {
 		const { svg, chartDiv, chartSvgDiv } = this.drawElement(
 			data.text,
 			data.id,
-			qc,
+			
 			circleDataNum,
 			inputStateData['max_magn'].toFixed(2),
 			svgWidth,
@@ -6712,10 +6580,10 @@ export default class d3Draw {
 	}
 
 	// 绘制普通完整表示
-	drawMatrix(qc, data) {
-		const { input_state: inputStateData, output_state: outStateData } = qc.getState(data.id)
+	drawMatrix(data) {
+		const { input_state: inputStateData, output_state: outStateData } = this.qc.getState(data.id)
 
-		const circleData = qc.getEvoMatrix(data.id)
+		const circleData = this.qc.getEvoMatrix(data.id)
 
 		let circleDataNum = 0
 		if (circleData.length && circleData[0].length) {
@@ -6738,7 +6606,7 @@ export default class d3Draw {
 		const { svg, chartDiv, chartSvgDiv } = this.drawElement(
 			data.text,
 			data.id,
-			qc,
+			
 			circleDataNum,
 			inputStateData['max_magn'].toFixed(2),
 			svgWidth,
@@ -6971,20 +6839,20 @@ export default class d3Draw {
 			}
 		}
 	}
-	drawDChart(qc, drawData) {
+	drawDChart(drawData) {
 		// 判断绘制类型
 		let labels = []
 		if (drawData) {
 			labels = drawData.labels.filter((item) => item.text !== '')
 		} else {
-			labels = qc.labels.filter((item) => item.text !== '')
+			labels = this.qc.labels.filter((item) => item.text !== '')
 		}
 		for (let i = 0; i < labels.length; i++) {
-			if (qc.canShow(labels[i].id)) {
-				if (qc.isSparse(labels[i].id)) {
-					this.drawSankey(qc, labels[i])
+			if (this.qc.canShow(labels[i].id)) {
+				if (this.qc.isSparse(labels[i].id)) {
+					this.drawSankey(labels[i])
 				} else {
-					this.drawMatrix(qc, labels[i])
+					this.drawMatrix(labels[i])
 				}
 			}
 		}
