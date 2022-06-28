@@ -5,7 +5,7 @@ message.config({
   maxCount: 1
 })
 const tip = msg => {
-    message.error(msg)
+    message.error(msg,1)
 }
 
 const errorHandle = (status, other) => {

@@ -151,6 +151,9 @@ const Test = () => {
             <Button type="text" onClick={() => delDoc(item)}>
               删除
             </Button>
+            <Button type="text" onClick={() => changeToOnelevel(item.doc_id)}>
+              变为一级目录
+            </Button>
           </div>
         </div>
       );
@@ -179,7 +182,13 @@ const Test = () => {
     // console.log(info, "拖动的元素");
     getNoticeListFn();
   };
-
+const changeToOnelevel = async(id)=>{
+     const formData = new FormData();
+     formData.append("doc_id", id);
+     formData.append("parent_doc_id",0);
+     const res = await changeDoc(formData);
+     getNoticeListFn();
+}
   return (
     <div style={{ marginTop: 50 }}>
       <div style={{ background: "#fff" }}>

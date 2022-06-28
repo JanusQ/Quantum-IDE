@@ -214,6 +214,7 @@ const Task = () => {
 		}
 	}, [isSimple])
 	const drawFn = (data, id) => {
+		// console.log(data,'587587')
 		let qc = new QCEngine()
 		qc.import(data.origin_circuit)
 		computerD3(qc.circuit, `task_before_chart_svg_${id}`, `task_before_chart_g_${id}`)

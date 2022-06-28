@@ -143,7 +143,7 @@ function App() {
 
 	// 分发事件
 	const dispathRun = () => {
-		if (runValue === 1) {
+		if (runValue === 1 || 3) {
 			setSubmitModalVisible(true)
 		} else {
 			runProgram()
@@ -211,7 +211,7 @@ function App() {
 			exportSVG(qc)
 		}
 		// 真机
-		if (noBug && runValue === 1) {
+		if (noBug && runValue === 1 || 3) {
 			console.log(qc.export())
 			realRun(qc, sample)
 		}
@@ -608,14 +608,15 @@ function App() {
 				<p>请选择模式</p>
 				<Radio.Group onChange={onSelectRunChange} value={runValue}>
 					<Radio value={1}>真机</Radio>
-					<Radio value={2}>模拟器</Radio>
+					<Radio value={2}>JavaScript模拟器</Radio>
+					<Radio value={3}>量子集群</Radio>
 				</Radio.Group>
 			</Modal>
 		)
 	}
 
 	const isSelectRunOk = () => {
-		if (runValue === 1) {
+		if (runValue === 1 || 3) {
 			setRunProgramName('Submit Task')
 			setIsShowBMode(false)
 			setIsShowCMode(false)
@@ -662,6 +663,7 @@ function App() {
 				},
 			])
 		}
+
 
 		setIsSelectRunModalVisible(false)
 	}
@@ -715,8 +717,14 @@ function App() {
 			loadProFn()
 		}
 	}, [])
+  
 
 	const submitTaskModal = () => {
+		// 在集群模式下可以select框可以多选
+		let ismodern = ''
+		if(runValue==3){
+			ismodern = 'multiple'
+		}
 		return (
 			<Modal
 				visible={submitModalVisible}
@@ -730,8 +738,11 @@ function App() {
 						<Input />
 					</Form.Item>
 					<Form.Item name='comName' label='选择计算机' rules={[{ required: true, message: '请选择计算机' }]}>
-						<Select placeholder='请选择计算机' allowClear>
+						<Select mode={ismodern} placeholder='请选择计算机' allowClear>
 							{getComListOpts}
+							 <Option key={9} value="python模拟器">python模拟器</Option>
+							 <Option key={10} value="模拟器1">模拟器1</Option>
+							 <Option key={11} value="模拟器2">模拟器2</Option>
 						</Select>
 					</Form.Item>
 				</Form>
