@@ -143,7 +143,7 @@ function App() {
 
 	// 分发事件
 	const dispathRun = () => {
-		if (runValue === 1 || 3) {
+		if (runValue === 'sqcg' || runValue === 'sgcq_cluster') {
 			setSubmitModalVisible(true)
 		} else {
 			runProgram()
@@ -206,14 +206,14 @@ function App() {
 			console.error(error)
 		}
 		// 模拟器
-		if (noBug && runValue !== 1) {
+		if (noBug && runValue === 'JavaScript_simulator') {
 			qc.runCircuit()
 			exportSVG(qc)
 		}
 		// 真机
-		if (noBug && runValue === 1 || 3) {
-			console.log(qc.export())
-			realRun(qc, sample)
+		if (noBug && (runValue === 'sqcg' || runValue === 'sgcq_cluster')) {
+			// console.log(qc.export())
+			realRun(qc, sample,runValue)
 		}
 	}
 	async function testfunc(qc) {
@@ -296,7 +296,7 @@ function App() {
 			setIsSimple(!isSimple)
 		}
 	}
-	const realRun = async (qc, sample) => {
+	const realRun = async (qc, sample,runValue) => {
 		setIsSubmitModalLoading(true)
 		try {
 			const formData = new FormData()
@@ -304,7 +304,7 @@ function App() {
 			formData.append('sample', sample)
 			formData.append('export_qasm', qc.export())
 			formData.append('computer_name', form.getFieldsValue(['comName']).comName)
-			formData.append('run_type', 'sqcg')
+			formData.append('run_type', runValue)
 			formData.append('user_id', auth.user_id)
 			const { data } = await submitTask(formData)
 			const taskIdFormData = new FormData()
@@ -598,7 +598,7 @@ function App() {
 	// 真机 模拟器切换
 	const [runProgramName, setRunProgramName] = useState('Run Program')
 	const [isSelectRunModalVisible, setIsSelectRunModalVisible] = useState(false)
-	const [runValue, setRunValue] = React.useState(2)
+	const [runValue, setRunValue] = useState('')
 	const onSelectRunChange = (e) => {
 		setRunValue(e.target.value)
 	}
@@ -607,16 +607,16 @@ function App() {
 			<Modal visible={isSelectRunModalVisible} onOk={isSelectRunOk} onCancel={isSelectRunCancel} title='切换模式'>
 				<p>请选择模式</p>
 				<Radio.Group onChange={onSelectRunChange} value={runValue}>
-					<Radio value={1}>真机</Radio>
-					<Radio value={2}>JavaScript模拟器</Radio>
-					<Radio value={3}>量子集群</Radio>
+					<Radio value={'sqcg'}>真机</Radio>
+					<Radio value={'JavaScript_simulator'}>JavaScript模拟器</Radio>
+					<Radio value={'sgcq_cluster'}>量子集群</Radio>
 				</Radio.Group>
 			</Modal>
 		)
 	}
 
 	const isSelectRunOk = () => {
-		if (runValue === 1 || 3) {
+		if (runValue === 'sqcg' || runValue === 'sgcq_cluster') {
 			setRunProgramName('Submit Task')
 			setIsShowBMode(false)
 			setIsShowCMode(false)
@@ -722,7 +722,7 @@ function App() {
 	const submitTaskModal = () => {
 		// 在集群模式下可以select框可以多选
 		let ismodern = ''
-		if(runValue==3){
+		if(runValue=='sgcq_cluster'){
 			ismodern = 'multiple'
 		}
 		return (
