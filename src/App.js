@@ -143,7 +143,7 @@ function App() {
 
 	// 分发事件
 	const dispathRun = () => {
-		if (runValue === 'sqcg' || runValue === 'sgcq_cluster') {
+		if (runValue === 'sqcg' || runValue === 'sgcq_cluster' || runValue === 'qiskit') {
 			setSubmitModalVisible(true)
 		} else {
 			runProgram()
@@ -211,7 +211,7 @@ function App() {
 			exportSVG(qc)
 		}
 		// 真机
-		if (noBug && (runValue === 'sqcg' || runValue === 'sgcq_cluster')) {
+		if (noBug && (runValue === 'sqcg' || runValue === 'sgcq_cluster' || runValue === 'qiskit')) {
 			// console.log(qc.export())
 			realRun(qc, sample,runValue)
 		}
@@ -610,13 +610,14 @@ function App() {
 					<Radio value={'sqcg'}>真机</Radio>
 					<Radio value={'JavaScript_simulator'}>JavaScript模拟器</Radio>
 					<Radio value={'sgcq_cluster'}>量子集群</Radio>
+					<Radio value={'qiskit'}>python模拟器</Radio>
 				</Radio.Group>
 			</Modal>
 		)
 	}
 
 	const isSelectRunOk = () => {
-		if (runValue === 'sqcg' || runValue === 'sgcq_cluster') {
+		if (runValue === 'sqcg' || runValue === 'sgcq_cluster' || runValue === 'qiskit') {
 			setRunProgramName('Submit Task')
 			setIsShowBMode(false)
 			setIsShowCMode(false)
@@ -740,9 +741,9 @@ function App() {
 					<Form.Item name='comName' label='选择计算机' rules={[{ required: true, message: '请选择计算机' }]}>
 						<Select mode={ismodern} placeholder='请选择计算机' allowClear>
 							{getComListOpts}
-							 <Option key={9} value="python模拟器">python模拟器</Option>
+							 {/* <Option key={9} value="python模拟器">python模拟器</Option>
 							 <Option key={10} value="模拟器1">模拟器1</Option>
-							 <Option key={11} value="模拟器2">模拟器2</Option>
+							 <Option key={11} value="模拟器2">模拟器2</Option> */}
 						</Select>
 					</Form.Item>
 				</Form>
