@@ -223,15 +223,15 @@ function App() {
 		console.log(data['qasm'])
 		data['sample'] = 1000
 		data['type'] = 'sqcg'
-		console.log(data)
+		// console.log(data)
 		var id
 		id = await send_to_real(data)
 		const params = {}
 		params.result_id = id['data']['result_id']
 		params.type = 'sqcg'
-		console.log(params)
+		// console.log(params)
 		let res = await recieve_from_real(params)
-		console.log(res)
+		// console.log(res)
 	}
 	// 真机运行的画图
 	const [resultData, setResultData] = useState(null)
@@ -685,8 +685,10 @@ function App() {
 		const formData = new FormData()
 		formData.append('filter',JSON.stringify({update_code:-1}))
 		const { data } = await getComList(formData)
-		setComputerList(data.com_list)
+		// 老板要求前端加一个数据 看见别慌
+		setComputerList([...data.com_list,...[{chip_id: 20, chip_name: 'python模拟器', com_status: 0, qubits_number: 20}]])
 	}
+	// console.log(computerList,55);
 	const getComListOpts = computerList.map((item) => (
 		<Option value={item.chip_name} key={item.chip_id}>
 			{item.chip_name}
