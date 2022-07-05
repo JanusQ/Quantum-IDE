@@ -16,6 +16,7 @@ import QCEngine from '../../simulator/MyQCEngine'
 import iojson from 'iojson'
 import '../styles/CommonAntDesign.css'
 import ComponentTitle from '../core/ComponentTitle'
+import CircuitDiagram from '../core/CircuitDiagram'
 const AdminTask = () => {
 	const _ = require('lodash')
 	const columns = [
@@ -131,6 +132,13 @@ const AdminTask = () => {
 	}
 	const [resultData, setResultData] = useState(null)
 	const [visibleTitle, setVisibleTitle] = useState(-1)
+	const [circuit, setcircuit] = useState([])
+	const renderCircuit = circuit.map((item,index) => (
+		
+    <CircuitDiagram key={index} circuitData={item} ></CircuitDiagram>
+	
+  ));
+
 	const lookResult = async (id) => {
 		// setVisible(true)
 		if (expandedRowKeys[0] === id) {
@@ -142,6 +150,15 @@ const AdminTask = () => {
 		const formData = new FormData()
 		formData.append('task_id', id)
 		const { data } = await getTaskResult(formData)
+		if (data.compiled_circuit){
+					console.log(
+            Object.prototype.toString.call(Array.from(data.compiled_circuit)),
+            99999
+          );
+
+		setcircuit(data.compiled_circuit);
+
+		}
 		// const qc = new QCEngine()
 		setResultData(data)
 		drawFn(data, id)
@@ -216,8 +233,12 @@ const AdminTask = () => {
 		qc.import(data.origin_circuit)
 		computerD3(qc.circuit, `task_before_chart_svg_${id}`, `task_before_chart_g_${id}`)
 		let qcAfter = new QCEngine()
-		qcAfter.import(data.compiled_circuit)
-		computerD3(qcAfter.import(data.compiled_circuit), `task_after_chart_svg_${id}`, `task_after_chart_g_${id}`)
+		qcAfter.import(data.compiled_circuit[0])
+		computerD3(
+      qcAfter.circuit,
+      `task_after_chart_svg_${id}`,
+      `task_after_chart_g_${id}`
+    );
 	}
 	// 导出
 	const downloadFn = (id) => {
@@ -266,51 +287,59 @@ const AdminTask = () => {
 					expandable={{
 						expandedRowRender: (record) => {
 							return (
-								<>
-									<div className='computer_params_btn'>
-										{/* <Button onClick={() => changeType(false)} type='primary'>
+                <>
+                  <div className="computer_params_btn">
+                    {/* <Button onClick={() => changeType(false)} type='primary'>
 											{isSimple ? 'Corrected' : 'Raw'}
 										</Button> */}
-										<Button
-											onClick={() => downloadFn(record.task_id)}
-											type='primary'
-											style={{ float: 'right', marginTop: '9px' }}
-											size='small'
-										>
-											Download
-										</Button>
-										<Switch
-											onChange={(checked) => changeType(false)}
-											checked={isSimple}
-											style={{ float: 'right', marginTop: '10px' }}
-										/>
-									</div>
-									<div className='computer_params_div' id={`computer_params_chart_${record.task_id}`}>
-										<svg
-											id={`computer_params_chart_svg_${record.task_id}`}
-											style={{ width: '100%', height: '100%' }}
-										></svg>
-									</div>
-									<div className='task_two_svg_div'>
-										<div className='task_number_div'>
-											<div className='task_number_title'>编译前电路</div>
-											<div className='task_before_chart'>
-												<svg id={`task_before_chart_svg_${record.task_id}`}>
-													<g id={`task_before_chart_g_${record.task_id}`}></g>
-												</svg>
-											</div>
-										</div>
-										<div className='task_number_div'>
-											<div className='task_number_title'>编译后电路</div>
-											<div className='task_after_chart'>
+                    <Button
+                      onClick={() => downloadFn(record.task_id)}
+                      type="primary"
+                      style={{ float: "right", marginTop: "9px" }}
+                      size="small"
+                    >
+                      Download
+                    </Button>
+                    <Switch
+                      onChange={(checked) => changeType(false)}
+                      checked={isSimple}
+                      style={{ float: "right", marginTop: "10px" }}
+                    />
+                  </div>
+                  <div
+                    className="computer_params_div"
+                    id={`computer_params_chart_${record.task_id}`}
+                  >
+                    <svg
+                      id={`computer_params_chart_svg_${record.task_id}`}
+                      style={{ width: "100%", height: "100%" }}
+                    ></svg>
+                  </div>
+                  <div className="task_two_svg_div">
+                    <div className="task_number_div">
+                      <div className="task_number_title">编译前电路</div>
+                      <div className="task_before_chart">
+                        <svg id={`task_before_chart_svg_${record.task_id}`}>
+                          <g id={`task_before_chart_g_${record.task_id}`}></g>
+                        </svg>
+                      </div>
+                    </div>
+                    <div className="task_number_div">
+                      <div className="task_number_title">编译后电路</div>
+                      {/* <div className='task_after_chart'>
 												<svg id={`task_after_chart_svg_${record.task_id}`}>
 													<g id={`task_after_chart_g_${record.task_id}`}></g>
 												</svg>
-											</div>
-										</div>
-									</div>
-								</>
-							)
+											</div> */}
+                      { circuit.map((item,index) => (
+		
+    <CircuitDiagram key={index} circuitData={item} ></CircuitDiagram>
+	
+  ))}
+                    </div>
+                  </div>
+                </>
+              );
 						},
 						expandIcon: () => {
 							return false

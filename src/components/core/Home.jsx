@@ -95,45 +95,51 @@ const Home = () => {
 	const [bannerSwiper, setBannerSwiper] = useState(null)
 	const homeBanner = () => {
 		return (
-			<div className='home_banner'>
-				<Swiper
-					// install Swiper modules
-					modules={[Navigation, Pagination, A11y]}
-					loop={true}
-					onSwiper={setBannerSwiper}
-					navigation
-					pagination={{ clickable: true }}
-					style={{ width: '100%', height: '100%' }}
-				>
-					<SwiperSlide>
-						<div className='home_banner_item home_banner_item_1'>
-							<div className='home_banner_text'>
-								<div className='home_banner_title'>太元量子云平台</div>
-								<div className='home_banner_content'>
-									提供实时的量子计算服务
-								</div>
-								<div className='home_banner_btn common_btn' onClick={gotoComputer}>
-									开始
-								</div>
-							</div>
-						</div>
-					</SwiperSlide>
-					<SwiperSlide>
-						<div className='home_banner_item home_banner_item_2'>
-							<div className='home_banner_text'>
-								<div className='home_banner_title'>量子云平台</div>
-								<div className='home_banner_content'>
-									提供实时的量子计算服务
-								</div>
-								<div className='home_banner_btn common_btn' onClick={gotoComputer}>
-									BUTTON
-								</div>
-							</div>
-						</div>
-					</SwiperSlide>
-				</Swiper>
-			</div>
-		)
+      <div className="home_banner">
+        <Swiper
+          // install Swiper modules
+          modules={[Navigation, Pagination, A11y]}
+          loop={true}
+          onSwiper={setBannerSwiper}
+          navigation
+          pagination={{ clickable: true }}
+          style={{ width: "100%", height: "100%" }}
+        >
+          <SwiperSlide>
+            <div className="home_banner_item home_banner_item_1">
+              <div className="home_banner_text">
+                <div className="home_banner_title">太元量子云平台</div>
+                <div className="home_banner_content">
+                  提供实时的量子计算服务
+                </div>
+                <div
+                  className="home_banner_btn common_btn"
+                  onClick={gotoComputer}
+                >
+                  开始
+                </div>
+              </div>
+            </div>
+          </SwiperSlide>
+          <SwiperSlide>
+            <div className="home_banner_item home_banner_item_2">
+              <div className="home_banner_text">
+                <div className="home_banner_title">太元量子云平台</div>
+                <div className="home_banner_content">
+                  提供实时的量子计算服务
+                </div>
+                <div
+                  className="home_banner_btn common_btn"
+                  onClick={gotoComputer}
+                >
+                  开始
+                </div>
+              </div>
+            </div>
+          </SwiperSlide>
+        </Swiper>
+      </div>
+    );
 	}
 	const [productionSwiper, setProductionSwiper] = useState(null)
 	const productionMessage = () => {

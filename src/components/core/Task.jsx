@@ -219,7 +219,7 @@ const Task = () => {
 		qc.import(data.origin_circuit)
 		computerD3(qc.circuit, `task_before_chart_svg_${id}`, `task_before_chart_g_${id}`)
 		let qcAfter = new QCEngine()
-		qcAfter.import(data.compiled_circuit)
+		qcAfter.import(data.compiled_circuit[0])
 		computerD3(qcAfter.circuit, `task_after_chart_svg_${id}`, `task_after_chart_g_${id}`)
 	}
 	// 导出
@@ -322,42 +322,6 @@ const Task = () => {
 					}}
 				/>
 			</div>
-			{/* <Drawer
-				title={visibleTitle}
-				placement='right'
-				onClose={onClose}
-				visible={visible}
-				width={900}
-				className='task_drawer'
-			>
-				<div className='computer_params_btn'>
-					<Button onClick={() => changeType(false)} type='primary'>
-						{isSimple ? 'Corrected' : 'Raw'}
-					</Button>
-					<Button onClick={() => downloadFn()} type='primary' style={{ float: 'right', marginTop: '9px' }}>
-						Download
-					</Button>
-				</div>
-				<div className='computer_params_div' id='computer_params_chart'>
-					<svg id='computer_params_chart_svg'></svg>
-				</div>
-				<div className='computer_number_div'>
-					<div className='computer_number_title'>编译前电路</div>
-					<div className='task_before_chart'>
-						<svg id='task_before_chart_svg'>
-							<g id='task_before_chart_g'></g>
-						</svg>
-					</div>
-				</div>
-				<div className='computer_number_div'>
-					<div className='computer_number_title'>编译后电路</div>
-					<div className='computer_after_chart'>
-						<svg id='task_after_chart_svg'>
-							<g id='task_after_chart_g'></g>
-						</svg>
-					</div>
-				</div>
-			</Drawer> */}
 		</Layout>
 	)
 }

@@ -134,6 +134,7 @@ function App() {
 	const [editorValue, setEditorValue] = useState('')
 	// console的内容
 	const [consoleValue, setConsoleValue] = useState(null)
+	const [circuit, setcircuit] = useState('')
 	// 编辑器输入
 	function onChange(newValue) {
 		setEditorValue(newValue)
@@ -143,7 +144,7 @@ function App() {
 
 	// 分发事件
 	const dispathRun = () => {
-		if (runValue === 'sqcg' || runValue === 'sgcq_cluster' || runValue === 'qiskit') {
+		if (runValue === 'sqcg' || runValue === 'sqcg_cluster' || runValue === 'qiskit') {
 			setSubmitModalVisible(true)
 		} else {
 			runProgram()
@@ -211,7 +212,7 @@ function App() {
 			exportSVG(qc)
 		}
 		// 真机
-		if (noBug && (runValue === 'sqcg' || runValue === 'sgcq_cluster' || runValue === 'qiskit')) {
+		if (noBug && (runValue === 'sqcg' || runValue === 'sqcg_cluster' || runValue === 'qiskit')) {
 			// console.log(qc.export())
 			realRun(qc, sample,runValue)
 		}
@@ -240,7 +241,7 @@ function App() {
 		qc.import(data.origin_circuit)
 		computerD3(qc.circuit, `real_before_chart_svg`, `real_before_chart_g`, 1200)
 		let qcAfter = new QCEngine()
-		qcAfter.import(data.compiled_circuit)
+		qcAfter.import(data.compiled_circuit[0])
 		computerD3(qcAfter.circuit, `real_after_chart_svg`, `real_after_chart_g`, 1200)
 	}
 	const drawChart = (data) => {
@@ -314,6 +315,10 @@ function App() {
 			
 			setSubmitModalVisible(false)
 			const { data:resultDataObj } = await getTaskResult(taskIdFormData)
+			if(resultDataObj){
+				setcircuit(resultDataObj)
+
+			}
 			drawFn(resultDataObj)
 			setResultData(resultDataObj)
 			if (!isSimple) {
@@ -609,7 +614,7 @@ function App() {
 				<Radio.Group onChange={onSelectRunChange} value={runValue}>
 					<Radio value={'sqcg'}>真机</Radio>
 					<Radio value={'JavaScript_simulator'}>JavaScript模拟器</Radio>
-					<Radio value={'sgcq_cluster'}>量子集群</Radio>
+					<Radio value={'sqcg_cluster'}>量子集群</Radio>
 					<Radio value={'qiskit'}>python模拟器</Radio>
 				</Radio.Group>
 			</Modal>
@@ -617,7 +622,7 @@ function App() {
 	}
 
 	const isSelectRunOk = () => {
-		if (runValue === 'sqcg' || runValue === 'sgcq_cluster' || runValue === 'qiskit') {
+		if (runValue === 'sqcg' || runValue === 'sqcg_cluster' || runValue === 'qiskit') {
 			setRunProgramName('Submit Task')
 			setIsShowBMode(false)
 			setIsShowCMode(false)
@@ -725,7 +730,7 @@ function App() {
 	const submitTaskModal = () => {
 		// 在集群模式下可以select框可以多选
 		let ismodern = ''
-		if(runValue=='sgcq_cluster'){
+		if(runValue=='sqcg_cluster'){
 			ismodern = 'multiple'
 		}
 		return (
@@ -804,6 +809,7 @@ function App() {
 						isShowRealD={isShowRealDmode}
 						changeType={changeType}
 						isSimple={isSimple}
+						circuit={circuit}
 					></Right>
 				</div>
 			</div>
