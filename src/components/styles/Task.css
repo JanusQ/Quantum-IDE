@@ -20,15 +20,15 @@
 	margin-bottom: 20px;
 	min-height: 500px;
 }
-.task_two_svg_div {
+/* .task_two_svg_div {
 	display: flex;
-}
+} */
 .task_number_div {
-	flex: 1;
+	/* flex: 1; */
 	border: 1px solid #508084;
 	border-radius: 9px;
 	height: 149px;
-	width: 551px;
+	width: 100%;
 }
 .task_before_chart,.task_after_chart {
 	height: calc(100% - 29px);

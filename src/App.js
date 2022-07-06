@@ -134,7 +134,7 @@ function App() {
 	const [editorValue, setEditorValue] = useState('')
 	// console的内容
 	const [consoleValue, setConsoleValue] = useState(null)
-	const [circuit, setcircuit] = useState('')
+	const [circuit, setcircuit] = useState([])
 	// 编辑器输入
 	function onChange(newValue) {
 		setEditorValue(newValue)
@@ -213,7 +213,6 @@ function App() {
 		}
 		// 真机
 		if (noBug && (runValue === 'sqcg' || runValue === 'sqcg_cluster' || runValue === 'qiskit')) {
-			// console.log(qc.export())
 			realRun(qc, sample,runValue)
 		}
 	}
@@ -221,7 +220,7 @@ function App() {
 		//qc.import(0);
 		let data = {}
 		data['qasm'] = qc.export()
-		console.log(data['qasm'])
+		// console.log(data['qasm'])
 		data['sample'] = 1000
 		data['type'] = 'sqcg'
 		// console.log(data)
@@ -315,10 +314,10 @@ function App() {
 			
 			setSubmitModalVisible(false)
 			const { data:resultDataObj } = await getTaskResult(taskIdFormData)
-			if(resultDataObj){
-				setcircuit(resultDataObj)
-
-			}
+			// if(resultDataObj){
+			// 	console.log(resultDataObj,3355);
+			// 	setcircuit(resultDataObj.compiled_circuit)
+			// }
 			drawFn(resultDataObj)
 			setResultData(resultDataObj)
 			if (!isSimple) {
@@ -471,7 +470,6 @@ function App() {
 		setOptionList(arr)
 		selectChange(arr[0])
 	}
-	// console.log(getDirac(1))
 	const aceRef = useRef(null)
 	const exportFn = () => {
 		aceRef.current.exportFile()
@@ -612,10 +610,10 @@ function App() {
 			<Modal visible={isSelectRunModalVisible} onOk={isSelectRunOk} onCancel={isSelectRunCancel} title='切换模式'>
 				<p>请选择模式</p>
 				<Radio.Group onChange={onSelectRunChange} value={runValue}>
-					<Radio value={'sqcg'}>真机</Radio>
-					<Radio value={'JavaScript_simulator'}>JavaScript模拟器</Radio>
 					<Radio value={'sqcg_cluster'}>量子集群</Radio>
-					<Radio value={'qiskit'}>python模拟器</Radio>
+					<Radio value={'sqcg'}>量子计算机</Radio>
+           <Radio value={'qiskit'}>python模拟器</Radio>
+					<Radio value={'JavaScript_simulator'}>JavaScript模拟器</Radio>
 				</Radio.Group>
 			</Modal>
 		)
@@ -693,7 +691,6 @@ function App() {
 		// 老板要求前端加一个数据 看见别慌
 		setComputerList([...data.com_list,...[{chip_id: 20, chip_name: 'python模拟器', com_status: 0, qubits_number: 20}]])
 	}
-	// console.log(computerList,55);
 	const getComListOpts = computerList.map((item) => (
 		<Option value={item.chip_name} key={item.chip_id}>
 			{item.chip_name}

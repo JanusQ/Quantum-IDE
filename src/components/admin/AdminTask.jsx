@@ -133,11 +133,7 @@ const AdminTask = () => {
 	const [resultData, setResultData] = useState(null)
 	const [visibleTitle, setVisibleTitle] = useState(-1)
 	const [circuit, setcircuit] = useState([])
-	const renderCircuit = circuit.map((item,index) => (
-		
-    <CircuitDiagram key={index} circuitData={item} ></CircuitDiagram>
-	
-  ));
+
 
 	const lookResult = async (id) => {
 		// setVisible(true)
@@ -151,12 +147,9 @@ const AdminTask = () => {
 		formData.append('task_id', id)
 		const { data } = await getTaskResult(formData)
 		if (data.compiled_circuit){
-					console.log(
-            Object.prototype.toString.call(Array.from(data.compiled_circuit)),
-            99999
-          );
-
+				
 		setcircuit(data.compiled_circuit);
+		console.log(data.compiled_circuit.length,3333);
 
 		}
 		// const qc = new QCEngine()
@@ -324,19 +317,21 @@ const AdminTask = () => {
                         </svg>
                       </div>
                     </div>
-                    <div className="task_number_div">
+                    {/* <div className="task_number_div">
                       <div className="task_number_title">编译后电路</div>
-                      {/* <div className='task_after_chart'>
+                    </div> */}
+                    {/* <div className='task_after_chart'>
 												<svg id={`task_after_chart_svg_${record.task_id}`}>
 													<g id={`task_after_chart_g_${record.task_id}`}></g>
 												</svg>
 											</div> */}
-                      { circuit.map((item,index) => (
-		
-    <CircuitDiagram key={index} circuitData={item} ></CircuitDiagram>
-	
-  ))}
-                    </div>
+                    {circuit.map((item, index) => (
+                      <CircuitDiagram
+                        key={index}
+                        circuitData={item}
+                        svgIndex={index}
+                      ></CircuitDiagram>
+                    ))}
                   </div>
                 </>
               );

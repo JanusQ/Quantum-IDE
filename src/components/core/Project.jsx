@@ -11,7 +11,10 @@ import { isAuth } from '../../helpers/auth'
 import moment from 'moment'
 import '../styles/CommonAntDesign.css'
 import ComponentTitle from './ComponentTitle'
+import { createPro } from '../../api/test_circuit'
 const Project = () => {
+		
+
 	const auth = isAuth()
 	const history = useHistory()
 	const columns = [
@@ -157,20 +160,51 @@ const Project = () => {
 	useEffect(() => {
 		getProListFn()
 	}, [])
+	// 创建项目
+	const [isSaveCaseModalVisible, setIsSaveCaseModalVisible] = useState(false);
+  const [caseName, setCaseName] = useState("");
+
+	const gotoComputer = () => {
+    if (!auth) {
+      message.error("请先登录");
+      history.push("/signin/1");
+      return;
+    }
+    setIsSaveCaseModalVisible(true);
+  };
+	const onSaveChange = (e) => {
+    setCaseName(e.target.value);
+  };
+		const isSaveCancel = () => {
+		setIsSaveCaseModalVisible(false)
+		setCaseName('')
+	}
+		const isSaveOk = async () => {
+		if (!caseName) {
+			message.error('请输入项目名称')
+			return
+		}
+		const formdata = new FormData()
+		formdata.append('user_id', auth.user_id)
+		formdata.append('project_name', caseName)
+		const { data } = await createPro(formdata)
+		history.push({ pathname: `/aceComputer/${caseName}/${data.project_id}` })
+		setIsSaveCaseModalVisible(false)
+	}
 	return (
-		<Layout>
-			<ComponentTitle name={'项目列表'}></ComponentTitle>
-			<div className='project_div'>
-				<div className='project_search_div'>
-					<Search
-						placeholder='请输入项目名称'
-						onSearch={onSearch}
-						value={searchValue}
-						onChange={searchValueChange}
-						enterButton
-						style={{ marginBottom: '40px' }}
-					/>
-					{/* <Select
+    <Layout>
+      <ComponentTitle name={"项目列表"}></ComponentTitle>
+      <div className="project_div">
+        <div className="project_search_div">
+          <Search
+            placeholder="请输入项目名称"
+            onSearch={onSearch}
+            value={searchValue}
+            onChange={searchValueChange}
+            enterButton
+            style={{ marginBottom: "40px" }}
+          />
+          {/* <Select
 						placeholder='请选择运行状态'
 						style={{ width: 200, marginLeft: '20px' }}
 						onChange={statusChange}
@@ -184,43 +218,69 @@ const Project = () => {
 					>
 						<Option value='1'>已启动</Option>
 					</Select> */}
-				</div>
-				<Table columns={columns} dataSource={projectList} pagination={false} style={{ marginBottom: '20px' }} rowKey="project_id"/>
-			</div>
-			<Drawer title='quantum computer name' placement='right' onClose={onClose} visible={visible} width={900}>
-				<div className='computer_params_div'>
-					<p style={{ fontSize: '16px' }}>参数</p>
-					<div className='computer_params_detail'>
-						<div className='computer_params_detail_div'>
-							<div className='computer_params_detail_item'>
-								<div className='computer_params_detail_num'>127</div>
-								<div className='computer_params_detail_name'>Qubits</div>
-							</div>
-							<div className='computer_params_detail_item'>
-								<div className='computer_params_detail_num'>64</div>
-								<div className='computer_params_detail_name'>QV</div>
-							</div>
-							<div className='computer_params_detail_item'>
-								<div className='computer_params_detail_num'>850</div>
-								<div className='computer_params_detail_name'>CLOPS</div>
-							</div>
-						</div>
-						<div>
-							<div className='computer_params_right_item'>status:online</div>
-							<div className='computer_params_right_item'>number of qubits: 40</div>
-							<div className='computer_params_right_item'>Avg.T1: xxx us</div>
-							<div className='computer_params_right_item'>Avg.T2: xxx us</div>
-						</div>
-					</div>
-				</div>
-				{/* <div className='computer_number_div'>
+        </div>
+        <div className="addProject">
+          <Button onClick={gotoComputer} type="primary">
+            添加
+          </Button>
+        </div>
+        <Table
+          columns={columns}
+          dataSource={projectList}
+          pagination={false}
+          style={{ marginBottom: "20px" }}
+          rowKey="project_id"
+        />
+      </div>
+      <Drawer
+        title="quantum computer name"
+        placement="right"
+        onClose={onClose}
+        visible={visible}
+        width={900}
+      >
+        <div className="computer_params_div">
+          <p style={{ fontSize: "16px" }}>参数</p>
+          <div className="computer_params_detail">
+            <div className="computer_params_detail_div">
+              <div className="computer_params_detail_item">
+                <div className="computer_params_detail_num">127</div>
+                <div className="computer_params_detail_name">Qubits</div>
+              </div>
+              <div className="computer_params_detail_item">
+                <div className="computer_params_detail_num">64</div>
+                <div className="computer_params_detail_name">QV</div>
+              </div>
+              <div className="computer_params_detail_item">
+                <div className="computer_params_detail_num">850</div>
+                <div className="computer_params_detail_name">CLOPS</div>
+              </div>
+            </div>
+            <div>
+              <div className="computer_params_right_item">status:online</div>
+              <div className="computer_params_right_item">
+                number of qubits: 40
+              </div>
+              <div className="computer_params_right_item">Avg.T1: xxx us</div>
+              <div className="computer_params_right_item">Avg.T2: xxx us</div>
+            </div>
+          </div>
+        </div>
+        {/* <div className='computer_number_div'>
 					<p className='computer_number_title'>数据矫正</p>
 					<Table columns={columns} dataSource={data} bordered pagination={false} />
 				</div> */}
-				<div id='computer_params_graph' style={{ height: '300px', width: '100%' }}></div>
-			</Drawer>
-		</Layout>
-	)
+        <div
+          id="computer_params_graph"
+          style={{ height: "300px", width: "100%" }}
+        ></div>
+      </Drawer>
+      <Modal onOk={isSaveOk} onCancel={isSaveCancel} visible={isSaveCaseModalVisible} title='保存项目'>
+        <p>项目名称</p>
+        <Input value={caseName} onChange={onSaveChange} ></Input>
+      </Modal>
+    </Layout>
+  );
 }
 
 export default Project

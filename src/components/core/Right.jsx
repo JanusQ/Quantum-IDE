@@ -4,35 +4,13 @@ import { Button, Tooltip, Switch } from "antd";
 import { restore } from "../../simulator/CommonFunction";
 import { log } from "mathjs";
 import CircuitDiagram from "./CircuitDiagram";
+
 const Right = (props) => {
-  const [circuitDiagram, setcircuitDiagram] = useState('')
-  // if(props.circuit.compiled_circuit){
-  //   console.log(props.circuit.compiled_circuit,3377);
-  // }
-  // if (!props.circuit.compiled_circuit){
-  //   return
-  // }else{
-  //   setcircuitDiagram(props.circuit.compiled_circuit);
-  // }
-  //   console.log(props.circuit.compiled_circuit, 96333);
-  // const renderCircuit =()=>{
-  // 	if(props.circuit.compiled_circuit){
-  // 		 {
-  // 			 console.log(7788);
-  //        props.circuit.compiled_circuit.map((item)=>{
-  // 				<CircuitDiagram circuitData={item}/>
-  // 			})
-  //     };
-  // 	}
-  // }
-  // const {compiled_circuit} = props
-  // console.log(compiled_circuit);
-  const renderCircuit = () => {
-   circuitDiagram.map((item) => {
-     <CircuitDiagram circuitData={item} />;
-     console.log(7788);
-   });
-  };
+
+  const [circuitDiagram, setcircuitDiagram] = useState([])
+  // if (props.circuit){
+  //   setcircuitDiagram(props.circuit);
+  // } 
   return (
     <div id="right_div_box">
       <div
@@ -228,7 +206,6 @@ const Right = (props) => {
             <g id="real_after_chart_g"></g>
           </svg>
         </div>
-        {/* {renderCircuit} */}
       </div>
     </div>
   );
