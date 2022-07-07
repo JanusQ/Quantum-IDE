@@ -12,7 +12,8 @@
 }
 .front_logo_title {
 	font-style: normal;
-	font-size: 26px;
+	font-size: 16px;
+	font-weight: 700;
 	color: #ffffff;
 	user-select: none;
 	cursor: pointer;
