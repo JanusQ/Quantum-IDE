@@ -60,10 +60,10 @@ export const computerParamsChat = (data, element, svgEle, isProbs) => {
 		// 		const z = new XMLSerializer()
 		// 		g.select(`.tick:nth-of-type(${index + 1})`)
 		// 			.append('foreignObject')
-		// 			.attr('width', 30)
+		// 			.attr('width', 60)
 		// 			.attr('height', 24)
-		// 			// .attr('transform', 'scale(0.9)')
-		// 			.attr('x', -15)
+		// 			.attr('transform', 'scale(0.5)')
+		// 			.attr('x', -25)
 		// 			.attr('y', 5)
 		// 			.append('xhtml:div')
 		// 			.attr('height', '100%')
@@ -221,7 +221,7 @@ export const computerD3 = (data, svgEle, gEle, svgWidthData) => {
 	const svgWidth = (row + d3Fn.scaleNum) * d3Fn.svgItemWidth > initSvgWidth ? (row + d3Fn.scaleNum) * d3Fn.svgItemWidth : initSvgWidth
 	// 设置SVG宽高 高度整体下移了一行
 	svg.attr('width', svgWidth)
-	svg.attr('height', (col + 4) * d3Fn.svgItemHeight - 50)
+	svg.attr('height', (col + 1) * d3Fn.svgItemHeight)
 	/**
 	 * 预留了前边是firstX，画线和添加name
 	 */
@@ -229,11 +229,11 @@ export const computerD3 = (data, svgEle, gEle, svgWidthData) => {
 		d3Fn.drawLine(
 			drawG,
 			d3Fn.firstX,
-			d3Fn.svgItemHeight * (i + 2),
+			d3Fn.svgItemHeight * (i + 1),
 			(row + 3) * d3Fn.svgItemWidth > initSvgWidth ? (row + 3) * d3Fn.svgItemWidth : initSvgWidth,
-			d3Fn.svgItemHeight * (i + 2)
+			d3Fn.svgItemHeight * (i + 1)
 		)
-		d3Fn.drawName(drawG, d3Fn.svgItemWidth * 2 + 5, d3Fn.svgItemHeight * (i + 2), 'Q' + i)
+		d3Fn.drawName(drawG, d3Fn.svgItemWidth * 2 + 5, d3Fn.svgItemHeight * (i + 1), 'Q' + i)
 	}
 	// 加入Qint, 右边的继承关系
 	for (const key in data.name2index) {
@@ -242,7 +242,7 @@ export const computerD3 = (data, svgEle, gEle, svgWidthData) => {
 			d3Fn.drawQint(
 				drawG,
 				d3Fn.svgItemWidth * 2,
-				d3Fn.svgItemHeight * (data.name2index[key][0] + 2),
+				d3Fn.svgItemHeight * (data.name2index[key][0] + 1),
 				d3Fn.svgItemHeight * lineNum - 10,
 				key
 			)
