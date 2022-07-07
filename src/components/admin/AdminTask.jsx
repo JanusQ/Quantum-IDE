@@ -267,11 +267,10 @@ const AdminTask = () => {
 					onRow={(record) => {
 						return {
 							onClick: (event) => {
-								if (expandedRowKeys[0] === record.task_id) {
-									document.querySelectorAll('tr').forEach((item) => {
-										item.classList.remove('tr_active')
-									})
-								} else {
+								document.querySelectorAll('tr').forEach((item) => {
+									item.classList.remove('tr_active')
+								})
+								if (expandedRowKeys[0] !== record.task_id) {
 									event.target.parentNode.parentNode.parentNode.classList.add('tr_active')
 								}
 							},

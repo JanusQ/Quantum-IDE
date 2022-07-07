@@ -35,10 +35,10 @@ export default class d3Draw {
 		// 设置比例
 		this.scaleNum = 3
 		// 设置空白和间距
-		this.svgItemWidth = options.svgItemWidth || 30
+		this.svgItemWidth = options.svgItemWidth || 35
 		this.firstX = this.svgItemWidth * this.scaleNum
 
-		this.svgItemHeight = options.svgItemHeight || 30
+		this.svgItemHeight = options.svgItemHeight || 32
 		// 鼠标放上的小label宽
 		this.svgItemLabelWidth = 30
 
@@ -91,9 +91,8 @@ export default class d3Draw {
 			(row + this.scaleNum) * this.svgItemWidth > 1299 ? (row + this.scaleNum) * this.svgItemWidth : 1299
 		// 设置SVG宽高 高度整体下移了一行
 		svg.attr('width', svgWidth)
-		svg.attr('height', (col + 4) * this.svgItemHeight - 50)
+		svg.attr('height', (col + 1) * this.svgItemHeight)
 		// 加Label,先加载label label在最底层
-		console.log(data)
 		for (let i = 0; i < data.labels.length; i++) {
 			if (data.labels[i].text && data.labels[i].end_operation !== undefined) {
 				const obj = data.getLabelUpDown(data.labels[i].id)
@@ -103,7 +102,7 @@ export default class d3Draw {
 					this.drawLabel(
 						labelG,
 						(this.svgItemWidth + this.gate_offest) * data.labels[i].start_operation + this.labelTranslate,
-						this.svgItemHeight * (obj.up_qubit + 1.5),
+						this.svgItemHeight * (obj.up_qubit + 0.5),
 						(this.svgItemWidth + this.gate_offest) * lineCol,
 						this.svgItemHeight * labelRow,
 						data.labels[i].text,
@@ -119,17 +118,17 @@ export default class d3Draw {
 			this.drawLine(
 				drawG,
 				this.firstX,
-				this.svgItemHeight * (i + 2),
+				this.svgItemHeight * (i + 1),
 				(row + 3) * this.svgItemWidth > 1299 ? (row + 3) * this.svgItemWidth : 1299,
-				this.svgItemHeight * (i + 2)
+				this.svgItemHeight * (i + 1)
 			)
-			this.drawName(drawG, this.svgItemWidth * 2 + 5, this.svgItemHeight * (i + 2), 'Q' + i)
+			this.drawName(drawG, this.svgItemWidth * 2 + 5, this.svgItemHeight * (i + 1), 'Q' + i)
 		}
 		// 绘制选择线
 		for (let i = 0; i < row; i++) {
 			this.drawCselectLine(
 				drawG,
-				this.svgItemWidth * (i + 3) + 14,
+				this.svgItemWidth * (i + 2) + 14,
 				this.svgItemHeight * 2 - 6,
 				this.svgItemHeight * col - 15,
 				i,
@@ -143,7 +142,7 @@ export default class d3Draw {
 				this.drawQint(
 					drawG,
 					this.svgItemWidth * 2,
-					this.svgItemHeight * (data.name2index[key][0] + 2),
+					this.svgItemHeight * (data.name2index[key][0] + 1),
 					this.svgItemHeight * lineNum - 10,
 					key
 				)
@@ -306,7 +305,7 @@ export default class d3Draw {
 	// 需要计算直线和target位置再加个实心圆
 	drawCcnot(svg, x, y) {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
-		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', '#fff').classed('operation_item', true)
+		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', 'transparent').classed('operation_item', true)
 		const childG = parentG.append('g')
 		childG
 			.append('circle')
@@ -334,7 +333,7 @@ export default class d3Draw {
 	// ry
 	drawRy(svg, x, y) {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
-		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', '#fff').classed('operation_item', true)
+		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', 'transparent').classed('operation_item', true)
 		const childG = parentG.append('g')
 		childG
 			.append('circle')
@@ -352,7 +351,7 @@ export default class d3Draw {
 	// rx
 	drawRx(svg, x, y) {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
-		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', '#fff').classed('operation_item', true)
+		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', 'transparent').classed('operation_item', true)
 		const childG = parentG.append('g')
 		childG
 			.append('circle')
@@ -371,7 +370,7 @@ export default class d3Draw {
 	// rx
 	drawNameCircle(svg, x, y, name, textY) {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
-		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', '#fff').classed('operation_item', true)
+		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', 'transparent').classed('operation_item', true)
 		const childG = parentG.append('g')
 		childG
 			.append('circle')
@@ -393,7 +392,7 @@ export default class d3Draw {
 	}
 	drawNameCircletwoLength(svg, x, y, name, testX) {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
-		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', '#fff').classed('operation_item', true)
+		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', 'transparent').classed('operation_item', true)
 		const childG = parentG.append('g')
 		childG
 			.append('circle')
@@ -415,7 +414,7 @@ export default class d3Draw {
 	}
 	drawNameCirclethreeLength(svg, x, y, name, testX) {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
-		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', '#fff').classed('operation_item', true)
+		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', 'transparent').classed('operation_item', true)
 		const childG = parentG.append('g')
 		childG
 			.append('circle')
@@ -439,7 +438,7 @@ export default class d3Draw {
 	// rz
 	drawRz(svg, x, y) {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
-		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', '#fff').classed('operation_item', true)
+		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', 'transparent').classed('operation_item', true)
 		const childG = parentG.append('g')
 		childG
 			.append('circle')
@@ -457,7 +456,7 @@ export default class d3Draw {
 	// u2/u3
 	drawUnumber(svg, x, y, name) {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
-		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', '#fff').classed('operation_item', true)
+		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', 'transparent').classed('operation_item', true)
 		const childG = parentG.append('g')
 		childG
 			.append('circle')
@@ -475,7 +474,7 @@ export default class d3Draw {
 	// srn
 	drawSrn(svg, x, y) {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
-		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', '#fff').classed('operation_item', true)
+		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', 'transparent').classed('operation_item', true)
 		const childG = parentG.append('g')
 		childG
 			.append('circle')
@@ -494,7 +493,7 @@ export default class d3Draw {
 	// srndg
 	drawSrndg(svg, x, y) {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
-		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', '#fff').classed('operation_item', true)
+		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', 'transparent').classed('operation_item', true)
 		const childG = parentG.append('g')
 		childG
 			.append('circle')
@@ -513,7 +512,7 @@ export default class d3Draw {
 	// s/t deg
 	drawSDg(svg, x, y, name) {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
-		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', '#fff').classed('operation_item', true)
+		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', 'transparent').classed('operation_item', true)
 		const childG = parentG.append('g')
 		childG
 			.append('circle')
@@ -551,7 +550,7 @@ export default class d3Draw {
 
 	drawCCPhase(svg, x, y) {
 		const parentG = svg.append('g').attr('transform', `translate(${x - 10}, ${y - 10})`)
-		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', '#fff').classed('operation_item', true)
+		parentG.append('rect').attr('width', 20).attr('height', 20).attr('fill', 'transparent').classed('operation_item', true)
 		const childG = parentG.append('g')
 		childG
 			.append('circle')
@@ -925,7 +924,7 @@ export default class d3Draw {
 					this.drawLabel(
 						labelG,
 						this.svgItemWidth * start_operation + this.labelTranslate,
-						this.svgItemHeight * (up_qubit + 1.5),
+						this.svgItemHeight * (up_qubit + 0.5),
 						this.svgItemWidth * lineCol,
 						this.svgItemHeight * labelRow,
 						labelObj.id,
@@ -951,7 +950,7 @@ export default class d3Draw {
 	// line: 行数
 	// col: 列数
 	operationY(line) {
-		return this.svgItemHeight * (line + 2)
+		return this.svgItemHeight * (line + 1)
 	}
 	// x坐标
 	// col:列数
@@ -960,13 +959,15 @@ export default class d3Draw {
 	}
 	// 弧度转度数
 	radianToAngle(radian){
-		if(typeof(radian) === 'string'){
-			const num1 = Number(radian.split('/')[1])
+		if(String(radian) !== '0' && !Number(radian)){
+			const num1 = Number(radian.split('/')[1]) ? Number(radian.split('/')[1]) : 1
 			const num2 = Number(radian.split('/')[0].split('p')[0]) ? Number(radian.split('/')[0].split('p')[0]) : 1
 			return _.round(_.divide(_.multiply(_.divide(_.multiply(num2,Math.PI),num1),180),Math.PI)) + '°'
 		}else{
 			return _.round(_.divide(_.multiply(radian,180),Math.PI)) + '°'
+			
 		}
+		
 		
 	}
 	
@@ -3229,7 +3230,7 @@ export default class d3Draw {
 									this.drawLine(
 										crzG,
 										this.operationX(j),
-										this.operationY(crzmin) + 10,
+										this.operationY(crzmin),
 										this.operationX(j),
 										this.operationY(crzmax)
 									)
@@ -3252,7 +3253,7 @@ export default class d3Draw {
 									.attr('stroke', 'gray')
 									.attr('stroke-width', 1)
 									.attr('height', 26)
-									.attr('width', 59)
+									.attr('width', 28)
 									.attr('fill', '#fff')
 									.attr('rx', 2)
 								const text = tipG

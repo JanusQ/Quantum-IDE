@@ -204,7 +204,6 @@ function App() {
 		} catch (error) {
 			consoleContent(false, error.message)
 			noBug = false
-			console.error(error)
 		}
 		// 模拟器
 		if (noBug && runValue === 'JavaScript_simulator') {
@@ -601,7 +600,7 @@ function App() {
 	// 真机 模拟器切换
 	const [runProgramName, setRunProgramName] = useState('Run Program')
 	const [isSelectRunModalVisible, setIsSelectRunModalVisible] = useState(false)
-	const [runValue, setRunValue] = useState('')
+	const [runValue, setRunValue] = useState('JavaScript_simulator')
 	const onSelectRunChange = (e) => {
 		setRunValue(e.target.value)
 	}
