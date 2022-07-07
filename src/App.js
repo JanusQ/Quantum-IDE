@@ -494,11 +494,15 @@ function App() {
 		// )
 		return (
 			<div className='ide_top_menu'>
+			<div className='ide_top_menu_left'>
+				
 				<span onClick={addNew}>新建</span>
 				<span onClick={saveCase}>保存</span>
 				<span onClick={selectShow}>窗口</span>
 				<span onClick={exportFn}>导出</span>
 				<span onClick={selectRun}>模式</span>
+				</div>
+				<div></div>
 				{/* <span>提交</span> */}
 			</div>
 		)
