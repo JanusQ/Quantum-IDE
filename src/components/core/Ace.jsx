@@ -160,7 +160,7 @@ const Ace = forwardRef((props, ref) => {
 					onLoad={complete}
 					name='ACE-EDITOR'
 					width='100%'
-					height='70%'
+					height='84%'
 					value={props.editorValue}
 					showGutter={false}
 					style={{ fontSize: fontSize + 'px' }}
