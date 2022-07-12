@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { Menu, Dropdown } from 'antd'
+import { Menu, Dropdown, message } from "antd";
 import { DownOutlined } from '@ant-design/icons'
 import { Link, useHistory } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { isAuth } from '../../helpers/auth'
 import '../styles/Layout.css'
 import { getRemainderList } from '../../api/remainder'
-
+import {getUserInfo} from '../../api/auth'
 function useActive(currentPath, path) {
 	return currentPath === path ? 'active' : ''
 }
@@ -51,23 +51,42 @@ const Navigation = ({isIde}) => {
 			history.push('/message')
 		}
 	}
+  // 获取用户信息 判断是否是管理员 能否访问后台管理系统
+  const getUserInfoFn = async () => {
+    const params = {};
+    params.user_id = auth.user_id;
+    const { data } = await getUserInfo(params);
+     setadmin(data.user_type)
+  };
+  useEffect(() => {
+    getUserInfoFn();
+  }, []);
+  const [admin, setadmin] = useState(null)
 	// 下拉菜单
 	const menu = (
-		<Menu>
-			<Menu.Item key='1'>
-				<Link to='/usercenter/1'>个人中心</Link>
-			</Menu.Item>
-			<Menu.Item key='2'>
-				<Link to='/usercenter/2'>修改密码</Link>
-			</Menu.Item>
-			<Menu.Item key='3'>
-				<Link to='/admin'>后台管理</Link>
-			</Menu.Item>
-			<Menu.Item key='4' onClick={logOut}>
-				退出登录
-			</Menu.Item>
-		</Menu>
-	)
+    <Menu>
+      <Menu.Item key="1">
+        <Link  to="/usercenter/1">
+          个人中心
+        </Link>
+      </Menu.Item>
+      <Menu.Item key="2">
+        <Link to="/usercenter/2">修改密码</Link>
+      </Menu.Item>
+      {admin === 0 ? (
+        <Menu.Item key="3">
+          <Link to="/admin" >
+            后台管理
+          </Link>
+        </Menu.Item>
+      ) : (
+        false
+      )}
+      <Menu.Item key="4" onClick={logOut}>
+        退出登录
+      </Menu.Item>
+    </Menu>
+  );
 	return (
     <>
       <ul className="front_menu_list" style={{paddingTop:isIde?'1px':'15px'}}>
