@@ -222,7 +222,6 @@ function App() {
 		// console.log(data['qasm'])
 		data['sample'] = 1000
 		data['type'] = 'sqcg'
-		// console.log(data)
 		var id
 		id = await send_to_real(data)
 		const params = {}
