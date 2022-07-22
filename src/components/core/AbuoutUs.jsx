@@ -1,21 +1,21 @@
 import React from "react";
 import "../styles/AboutUs.css";
 import Layout from "./Layout";
-import aboutUs from "../../images/aboutUS.png";
+// import aboutUs from "../../images/aboutUS.png";
 export default function AbuoutUs() {
   return (
     <Layout>
       <div>
         <div className="aboutUs">
           <h2>团队介绍</h2>
-          <div className="usImg">
+          {/* <div className="usImg">
             <img src={aboutUs} alt="" />
-          </div>
+          </div> */}
           <div className="usFount">
             <div className="usComtent">
               <p>
                 <span></span>
-                XX量子云平台依托于浙江大学物理学院和浙江大学计算机学院共同创建，致力于向大众免费提供先进的量子计算机的云服务。
+                太元量子云平台依托于浙江大学物理学院和浙江大学计算机学院共同创建，致力于向大众免费提供先进的量子计算机的云服务。
               </p>
               <p>
                 <span></span>

@@ -7,6 +7,7 @@ import { isAuth } from '../../helpers/auth'
 import '../styles/Layout.css'
 import { getRemainderList } from '../../api/remainder'
 import {getUserInfo} from '../../api/auth'
+import AbuoutUs from './AbuoutUs';
 function useActive(currentPath, path) {
 	return currentPath === path ? 'active' : ''
 }
@@ -24,6 +25,7 @@ const Navigation = ({isIde}) => {
 	// const isNoticeDetail = useActive(pathname, '/noticedetail')
 	const isProject = useActive(pathname, '/project')
 	const isReferenceDoc = useActiveAct(pathname, '/referenceDoc')
+	const isaboutUs = useActiveAct(pathname, "/aboutUs");
 	const auth = isAuth()
 	const [remainNum, setRemainNum] = useState(1)
 	let interval = null
@@ -105,7 +107,7 @@ const Navigation = ({isIde}) => {
         <li>
           <a href="http://183.129.170.180:10213/">社区论坛</a>
         </li>
-        <li> <Link to="/aboutUs">关于我们</Link></li>
+        <li className={isaboutUs}> <Link to="/aboutUs">关于我们</Link></li>
       </ul>
 
       <ul className="front_menu_list front_menu_list_second" style={{paddingTop:isIde?'1px':'15px'}}>
