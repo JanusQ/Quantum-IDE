@@ -140,6 +140,7 @@ function App() {
 		setEditorValue(newValue)
 	}
 	const auth = isAuth()
+	// {user_id: 2, username: 'wangxuanhe', user_type: 0} 6666
 	const { projectName, projectId } = useParams()
 
 	// 分发事件
@@ -607,14 +608,16 @@ function App() {
 	const onSelectRunChange = (e) => {
 		setRunValue(e.target.value)
 	}
+	// 模拟器用户禁用其他选项
+		
 	const selectRunModal = () => {
 		return (
 			<Modal visible={isSelectRunModalVisible} onOk={isSelectRunOk} onCancel={isSelectRunCancel} title='切换模式'>
 				<p>请选择模式</p>
 				<Radio.Group onChange={onSelectRunChange} value={runValue}>
-					<Radio value={'sqcg_cluster'}>量子集群</Radio>
-					<Radio value={'sqcg'}>量子计算机</Radio>
-           <Radio value={'qiskit'}>python模拟器</Radio>
+					<Radio disabled={auth.user_type==1 ? true:false} value={'sqcg_cluster'}>量子集群</Radio>
+					<Radio disabled={auth.user_type==1 ? true:false} value={'sqcg'}>量子计算机</Radio>
+           <Radio disabled={auth.user_type==1 ? true:false} value={'qiskit'}>python模拟器</Radio>
 					<Radio value={'JavaScript_simulator'}>JavaScript模拟器</Radio>
 				</Radio.Group>
 			</Modal>
