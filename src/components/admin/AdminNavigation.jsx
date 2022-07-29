@@ -18,6 +18,7 @@ const AdminNavigation = () => {
 	const isAdminUser = useActive(pathname, '/admin/user')
 	const isAdminNotice = useActive(pathname, '/admin/notice')
 	const isAdminReferenceDoc = useActive(pathname, '/admin/referenceDoc')
+	const isAdminOperationLog = useActive(pathname, "/admin/operation");
 	const auth = isAuth()
 	const [remainNum, setRemainNum] = useState(1)
 	let interval = null
@@ -61,47 +62,56 @@ const AdminNavigation = () => {
 	)
 
 	return (
-		<>
-			<ul className='front_menu_list'>
-				<li className={isHome}>
-					<Link to='/admin'>后台数据</Link>
-				</li>
-				{/* <li className={isComputer}>
+    <>
+      <ul className="front_menu_list">
+        <li className={isHome}>
+          <Link to="/admin">后台数据</Link>
+        </li>
+        {/* <li className={isComputer}>
 				<Link to='/computer'>计算机列表</Link>
 			</li> */}
-				<li className={isProject}>
-					<Link to='/admin/project'>项目管理</Link>
-				</li>
-				<li className={isAdminUser}>
-					<Link to='/admin/user'>用户管理</Link>
-				</li>
-				<li className={isAdminNotice}>
-					<Link to='/admin/notice'>通知管理</Link>
-				</li>
-				<li className={isAdminReferenceDoc}>
-					<Link to='/admin/referenceDoc'>文档管理</Link>
-				</li>
-			</ul>
+        <li className={isProject}>
+          <Link to="/admin/project">项目管理</Link>
+        </li>
+        <li className={isAdminUser}>
+          <Link to="/admin/user">用户管理</Link>
+        </li>
+        <li className={isAdminNotice}>
+          <Link to="/admin/notice">通知管理</Link>
+        </li>
+        <li className={isAdminReferenceDoc}>
+          <Link to="/admin/referenceDoc">文档管理</Link>
+        </li>
+        <li className={isAdminOperationLog}>
+          <Link to="/admin/operation">操作日志</Link>
+        </li>
+      </ul>
 
-			<ul className='front_menu_list front_menu_list_second'>
-				<>
-					<li className='front_menu_user'>
-						<Dropdown overlay={menu}>
-							<a className='ant-dropdown-link' onClick={(e) => e.preventDefault()}>
-								<span className='front_user_name'>{auth.username}</span>
-								<DownOutlined />
-							</a>
-						</Dropdown>
-					</li>
-					<li className='menu_notice_li'>
-						<span className='front_ling_dang' onClick={lookRemainder}></span>
-						<span className='front_tip_num' style={{ display: remainNum > 0 ? 'inline-block' : 'none' }}>
-							{remainNum}
-						</span>
-					</li>
-				</>
-			</ul>
-		</>
-	)
+      <ul className="front_menu_list front_menu_list_second">
+        <>
+          <li className="front_menu_user">
+            <Dropdown overlay={menu}>
+              <a
+                className="ant-dropdown-link"
+                onClick={(e) => e.preventDefault()}
+              >
+                <span className="front_user_name">{auth.username}</span>
+                <DownOutlined />
+              </a>
+            </Dropdown>
+          </li>
+          <li className="menu_notice_li">
+            <span className="front_ling_dang" onClick={lookRemainder}></span>
+            <span
+              className="front_tip_num"
+              style={{ display: remainNum > 0 ? "inline-block" : "none" }}
+            >
+              {remainNum}
+            </span>
+          </li>
+        </>
+      </ul>
+    </>
+  );
 }
 export default AdminNavigation

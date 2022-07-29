@@ -23,10 +23,12 @@ import AdminUser from './components/admin/AdminUser'
 import AdminNotice from './components/admin/AdminNotice'
 import AdminReferenceDoc from './components/admin/AdminReferenceDoc'
 import AdminNoticeDetail from './components/admin/AdminNoticeDetail'
+import AdminOperationLog from './components/admin/AdminOperationLog'
 import PrivateRoute from './components/admin/PrivateRoute'
 import AdminTask from './components/admin/AdminTask'
 import AbuoutUs from './components/core/AbuoutUs'
 import NotFound from './components/core/NotFound'
+
 const Routes = () => {
 	return (
     <ConfigProvider locale={zhCN}>
@@ -70,6 +72,11 @@ const Routes = () => {
           <PrivateRoute path="/admin/project" component={AdminProject} exact />
           <PrivateRoute path="/admin/user" component={AdminUser} exact />
           <PrivateRoute path="/admin/notice" component={AdminNotice} exact />
+          <PrivateRoute
+            path="/admin/operation"
+            component={AdminOperationLog}
+            exact
+          />
           <PrivateRoute
             path="/admin/referenceDoc"
             component={AdminReferenceDoc}
