@@ -39,6 +39,7 @@ import { useParams } from 'react-router-dom'
 import { isAuth } from './helpers/auth'
 import { computerParamsChat, computerD3 } from './helpers/computerParamsChart'
 import { getTaskResult } from './api/project'
+import {uploadOperation}from './api/operationLog'
 // import QCEngine from './simulator/MyQCEngine'
 // import './test/meausre'
 // import './test/reset'
@@ -143,6 +144,10 @@ function App() {
 	// {user_id: 2, username: 'wangxuanhe', user_type: 0} 6666
 	const { projectName, projectId } = useParams()
 
+	// 操作日志上传内容
+	const [uploadOperationData, setuploadOperationData] = useState('')
+	const [errorInformation, seterrorInformation] = useState('')
+		
 	// 分发事件
 	const dispathRun = () => {
 		if (runValue === 'sqcg' || runValue === 'sqcg_cluster' || runValue === 'qiskit') {
@@ -317,6 +322,8 @@ function App() {
 			// 	console.log(resultDataObj,3355);
 			// 	setcircuit(resultDataObj.compiled_circuit)
 			// }
+						
+setuploadOperationData({username:auth.username,access_page:'',user_operation:'提交代码',user_code:editorValue,error_information:errorInformation})
 			drawFn(resultDataObj)
 			setResultData(resultDataObj)
 			if (!isSimple) {
@@ -325,8 +332,14 @@ function App() {
 				drawChart(resultDataObj)
 			}
 		
-		} catch {
-			setIsSubmitModalLoading(false)
+		} catch  (e) {
+			console.log(e.msg,123);
+			seterrorInformation(e.msg)
+			console.log({username:auth.username,access_page:'',user_operation:'提交代码',user_code:editorValue,error_information:e.msg},666655);
+			 const res = await uploadOperation(uploadOperationData)
+			 console.log(res,666);
+
+			 setIsSubmitModalLoading(false)
 		}
 		form.resetFields()
 	}
@@ -492,6 +505,7 @@ function App() {
 		// 		</ul>
 		// 	</div>
 		// )
+		console.log(auth,555);
 		return (
 			<div className='ide_top_menu'>
 			<div className='ide_top_menu_left'>
