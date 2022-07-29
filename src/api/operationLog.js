@@ -1,9 +1,9 @@
-import instance from "./http";
+import request from "./request"
 
 export const uploadOperation = (data) =>{
-  return instance.get('/log/sbumitLog',data)
+  return request.post('/log/submitLog',data)
 }
 // 获取操作日志列表
 export const getOperationLogList = (data)=>{
-  return instance.get('/log/getLogList',data)
+  return request.post('/log/getLogList',data)
 }

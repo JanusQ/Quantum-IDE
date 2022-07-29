@@ -315,7 +315,8 @@ function App() {
 			taskIdFormData.append('task_id',data.task_info.task_id)
 			setIsSubmitModalLoading(false)
 			message.success('已提交')
-			
+			  const res = await uploadOperation({username:auth.username,access_page:'',user_operation:'提交代码',user_code:editorValue,error_information:'无'})
+			 console.log(res,3366);
 			setSubmitModalVisible(false)
 			const { data:resultDataObj } = await getTaskResult(taskIdFormData)
 			// if(resultDataObj){
@@ -323,7 +324,7 @@ function App() {
 			// 	setcircuit(resultDataObj.compiled_circuit)
 			// }
 						
-setuploadOperationData({username:auth.username,access_page:'',user_operation:'提交代码',user_code:editorValue,error_information:errorInformation})
+     
 			drawFn(resultDataObj)
 			setResultData(resultDataObj)
 			if (!isSimple) {
@@ -333,10 +334,8 @@ setuploadOperationData({username:auth.username,access_page:'',user_operation:'�
 			}
 		
 		} catch  (e) {
-			console.log(e.msg,123);
-			seterrorInformation(e.msg)
-			console.log({username:auth.username,access_page:'',user_operation:'提交代码',user_code:editorValue,error_information:e.msg},666655);
-			 const res = await uploadOperation(uploadOperationData)
+			// 提交运行错误信息到后台
+			 const res = await uploadOperation({username:auth.username,access_page:'',user_operation:'提交代码',user_code:editorValue,error_information:e.msg})
 			 console.log(res,666);
 
 			 setIsSubmitModalLoading(false)
@@ -505,7 +504,6 @@ setuploadOperationData({username:auth.username,access_page:'',user_operation:'�
 		// 		</ul>
 		// 	</div>
 		// )
-		console.log(auth,555);
 		return (
 			<div className='ide_top_menu'>
 			<div className='ide_top_menu_left'>

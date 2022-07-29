@@ -58,6 +58,13 @@ module.exports = function (app) {
 		})
 	)
 	app.use(
+		createProxyMiddleware('/api1',{
+			target: 'http://183.129.170.180:10212', // 请求的地址域名
+			changeOrigin: true,
+			 pathRewrite: { '^/api1': '' },
+		})
+	)
+	app.use(
 		'/api',
 		createProxyMiddleware({
 			target: 'http://183.129.170.180:10213', // 请求的地址域名
@@ -65,13 +72,6 @@ module.exports = function (app) {
 			changeOrigin: true,
 		})
 	)
-	app.use(
-		'/log',
-		createProxyMiddleware({
-			target: 'http://183.129.170.180:10213', // 请求的地址域名
-			secure:false,
-			changeOrigin: true,
-		})
-	)
+	
 	
 }
