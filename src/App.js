@@ -315,7 +315,7 @@ function App() {
 			taskIdFormData.append('task_id',data.task_info.task_id)
 			setIsSubmitModalLoading(false)
 			message.success('已提交')
-			  const res = await uploadOperation({username:auth.username,access_page:'',user_operation:'提交代码',user_code:editorValue,error_information:'无'})
+			  const res = await uploadOperation({username:auth.username,access_page:'',user_operation:'提交代码',user_code:editorValue,error_information:'运行成功'})
 			 console.log(res,3366);
 			setSubmitModalVisible(false)
 			const { data:resultDataObj } = await getTaskResult(taskIdFormData)
