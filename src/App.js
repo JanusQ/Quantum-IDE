@@ -6,7 +6,7 @@ import ConsoleComponent from './components/core/ConsoleComponent'
 import axios from 'axios'
 import React, { useState, useRef } from 'react'
 import { exportSVG } from './simulator/CommonFunction'
-import QCEngine from './simulator/MyQCEngine'
+import QCEngine from './simulator/myQCEngine'
 import { cos, sin, round, pi, complex, create, all, max, sparse } from 'mathjs'
 import {
 	pow2,
@@ -142,16 +142,16 @@ function App() {
 	}
 	// 处理console
 	const consoleContent = (isTure, message) => {
-		if (isTure) {
-			const console_list = []
-			for (let i = 0; i < message.length; i++) {
-				console_list.push(<p key={i}>{message[i]}</p>)
-			}
-			setConsoleValue(<div className='right_content'>{console_list}</div>)
-		} else {
-			setConsoleValue(<div className='error_content'>{message}</div>)
-		}
-	}
+    if (isTure) {
+      const console_list = []
+      for (let i = 0; i < message.length; i++) {
+        console_list.push(<p key={i}>{message[i]}</p>)
+      }
+      setConsoleValue(<div className="right_content">{console_list}</div>)
+    } else {
+      setConsoleValue(<div className="error_content">{message}</div>)
+    }
+  }
 
 	// console.log(getDirac(1))
 

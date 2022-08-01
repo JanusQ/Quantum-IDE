@@ -7,7 +7,7 @@ import 'ace-builds/src-min-noconflict/ext-language_tools'
 import { Button, Select, Modal, Tooltip } from 'antd'
 import { ZoomInOutlined, ZoomOutOutlined } from '@ant-design/icons'
 import { createFile } from '../../simulator/CommonFunction'
-import QCEngine from '../../simulator/MyQCEngine'
+import QCEngine from '../../simulator/myQCEngine'
 
 const Ace = (props) => {
 	// 初始化字体

@@ -6,7 +6,7 @@ import { im, number, re } from 'mathjs'
 import { ConsoleErrorListener, toDocs } from '../resource/js/quantum-circuit.min'
 import Chart from './Chart'
 import { getDirac } from '../components/Mathjax'
-import QCEngine from './MyQCEngine'
+import QCEngine from './myQCEngine'
 const _ = require('lodash')
 export default class d3Draw {
 	constructor(options) {
