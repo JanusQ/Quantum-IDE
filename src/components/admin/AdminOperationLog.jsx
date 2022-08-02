@@ -9,10 +9,15 @@ export default function AdminOperationLog() {
   const [showCodeVisible, setshowCodeVisible] = useState(false)
   const [code, setcode] = useState('')
   const getLogList = async () => {
-    const res = await getOperationLogList({ page_size, page_num, filter: {} })
-    const list = JSON.parse(res.data.data.log_list)
+   try {
+     const res = await getOperationLogList({ page_size, page_num, filter: {} })
+    
+   } catch (e) {
+     const list = JSON.parse(e.data.log_list)
 
-    setOperationList(list)
+     setOperationList(list)
+    
+   }
   }
   const showcode = (text) => {
     setcode(text)
