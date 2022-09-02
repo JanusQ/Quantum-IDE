@@ -3,21 +3,22 @@ import AdminLayout from './AdminLayout'
 import { Table, Modal } from 'antd'
 import { getOperationLogList } from '../../api/operationLog'
 export default function AdminOperationLog() {
+  const [data, setdata] = useState({})
   const [operationList, setOperationList] = useState([])
   const [page_size, setPageSize] = useState(10)
   const [page_num, setpageNumber] = useState(1)
   const [showCodeVisible, setshowCodeVisible] = useState(false)
   const [code, setcode] = useState('')
   const getLogList = async () => {
-   try {
-     const res = await getOperationLogList({ page_size, page_num, filter: {} })
-    
-   } catch (e) {
-     const list = JSON.parse(e.data.log_list)
-
-     setOperationList(list)
-    
-   }
+    try {
+      const res = await getOperationLogList({ page_size, page_num, filter: {} })
+       const list = JSON.parse(res.data.log_list)
+        setdata(res.data)
+       setOperationList(list)
+    } catch (e) {
+     console.log(e);
+     
+    }
   }
   const showcode = (text) => {
     setcode(text)
@@ -26,9 +27,13 @@ export default function AdminOperationLog() {
   const closeCode = () => {
     setshowCodeVisible(false)
   }
-  useEffect(() => {
-    getLogList()
-  }, [page_num])
+  useEffect(
+    () => {
+      getLogList()
+    },
+    [page_num],
+    page_size
+  )
   const columns = [
     {
       title: '用户名',
@@ -46,6 +51,12 @@ export default function AdminOperationLog() {
       title: '用户操作',
       dataIndex: 'user_operation',
       key: '用户操作',
+      render: (text) => text,
+    },
+    {
+      title: '进入的页面',
+      dataIndex: 'access_page',
+      key: '进入的页面',
       render: (text) => text,
     },
     {
@@ -68,6 +79,14 @@ export default function AdminOperationLog() {
         rowKey="user_id"
         dataSource={operationList}
         columns={columns}
+        pagination={{
+          total: data.log_count,
+          pageSize: page_size,
+          onChange(page_num, pageSize) {
+            setpageNumber(page_num)
+            setPageSize(pageSize)
+          },
+        }}
       ></Table>
 
       <Modal onCancel={closeCode} footer={false} visible={showCodeVisible}>
