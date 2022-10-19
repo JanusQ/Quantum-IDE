@@ -33,7 +33,7 @@ cnot([1,2]);
 cnot([2,3]);
 epb.had();
 
-ncphase(180, [0,2]);
+cphase(180, [0,2]);
 endlabel('teleport');
 
 

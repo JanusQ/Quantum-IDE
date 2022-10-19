@@ -287,6 +287,7 @@ function App() {
       'ncnot',
       'ncphase',
       'qprint',
+      'cphase'
     ]
     var cx,
       cy,
@@ -345,6 +346,7 @@ function App() {
       ccnot,
       ncnot,
       ncphase,
+      cphase,
       qprint
     //let gates =['had']
     let bind_str = 'gate_name = qc.gate_name.bind(qc);\n '
