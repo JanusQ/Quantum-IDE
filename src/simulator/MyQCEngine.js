@@ -333,6 +333,7 @@ export default class QCEngine {
         let qlen = this.circuit.numQubits;
         let cir_len = gates[0].length
         let op_col = 0;
+        console.log(this.circuit)
         
         let control_set = ['cx','cy','cz','ch','csrn','cr2','cr4','cr8','crx','cry','crz','cu1','cu2',
         'cu3','cs','ct','csdg','ctdg','ccx', ];//'cswap','csrswap']
