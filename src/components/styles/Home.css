@@ -87,11 +87,13 @@
 	margin-top: 44px;
 }
 .home_banner .home_banner_item_1 {
-	background: url('../../images/banner_1.jpg') no-repeat;
+	background: black;
+	/* background: url('../../images/banner_1.png') no-repeat; */
 	background-size: 100% 100%;
 }
 .home_banner .home_banner_item_2 {
-	background: url('../../images/banner_2.png') no-repeat;
+	/* background: url('../../images/banner_2.png') no-repeat; */
+	background: black;
 	background-size: 100% 100%;
 }
 .home_production_div {
