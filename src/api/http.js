@@ -51,6 +51,13 @@ instance.interceptors.response.use(
       return Promise.resolve(res.data)
     } else if (res.data.status === 200) {
       return Promise.resolve(res.data)
+    } else if (res.data.status === 409) {
+      return Promise.resolve(res.data)
+      return Promise.resolve(res.data)
+    } else if (res.data.status === 404) {
+      return Promise.resolve(res.data)
+    } else if (res.data.status === 409) {
+      return Promise.resolve(res.data)
     } else if (res.data.status === 407) {
       message.error(res.data.msg, 1)
       // history.replace({

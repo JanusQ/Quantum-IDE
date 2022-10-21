@@ -333,6 +333,7 @@ export default class QCEngine {
         let qlen = this.circuit.numQubits;
         let cir_len = gates[0].length
         let op_col = 0;
+        console.log(this.circuit)
         
         let control_set = ['cx','cy','cz','ch','csrn','cr2','cr4','cr8','crx','cry','crz','cu1','cu2',
         'cu3','cs','ct','csdg','ctdg','ccx', ];//'cswap','csrswap']
@@ -833,6 +834,10 @@ export default class QCEngine {
     ccnot(wires, column = undefined)
     {
         this.ccx(wires,column)
+    }
+    cphase(lambda, wires, column = undefined)
+    {
+        this.cu1(lambda, wires, column = undefined)
     }
 
     _Multi2Op(op, wires, column = undefined, pars = undefined)
@@ -2573,6 +2578,10 @@ class QInt {
         let new_wires = this.bits(wires)
         this.qc.ncphase(phi, new_wires, column)
     }
+    cphase(lambda, wires, column = undefined)
+    {
+        this.cu1(lambda, wires, column)
+    }
 
     // read的应该不是数组
     // read(binary_qubits) {
@@ -2753,7 +2762,7 @@ class QInt {
             qc.had([qubits1])
             qubits.slice(index1 + 1).forEach((qubits2, index2) => {
                 let phi = 90 / pow2(index2)
-                qc.ncphase(phi, [qubits1,qubits2])
+                qc.cphase(phi, [qubits1,qubits2])
             })
         })
 
@@ -2770,7 +2779,7 @@ class QInt {
             qubits.slice(index1 + 1).forEach((qubits2, index2) => {
                 let phi = - 90 / pow2(index2)
                 // console.log(phi);
-                qc.ncphase(phi, [qubits1, qubits2])
+                qc.cphase(phi, [qubits1, qubits2])
             })
         })
 

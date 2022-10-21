@@ -6,11 +6,16 @@ import { getCookie, isAuth, delCookie, setCookie } from '../../helpers/auth'
 // import { Redirect } from 'react-router-dom'
 import '../styles/SignIn.css'
 import { Link, Redirect, useParams } from 'react-router-dom'
-import { login, register, registerDiscuz } from '../../api/auth'
+import {
+  login,
+  register,
+  registerDiscuz,
+  getVertifyImg,
+  VertifyImgCode,
+} from '../../api/auth'
 import { useHistory } from 'react-router-dom'
 import { setToken, removeToken } from '../../api/storage'
 import encypt from '../../util/crypto'
-import ValiadteCode from './components/ValiadteCode'
 const SignIn = () => {
   const { type } = useParams()
   const history = useHistory()
@@ -51,18 +56,35 @@ const SignIn = () => {
       delCookie('password')
     }
   }
-  // 验证码
-  const [verifyCode, setverifyCode] = useState('')
-
-  const getverifyCode = (verifyCode) => {
-    setverifyCode(verifyCode)
+  // 获取登录前验证图片
+  const [imagedata, setImageData] = useState('')
+  const getImage = async () => {
+    const res = await getVertifyImg()
+    setImageData(res.data)
+    // console.log(res, 'img')
   }
-  const checkauth = (rule, value) => {
-    if (value.toLowerCase() === verifyCode.toLowerCase()) {
-      return Promise.resolve()
-    } else {
-      form.getFieldsValue().code = ''
-      return Promise.reject('验证码错误,请重新输入')
+  useEffect(() => {
+    getImage()
+  }, [])
+  // 验证码
+  const checkauth = async (rule, value) => {
+    const data = await VertifyImgCode({
+      code: value,
+      uuid: imagedata.uuid,
+    })
+    switch (data.status) {
+      case 200:
+        return Promise.resolve()
+        break
+      case 404:
+        getImage()
+        return Promise.reject('验证码错误,请重新输入')
+        break
+      case 409:
+        getImage()
+        return Promise.reject('验证码错误,请重新输入')
+
+      default:
     }
   }
 
@@ -74,9 +96,9 @@ const SignIn = () => {
           layout="vertical"
           autoComplete="off"
           form={form}
-          validateTrigger={'onBlur'}
         >
           <Form.Item
+            validateTrigger={'onBlur'}
             name="email"
             rules={[
               { required: true, message: '请输入邮箱' },
@@ -86,6 +108,7 @@ const SignIn = () => {
             <Input placeholder="请输入您的邮箱" />
           </Form.Item>
           <Form.Item
+            validateTrigger={'onBlur'}
             name="password"
             rules={[{ required: true, message: '请输入密码' }]}
           >
@@ -93,17 +116,27 @@ const SignIn = () => {
           </Form.Item>
 
           <Form.Item
+            validateTrigger="onBlur"
             autoComplete="off"
-            validateTrigger={['onBlur']}
             name="code"
             rules={[{ validator: checkauth }]}
             label="验证码"
           >
-            <Input placeholder="请输入下方图片验证码,不区分大小写"></Input>
+            <Input />
           </Form.Item>
-          <ValiadteCode
-            getverifycode={(verifyCode) => getverifyCode(verifyCode)}
-          />
+          <div className="valiadteImg">
+            <img
+              style={{ width: 300, height: 100 }}
+              src={`data:image/jpeg;base64,${imagedata.img}`}
+              alt=""
+            />
+            <span
+              onClick={getImage}
+              style={{ fontSize: 16, display: 'displayIlilneBlokc' }}
+            >
+              换一张
+            </span>
+          </div>
 
           <Form.Item style={{ marginBottom: '20px' }}>
             <div className="sign_in_form_operation">

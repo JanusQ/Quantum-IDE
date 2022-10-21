@@ -8,6 +8,14 @@ export const register = (data) => {
 export const login = (data) => {
   return instance.post('/user/login/', data)
 }
+// 获取登录前验证图片
+export const getVertifyImg = () => {
+  return instance.get('/user/imageCode/')
+}
+// 获取登录前验证图片
+export const VertifyImgCode = (data) => {
+  return instance.post('/user/imageCode/', data)
+}
 // 基本信息获取
 export const getUserInfo = (data) => {
   return instance.get(`/user/${data}/partial_list/`)
