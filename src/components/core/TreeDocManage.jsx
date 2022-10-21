@@ -65,7 +65,6 @@ const Test = () => {
   }, [fileList]);
   const handleOk = () => {
     addForm.validateFields().then(async (value) => {
-      console.log(value, 88888);
       const formData = new FormData();
       if (editId === -1) {
         formData.append("doc_content", value.file.file);

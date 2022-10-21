@@ -66,7 +66,6 @@ const Test = () => {
   }, [fileList]);
   const handleOk = () => {
     addForm.validateFields().then(async (value) => {
-      console.log(value, 88888);
       const formData = new FormData();
       if (editId === -1) {
         formData.append("doc_content", value.file.file);
@@ -110,7 +109,6 @@ const Test = () => {
     // 删除文档
     const delDoc = (item) =>{
       if(item.children.length !==0) return message.success('当前文档下还有其他文档')
-      console.log(item);
     	Modal.confirm({
         title: "确认删除？",
         okText: "确认",

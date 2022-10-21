@@ -94,7 +94,6 @@ const MessageList = () => {
 			okText: '确认',
 			cancelText: '取消',
 			onOk: () => {
-				console.log(id)
 			},
 		})
 	}

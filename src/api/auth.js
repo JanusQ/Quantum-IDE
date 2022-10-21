@@ -2,25 +2,25 @@ import axios from 'axios'
 import instance from './http'
 // 注册
 export const register = (data) => {
-	return instance.post('/user/register', data)
+  return instance.post('/user/register/', data)
 }
 // 登录
 export const login = (data) => {
-	return instance.post('/user/login', data)
+  return instance.post('/user/login/', data)
 }
 // 基本信息获取
 export const getUserInfo = (data) => {
-	return instance.post('/user/userInfo', data)
+  return instance.get(`/user/${data}/partial_list/`)
 }
 // 变更个人信息
-export const updateUserInfo = (data) => {
-	return instance.post('/user/updateUserInfo', data)
+export const updateUserInfo = (id, data) => {
+  return instance.patch(`/user/${id}/`, data)
 }
 // 修改密码
-export const updateUserPassword = (data) => {
-	return instance.post('/user/updateUserPassword', data)
+export const updateUserPassword = (id, data) => {
+  return instance.post(`/user/updatePassword/${id}/`, data)
 }
 // 注册论坛
-export const registerDiscuz = (data)=>{
-	return axios.post('/api/v3/users/username.register', data)
+export const registerDiscuz = (data) => {
+  return axios.post('/api/v3/users/username.register', data)
 }

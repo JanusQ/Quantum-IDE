@@ -8,6 +8,7 @@ import '../styles/Layout.css'
 import { getRemainderList } from '../../api/remainder'
 import { getUserInfo } from '../../api/auth'
 import AbuoutUs from './AbuoutUs'
+import { removeToken } from '../../api/storage'
 function useActive(currentPath, path) {
   return currentPath === path ? 'active' : ''
 }
@@ -37,14 +38,15 @@ const Navigation = ({ isIde }) => {
   }
   const logOut = () => {
     localStorage.removeItem('jwt')
+    removeToken()
     history.push('/signin/1')
   }
   useEffect(() => {
     if (!interval && isAuth()) {
       getRemainderListFn()
-      interval = setInterval(() => {
-        getRemainderListFn()
-      }, 5000)
+      // interval = setInterval(() => {
+      //   getRemainderListFn()
+      // }, 5000)
     }
     return () => clearInterval(interval)
   }, [])
@@ -54,16 +56,18 @@ const Navigation = ({ isIde }) => {
     }
   }
   // 获取用户信息 判断是否是管理员 能否访问后台管理系统
-  const getUserInfoFn = async () => {
-    const params = {}
-    params.user_id = auth.user_id
-    const { data } = await getUserInfo(params)
-    setadmin(data.user_type)
-  }
-  useEffect(() => {
-    getUserInfoFn()
-  }, [])
-  const [admin, setadmin] = useState(null)
+  // const getUserInfoFn = async () => {
+  //   const params = {}
+  //   params.user_id = auth.user_id
+  //   const { data } = await getUserInfo(params.user_id)
+  //   console.log(data)
+  //   setadmin(auth.user_type)
+  //   console.log(auth.user_type, 'auth.user_type')
+  // }
+  // useEffect(() => {
+  //   getUserInfoFn()
+  // }, [])
+  // const [admin, setadmin] = useState(null)
   // 下拉菜单
   const menu = (
     <Menu>
@@ -73,7 +77,7 @@ const Navigation = ({ isIde }) => {
       <Menu.Item key="2">
         <Link to="/usercenter/2">修改密码</Link>
       </Menu.Item>
-      {admin === 0 ? (
+      {auth.user_type === 0 ? (
         <Menu.Item key="3">
           <Link to="/admin">后台管理</Link>
         </Menu.Item>
