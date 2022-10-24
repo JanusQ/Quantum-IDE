@@ -11,7 +11,7 @@ module.exports = function (app) {
   app.use(
     '/user',
     createProxyMiddleware({
-      target: 'http://192.168.21.191:10218', // 请求的地址域名
+      target: 'http://192.168.21.191:10211', // 请求的地址域名
       changeOrigin: true,
     })
   )

@@ -53,7 +53,7 @@ const SignUp = () => {
               rules={[
                 {
                   required: true,
-                  message: '请输入手机号555',
+                  message: '请输入手机号',
                 },
                 {
                   pattern: /^1[3-9]\d{9}$/,

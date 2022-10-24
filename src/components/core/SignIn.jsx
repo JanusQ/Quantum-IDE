@@ -233,6 +233,11 @@ const SignIn = () => {
                 required: true,
                 message: '请输入手机号',
               },
+              {
+                pattern:
+                  /^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0,5-9]))\d{8}$/,
+                message: '手机号格式错误',
+              },
             ]}
           >
             <Input placeholder="请输入手机号" />
@@ -243,6 +248,10 @@ const SignIn = () => {
               {
                 required: true,
                 message: '请输入密码',
+              },
+              {
+                pattern: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,
+                message: '密码至少八个字符，至少一个字母和一个数字',
               },
             ]}
           >
