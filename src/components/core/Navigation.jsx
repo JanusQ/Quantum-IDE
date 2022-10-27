@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { Menu, Dropdown, message } from 'antd'
-import { DownOutlined } from '@ant-design/icons'
+import { Menu, Dropdown, message, Switch } from 'antd'
+import { DownOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons'
 import { Link, useHistory } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { isAuth } from '../../helpers/auth'
@@ -9,6 +9,7 @@ import { getRemainderList } from '../../api/remainder'
 import { getUserInfo } from '../../api/auth'
 import AbuoutUs from './AbuoutUs'
 import { removeToken } from '../../api/storage'
+import { useTranslation } from 'react-i18next'
 function useActive(currentPath, path) {
   return currentPath === path ? 'active' : ''
 }
@@ -55,6 +56,28 @@ const Navigation = ({ isIde }) => {
       history.push('/message')
     }
   }
+  // 切换语言
+  const [lang, setLang] = useState('en')
+
+  useEffect(() => {
+    // 首次加载为中文
+    i18n.changeLanguage(lang)
+  }, [lang])
+
+  const { t, i18n } = useTranslation()
+  const changeLanguage = (check) => {
+    switch (check) {
+      case true:
+        setLang('zh')
+        break
+      case false:
+        setLang('en')
+        break
+      default:
+    }
+
+    // i18n.changeLanguage(lang)
+  }
   // 获取用户信息 判断是否是管理员 能否访问后台管理系统
   // const getUserInfoFn = async () => {
   //   const params = {}
@@ -96,25 +119,33 @@ const Navigation = ({ isIde }) => {
         style={{ paddingTop: isIde ? '1px' : '15px' }}
       >
         <li className={isHome}>
-          <Link to="/">首页</Link>
+          <Link to="/">{t('nav.home')}</Link>
         </li>
         <li className={isComputer}>
-          <Link to="/computer">计算资源</Link>
+          <Link to="/computer">{t('nav.computingResource')}</Link>
         </li>
         <li className={isProject}>
-          <Link to="/project">项目管理</Link>
+          <Link to="/project">{t('nav.pm')}</Link>
         </li>
         <li className={isReferenceDoc}>
-          <Link to="/referenceDoc/all">教程与文档</Link>
+          <Link to="/referenceDoc/all">{t('nav.document')}</Link>
         </li>
         <li>
           <a target="_blank" href="http://janusq.zju.edu.cn:10213/">
-            社区论坛
+            {t('nav.forum')}
           </a>
         </li>
         <li className={isaboutUs}>
           {' '}
-          <Link to="/aboutUs">关于我们</Link>
+          <Link to="/aboutUs">{t('nav.aboutUs')}</Link>
+        </li>
+        <li>
+          <Switch
+            onChange={changeLanguage}
+            checkedChildren="中文"
+            unCheckedChildren="English"
+            defaultChecked={false}
+          />
         </li>
       </ul>
 

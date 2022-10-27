@@ -1,0 +1,108 @@
+{
+  "language": "中文",
+  "logo": {
+    "Tai Yuan Quantum": "太元量子计算"
+  },
+  "Home": {
+    "start": "开始",
+    "stored item": "保存项目",
+    "project name": "项目名称",
+    "title": "太元量子云平台",
+    "content": "提供实时的量子计算服务",
+    "Project status": "项目状态",
+    "Service resources": "服务资源",
+    "document": "教程与文档"
+
+  },
+  "nav": {
+    "home": "首页",
+    "computingResource": "计算资源",
+    "pm": "项目管理",
+    "document": "教程与文档",
+    "forum": "社区论坛",
+    "aboutUs": "关于我们"
+  },
+  "login": {
+    "login": "登录",
+    "register": "注册"
+  },
+  "menu": {
+    "personalCenter": "个人中心",
+    "changePassword": "修改密码",
+    "backgroundSystem": "后台管理",
+    "logOut": "退出登录"
+  },
+   "computer": {
+   "Name of computer": "计算机名字",
+    "List of computers": "计算机列表"
+  },
+  "project": {
+    "projectList": "项目列表",
+    "Please enter a project name": "请输入项目名称",
+    "add": "添加",
+    "parameter": "参数",
+    "stored item": "保存项目",
+    " project name": "项目名称"
+  },
+  "list": {
+    "serial number": "序号",
+    "project name": "项目名称",
+    "task numbet": "任务个数",
+    "creation time": "创建时间",
+    "operation": "操作",
+    "edit item": "编辑项目",
+    "view details": "查看任务详情",
+    "delete": "删除"
+  },
+  "ideMenu": {
+    "construction": "新建",
+    "save": "保存",
+    "window": "窗口",
+    "export": "导出",
+    "model": "模式"
+  },
+  "view": {
+    "view": "视图",
+    "Choose View": "选择视图",
+    "Choose View show": "选择视图展示"
+  },
+  "compile": {
+    "before compile": "编译前",
+    "after compile": "编译后"
+  },
+  "switchingmode": {
+    "switching mode": "切换模式",
+    "Choose mode": "请选择模式",
+    "Quantum cluster": "量子集群",
+    "Quantum computer": " 量子计算机",
+    "simulator": "模拟器"
+  },
+  "Submittask": {
+    "Submit task": "提交任务",
+    "Sampling frequency": "采样次数",
+    "Computer of choice": "请选择计算机"
+  },
+  "file": {
+    "add file": "添加文件",
+    "file name": "文件名称"
+  },
+  "task": {
+    "Task details": "任务详情",
+    "before compile": "编译前电路",
+    "after compile": "编译后电路",
+     "close read correction":"关闭读取矫正",
+    "open read correction":"打开读取矫正"
+  },
+  "taskList": {
+    "serial number": "序号",
+    "task number": "任务编号",
+    "name of computer": "计算机名称",
+    "running status": "运行状态",
+    "running time": "运行时长",
+    "creation time": "创建时间",
+    "operation": "操作",
+    "View the results": "查看结果",
+     "succeed":"已完成",
+    "failed":" 已失败"
+  }
+}

@@ -67,6 +67,8 @@ import { computerParamsChat, computerD3 } from './helpers/computerParamsChart'
 import { getTaskResult } from './api/project'
 import { uploadOperation } from './api/operationLog'
 import { submitLog } from './util/submitLog'
+import { useTranslation } from 'react-i18next'
+
 // import QCEngine from './simulator/MyQCEngine'
 // import './test/meausre'
 // import './test/reset'
@@ -157,6 +159,8 @@ function App() {
     },
   ]
   const [optionList, setOptionList] = useState([])
+  // 中英文
+  const { t, i18n } = useTranslation()
 
   // 编辑器内容
   const [editorValue, setEditorValue] = useState('')
@@ -287,7 +291,7 @@ function App() {
       'ncnot',
       'ncphase',
       'qprint',
-      'cphase'
+      'cphase',
     ]
     var cx,
       cy,
@@ -588,9 +592,9 @@ function App() {
         visible={isNewCaseModalVisible}
         onOk={isSaveOk}
         onCancel={isSaveCancel}
-        title="添加文件"
+        title={t('file.add file')}
       >
-        <p>文件名称</p>
+        <p>{t('file.file name')}</p>
         <AutoComplete
           options={initCaseList}
           value={caseName}
@@ -688,11 +692,11 @@ function App() {
     return (
       <div className="ide_top_menu">
         <div className="ide_top_menu_left">
-          <span onClick={addNew}>新建</span>
-          <span onClick={saveCase}>保存</span>
-          <span onClick={selectShow}>窗口</span>
-          <span onClick={exportFn}>导出</span>
-          <span onClick={selectRun}>模式</span>
+          <span onClick={addNew}>{t('ideMenu.construction')}</span>
+          <span onClick={saveCase}>{t('ideMenu.save')}</span>
+          <span onClick={selectShow}>{t('ideMenu.window')}</span>
+          <span onClick={exportFn}>{t('ideMenu.export')}</span>
+          <span onClick={selectRun}>{t('ideMenu.model')}</span>
         </div>
         <div></div>
         {/* <span>提交</span> */}
@@ -703,15 +707,15 @@ function App() {
   const [isSelectShowModalVisible, setIsSelectModalVisible] = useState(false)
   const [options, setOptions] = useState([
     {
-      label: 'B视图',
+      label: 'B' + t('view.view'),
       value: 'B',
     },
     {
-      label: 'C视图',
+      label: 'C' + t('view.view'),
       value: 'C',
     },
     {
-      label: 'D视图',
+      label: 'D' + t('view.view'),
       value: 'D',
     },
   ])
@@ -725,9 +729,9 @@ function App() {
         visible={isSelectShowModalVisible}
         onOk={isSelectShowOk}
         onCancel={isSelectShowCancel}
-        title="选择视图"
+        title={t('view.Choose View')}
       >
-        <p>选择视图展示</p>
+        <p>{t('view.Choose View show')}</p>
         <Checkbox.Group
           options={options}
           value={checkedModeList}
@@ -777,10 +781,14 @@ function App() {
     return setShowRealBmode(checkedModeList.includes('BarChart'))
   }
   const isShowRealC = () => {
-    return setShowRealCmode(checkedModeList.includes('编译前'))
+    return setShowRealCmode(
+      checkedModeList.includes(t('compile.before compile'))
+    )
   }
   const isShowRealD = () => {
-    return setShowRealDmode(checkedModeList.includes('编译后'))
+    return setShowRealDmode(
+      checkedModeList.includes(t('compile.before compile'))
+    )
   }
   const isShowRight = () => {
     if (
@@ -788,8 +796,8 @@ function App() {
       !checkedModeList.includes('B') &&
       !checkedModeList.includes('D') &&
       !checkedModeList.includes('BarChart') &&
-      !checkedModeList.includes('编译前') &&
-      !checkedModeList.includes('编译后')
+      !checkedModeList.includes(t('compile.before compile')) &&
+      !checkedModeList.includes(t('compile.after compile'))
     ) {
       setIsShowRightMode(false)
     } else {
@@ -812,23 +820,25 @@ function App() {
         visible={isSelectRunModalVisible}
         onOk={isSelectRunOk}
         onCancel={isSelectRunCancel}
-        title="切换模式"
+        title={t('switchingmode.switching mode')}
       >
-        <p>请选择模式</p>
+        <p> {t('switchingmode.Choose mode')}</p>
         <Radio.Group onChange={onSelectRunChange} value={runValue}>
           <Radio
             disabled={auth.user_type == 1 ? true : false}
             value={'sqcg_cluster'}
           >
-            量子集群
+            {t('switchingmode.Quantum cluster')}{' '}
           </Radio>
           <Radio disabled={auth.user_type == 1 ? true : false} value={'sqcg'}>
-            量子计算机
+            {t('switchingmode.Quantum computer')}
           </Radio>
           <Radio disabled={auth.user_type == 1 ? true : false} value={'qiskit'}>
-            python模拟器
+            python{t('switchingmode.simulator')}
           </Radio>
-          <Radio value={'JavaScript_simulator'}>JavaScript模拟器</Radio>
+          <Radio value={'JavaScript_simulator'}>
+            JavaScript{t('switchingmode.simulator')}
+          </Radio>
         </Radio.Group>
       </Modal>
     )
@@ -847,19 +857,24 @@ function App() {
       setShowRealBmode(true)
       setShowRealCmode(true)
       setShowRealDmode(true)
-      setCheckedModeList(['BarChart', '编译前', '编译后'])
+      setCheckedModeList([
+        'BarChart',
+        t('compile.before compile'),
+        t('compile.before compile'),
+      ])
       setOptions([
         {
           label: 'BarChart',
           value: 'BarChart',
         },
         {
-          label: '编译前',
-          value: '编译前',
+          label: t('compile.before compile'),
+
+          value: t('compile.before compile'),
         },
         {
-          label: '编译后',
-          value: '编译后',
+          label: t('compile.before compile'),
+          value: t('compile.before compile'),
         },
       ])
     } else {
@@ -873,15 +888,15 @@ function App() {
       setCheckedModeList(['B', 'C', 'D'])
       setOptions([
         {
-          label: 'B视图',
+          label: 'B' + t('view.view'),
           value: 'B',
         },
         {
-          label: 'C视图',
+          label: 'C' + t('view.view'),
           value: 'C',
         },
         {
-          label: 'D视图',
+          label: 'D' + t('view.view'),
           value: 'D',
         },
       ])
@@ -912,7 +927,7 @@ function App() {
       ...[
         {
           chip_id: 20,
-          chip_name: 'python模拟器',
+          chip_name: 'python' + t('switchingmode.simulator'),
           com_status: 0,
           qubits_number: 20,
         },
@@ -962,23 +977,31 @@ function App() {
         visible={submitModalVisible}
         onOk={isSubmitOk}
         onCancel={isSubmitCancel}
-        title="提交任务"
+        title={t('Submittask.Submit task')}
         confirmLoading={isSubmitModalLoading}
       >
         <Form form={form} layout="vertical" autoComplete="off">
           <Form.Item
             name="sample"
-            label="采样次数"
-            rules={[{ required: true, message: '请输入采样次数' }]}
+            label={t('Submittask.')}
+            rules={[
+              { required: true, message: t('Submittask.Sampling frequency') },
+            ]}
           >
             <Input />
           </Form.Item>
           <Form.Item
             name="comName"
-            label="选择计算机"
-            rules={[{ required: true, message: '请选择计算机' }]}
+            label={t('Submittask.Computer of choice')}
+            rules={[
+              { required: true, message: t('Submittask.Computer of choice') },
+            ]}
           >
-            <Select mode={ismodern} placeholder="请选择计算机" allowClear>
+            <Select
+              mode={ismodern}
+              placeholder={t('Submittask.Computer of choice')}
+              allowClear
+            >
               {getComListOpts}
               {/* <Option key={9} value="python模拟器">python模拟器</Option>
 							 <Option key={10} value="模拟器1">模拟器1</Option>

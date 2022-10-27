@@ -119,7 +119,7 @@ export const taskTypeName = (type) => {
 export const setCookie = (name, value, day) => {
 	const date = new Date()
 	date.setDate(date.getDate() + day)
-	document.cookie = name + '=' + value + ';expires=' + date
+	document.cookie = name + '=' + value + ';expires=' + date+';secure'
 }
 // 获取cookie
 export const getCookie = (name) => {

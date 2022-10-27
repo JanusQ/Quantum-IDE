@@ -1,0 +1,108 @@
+{
+  "language": "English",
+  "logo": {
+    "Tai Yuan Quantum": "Tai Yuan"
+  },
+  "Home": {
+    "start": "Start",
+    "stored item": "stored item",
+    "project name": " project name",
+    "title": "Taiyuan Quantum",
+    "content": "Provide real-time quantum computing services",
+    "Project status": "Project status",
+    "Service resources": "Service resources",
+    "document": "Document"
+  },
+  "nav": {
+    "home": "Home",
+    "computingResource": "Resource",
+    "pm": "Project",
+    "document": "Document",
+    "forum": "Forum",
+    "aboutUs": "AboutUs"
+  },
+  "login": {
+    "login": "Login",
+    "register": "Register"
+  },
+  "menu": {
+    "personalCenter": "Personal Center",
+    "changePassword": "Change Password",
+    "backgroundSystem": "Background System",
+    "logOut": "LogOut"
+  },
+  "computer": {
+    "Name of computer": "Name of computer",
+    "List of computers": "List of computers"
+  },
+  "project": {
+    "projectList": "Project List",
+    "Please enter a project name": "Please enter a project name",
+    "add": "Add",
+    "parameter": "Parameter",
+    "stored item": "stored item",
+    " project name": " project name"
+  },
+  "list": {
+    "serial number": "serial number",
+    "project name": "project name",
+    "task numbet": "task numbet",
+    "creation time": "creation time",
+    "operation": "operation",
+    "edit item": "edit item",
+    "view details": "view details",
+    "delete": "delete"
+  },
+  "ideMenu": {
+    "construction": "new",
+    "save": "save",
+    "window": "window",
+    "export": "export",
+    "model": "mode"
+  },
+  "view": {
+    "view": "view",
+    "Choose View": "Choose View",
+    "Choose View show": "Choose View show"
+  },
+  "compile": {
+    "before compile": "before compile",
+    "after compile": "after compile"
+  },
+  "switchingmode": {
+    "switching mode": "switching mode",
+    "Choose mode": "Choose mode",
+    "Quantum cluster": "Quantum cluster",
+    "Quantum computer": "Quantum computer",
+    "simulator": " simulator"
+  },
+  "Submittask": {
+    "Submit task": "Submit task",
+    "Sampling frequency": "Sampling frequency",
+    "Computer of choice": "Computer of choice"
+  },
+  "file": {
+    "add file": "add file",
+    "file name": "file name"
+  },
+  "task": {
+    "Task details": "Task details",
+    "before compile": "before compile",
+    "after compile": "after compile",
+    "close read correction":"Close read correction",
+    "open read correction":"open read correction"
+  },
+  "taskList": {
+    "serial number": "serial number",
+    "task number": "task number",
+    "name of computer": "name of computer",
+    "running status": "running status",
+    "running time": "running time",
+    "creation time": "creation time",
+    "operation": "operation",
+    "View the results": "view the results",
+    "succeed":"succeed",
+    "failed":" failed"
+  }
+  
+}

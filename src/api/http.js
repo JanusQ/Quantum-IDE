@@ -55,6 +55,7 @@ instance.interceptors.response.use(
       return Promise.resolve(res.data)
       return Promise.resolve(res.data)
     } else if (res.data.status === 404) {
+      message.error(res.data.msg, 1)
       return Promise.resolve(res.data)
     } else if (res.data.status === 409) {
       return Promise.resolve(res.data)

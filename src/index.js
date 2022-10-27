@@ -9,6 +9,7 @@ import { Provider } from 'react-redux'
 import reportWebVitals from './reportWebVitals'
 import { ConnectedRouter } from 'connected-react-router'
 import { history } from './store'
+import './i18n/config'
 ReactDOM.render(
   <Provider store={store}>
     <ConnectedRouter history={history}>
