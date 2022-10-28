@@ -26,10 +26,10 @@
     "register": "Register"
   },
   "menu": {
-    "personalCenter": "Personal Center",
-    "changePassword": "Change Password",
-    "backgroundSystem": "Background System",
-    "logOut": "LogOut"
+    "personalCenter": "Personal center",
+    "changePassword": "Change password",
+    "backgroundSystem": "Background system",
+    "logOut": "Sign out"
   },
   "computer": {
     "Name of computer": "Name of computer",
@@ -78,8 +78,8 @@
   },
   "Submittask": {
     "Submit task": "Submit task",
-    "Sampling frequency": "Sampling frequency",
-    "Computer of choice": "Computer of choice"
+    "Sampling frequency": "sampling number",
+    "Computer of choice": "your resources"
   },
   "file": {
     "add file": "add file",

@@ -95,20 +95,20 @@ const Navigation = ({ isIde }) => {
   const menu = (
     <Menu>
       <Menu.Item key="1">
-        <Link to="/usercenter/1">个人中心</Link>
+        <Link to="/usercenter/1">{t('menu.personalCenter')}</Link>
       </Menu.Item>
       <Menu.Item key="2">
-        <Link to="/usercenter/2">修改密码</Link>
+        <Link to="/usercenter/2">{t('menu.changePassword')}</Link>
       </Menu.Item>
       {auth.user_type === 0 ? (
         <Menu.Item key="3">
-          <Link to="/admin">后台管理</Link>
+          <Link to="/admin">{t('menu.backgroundSystem')}</Link>
         </Menu.Item>
       ) : (
         false
       )}
       <Menu.Item key="4" onClick={logOut}>
-        退出登录
+        {t('menu.logOut')}
       </Menu.Item>
     </Menu>
   )

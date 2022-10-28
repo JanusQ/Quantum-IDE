@@ -983,7 +983,7 @@ function App() {
         <Form form={form} layout="vertical" autoComplete="off">
           <Form.Item
             name="sample"
-            label={t('Submittask.')}
+            label={t('Submittask.Sampling frequency')}
             rules={[
               { required: true, message: t('Submittask.Sampling frequency') },
             ]}
