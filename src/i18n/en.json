@@ -102,7 +102,13 @@
     "operation": "operation",
     "View the results": "view the results",
     "succeed":"succeed",
-    "failed":" failed"
+    "failed":" failed",
+     "all":" all",
+    "waiting":" waiting"
+  },
+  "isok":{
+    "confirm":"confirm",
+    "cancel":"cancel"
   }
   
 }

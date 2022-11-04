@@ -2,8 +2,14 @@
 import CryptoJS from 'crypto-js'
 const today = new Date()
 const year = today.getFullYear()
-const month = today.getMonth() + 1
-const day = today.getDate()
+let month = today.getMonth() + 1
+let day = today.getDate()
+if (day < 10) {
+  day = `0${day}`
+}
+if (month < 10) {
+  month = `0${month}`
+}
 const timeData = `${year}${month}${day}`
 function reverse(str) {
   var arr = []

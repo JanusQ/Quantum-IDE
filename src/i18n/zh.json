@@ -103,6 +103,15 @@
     "operation": "操作",
     "View the results": "查看结果",
      "succeed":"已完成",
-    "failed":" 已失败"
+    "failed":" 已失败",
+    "all":" 全部",
+    "waiting":" 等待中"
+
+
+  },
+  "isok":{
+    "confirm":"确认",
+    "cancel":"取消"
   }
+
 }

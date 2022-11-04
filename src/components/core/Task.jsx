@@ -169,7 +169,24 @@ const Task = () => {
   const onClose = () => {
     setVisible(false)
   }
-
+ const taskTypeArr = [
+  {
+    code: -1,
+    name: t('taskList.all'),
+  },
+  {
+    code: 0,
+    name: t('taskList.waiting'),
+  },
+  {
+    code: 1,
+    name:  t('taskList.succeed'),
+  },
+  {
+    code: 2,
+    name: t('taskList.failed'),
+  },
+]
   const taskTypeOperations = taskTypeArr.map((item) => (
     <Option key={item.code} value={item.code}>
       {item.name}

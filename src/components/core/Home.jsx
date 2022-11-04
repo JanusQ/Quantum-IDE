@@ -75,6 +75,8 @@ const Home = () => {
   const saveCaseModal = () => {
     return (
       <Modal
+        okText={t('isok.confirm')}
+        cancelText={t('isok.cancel')}
         visible={isSaveCaseModalVisible}
         onOk={isSaveOk}
         onCancel={isSaveCancel}

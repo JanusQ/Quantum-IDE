@@ -589,6 +589,8 @@ function App() {
   const newCaseModal = () => {
     return (
       <Modal
+        okText={t('isok.confirm')}
+        cancelText={t('isok.cancel')}
         visible={isNewCaseModalVisible}
         onOk={isSaveOk}
         onCancel={isSaveCancel}
@@ -726,6 +728,8 @@ function App() {
   const selectShowModal = () => {
     return (
       <Modal
+        okText={t('isok.confirm')}
+        cancelText={t('isok.cancel')}
         visible={isSelectShowModalVisible}
         onOk={isSelectShowOk}
         onCancel={isSelectShowCancel}
@@ -817,6 +821,8 @@ function App() {
   const selectRunModal = () => {
     return (
       <Modal
+        okText={t('isok.confirm')}
+        cancelText={t('isok.cancel')}
         visible={isSelectRunModalVisible}
         onOk={isSelectRunOk}
         onCancel={isSelectRunCancel}
@@ -974,6 +980,8 @@ function App() {
     }
     return (
       <Modal
+        okText={t('isok.confirm')}
+        cancelText={t('isok.cancel')}
         visible={submitModalVisible}
         onOk={isSubmitOk}
         onCancel={isSubmitCancel}

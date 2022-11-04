@@ -202,6 +202,8 @@ const Computer = () => {
   const computerDetailModal = () => {
     return (
       <Modal
+        okText={t('isok.confirm')}
+        cancelText={t('isok.cancel')}
         title={false}
         visible={visible}
         onCancel={handleCancel}

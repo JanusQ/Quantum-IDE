@@ -281,6 +281,8 @@ const Project = () => {
         ></div>
       </Drawer>
       <Modal
+         okText={t('isok.confirm')}
+        cancelText={t('isok.cancel')}
         onOk={isSaveOk}
         onCancel={isSaveCancel}
         visible={isSaveCaseModalVisible}
