@@ -10,6 +10,7 @@ import { getUserInfo } from '../../api/auth'
 import AbuoutUs from './AbuoutUs'
 import { removeToken } from '../../api/storage'
 import { useTranslation } from 'react-i18next'
+import { stubString } from 'lodash'
 function useActive(currentPath, path) {
   return currentPath === path ? 'active' : ''
 }
@@ -56,22 +57,23 @@ const Navigation = ({ isIde }) => {
       history.push('/message')
     }
   }
-  // 切换语言
+  
   const [lang, setLang] = useState('en')
 
   useEffect(() => {
-    // 首次加载为中文
-    i18n.changeLanguage(lang)
-  }, [lang])
+    // 首次加载根据浏览器语言
+    i18n.changeLanguage(navigator.language.slice(0,2))
+  }, [])
 
   const { t, i18n } = useTranslation()
+  // 切换语言
   const changeLanguage = (check) => {
     switch (check) {
       case true:
-        setLang('zh')
+        i18n.changeLanguage('zh')
         break
       case false:
-        setLang('en')
+        i18n.changeLanguage('en')
         break
       default:
     }
@@ -143,8 +145,8 @@ const Navigation = ({ isIde }) => {
           <Switch
             onChange={changeLanguage}
             checkedChildren="中文"
-            unCheckedChildren="English"
-            defaultChecked={false}
+            unCheckedChildren="EN"
+            defaultChecked={navigator.language.slice(0,2)==='zh'?true:false}
           />
         </li>
       </ul>

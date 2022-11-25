@@ -128,6 +128,8 @@ const Ace = forwardRef((props, ref) => {
 				</div>
 				{/* 操作按钮 */}
 				<div className='ace_operation'>
+					{props.runProgramName==='Submit Task'?<Button onClick={()=>props.changeIsAnlysis()} type='primary' style={{ background: '#649FAE',marginRight:10 }}>analysis</Button>:""
+}
 					<Button type='primary' onClick={props.runProgram} style={{ background: '#649FAE' }}>
 						{props.runProgramName}
 					</Button>

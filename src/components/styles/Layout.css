@@ -35,7 +35,7 @@
   color: #ffffff;
   text-align: center;
   user-select: none;
-  margin-left: 60px;
+  margin-left: 60PX;
 }
 .front_menu_list li:hover {
   cursor: pointer;
