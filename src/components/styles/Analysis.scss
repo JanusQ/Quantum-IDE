@@ -3,10 +3,13 @@
     height: 100%;
     display: inline-block;
     border: 1px solid;
+    overflow: hidden;
     margin-right: 10px;
     background-color: #fff;
     .top {
+      display: flex;
       .circuit {
+        flex: 2;
         width: 70%;
         height: 350px;
         background-color: aquamarine;
@@ -16,6 +19,7 @@
         background-color: #fff;
       }
       .chart {
+        flex:1;
         width: 350px;
         height: 350px;
         display: inline-block;
@@ -30,9 +34,11 @@
       }
     }
     .middle {
+      display: flex;
       height: 50px;
       background-color: #fff;
       div {
+        flex: 1;
         vertical-align: top;
         height: 50px;
         width: 100px;
@@ -43,6 +49,7 @@
         margin-left: 20px;
       }
       .config {
+        flex: 10;
         width: 88%;
         border: 1px solid;
         height: 25px;
@@ -53,12 +60,17 @@
       }
     }
     .down {
-      .noise {
+      display: flex;
+      .optimized {
         width: 30%;
-        height: 300px;
+        height: 220px;
         display: inline-block;
         border: 1px solid;
         margin-left: 52px;
+        .selectOptimized{
+          margin-top: 10px;
+          margin-left: 15px;
+        }
         .header {
           width: 100%;
           display: inline-block;
@@ -75,8 +87,9 @@
       }
 
       .hardware {
+        flex: 1;
         width: 30%;
-        height: 300px;
+        height: 220px;
         display: inline-block;
         border: 1px solid;
         margin-left: 30px;
@@ -95,8 +108,9 @@
         }
       }
       .efficiency {
+        flex: 1;
         width: 30%;
-        height: 300px;
+        height: 220px;
         display: inline-block;
         border: 1px solid;
         margin-left: 30px;

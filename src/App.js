@@ -59,6 +59,7 @@ import {
   saveProject,
   submitTask,
   loadPro,
+  circuitAnalysis
 } from "./api/test_circuit";
 import { values } from "lodash";
 import { getComList } from "./api/computer";
@@ -385,6 +386,10 @@ function App() {
     ) {
       realRun(qc, sample, runValue);
     }
+
+    if(noBug&&runValue==='analysis'){
+      runCircuitAlalysis(qc)
+    }
   };
   async function testfunc(qc) {
     //qc.import(0);
@@ -401,6 +406,21 @@ function App() {
     // console.log(params)
     let res = await recieve_from_real(params);
     // console.log(res)
+  }
+  // 分析
+  const [parameter, setParameter] = useState({})
+  const runCircuitAlalysis = async(qc) =>{
+    let analysisData={}
+    let qasm = qc.export()
+    let coms = {}
+    console.log();
+    analysisData["qasm"] = qc.export();
+    analysisData['coms']={}
+    analysisData['parameter']=parameter
+
+    const res  = await circuitAnalysis(JSON.stringify(analysisData))
+    console.log(analysisData,333);
+
   }
   // 真机运行的画图
   const [resultData, setResultData] = useState(null);
@@ -854,12 +874,15 @@ function App() {
           <Radio value={"JavaScript_simulator"}>
             JavaScript{t("switchingmode.simulator")}
           </Radio>
+          <Radio value={"analysis"}>analysis </Radio>
         </Radio.Group>
       </Modal>
     );
   };
 
   const isSelectRunOk = () => {
+    // 先把分析模式关闭 再根据模式显示相关内容
+    setIsAnlysis(false)
     if (
       runValue === "sqcg" ||
       runValue === "sqcg_cluster" ||
@@ -892,7 +915,7 @@ function App() {
           value: t("compile.before compile"),
         },
       ]);
-    } else {
+    } else if(runValue==='JavaScript_simulator') {
       setRunProgramName("Run Program");
       setIsShowBMode(true);
       setIsShowCMode(true);
@@ -915,6 +938,9 @@ function App() {
           value: "D",
         },
       ]);
+    }else if(runValue==='analysis'){
+      setIsAnlysis(true);
+      setRunProgramName("analysis");
     }
 
     setIsSelectRunModalVisible(false);
@@ -1043,7 +1069,7 @@ function App() {
   // 切换成分析模式
   const changeIsAnlysis = () => {
     setIsAnlysis(true);
-    console.log('555');
+    console.log("555");
   };
   return (
     <Layout isIde={true}>
@@ -1080,7 +1106,7 @@ function App() {
           }}
         >
           {isAnlysis ? (
-            <Analysis />
+            <Analysis  parameter={(parameterData)=>setParameter(parameterData)}/>
           ) : (
             <Right
               isShowBMode={isShowBMode}
