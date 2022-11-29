@@ -411,16 +411,20 @@ function App() {
   const [parameter, setParameter] = useState({})
   const runCircuitAlalysis = async(qc) =>{
     let analysisData={}
-    let qasm = qc.export()
-    let coms = {}
-    console.log();
     analysisData["qasm"] = qc.export();
-    analysisData['coms']={}
+    analysisData['coms']=['N36U19']
     analysisData['parameter']=parameter
 
-    const res  = await circuitAnalysis(JSON.stringify(analysisData))
-    console.log(analysisData,333);
-
+    const res  = await circuitAnalysis(analysisData)
+    let analysisQc = new QCEngine(); 
+    analysisQc.import(res.data.compiled_qc)
+    // 绘制analysis电路图
+    computerD3(
+      analysisQc.circuit,
+      `anlysisSvg`,
+      `anlysisSvg_g`,
+      890
+    )
   }
   // 真机运行的画图
   const [resultData, setResultData] = useState(null);

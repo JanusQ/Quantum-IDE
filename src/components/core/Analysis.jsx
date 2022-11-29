@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import "../styles/Analysis.scss";
-import { Progress, Card, Table, Select, Radio,Checkbox } from "antd";
+import { Radio, Checkbox } from "antd";
 import { SettingOutlined } from "@ant-design/icons";
 import * as echarts from "echarts";
 export default function Analysis(props) {
@@ -64,16 +64,15 @@ export default function Analysis(props) {
   //   "optimization":optimization
 
   // })
-  let parameter={
-       'layout':layoutValue,
-    "routing":routing,
-    "translation":translation,
-    "optimization":optimization
-  }
+  let parameter = {
+    layout: layoutValue,
+    routing: routing,
+    translation: translation,
+    optimization: optimization,
+  };
   const onChangeLayout = (e) => {
     console.log("radio checked", e.target.value);
     setLayoutValue([e.target.value]);
-   
   };
   const onChangeRouting = (e) => {
     console.log("radio checked", e.target.value);
@@ -87,45 +86,44 @@ export default function Analysis(props) {
     // console.log("radio checked", e.target.value);
     setOptimization(list);
   };
-  const test = () =>{
-    console.log(parameter,88);
-
-  }
   // 取消单选框
-  const cancle = (type) =>{
+  const cancle = (type) => {
     switch (type) {
-      case 'translation':
+      case "translation":
         setTranslation([]);
         break;
-      case 'routing':
-        setRouting([]) 
-       break;
-      case 'layout':
-        setLayoutValue([]) 
-       break;
+      case "routing":
+        setRouting([]);
+        break;
+      case "layout":
+        setLayoutValue([]);
+        break;
       default:
         break;
     }
-  }
+  };
   useEffect(() => {
     const myChart = echarts.init(main.current);
     myChart.setOption(option);
   }, []);
-  useEffect(()=>{
-    props.parameter(parameter)
-console.log('执行了');
-  },[layoutValue,routing,translation,optimization])
+  useEffect(() => {
+    props.parameter(parameter);
+  }, [layoutValue, routing, translation, optimization]);
   return (
     <div className="compile">
       <span>编译</span>
       <div className="top">
-        <div className="circuit"></div>
+        <div className="circuit">
+          <svg id="anlysisSvg">
+            <g id="anlysisSvg_g"></g>
+          </svg>
+        </div>
         <div className="chart">
           <div ref={main} className="radarChart"></div>
         </div>
       </div>
       <div className="middle">
-        <div onClick={test}>配置</div>
+        <div>配置</div>
         <div className="config">
           <div
             style={{
@@ -147,10 +145,10 @@ console.log('执行了');
             </div>
           </div>
           <div className="selectOptimized">
-            <Radio.Group  onChange={onChangeLayout} value={layoutValue[0]}>
+            <Radio.Group onChange={onChangeLayout} value={layoutValue[0]}>
               {LayoutData.map((item, index) => (
-                <div>
-                  <Radio onClick={()=>cancle('layout')} key={index} value={item}>
+                <div key={index}>
+                  <Radio onClick={() => cancle("layout")} value={item}>
                     {item}
                   </Radio>
                 </div>
@@ -168,8 +166,8 @@ console.log('执行了');
           <div className="selectOptimized">
             <Radio.Group onChange={onChangeRouting} value={routing[0]}>
               {RoutingData.map((item, index) => (
-                <div>
-                  <Radio onClick={()=>cancle('routing')} key={index} value={item}>
+                <div key={index}>
+                  <Radio onClick={() => cancle("routing")} value={item}>
                     {item}
                   </Radio>
                 </div>
@@ -187,8 +185,8 @@ console.log('执行了');
           <div className="selectOptimized">
             <Radio.Group onChange={onChangeTranslation} value={translation[0]}>
               {TranslationData.map((item, index) => (
-                <div>
-                  <Radio onClick={()=>cancle('translation')} key={index} value={item}>
+                <div key={index}>
+                  <Radio onClick={() => cancle("translation")} value={item}>
                     {item}
                   </Radio>
                 </div>
@@ -204,8 +202,11 @@ console.log('执行了');
             </div>
           </div>
           <div className="selectOptimized">
-                  <Checkbox.Group value={optimization} options={optimizationData} onChange={onChangeOptimization}>
-                  </Checkbox.Group>
+            <Checkbox.Group
+              value={optimization}
+              options={optimizationData}
+              onChange={onChangeOptimization}
+            ></Checkbox.Group>
           </div>
         </div>
       </div>
