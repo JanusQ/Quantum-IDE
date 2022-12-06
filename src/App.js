@@ -59,7 +59,8 @@ import {
   saveProject,
   submitTask,
   loadPro,
-  circuitAnalysis
+  circuitAnalysis,
+  circuitpredict
 } from "./api/test_circuit";
 import { values } from "lodash";
 import { getComList } from "./api/computer";
@@ -409,22 +410,30 @@ function App() {
   }
   // 分析
   const [parameter, setParameter] = useState({})
+  const [CircuitAnalysisData, setCircuitAnalysisData] = useState({})
+  const [circuitPreditt, setCircuitPreditt] = useState({})
   const runCircuitAlalysis = async(qc) =>{
     let analysisData={}
     analysisData["qasm"] = qc.export();
     analysisData['coms']=['N36U19']
     analysisData['parameter']=parameter
+    let predictData = {qasm:qc.export()}
+    const analysisRes  = await circuitAnalysis(analysisData)
+    const predictRes  = await circuitpredict(predictData)
+    setCircuitPreditt(predictRes.data)
 
-    const res  = await circuitAnalysis(analysisData)
     let analysisQc = new QCEngine(); 
-    analysisQc.import(res.data.compiled_qc)
+    analysisQc.import(analysisRes.data.compiled_qc)
+    setCircuitAnalysisData(analysisQc.circuit)
+    // console.log(analysisQc.import(res.data.compiled_qc),555);
+    // console.log(analysisQc.circuit,5555);                                                                                                                                                                                                  
     // 绘制analysis电路图
-    computerD3(
-      analysisQc.circuit,
-      `anlysisSvg`,
-      `anlysisSvg_g`,
-      890
-    )
+    // computerD3(
+    //   analysisQc.circuit,
+    //   `anlysisSvg`,
+    //   `anlysisSvg_g`,
+    //   890
+    // )
   }
   // 真机运行的画图
   const [resultData, setResultData] = useState(null);
@@ -1073,7 +1082,6 @@ function App() {
   // 切换成分析模式
   const changeIsAnlysis = () => {
     setIsAnlysis(true);
-    console.log("555");
   };
   return (
     <Layout isIde={true}>
@@ -1110,7 +1118,7 @@ function App() {
           }}
         >
           {isAnlysis ? (
-            <Analysis  parameter={(parameterData)=>setParameter(parameterData)}/>
+            <Analysis circuitPreditt={circuitPreditt} CircuitAnalysisData={CircuitAnalysisData}  parameter={(parameterData)=>setParameter(parameterData)}/>
           ) : (
             <Right
               isShowBMode={isShowBMode}

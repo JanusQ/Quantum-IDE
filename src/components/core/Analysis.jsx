@@ -3,7 +3,11 @@ import "../styles/Analysis.scss";
 import { Radio, Checkbox } from "antd";
 import { SettingOutlined } from "@ant-design/icons";
 import * as echarts from "echarts";
+import Circuit from "./Circuit";
+import QCEngine from "../../simulator/MyQCEngine";
 export default function Analysis(props) {
+  const {circuitPreditt,CircuitAnalysisData} ={...props}
+ 
   const main = useRef();
   const option = {
     title: {
@@ -71,15 +75,15 @@ export default function Analysis(props) {
     optimization: optimization,
   };
   const onChangeLayout = (e) => {
-    console.log("radio checked", e.target.value);
+    // console.log("radio checked", e.target.value);
     setLayoutValue([e.target.value]);
   };
   const onChangeRouting = (e) => {
-    console.log("radio checked", e.target.value);
+    // console.log("radio checked", e.target.value);
     setRouting([e.target.value]);
   };
   const onChangeTranslation = (e) => {
-    console.log("radio checked", e.target.value);
+    // console.log("radio checked", e.target.value);
     setTranslation([e.target.value]);
   };
   const onChangeOptimization = (list) => {
@@ -114,9 +118,7 @@ export default function Analysis(props) {
       <span>编译</span>
       <div className="top">
         <div className="circuit">
-          <svg id="anlysisSvg">
-            <g id="anlysisSvg_g"></g>
-          </svg>
+        <Circuit circuitPreditt={circuitPreditt} circuitData={CircuitAnalysisData}/>
         </div>
         <div className="chart">
           <div ref={main} className="radarChart"></div>

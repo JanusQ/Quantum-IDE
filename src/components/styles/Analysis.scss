@@ -17,6 +17,9 @@
         margin-left: 20px;
         border: 1px solid;
         background-color: #fff;
+        overflow: hidden;
+        overflow-y: scroll;
+        overflow-x: scroll;
       }
       .chart {
         flex:1;

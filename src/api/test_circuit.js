@@ -11,6 +11,10 @@ export const recieve_from_real = (params) => {
 export const circuitAnalysis  = (data) => {
 	return instance.post('/circuit/analysis', data)
 }
+// 电路预测
+export const circuitpredict = (data) => {
+	return instance.post('/circuit/predict', data)
+}
 // 创建项目
 export const createPro = (data) => {
     return instance.post('/ide/createPro', data)
@@ -27,6 +31,7 @@ export const submitTask = (data) => {
 export const loadPro = (data) => {
 	return instance.post('/ide/loadPro', data)
 }
+
 
 
 
