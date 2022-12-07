@@ -72,6 +72,63 @@ export default class QCEngine {
         return qasm;
     }
 
+    newexport()
+    {
+        const {circuit} = this;
+        var layer2inst = [];
+        let gates = circuit.gates;
+        let numq = gates.length;
+        let numl = gates[0].length;
+        // let
+        for(let i=0;i<numl;i++){
+            layer2inst.push([]);
+        }
+
+        let i=0;
+        for(let i=0;i<numq;i++){
+            let wire = gates[i];
+            for(let la=0;la<wire.length;la++){
+                if(wire[la]==null)
+                    continue;
+                let id = wire[la]['id'];
+                let flag=false;
+                let k=0;
+                for(k=0;k<layer2inst[la].length;k++){
+                    if(id == layer2inst[la][k]['id']){
+                        flag=true;
+                        break;
+                    }
+                }
+                if(flag==true){
+                    //only allow 2 qubits gates now
+                    if(wire[la]['connector']==1)
+                        layer2inst[la][k]['qubits'].push(i);
+                    else
+                        layer2inst[la][k]['qubits'].unshift(i);
+                }
+                else{
+                    let gate = {};
+                    gate['id']=wire[la]['id'];
+                    gate['name']=wire[la]['name'];
+                    console.log(i);
+                    gate['qubits']=[i];
+
+                    if('params' in wire[la]['options'])
+                        gate['params']=wire[la]['options']['params'];
+                    else
+                        gate['params'] = {};
+                    layer2inst[la].push(gate);
+                }
+
+            }
+
+        }
+        console.log(layer2inst)
+        return layer2inst;
+
+
+    }
+
     //import from QASM to a empty qcengine
     import(QASM)
     {
@@ -328,6 +385,7 @@ export default class QCEngine {
     {
         this.circuit.myStartRun()
         this.now_state = this.circuit.stateAsArray()
+        // this.newexport();
 
         const { gates } = this.circuit;
         let qlen = this.circuit.numQubits;
