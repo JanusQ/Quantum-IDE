@@ -7,7 +7,7 @@ export default function XGate() {
       cx="16"
       cy="16"
       r="16"
-      fill="rgb(0, 45, 156)"
+      // fill="rgb(0, 45, 156)"
       strokeWidth="0"
       stroke="transparent"
       paintOrder="stroke"

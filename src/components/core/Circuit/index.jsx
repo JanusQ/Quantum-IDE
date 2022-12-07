@@ -1,24 +1,33 @@
 import React from "react";
 import Qubit from "./components/Qubit";
 export default function Circuit(props) {
-  const { circuitPreditt, circuitData } = { ...props };
-  const circuitGate = circuitData.gates;
-  const gateError = circuitPreditt.gate_errors;
+  let circuitGate = [[]];
+  let gateError = [[]];
+  circuitGate = props.circuitData.gates;
+  gateError = props.circuitPreditt.gate_errors;
+  let maxColor = 0;
   let svgWidth = 1110;
   let svgHeight = 500;
   let gates1 = [];
   let gateLine = [];
+  let precent = []
   if (circuitGate !== undefined) {
+    maxColor = Math.max(...gateError.flat());
+    // 百分比数据处理
+    for (let i = 0; i <5; i++) {
+      precent.push(Math.round(maxColor*i/5*10000)/100)
+      
+    }
     gates1 = circuitGate;
     svgWidth = gates1[0].length * 40 + 200;
     svgHeight = gates1.length * 40 + 200;
     for (let i = 0; i < gates1.length; i++) {
       for (let j = 0; j < gates1[1].length; j++) {
-        if (gates1[i][j]) {
+        if (gates1[i][j] && gateError[i]) {
           const operation = gates1[i][j];
-          // operation.x = this.operationX(j)
           operation.line = i;
           operation.col = j;
+          operation.gate_error = gateError[i][j];
         }
       }
     }
@@ -97,20 +106,30 @@ export default function Circuit(props) {
       }
     }
   }
-  // console.log(circuitGate,gateError,3666);
   return (
     <svg
       style={{ overflow: "hidden" }}
       width={svgWidth > 1100 ? svgWidth : 1100}
       height={svgHeight > 500 ? svgHeight : 500}
     >
-         <rect
+      
+      <rect
         stroke="#C4C4C4"
         width={"100%"}
         height={"100%"}
         fill="transparent"
       ></rect>
-        {gates1.map((qubit, index) => (
+     <foreignObject x="2" y="40" width="32" height="160">
+      <div  style={{width:30,height:160,backgroundImage: 'linear-gradient(to top, rgba(126, 191, 236),rgba(254, 236, 218), rgba(237, 97, 69))'}}></div>
+     </foreignObject>
+     <g>
+      {precent.map((item,index)=>(
+             < text x='34' key={index} y={200-index*37}>{item}%</text>
+      ))}
+      <text  x='10' y='25'>predict:{ Math.round( props?.circuitPreditt?.circuit_predict*100)/100||''}</text>
+     </g>
+    <g transform='translate(20)'>
+      {gates1.map((qubit, index) => (
         <g
           key={index}
           transform={`translate(60,${20 + index * 40 ? index * 40 : 0})`}
@@ -127,7 +146,7 @@ export default function Circuit(props) {
           ></line>
         </g>
       ))}
-         {gateLine.map((item, index) => (
+      {gateLine.map((item, index) => (
         <g key={index}>
           <line
             x1={16 + 40 * item.col + 95}
@@ -139,9 +158,15 @@ export default function Circuit(props) {
           ></line>
         </g>
       ))}
-       {gates1.map((qubit, index) => (
-        <Qubit key={index} index={index} gates={qubit}></Qubit>
+      {gates1.map((qubit, index) => (
+        <Qubit
+          maxColor={maxColor}
+          key={index}
+          index={index}
+          gates={qubit}
+        ></Qubit>
       ))}
+      </g>
     </svg>
   );
 }

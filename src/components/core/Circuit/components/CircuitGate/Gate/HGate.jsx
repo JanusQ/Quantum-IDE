@@ -3,11 +3,11 @@ import React from 'react'
 export default function HGate() {
   return (
     <g>
-    <g>
+    <g >
       <rect
         y="0"
         type="h"
-        fill="rgb(0, 45, 160)"
+        // fill="rgb(0, 45, 160)"
         width="32"
         height="32"
       ></rect>

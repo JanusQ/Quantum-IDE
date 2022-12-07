@@ -132,7 +132,7 @@ const SignIn = () => {
             />
             <span
               onClick={getImage}
-              style={{ fontSize: 16, display: 'displayIlilneBlokc' }}
+              style={{ fontSize: 16, display: 'displayIlilneBlokc',cursor: 'default' }}
             >
               换一张
             </span>
@@ -235,7 +235,8 @@ const SignIn = () => {
               },
               {
                 pattern:
-                  /^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0,5-9]))\d{8}$/,
+                  // /^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0,5-9]))\d{8}$/,
+                  /^1[3-9]\d{9}$/,
                 message: '手机号格式错误',
               },
             ]}

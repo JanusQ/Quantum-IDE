@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import "../styles/Analysis.scss";
-import { Radio, Checkbox } from "antd";
+import { Radio, Checkbox,Button } from "antd";
 import { SettingOutlined } from "@ant-design/icons";
 import * as echarts from "echarts";
 import Circuit from "./Circuit";
 import QCEngine from "../../simulator/MyQCEngine";
+import { getComList } from "../../api/computer";
 export default function Analysis(props) {
   const {circuitPreditt,CircuitAnalysisData} ={...props}
  
@@ -61,6 +62,8 @@ export default function Analysis(props) {
   const [routing, setRouting] = useState([]);
   const [translation, setTranslation] = useState([]);
   const [optimization, setOptimization] = useState([]);
+  // 选择的计算机
+  const [computer, setComputer] = useState([])
   // const [parameter, setParameter] = useState({
   //   'layout':layoutValue,
   //   "routing":routing,
@@ -68,11 +71,14 @@ export default function Analysis(props) {
   //   "optimization":optimization
 
   // })
-  let parameter = {
-    layout: layoutValue,
-    routing: routing,
-    translation: translation,
-    optimization: optimization,
+  let configData = {
+    parameter:{
+      layout: layoutValue,
+      routing: routing,
+      translation: translation,
+      optimization: optimization,
+    },
+   computer:computer
   };
   const onChangeLayout = (e) => {
     // console.log("radio checked", e.target.value);
@@ -90,6 +96,11 @@ export default function Analysis(props) {
     // console.log("radio checked", e.target.value);
     setOptimization(list);
   };
+  const onChangeComputerList = (e) => {
+    // console.log("radio checked", e.target.value);
+    setComputer([e.target.value]);
+    // console.log(computer);
+  };
   // 取消单选框
   const cancle = (type) => {
     switch (type) {
@@ -102,17 +113,32 @@ export default function Analysis(props) {
       case "layout":
         setLayoutValue([]);
         break;
+      case "computer":
+        setComputer([]);
+        break;
       default:
         break;
     }
   };
+    // 获取计算机列表
+  const [computerList, setComputerList] = useState([]);
+  const getComListFn = async () => {
+    const formData = new FormData();
+    formData.append("filter", JSON.stringify({ update_code: -1 }));
+    const { data } = await getComList(formData);
+    setComputerList(data.com_list)
+    console.log(data.com_list);
+  };
   useEffect(() => {
     const myChart = echarts.init(main.current);
     myChart.setOption(option);
+    // 获取计算机列表
+    getComListFn()
+
   }, []);
   useEffect(() => {
-    props.parameter(parameter);
-  }, [layoutValue, routing, translation, optimization]);
+    props.parameter(configData);
+  }, [layoutValue, routing, translation, optimization,computer]);
   return (
     <div className="compile">
       <span>编译</span>
@@ -126,6 +152,7 @@ export default function Analysis(props) {
       </div>
       <div className="middle">
         <div>配置</div>
+        {/* <Button type='primary' style={{ marginTop:10 }}>Analysis</Button> */}
         <div className="config">
           <div
             style={{
@@ -139,6 +166,25 @@ export default function Analysis(props) {
         </div>
       </div>
       <div className="down">
+        <div className="optimized">
+          <div className="header">
+            <span>coms</span>
+            <div className="icon">
+              <SettingOutlined />
+            </div>
+          </div>
+          <div className="selectOptimized">
+            <Radio.Group onChange={onChangeComputerList} value={computer[0]} >
+              {computerList.map((item, index) => (
+                <div key={index}>
+                  <Radio onClick={() => cancle("computer")} value={item.chip_name}>
+                    {item.chip_name}
+                  </Radio>
+                </div>
+              ))}
+            </Radio.Group>
+          </div>
+        </div>
         <div className="optimized">
           <div className="header">
             <span>layout</span>

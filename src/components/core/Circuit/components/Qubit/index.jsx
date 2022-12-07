@@ -31,6 +31,7 @@ export default function Qubit(props) {
       <g>
         {props.gates.map((gate, index) => (
           <Gate
+          maxColor={props.maxColor}
             index={index}
             x={95}
             y={25 + props.index * 40}

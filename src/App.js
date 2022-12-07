@@ -412,18 +412,21 @@ function App() {
   const [parameter, setParameter] = useState({})
   const [CircuitAnalysisData, setCircuitAnalysisData] = useState({})
   const [circuitPreditt, setCircuitPreditt] = useState({})
+  // 
+  const beforAlalysis = ()=>{
+    
+  }
   const runCircuitAlalysis = async(qc) =>{
     let analysisData={}
     analysisData["qasm"] = qc.export();
-    analysisData['coms']=['N36U19']
-    analysisData['parameter']=parameter
+    analysisData['coms']=parameter.computer
+    analysisData['parameter']=parameter.parameter
     let predictData = {qasm:qc.export()}
     const analysisRes  = await circuitAnalysis(analysisData)
-    const predictRes  = await circuitpredict(predictData)
+    const predictRes  = await circuitpredict(analysisData)
     setCircuitPreditt(predictRes.data)
-
     let analysisQc = new QCEngine(); 
-    analysisQc.import(analysisRes.data.compiled_qc)
+    analysisQc.import(predictRes.data.return_qasm)
     setCircuitAnalysisData(analysisQc.circuit)
     // console.log(analysisQc.import(res.data.compiled_qc),555);
     // console.log(analysisQc.circuit,5555);                                                                                                                                                                                                  
