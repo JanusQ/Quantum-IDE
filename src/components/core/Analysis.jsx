@@ -8,6 +8,7 @@ import QCEngine from "../../simulator/MyQCEngine";
 import { getComList } from "../../api/computer";
 export default function Analysis(props) {
   const {circuitPreditt,CircuitAnalysisData} ={...props}
+  console.log(CircuitAnalysisData,'CircuitAnalysisData');
  
   const main = useRef();
   const option = {
@@ -64,13 +65,6 @@ export default function Analysis(props) {
   const [optimization, setOptimization] = useState([]);
   // 选择的计算机
   const [computer, setComputer] = useState([])
-  // const [parameter, setParameter] = useState({
-  //   'layout':layoutValue,
-  //   "routing":routing,
-  //   "translation":translation,
-  //   "optimization":optimization
-
-  // })
   let configData = {
     parameter:{
       layout: layoutValue,
@@ -139,12 +133,17 @@ export default function Analysis(props) {
   useEffect(() => {
     props.parameter(configData);
   }, [layoutValue, routing, translation, optimization,computer]);
+  const runAnalysis =()=>{
+    console.log(555555);
+    props.changCircuit(true)
+    props.runProgram()
+  }
   return (
     <div className="compile">
       <span>编译</span>
       <div className="top">
         <div className="circuit">
-        <Circuit circuitPreditt={circuitPreditt} circuitData={CircuitAnalysisData}/>
+        <Circuit realCircuit={props.realCircuit} circuitPreditt={circuitPreditt} circuitData={CircuitAnalysisData}/>
         </div>
         <div className="chart">
           <div ref={main} className="radarChart"></div>
@@ -152,7 +151,7 @@ export default function Analysis(props) {
       </div>
       <div className="middle">
         <div>配置</div>
-        {/* <Button type='primary' style={{ marginTop:10 }}>Analysis</Button> */}
+        <Button onClick={runAnalysis} type='primary' style={{ marginTop:10 }}>Analysis</Button>
         <div className="config">
           <div
             style={{

@@ -113,7 +113,10 @@ const Ace = forwardRef((props, ref) => {
 			},
 		})
 	}
-
+	const runProgram =()=>{
+		props.runProgram()
+		props.changCircuit(false)
+	}
 	return (
 		<div className='left_top_div'>
 			<div className='ace_div'>
@@ -128,7 +131,7 @@ const Ace = forwardRef((props, ref) => {
 				</div>
 				{/* 操作按钮 */}
 				<div className='ace_operation'>
-					<Button type='primary' onClick={props.runProgram} style={{ background: '#649FAE' }}>
+					<Button type='primary' onClick={runProgram} style={{ background: '#649FAE' }}>
 						{props.runProgramName}
 					</Button>
 					<Select

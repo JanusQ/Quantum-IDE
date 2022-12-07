@@ -12,6 +12,7 @@ export default function Circuit(props) {
   let gateLine = [];
   let precent = []
   if (circuitGate !== undefined) {
+    console.log(circuitGate,'circuitGate');
     maxColor = Math.max(...gateError.flat());
     // 百分比数据处理
     for (let i = 0; i <5; i++) {
