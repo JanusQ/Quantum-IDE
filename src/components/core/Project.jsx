@@ -288,7 +288,7 @@ const Project = () => {
         visible={isSaveCaseModalVisible}
         title={t('project.stored item')}
       >
-        <p>{t('project. project name')}}</p>
+        <p>{t('project. project name')}</p>
         <Input value={caseName} onChange={onSaveChange}></Input>
       </Modal>
     </Layout>

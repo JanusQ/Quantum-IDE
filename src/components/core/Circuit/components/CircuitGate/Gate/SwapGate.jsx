@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function SwapGate() {
+export default function SwapGate(props) {
   return (
     <g>
     <line
@@ -9,7 +9,7 @@ export default function SwapGate() {
       x2="24"
       y2="24"
       strokeWidth="1.25"
-      stroke="rgb(0, 45, 156)"
+      stroke={props.rgb}
     ></line>
     <line
       x1="24"
@@ -17,7 +17,7 @@ export default function SwapGate() {
       x2="8"
       y2="24"
       strokeWidth="1.25"
-      stroke="rgb(0, 45, 156)"
+      stroke={props.rgb}
     ></line>
   </g>  )
 }

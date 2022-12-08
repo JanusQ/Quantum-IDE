@@ -8,7 +8,6 @@ import QCEngine from "../../simulator/MyQCEngine";
 import { getComList } from "../../api/computer";
 export default function Analysis(props) {
   const {circuitPreditt,CircuitAnalysisData} ={...props}
-  console.log(CircuitAnalysisData,'CircuitAnalysisData');
  
   const main = useRef();
   const option = {
@@ -121,7 +120,6 @@ export default function Analysis(props) {
     formData.append("filter", JSON.stringify({ update_code: -1 }));
     const { data } = await getComList(formData);
     setComputerList(data.com_list)
-    console.log(data.com_list);
   };
   useEffect(() => {
     const myChart = echarts.init(main.current);
@@ -134,16 +132,15 @@ export default function Analysis(props) {
     props.parameter(configData);
   }, [layoutValue, routing, translation, optimization,computer]);
   const runAnalysis =()=>{
-    console.log(555555);
     props.changCircuit(true)
-    props.runProgram()
+    props.runProgram(true)
   }
   return (
     <div className="compile">
-      <span>编译</span>
+      <span>{props.circuitType?'编译后':'编译前'}</span>
       <div className="top">
         <div className="circuit">
-        <Circuit realCircuit={props.realCircuit} circuitPreditt={circuitPreditt} circuitData={CircuitAnalysisData}/>
+        <Circuit circuitType={props.circuitType} circuitPreditt={circuitPreditt} circuitData={CircuitAnalysisData}/>
         </div>
         <div className="chart">
           <div ref={main} className="radarChart"></div>

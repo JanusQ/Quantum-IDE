@@ -9,8 +9,8 @@ export default function Cu1Gate() {
           cy="16"
           r="14"
           // fill="rgb(0, 45, 156)"
-          strokeWidth="2"
-          stroke="rgb(0, 45, 156)"
+          // strokeWidth="2"
+          // stroke="rgb(0, 45, 156)"
           paintOrder="stroke"
         ></circle>
 

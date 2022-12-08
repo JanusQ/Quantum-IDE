@@ -11,27 +11,41 @@ export default function Circuit(props) {
   let gates1 = [];
   let gateLine = [];
   let precent = []
-  if (circuitGate !== undefined) {
-    console.log(circuitGate,'circuitGate');
+  if(props.circuitType&&circuitGate&&gateError){
     maxColor = Math.max(...gateError.flat());
     // 百分比数据处理
     for (let i = 0; i <5; i++) {
       precent.push(Math.round(maxColor*i/5*10000)/100)
       
     }
+  }
+  if (circuitGate !== undefined) {   
     gates1 = circuitGate;
     svgWidth = gates1[0].length * 40 + 200;
     svgHeight = gates1.length * 40 + 200;
-    for (let i = 0; i < gates1.length; i++) {
-      for (let j = 0; j < gates1[1].length; j++) {
-        if (gates1[i][j] && gateError[i]) {
-          const operation = gates1[i][j];
-          operation.line = i;
-          operation.col = j;
-          operation.gate_error = gateError[i][j];
+    if(props.circuitType&&gateError){
+      for (let i = 0; i < gates1.length; i++) {
+        for (let j = 0; j < gates1[1].length; j++) {
+          if (gates1[i][j] && gateError[i]) {
+            const operation = gates1[i][j];
+            operation.line = i;
+            operation.col = j;
+            operation.gate_error = gateError[i][j];
+          }
+        }
+      }
+    }else{
+      for (let i = 0; i < gates1.length; i++) {
+        for (let j = 0; j < gates1[1].length; j++) {
+          if (gates1[i][j]) {
+            const operation = gates1[i][j];
+            operation.line = i;
+            operation.col = j;
+          }
         }
       }
     }
+  
     let aaa = gates1.flat();
     let bbb = aaa.filter((item) => item !== null);
     const findDuplicates = (aaa) => {
