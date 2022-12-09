@@ -170,6 +170,7 @@ const Ace = forwardRef((props, ref) => {
 					style={{ fontSize: fontSize + 'px' }}
 					highlightActiveLine={false}
 					setOptions={{
+						useWorker: false,
 						wrap: true,
 						enableLiveAutocompletion: true,
 					}}
