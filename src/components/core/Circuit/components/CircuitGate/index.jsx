@@ -110,6 +110,12 @@ export default function Gate(props) {
                 return null;
             }
           })()}
+          {/* {
+            gate1.bug?<g  transform="translate(13,-16)"> <text fontSize={16} fill="blue">*</text> </g>:''
+          } */}
+          {
+            gate1.bug?<g  transform="translate(11,35)"> <rect width={10} height='1' strokeWidth={1} stroke='red' fontSize={16} fill="blue"></rect> </g>:''
+          }
         </g>
       </Popover>
     </>

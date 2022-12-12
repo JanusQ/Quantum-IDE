@@ -437,17 +437,26 @@ function App() {
 
   }
   const runCircuitAlalysis = async(qc) =>{
+    const hide = message.loading('正在编译', 0, () => {
+    });
     let analysisData={}
     analysisData["qasm"] = qc.export();
     analysisData['coms']=parameter.computer
     analysisData['parameter']=parameter.parameter
     let predictData = {qasm:qc.export()}
-    const analysisRes  = await circuitAnalysis(analysisData)
-    const predictRes  = await circuitpredict(analysisData)
-    setCircuitPreditt(predictRes.data)
-    let analysisQc = new QCEngine(); 
-    analysisQc.import(predictRes.data.return_qasm)
-    setCircuitAnalysisData(analysisQc.circuit)
+    try {
+      const analysisRes  = await circuitAnalysis(analysisData)
+      const predictRes  = await circuitpredict(analysisData)
+      setCircuitPreditt(predictRes.data)
+      let analysisQc = new QCEngine(); 
+      analysisQc.import(predictRes.data.return_qasm)
+      setCircuitAnalysisData(analysisQc.circuit)
+      hide()
+      message.success('编译成功',1);
+    } catch (error) {
+      message.error('编译失败',1)
+    }
+   
     // console.log(analysisQc.import(res.data.compiled_qc),555);
     // console.log(analysisQc.circuit,5555);                                                                                                                                                                                                  
     // 绘制analysis电路图

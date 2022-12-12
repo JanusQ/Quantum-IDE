@@ -3,14 +3,39 @@ import Qubit from "./components/Qubit";
 export default function Circuit(props) {
   let circuitGate = [[]];
   let gateError = [[]];
+  let bugPositions=[]
   circuitGate = props.circuitData.gates;
   gateError = props.circuitPreditt.gate_errors;
+  bugPositions=props.circuitPreditt.bug_positions
+
   let maxColor = 0;
   let svgWidth = 1110;
   let svgHeight = 500;
   let gates1 = [];
   let gateLine = [];
   let precent = []
+  // 计算渐变色
+  const getColorByBaiFenBi = (bili) => {
+    // console.log(bili,'bill');
+    let r = 0;
+    let g = 0;
+    let b = 0;
+    if (bili < 0.5) {
+      r = 94 * bili + 125;
+      g = 38 * bili + 190;
+      b = 236 - bili * 9;
+    }
+
+    if (bili >= 0.5) {
+      r = 254 - bili * 17;
+      g = 234 - bili * 137;
+      b = 215 - bili * 146;
+    }
+    r = parseInt(r); // 取整
+    g = parseInt(g); // 取整
+    b = parseInt(b); // 取整
+    return "rgb(" + r + "," + g + "," + b + ")";
+  };
   if(props.circuitType&&circuitGate&&gateError){
     maxColor = Math.max(...gateError.flat());
     // 百分比数据处理
@@ -23,7 +48,17 @@ export default function Circuit(props) {
     gates1 = circuitGate;
     svgWidth = gates1[0].length * 40 + 200;
     svgHeight = gates1.length * 40 + 200;
-    if(props.circuitType&&gateError){
+    if(props.circuitType&&gateError&&bugPositions){
+      for (let index = 0; index < bugPositions.length; index++) {
+       let i= bugPositions[index][0]
+       let j= bugPositions[index][1]
+       if( gates1[i]&& gates1[i][j]){
+        gates1[i][j].bug=true
+
+       }
+
+        
+      }
       for (let i = 0; i < gates1.length; i++) {
         for (let j = 0; j < gates1[1].length; j++) {
           if (gates1[i][j] && gateError[i]) {
@@ -31,6 +66,7 @@ export default function Circuit(props) {
             operation.line = i;
             operation.col = j;
             operation.gate_error = gateError[i][j];
+
           }
         }
       }
@@ -45,7 +81,6 @@ export default function Circuit(props) {
         }
       }
     }
-  
     let aaa = gates1.flat();
     let bbb = aaa.filter((item) => item !== null);
     const findDuplicates = (aaa) => {
@@ -101,6 +136,11 @@ export default function Circuit(props) {
     for (var i = 0; i < ccc.length; i++) {
       var ai = ccc[i];
       if (!map[ai.id]) {
+        let lineColor = 'rgb(0, 45, 156)'
+        if(ai.gate_error){
+            // 计算渐变色
+          lineColor=getColorByBaiFenBi(ai.gate_error/maxColor)
+        }
         gateLine.push({
           id: ai.id,
           col: ai.col,
@@ -108,6 +148,7 @@ export default function Circuit(props) {
           options: ai.options,
           x: ai.x,
           lineArr: [{ line: ai.line }],
+          lineColor
         });
         map[ai.id] = ai.id;
       } else {
@@ -169,7 +210,7 @@ export default function Circuit(props) {
             x2={16 + 40 * item.col + 95}
             y2={item.lineArr[item.lineArr.length - 1].line * 40 + 40}
             strokeWidth="1.25"
-            stroke=" rgb(0, 45, 156)"
+            stroke={item.lineColor}
           ></line>
         </g>
       ))}
