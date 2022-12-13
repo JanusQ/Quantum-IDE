@@ -7,30 +7,37 @@ import Circuit from "./Circuit";
 import QCEngine from "../../simulator/MyQCEngine";
 import { getComList } from "../../api/computer";
 export default function Analysis(props) {
-  const {circuitPreditt,CircuitAnalysisData} ={...props}
- 
+  const {radarData,circuitPreditt,CircuitAnalysisData} ={...props}
+  // circuit_predict和其他数据是两个接口需要合并一下
+ let radarValue = [...radarData,circuitPreditt.circuit_predict]
   const main = useRef();
   const option = {
     title: {
       text: "预期结果",
     },
+    tooltip: {
+      trigger: 'axis'
+    },
     radar: {
       indicator: [
-        { name: "门数量", max: 6500 },
-        { name: "深度", max: 52000 },
-        { name: "保真度", max: 38000 },
-        { name: "编译速度", max: 30000 },
-        { name: "并行度", max: 16000 },
+        { name: "门数量", max: 1 },
+        { name: "并行度", max: 1 },
+        { name: "编译速度", max: 1 },
+        { name: "深度", max: 1 },
+        { name: "保真度", max: 1 },
       ],
     },
     series: [
       {
         name: "Budget vs spending",
         type: "radar",
+        tooltip: {
+          trigger: 'item'
+        },
         data: [
           {
-            value: [4200, 3000, 8000, 6000, 5000, 5000],
-            name: "Allocated Budget",
+            value:radarValue,
+            name: "预期数据",
             areaStyle: {
               color: new echarts.graphic.RadialGradient(0.1, 0.6, 1, [
                 {
@@ -121,13 +128,17 @@ export default function Analysis(props) {
     const { data } = await getComList(formData);
     setComputerList(data.com_list)
   };
+  useEffect(()=>{
+        // 获取计算机列表
+
+    getComListFn()
+
+  },[])
   useEffect(() => {
     const myChart = echarts.init(main.current);
     myChart.setOption(option);
-    // 获取计算机列表
-    getComListFn()
 
-  }, []);
+  }, [radarValue]);
   useEffect(() => {
     props.parameter(configData);
   }, [layoutValue, routing, translation, optimization,computer]);

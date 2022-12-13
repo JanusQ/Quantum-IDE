@@ -137,7 +137,7 @@ export default function Circuit(props) {
       var ai = ccc[i];
       if (!map[ai.id]) {
         let lineColor = 'rgb(0, 45, 156)'
-        if(ai.gate_error){
+        if(ai.gate_error!==undefined){
             // 计算渐变色
           lineColor=getColorByBaiFenBi(ai.gate_error/maxColor)
         }

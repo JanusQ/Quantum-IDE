@@ -436,6 +436,8 @@ function App() {
     setCircuitAnalysisData(qc.circuit)
 
   }
+  // 雷达图数据
+  const [radarData, setRadarData] = useState([])
   const runCircuitAlalysis = async(qc) =>{
     const hide = message.loading('正在编译', 0, () => {
     });
@@ -447,6 +449,10 @@ function App() {
     try {
       const analysisRes  = await circuitAnalysis(analysisData)
       const predictRes  = await circuitpredict(analysisData)
+      const score=analysisRes.data.compiled_qc.score
+      const predict=predictRes.data.circuit_predict
+      setRadarData(score)
+      // const radar_data ={analysisRes.data.compiled_qc.score}
       setCircuitPreditt(predictRes.data)
       let analysisQc = new QCEngine(); 
       analysisQc.import(predictRes.data.return_qasm)
@@ -454,6 +460,8 @@ function App() {
       hide()
       message.success('编译成功',1);
     } catch (error) {
+      console.log(error);
+      hide()
       message.error('编译失败',1)
     }
    
@@ -985,7 +993,7 @@ function App() {
       ]);
     }else if(runValue==='analysis'){
       setIsAnlysis(true);
-      setRunProgramName("analysis");
+      setRunProgramName("Run Program");
     }
 
     setIsSelectRunModalVisible(false);
@@ -1151,7 +1159,7 @@ function App() {
           }}
         >
           {isAnlysis ? (
-            <Analysis circuitType={circuitType} changCircuit={changCircuit}  runProgram={runProgram} circuitPreditt={circuitPreditt} CircuitAnalysisData={CircuitAnalysisData}  parameter={(parameterData)=>setParameter(parameterData)}/>
+            <Analysis radarData={radarData} circuitType={circuitType} changCircuit={changCircuit}  runProgram={runProgram} circuitPreditt={circuitPreditt} CircuitAnalysisData={CircuitAnalysisData}  parameter={(parameterData)=>setParameter(parameterData)}/>
           ) : (
             <Right
               isShowBMode={isShowBMode}
