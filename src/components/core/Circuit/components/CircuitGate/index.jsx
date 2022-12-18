@@ -48,16 +48,19 @@ export default function Gate(props) {
     b = parseInt(b) // 取整
     return "rgb(" + r + "," + g + "," + b + ")"
   }
+  let gateError=false
   if (props.gate !== null) {
     gate1 = props.gate
     let changeColor = gate1.gate_error / props.maxColor
 
     rgb = getColorByBaiFenBi(changeColor)
-
+    if(gate1.gate_error){
+      gateError=Math.round(gate1.gate_error * 10000) / 100
+    }
     var content = (
       <div>
         <p>name:{gate1.name}</p>
-        <p>gate_error:{Math.round(gate1.gate_error * 10000) / 100}%</p>
+      { gateError? <p>gate_error:{gateError}</p>:''}
       </div>
     )
   }
@@ -124,13 +127,16 @@ export default function Gate(props) {
             gate1.bug?<g  transform="translate(13,-16)"> <text fontSize={16} fill="blue">*</text> </g>:''
           } */}
           {gate1.bug ? (
-            <g transform="translate(16,16)">
-              <circle
+            <g transform="translate(5,45)">
+              {/* <circle
                 r="10"
                 strokeWidth={1}
                 stroke="red"
                 fill="transparent"
-              ></circle>
+              ></circle> */}
+              <text fontSize={30} fill="red">
+                ~
+              </text>
             </g>
           ) : (
             ""

@@ -1,15 +1,16 @@
-import logo from "./logo.svg";
-import "./App.css";
-import "./components/styles/CommonAntDesign.css";
-import Ace from "./components/core/Ace";
-import Right from "./components/core/Right";
-import Analysis from "./components/core/Analysis";
-import ConsoleComponent from "./components/core/ConsoleComponent";
-import axios from "axios";
-import React, { useState, useRef, useEffect } from "react";
-import { exportSVG } from "./simulator/CommonFunction";
-import QCEngine from "./simulator/MyQCEngine";
-import QuantumCircuit from "./simulator/QuantumCircuit";
+import logo from "./logo.svg"
+import "./App.css"
+import "./components/styles/CommonAntDesign.css"
+import Ace from "./components/core/Ace"
+import Right from "./components/core/Right"
+import Analysis from "./components/core/Analysis"
+import AnalysisCircuitPage from "./components/core/AnalysisCircuitPage"
+import ConsoleComponent from "./components/core/ConsoleComponent"
+import axios from "axios"
+import React, { useState, useRef, useEffect } from "react"
+import { exportSVG } from "./simulator/CommonFunction"
+import QCEngine from "./simulator/MyQCEngine"
+import QuantumCircuit from "./simulator/QuantumCircuit"
 import {
   cos,
   sin,
@@ -21,8 +22,8 @@ import {
   max,
   sparse,
   hartreeEnergyDependencies,
-} from "mathjs";
-import ComponentTitle from "../src/components/core/ComponentTitle";
+} from "mathjs"
+import ComponentTitle from "../src/components/core/ComponentTitle"
 import {
   pow2,
   binary,
@@ -39,10 +40,10 @@ import {
   binary2int,
   average,
   spec,
-} from "./simulator/CommonFunction";
+} from "./simulator/CommonFunction"
 // import MathJax from 'mathJax'
-import { getDirac } from "./components/Mathjax";
-import Layout from "./components/core/Layout";
+import { getDirac } from "./components/Mathjax"
+import Layout from "./components/core/Layout"
 import {
   Modal,
   Checkbox,
@@ -52,7 +53,7 @@ import {
   Form,
   Select,
   AutoComplete,
-} from "antd";
+} from "antd"
 import {
   send_to_real,
   recieve_from_real,
@@ -60,17 +61,17 @@ import {
   submitTask,
   loadPro,
   circuitAnalysis,
-  circuitpredict
-} from "./api/test_circuit";
-import { values } from "lodash";
-import { getComList } from "./api/computer";
-import { useParams } from "react-router-dom";
-import { isAuth } from "./helpers/auth";
-import { computerParamsChat, computerD3 } from "./helpers/computerParamsChart";
-import { getTaskResult } from "./api/project";
-import { uploadOperation } from "./api/operationLog";
-import { submitLog } from "./util/submitLog";
-import { useTranslation } from "react-i18next";
+  circuitpredict,
+} from "./api/test_circuit"
+import { values } from "lodash"
+import { getComList } from "./api/computer"
+import { useParams } from "react-router-dom"
+import { isAuth } from "./helpers/auth"
+import { computerParamsChat, computerD3 } from "./helpers/computerParamsChart"
+import { getTaskResult } from "./api/project"
+import { uploadOperation } from "./api/operationLog"
+import { submitLog } from "./util/submitLog"
+import { useTranslation } from "react-i18next"
 
 // import QCEngine from './simulator/MyQCEngine'
 // import './test/meausre'
@@ -97,7 +98,7 @@ import { useTranslation } from "react-i18next";
 // import './test/canShow_test.js'
 
 function App() {
-  const _ = require("lodash");
+  const _ = require("lodash")
   // 提供的case列表
   const initCaseList = [
     {
@@ -160,23 +161,26 @@ function App() {
     {
       value: "Markov Process",
     },
-  ];
-  const [optionList, setOptionList] = useState([]);
+  ]
+  // 背景色
+
+  const [backcolor, setBackcolor] = useState("black")
+  const [optionList, setOptionList] = useState([])
   // 中英文
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation()
 
   // 编辑器内容
-  const [editorValue, setEditorValue] = useState("");
+  const [editorValue, setEditorValue] = useState("")
   // console的内容
-  const [consoleValue, setConsoleValue] = useState(null);
-  const [circuit, setcircuit] = useState([]);
+  const [consoleValue, setConsoleValue] = useState(null)
+  const [circuit, setcircuit] = useState([])
   // 编辑器输入
   function onChange(newValue) {
-    setEditorValue(newValue);
+    setEditorValue(newValue)
   }
-  const auth = isAuth();
+  const auth = isAuth()
   // {user_id: 2, username: 'wangxuanhe', user_type: 0} 6666
-  const { projectName, projectId } = useParams();
+  const { projectName, projectId } = useParams()
 
   // 分发事件
   const dispathRun = () => {
@@ -185,17 +189,17 @@ function App() {
       runValue === "sqcg_cluster" ||
       runValue === "qiskit"
     ) {
-      setSubmitModalVisible(true);
+      setSubmitModalVisible(true)
     } else {
-      runProgram();
+      runProgram()
     }
-  };
+  }
   // 运行
   const runProgram = (sample) => {
-    let noBug = false;
-    let qc = new QCEngine();
+    let noBug = false
+    let qc = new QCEngine()
 
-    const { qint } = qc;
+    const { qint } = qc
     // TODO: 这些也要写在文档里面
     const {
       cos,
@@ -210,7 +214,7 @@ function App() {
       acos,
       asin,
       sqrt,
-    } = require("mathjs");
+    } = require("mathjs")
     const {
       pow2,
       binary,
@@ -227,12 +231,12 @@ function App() {
       binary2int,
       average,
       spec,
-    } = require("./simulator/CommonFunction");
+    } = require("./simulator/CommonFunction")
     const {
       tensor,
       groundState,
       tensorState,
-    } = require("./simulator/MatrixOperation");
+    } = require("./simulator/MatrixOperation")
 
     //bind function
     let gates = [
@@ -295,7 +299,7 @@ function App() {
       "ncphase",
       "qprint",
       "cphase",
-    ];
+    ]
     var cx,
       cy,
       cz,
@@ -354,29 +358,29 @@ function App() {
       ncnot,
       ncphase,
       cphase,
-      qprint;
+      qprint
     //let gates =['had']
-    let bind_str = "gate_name = qc.gate_name.bind(qc);\n ";
-    let bind_str_all = "";
+    let bind_str = "gate_name = qc.gate_name.bind(qc);\n "
+    let bind_str_all = ""
     for (let ind = 0; ind < gates.length; ind++) {
-      let gate = gates[ind];
-      bind_str_all += bind_str.replace(/gate_name/g, gate);
+      let gate = gates[ind]
+      bind_str_all += bind_str.replace(/gate_name/g, gate)
     }
 
-    eval(bind_str_all);
+    eval(bind_str_all)
 
     try {
-      eval(editorValue);
-      consoleContent(true, qc.console_data);
-      noBug = true;
+      eval(editorValue)
+      consoleContent(true, qc.console_data)
+      noBug = true
     } catch (error) {
-      consoleContent(false, error.message);
-      noBug = false;
+      consoleContent(false, error.message)
+      noBug = false
     }
     // 模拟器
     if (noBug && runValue === "JavaScript_simulator") {
-      qc.runCircuit();
-      exportSVG(qc);
+      qc.runCircuit()
+      exportSVG(qc)
     }
     // 真机
     if (
@@ -385,88 +389,74 @@ function App() {
         runValue === "sqcg_cluster" ||
         runValue === "qiskit")
     ) {
-      realRun(qc, sample, runValue);
+      realRun(qc, sample, runValue)
     }
 
-    if(noBug&&runValue==='analysis'){
-      if(sample){
-        runCircuitAlalysis(qc)
-      }else{
-        beforAlalysis(qc)
-
-
-      }
-      // if(circuitType===true){
-      //   runCircuitAlalysis(qc)
-      //   console.log('999999');
-      // }else if(!circuitType){
-      //   beforAlalysis(qc)
-      //   console.log('这里？');
-      // }
+    if (noBug && runValue === "analysis") {
+      setAnalysisQc(qc)
+      setBackcolor("#fff")
     }
-  };
-  
+  }
+  const [analysisQc, setAnalysisQc] = useState({})
   async function testfunc(qc) {
     //qc.import(0);
-    let data = {};
-    data["qasm"] = qc.export();
+    let data = {}
+    data["qasm"] = qc.export()
     // console.log(data['qasm'])
-    data["sample"] = 1000;
-    data["type"] = "sqcg";
-    var id;
-    id = await send_to_real(data);
-    const params = {};
-    params.result_id = id["data"]["result_id"];
-    params.type = "sqcg";
+    data["sample"] = 1000
+    data["type"] = "sqcg"
+    var id
+    id = await send_to_real(data)
+    const params = {}
+    params.result_id = id["data"]["result_id"]
+    params.type = "sqcg"
     // console.log(params)
-    let res = await recieve_from_real(params);
+    let res = await recieve_from_real(params)
     // console.log(res)
   }
   // 分析
   const [parameter, setParameter] = useState({})
   const [CircuitAnalysisData, setCircuitAnalysisData] = useState({})
   const [circuitPreditt, setCircuitPreditt] = useState({})
-  // 
+  //
   // 是否展示真机电路
   const [circuitType, setcircuitType] = useState(false)
-  const changCircuit =(type)=>{
+  const changCircuit = (type) => {
     setcircuitType(type)
   }
-  const beforAlalysis = (qc)=>{
+  const beforAlalysis = (qc) => {
     setCircuitAnalysisData(qc.circuit)
-
   }
   // 雷达图数据
   const [radarData, setRadarData] = useState([])
-  const runCircuitAlalysis = async(qc) =>{
-    const hide = message.loading('正在编译', 0, () => {
-    });
-    let analysisData={}
-    analysisData["qasm"] = qc.export();
-    analysisData['coms']=parameter.computer
-    analysisData['parameter']=parameter.parameter
-    let predictData = {qasm:qc.export()}
+  const runCircuitAlalysis = async (qc) => {
+    const hide = message.loading("正在编译", 0, () => {})
+    let analysisData = {}
+    analysisData["qasm"] = qc.export()
+    analysisData["coms"] = parameter.computer
+    analysisData["parameter"] = parameter.parameter
+    let predictData = { qasm: qc.export() }
     try {
-      const analysisRes  = await circuitAnalysis(analysisData)
-      const predictRes  = await circuitpredict(analysisData)
-      const score=analysisRes.data.compiled_qc.score
-      const predict=predictRes.data.circuit_predict
+      const analysisRes = await circuitAnalysis(analysisData)
+      const predictRes = await circuitpredict(analysisData)
+      const score = analysisRes.data.compiled_qc.score
+      const predict = predictRes.data.circuit_predict
       setRadarData(score)
       // const radar_data ={analysisRes.data.compiled_qc.score}
       setCircuitPreditt(predictRes.data)
-      let analysisQc = new QCEngine(); 
+      let analysisQc = new QCEngine()
       analysisQc.import(predictRes.data.return_qasm)
       setCircuitAnalysisData(analysisQc.circuit)
       hide()
-      message.success('编译成功',1);
+      message.success("编译成功", 1)
     } catch (error) {
-      console.log(error);
+      console.log(error)
       hide()
-      message.error('编译失败',1)
+      message.error("编译失败", 1)
     }
-   
+
     // console.log(analysisQc.import(res.data.compiled_qc),555);
-    // console.log(analysisQc.circuit,5555);                                                                                                                                                                                                  
+    // console.log(analysisQc.circuit,5555);
     // 绘制analysis电路图
     // computerD3(
     //   analysisQc.circuit,
@@ -476,198 +466,190 @@ function App() {
     // )
   }
   // 真机运行的画图
-  const [resultData, setResultData] = useState(null);
+  const [resultData, setResultData] = useState(null)
   const drawFn = (data) => {
-    let qc = new QCEngine();
-    qc.import(data.origin_circuit);
-    computerD3(
-      qc.circuit,
-      `real_before_chart_svg`,
-      `real_before_chart_g`,
-      1200
-    );
-    let qcAfter = new QCEngine();
-    qcAfter.import(data.compiled_circuit[0]);
+    let qc = new QCEngine()
+    qc.import(data.origin_circuit)
+    computerD3(qc.circuit, `real_before_chart_svg`, `real_before_chart_g`, 1200)
+    let qcAfter = new QCEngine()
+    qcAfter.import(data.compiled_circuit[0])
     computerD3(
       qcAfter.circuit,
       `real_after_chart_svg`,
       `real_after_chart_g`,
       1200
-    );
-  };
+    )
+  }
   const drawChart = (data) => {
     if (!data) {
-      data = resultData;
+      data = resultData
     }
     if (isSimple) {
-      const echartsData = [];
-      const dataKeys = Object.keys(data.result);
-      const arr = [];
+      const echartsData = []
+      const dataKeys = Object.keys(data.result)
+      const arr = []
       dataKeys.forEach((item) => {
-        arr.push({ form: item, to: parseInt(item, 2) });
-      });
-      arr.sort(compare("to"));
+        arr.push({ form: item, to: parseInt(item, 2) })
+      })
+      arr.sort(compare("to"))
       // dataKeys.sort
       arr.forEach((item) => {
         echartsData.push({
           yValue: data.result[item.form],
           xValue: item.form,
-        });
-      });
+        })
+      })
       // console.log(qc.import(data.compiled_qc))
       computerParamsChat(
         echartsData,
         "real_params_chart",
         "real_params_chart_svg",
         false
-      );
+      )
       // if(isSimple)
     } else {
-      const echartsData = [];
-      const dataKeys = Object.keys(data.probs);
-      const arr = [];
+      const echartsData = []
+      const dataKeys = Object.keys(data.probs)
+      const arr = []
       dataKeys.forEach((item) => {
-        arr.push({ form: item, to: item });
-      });
-      arr.sort(compare("to"));
+        arr.push({ form: item, to: item })
+      })
+      arr.sort(compare("to"))
       // dataKeys.sort
       arr.forEach((item) => {
         echartsData.push({
           yValue: _.parseInt(_.multiply(data.probs[item.form], data.sample)),
           xValue: item.form,
-        });
-      });
+        })
+      })
       computerParamsChat(
         echartsData,
         "real_params_chart",
         "real_params_chart_svg",
         true
-      );
+      )
     }
-  };
+  }
   const compare = (property) => {
     return function (a, b) {
-      const value1 = a[property];
-      const value2 = b[property];
-      return value1 - value2;
-    };
-  };
-  const [isSimple, setIsSimple] = useState(true);
+      const value1 = a[property]
+      const value2 = b[property]
+      return value1 - value2
+    }
+  }
+  const [isSimple, setIsSimple] = useState(true)
   const changeType = (isFirst, checked) => {
     if (!isFirst) {
-      setIsSimple(!isSimple);
+      setIsSimple(!isSimple)
     }
-  };
+  }
   const realRun = async (qc, sample, runValue) => {
-    setIsSubmitModalLoading(true);
+    setIsSubmitModalLoading(true)
     try {
-      const formData = new FormData();
-      formData.append("project_id", projectId);
-      formData.append("sample", sample);
-      formData.append("export_qasm", qc.export());
-      formData.append(
-        "computer_name",
-        form.getFieldsValue(["comName"]).comName
-      );
-      formData.append("run_type", runValue);
-      formData.append("user_id", auth.user_id);
-      const { data } = await submitTask(formData);
-      const taskIdFormData = new FormData();
-      taskIdFormData.append("task_id", data.task_info.task_id);
-      setIsSubmitModalLoading(false);
-      message.success("已提交");
+      const formData = new FormData()
+      formData.append("project_id", projectId)
+      formData.append("sample", sample)
+      formData.append("export_qasm", qc.export())
+      formData.append("computer_name", form.getFieldsValue(["comName"]).comName)
+      formData.append("run_type", runValue)
+      formData.append("user_id", auth.user_id)
+      const { data } = await submitTask(formData)
+      const taskIdFormData = new FormData()
+      taskIdFormData.append("task_id", data.task_info.task_id)
+      setIsSubmitModalLoading(false)
+      message.success("已提交")
       // 提交日志
       try {
-        submitLog("", "提交代码", editorValue, "运行成功");
+        submitLog("", "提交代码", editorValue, "运行成功")
       } catch (error) {}
 
-      setSubmitModalVisible(false);
+      setSubmitModalVisible(false)
 
-      const { data: resultDataObj } = await getTaskResult(taskIdFormData);
+      const { data: resultDataObj } = await getTaskResult(taskIdFormData)
       // if(resultDataObj){
       // 	console.log(resultDataObj,3355);
       // 	setcircuit(resultDataObj.compiled_circuit)
       // }
 
-      drawFn(resultDataObj);
-      setResultData(resultDataObj);
+      drawFn(resultDataObj)
+      setResultData(resultDataObj)
       if (!isSimple) {
-        setIsSimple(true);
+        setIsSimple(true)
       } else {
-        drawChart(resultDataObj);
+        drawChart(resultDataObj)
       }
     } catch (e) {
       // 提交运行错误信息到后台
-      submitLog("", "提交代码", editorValue, e.msg);
+      submitLog("", "提交代码", editorValue, e.msg)
 
-      setIsSubmitModalLoading(false);
+      setIsSubmitModalLoading(false)
     }
-    form.resetFields();
-  };
+    form.resetFields()
+  }
   useEffect(() => {
     if (resultData) {
-      drawChart();
+      drawChart()
     }
-  }, [isSimple]);
+  }, [isSimple])
   // 处理console
   const consoleContent = (isTure, message) => {
     if (isTure) {
-      const console_list = [];
+      const console_list = []
       for (let i = 0; i < message.length; i++) {
-        console_list.push(<p key={i}>{message[i]}</p>);
+        console_list.push(<p key={i}>{message[i]}</p>)
       }
-      setConsoleValue(<div className="right_content">{console_list}</div>);
+      setConsoleValue(<div className="right_content">{console_list}</div>)
     } else {
-      setConsoleValue(<div className="error_content">{message}</div>);
+      setConsoleValue(<div className="error_content">{message}</div>)
     }
-  };
+  }
   // 保存项目
   const saveCase = async (caseName, caseValue) => {
-    const formData = new FormData();
-    const obj = {};
-    newFile[initOption] = editorValue;
+    const formData = new FormData()
+    const obj = {}
+    newFile[initOption] = editorValue
     for (const key in newFile) {
-      obj[key] = newFile[key];
+      obj[key] = newFile[key]
     }
-    formData.append("user_id", auth.user_id);
-    formData.append("project_id", projectId);
-    formData.append("code", JSON.stringify(obj));
-    await saveProject(formData);
-    message.success("已保存");
-  };
+    formData.append("user_id", auth.user_id)
+    formData.append("project_id", projectId)
+    formData.append("code", JSON.stringify(obj))
+    await saveProject(formData)
+    message.success("已保存")
+  }
   // 添加新空白页面
 
-  const [newFile, setNewFile] = useState({});
-  const [initOption, setInitOption] = useState("");
+  const [newFile, setNewFile] = useState({})
+  const [initOption, setInitOption] = useState("")
 
   // 选择改变编辑器的内容
   const selectChange = (value) => {
-    setInitOption(value);
+    setInitOption(value)
     if (newFile[value]) {
-      setEditorValue(newFile[value]);
+      setEditorValue(newFile[value])
     } else if (initCaseList.includes(value)) {
       axios
         .get("/js/" + value + ".js")
         .then((res) => {
-          setEditorValue(res.data);
+          setEditorValue(res.data)
         })
         .catch((error) => {
-          setEditorValue("//please");
-        });
+          setEditorValue("//please")
+        })
     } else {
-      setEditorValue("//please");
+      setEditorValue("//please")
     }
 
     // }
-  };
+  }
   const addNew = () => {
-    setIsNewCaseModalVisible(true);
-  };
-  const [isNewCaseModalVisible, setIsNewCaseModalVisible] = useState(false);
-  const [caseName, setCaseName] = useState("");
+    setIsNewCaseModalVisible(true)
+  }
+  const [isNewCaseModalVisible, setIsNewCaseModalVisible] = useState(false)
+  const [caseName, setCaseName] = useState("")
   const onSaveChange = (value) => {
-    setCaseName(value);
-  };
+    setCaseName(value)
+  }
   const newCaseModal = () => {
     return (
       <Modal
@@ -686,74 +668,74 @@ function App() {
           style={{ width: "100%" }}
         />
       </Modal>
-    );
-  };
+    )
+  }
   const isSaveOk = async () => {
     if (!caseName) {
-      message.error("请输入文件名称");
-      return;
+      message.error("请输入文件名称")
+      return
     }
-    optionList.unshift(caseName);
-    setOptionList(optionList);
-    selectChange(optionList[0]);
-    let isHasCase = false;
+    optionList.unshift(caseName)
+    setOptionList(optionList)
+    selectChange(optionList[0])
+    let isHasCase = false
     initCaseList.forEach((item) => {
       if (item.value === caseName) {
-        isHasCase = true;
+        isHasCase = true
         axios
           .get("/js/" + caseName + ".js")
           .then((res) => {
-            setEditorValue(res.data);
-            newFile[caseName] = res.data;
-            saveCase();
-            setCaseName("");
-            setIsNewCaseModalVisible(false);
+            setEditorValue(res.data)
+            newFile[caseName] = res.data
+            saveCase()
+            setCaseName("")
+            setIsNewCaseModalVisible(false)
           })
           .catch((error) => {
-            setEditorValue("//please");
-            newFile[caseName] = "//please";
-            saveCase();
-            setCaseName("");
-            setIsNewCaseModalVisible(false);
-          });
+            setEditorValue("//please")
+            newFile[caseName] = "//please"
+            saveCase()
+            setCaseName("")
+            setIsNewCaseModalVisible(false)
+          })
       }
-    });
+    })
     if (!isHasCase) {
-      setEditorValue("//please");
-      newFile[caseName] = "//please";
-      saveCase();
-      setCaseName("");
-      setIsNewCaseModalVisible(false);
+      setEditorValue("//please")
+      newFile[caseName] = "//please"
+      saveCase()
+      setCaseName("")
+      setIsNewCaseModalVisible(false)
     }
-  };
+  }
   const isSaveCancel = () => {
-    setIsNewCaseModalVisible(false);
-    setCaseName("");
-  };
+    setIsNewCaseModalVisible(false)
+    setCaseName("")
+  }
   // 删除一个文件
   const deleteItem = async (e, name) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const arr = JSON.parse(JSON.stringify(optionList));
-    delete newFile[name];
-    const formData = new FormData();
-    const obj = {};
+    e.preventDefault()
+    e.stopPropagation()
+    const arr = JSON.parse(JSON.stringify(optionList))
+    delete newFile[name]
+    const formData = new FormData()
+    const obj = {}
     for (const key in newFile) {
-      obj[key] = newFile[key];
+      obj[key] = newFile[key]
     }
-    formData.append("user_id", auth.user_id);
-    formData.append("project_id", projectId);
-    formData.append("code", JSON.stringify(obj));
-    await saveProject(formData);
-    message.success("已移除");
-    arr.splice(arr.indexOf(name), 1);
-    setOptionList(arr);
-    selectChange(arr[0]);
-  };
-  const aceRef = useRef(null);
+    formData.append("user_id", auth.user_id)
+    formData.append("project_id", projectId)
+    formData.append("code", JSON.stringify(obj))
+    await saveProject(formData)
+    message.success("已移除")
+    arr.splice(arr.indexOf(name), 1)
+    setOptionList(arr)
+    selectChange(arr[0])
+  }
+  const aceRef = useRef(null)
   const exportFn = () => {
-    aceRef.current.exportFile();
-  };
+    aceRef.current.exportFile()
+  }
   const leftOperations = () => {
     // return (
     // 	<div className='computer_left_operation'>
@@ -785,10 +767,10 @@ function App() {
         <div></div>
         {/* <span>提交</span> */}
       </div>
-    );
-  };
+    )
+  }
   // 控制显示视图
-  const [isSelectShowModalVisible, setIsSelectModalVisible] = useState(false);
+  const [isSelectShowModalVisible, setIsSelectModalVisible] = useState(false)
   const [options, setOptions] = useState([
     {
       label: "B" + t("view.view"),
@@ -802,11 +784,11 @@ function App() {
       label: "D" + t("view.view"),
       value: "D",
     },
-  ]);
-  const [checkedModeList, setCheckedModeList] = useState(["B", "C", "D"]);
+  ])
+  const [checkedModeList, setCheckedModeList] = useState(["B", "C", "D"])
   const onModeChange = (list) => {
-    setCheckedModeList(list);
-  };
+    setCheckedModeList(list)
+  }
   const selectShowModal = () => {
     return (
       <Modal
@@ -824,58 +806,58 @@ function App() {
           onChange={onModeChange}
         ></Checkbox.Group>
       </Modal>
-    );
-  };
+    )
+  }
   const selectShow = () => {
-    setIsSelectModalVisible(true);
-  };
+    setIsSelectModalVisible(true)
+  }
   const isSelectShowOk = () => {
-    setIsSelectModalVisible(false);
-    isShowRight();
+    setIsSelectModalVisible(false)
+    isShowRight()
     // isShowA()
-    isShowB();
-    isShowC();
-    isShowD();
-    isShowRealB();
-    isShowRealC();
-    isShowRealD();
-  };
+    isShowB()
+    isShowC()
+    isShowD()
+    isShowRealB()
+    isShowRealC()
+    isShowRealD()
+  }
   const isSelectShowCancel = () => {
-    setIsSelectModalVisible(false);
-  };
-  const [isShowAMode, setIsShowAMode] = useState(true);
-  const [isShowBMode, setIsShowBMode] = useState(true);
-  const [isShowCMode, setIsShowCMode] = useState(true);
-  const [isShowDMode, setIsShowDMode] = useState(true);
-  const [isShowRightMode, setIsShowRightMode] = useState(true);
-  const [isShowRealBmode, setShowRealBmode] = useState(false);
-  const [isShowRealCmode, setShowRealCmode] = useState(false);
-  const [isShowRealDmode, setShowRealDmode] = useState(false);
+    setIsSelectModalVisible(false)
+  }
+  const [isShowAMode, setIsShowAMode] = useState(true)
+  const [isShowBMode, setIsShowBMode] = useState(true)
+  const [isShowCMode, setIsShowCMode] = useState(true)
+  const [isShowDMode, setIsShowDMode] = useState(true)
+  const [isShowRightMode, setIsShowRightMode] = useState(true)
+  const [isShowRealBmode, setShowRealBmode] = useState(false)
+  const [isShowRealCmode, setShowRealCmode] = useState(false)
+  const [isShowRealDmode, setShowRealDmode] = useState(false)
   const isShowA = () => {
-    return setIsShowAMode(checkedModeList.includes("A"));
-  };
+    return setIsShowAMode(checkedModeList.includes("A"))
+  }
   const isShowB = () => {
-    return setIsShowBMode(checkedModeList.includes("B"));
-  };
+    return setIsShowBMode(checkedModeList.includes("B"))
+  }
   const isShowC = () => {
-    return setIsShowCMode(checkedModeList.includes("C"));
-  };
+    return setIsShowCMode(checkedModeList.includes("C"))
+  }
   const isShowD = () => {
-    return setIsShowDMode(checkedModeList.includes("D"));
-  };
+    return setIsShowDMode(checkedModeList.includes("D"))
+  }
   const isShowRealB = () => {
-    return setShowRealBmode(checkedModeList.includes("BarChart"));
-  };
+    return setShowRealBmode(checkedModeList.includes("BarChart"))
+  }
   const isShowRealC = () => {
     return setShowRealCmode(
       checkedModeList.includes(t("compile.before compile"))
-    );
-  };
+    )
+  }
   const isShowRealD = () => {
     return setShowRealDmode(
       checkedModeList.includes(t("compile.before compile"))
-    );
-  };
+    )
+  }
   const isShowRight = () => {
     if (
       !checkedModeList.includes("C") &&
@@ -885,19 +867,19 @@ function App() {
       !checkedModeList.includes(t("compile.before compile")) &&
       !checkedModeList.includes(t("compile.after compile"))
     ) {
-      setIsShowRightMode(false);
+      setIsShowRightMode(false)
     } else {
-      setIsShowRightMode(true);
+      setIsShowRightMode(true)
     }
-  };
+  }
 
   // 真机 模拟器切换
-  const [runProgramName, setRunProgramName] = useState("Run Program");
-  const [isSelectRunModalVisible, setIsSelectRunModalVisible] = useState(false);
-  const [runValue, setRunValue] = useState("JavaScript_simulator");
+  const [runProgramName, setRunProgramName] = useState("Run Program")
+  const [isSelectRunModalVisible, setIsSelectRunModalVisible] = useState(false)
+  const [runValue, setRunValue] = useState("JavaScript_simulator")
   const onSelectRunChange = (e) => {
-    setRunValue(e.target.value);
-  };
+    setRunValue(e.target.value)
+  }
   // 模拟器用户禁用其他选项
 
   const selectRunModal = () => {
@@ -930,10 +912,11 @@ function App() {
           <Radio value={"analysis"}>analysis </Radio>
         </Radio.Group>
       </Modal>
-    );
-  };
+    )
+  }
 
   const isSelectRunOk = () => {
+    setBackcolor("black")
     // 先把分析模式关闭 再根据模式显示相关内容
     setIsAnlysis(false)
     if (
@@ -941,18 +924,18 @@ function App() {
       runValue === "sqcg_cluster" ||
       runValue === "qiskit"
     ) {
-      setRunProgramName("Submit Task");
-      setIsShowBMode(false);
-      setIsShowCMode(false);
-      setIsShowDMode(false);
-      setShowRealBmode(true);
-      setShowRealCmode(true);
-      setShowRealDmode(true);
+      setRunProgramName("Submit Task")
+      setIsShowBMode(false)
+      setIsShowCMode(false)
+      setIsShowDMode(false)
+      setShowRealBmode(true)
+      setShowRealCmode(true)
+      setShowRealDmode(true)
       setCheckedModeList([
         "BarChart",
         t("compile.before compile"),
         t("compile.before compile"),
-      ]);
+      ])
       setOptions([
         {
           label: "BarChart",
@@ -967,16 +950,16 @@ function App() {
           label: t("compile.before compile"),
           value: t("compile.before compile"),
         },
-      ]);
-    } else if(runValue==='JavaScript_simulator') {
-      setRunProgramName("Run Program");
-      setIsShowBMode(true);
-      setIsShowCMode(true);
-      setIsShowDMode(true);
-      setShowRealBmode(false);
-      setShowRealCmode(false);
-      setShowRealDmode(false);
-      setCheckedModeList(["B", "C", "D"]);
+      ])
+    } else if (runValue === "JavaScript_simulator") {
+      setRunProgramName("Run Program")
+      setIsShowBMode(true)
+      setIsShowCMode(true)
+      setIsShowDMode(true)
+      setShowRealBmode(false)
+      setShowRealCmode(false)
+      setShowRealDmode(false)
+      setCheckedModeList(["B", "C", "D"])
       setOptions([
         {
           label: "B" + t("view.view"),
@@ -990,31 +973,32 @@ function App() {
           label: "D" + t("view.view"),
           value: "D",
         },
-      ]);
-    }else if(runValue==='analysis'){
-      setIsAnlysis(true);
-      setRunProgramName("Run Program");
+      ])
+    } else if (runValue === "analysis") {
+      setIsAnlysis(true)
+      setRunProgramName("Run Program")
+      setBackcolor("#fff")
     }
 
-    setIsSelectRunModalVisible(false);
-  };
+    setIsSelectRunModalVisible(false)
+  }
   const selectRun = () => {
-    setIsSelectRunModalVisible(true);
-  };
+    setIsSelectRunModalVisible(true)
+  }
   const isSelectRunCancel = () => {
-    setIsSelectRunModalVisible(false);
-  };
+    setIsSelectRunModalVisible(false)
+  }
   // 提交任务modal
-  const [submitModalVisible, setSubmitModalVisible] = useState(false);
-  const [isSubmitModalLoading, setIsSubmitModalLoading] = useState(false);
-  const [form] = Form.useForm();
-  const { Option } = Select;
+  const [submitModalVisible, setSubmitModalVisible] = useState(false)
+  const [isSubmitModalLoading, setIsSubmitModalLoading] = useState(false)
+  const [form] = Form.useForm()
+  const { Option } = Select
   // 获取计算机列表
-  const [computerList, setComputerList] = useState([]);
+  const [computerList, setComputerList] = useState([])
   const getComListFn = async () => {
-    const formData = new FormData();
-    formData.append("filter", JSON.stringify({ update_code: -1 }));
-    const { data } = await getComList(formData);
+    const formData = new FormData()
+    formData.append("filter", JSON.stringify({ update_code: -1 }))
+    const { data } = await getComList(formData)
     // 老板要求前端加一个数据 看见别慌
     setComputerList([
       ...data.com_list,
@@ -1026,45 +1010,45 @@ function App() {
           qubits_number: 20,
         },
       ],
-    ]);
-  };
+    ])
+  }
   const getComListOpts = computerList.map((item) => (
     <Option value={item.chip_name} key={item.chip_id}>
       {item.chip_name}
     </Option>
-  ));
+  ))
   // 加载项目
   const loadProFn = async () => {
     if (!optionList.length) {
-      const arr = [projectName];
-      setOptionList(arr);
-      selectChange(arr[0]);
+      const arr = [projectName]
+      setOptionList(arr)
+      selectChange(arr[0])
     }
-    const formData = new FormData();
-    formData.append("project_id", projectId);
-    const { data } = await loadPro(formData);
+    const formData = new FormData()
+    formData.append("project_id", projectId)
+    const { data } = await loadPro(formData)
     if (JSON.stringify(data.code) !== "{}") {
-      const arr = JSON.parse(JSON.stringify(optionList));
+      const arr = JSON.parse(JSON.stringify(optionList))
       for (const key in data.code) {
-        arr.unshift(key);
-        newFile[key] = data.code[key];
+        arr.unshift(key)
+        newFile[key] = data.code[key]
       }
-      setOptionList(arr);
-      selectChange(arr[0]);
+      setOptionList(arr)
+      selectChange(arr[0])
     }
-  };
+  }
   useEffect(() => {
-    getComListFn();
+    getComListFn()
     if (projectId) {
-      loadProFn();
+      loadProFn()
     }
-  }, []);
+  }, [])
 
   const submitTaskModal = () => {
     // 在集群模式下可以select框可以多选
-    let ismodern = "";
+    let ismodern = ""
     if (runValue == "sqcg_cluster") {
-      ismodern = "multiple";
+      ismodern = "multiple"
     }
     return (
       <Modal
@@ -1106,28 +1090,29 @@ function App() {
           </Form.Item>
         </Form>
       </Modal>
-    );
-  };
+    )
+  }
   const isSubmitOk = () => {
     form.validateFields().then((value) => {
-      runProgram(Number(value.sample));
-    });
-  };
+      runProgram(Number(value.sample))
+    })
+  }
   const isSubmitCancel = () => {
-    form.resetFields();
-    setSubmitModalVisible(false);
-  };
+    form.resetFields()
+    setSubmitModalVisible(false)
+  }
   // 分析模式
-  const [isAnlysis, setIsAnlysis] = useState(false);
+  const [isAnlysis, setIsAnlysis] = useState(false)
   // 切换成分析模式
   const changeIsAnlysis = () => {
-    setIsAnlysis(true);
-  };
+    setIsAnlysis(true)
+  }
+
   return (
     <Layout isIde={true}>
       {/* <ComponentTitle name={'IDE'}></ComponentTitle> */}
       {leftOperations()}
-      <div className="App">
+      <div className="App" style={{ backgroundColor: backcolor }}>
         <div
           className="left-div"
           style={{
@@ -1137,7 +1122,7 @@ function App() {
           }}
         >
           <Ace
-          changCircuit={changCircuit}
+            changCircuit={changCircuit}
             changeIsAnlysis={changeIsAnlysis}
             runProgram={dispathRun}
             runProgramName={runProgramName}
@@ -1159,7 +1144,7 @@ function App() {
           }}
         >
           {isAnlysis ? (
-            <Analysis radarData={radarData} circuitType={circuitType} changCircuit={changCircuit}  runProgram={runProgram} circuitPreditt={circuitPreditt} CircuitAnalysisData={CircuitAnalysisData}  parameter={(parameterData)=>setParameter(parameterData)}/>
+            <AnalysisCircuitPage analysisQc={analysisQc} />
           ) : (
             <Right
               isShowBMode={isShowBMode}
@@ -1181,7 +1166,7 @@ function App() {
       {submitTaskModal()}
       {newCaseModal()}
     </Layout>
-  );
+  )
 }
 
-export default App;
+export default App
