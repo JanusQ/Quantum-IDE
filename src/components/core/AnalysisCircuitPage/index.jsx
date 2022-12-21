@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from "react"
 import {
-  Radio,
   Checkbox,
   Button,
   Drawer,
@@ -10,8 +9,12 @@ import {
   Input,
   Select,
   message,
+  Tooltip,
+  Dropdown,
+  Menu,
+  Card,
 } from "antd"
-import { SettingOutlined } from "@ant-design/icons"
+import { InfoCircleOutlined } from "@ant-design/icons"
 import * as echarts from "echarts"
 import AnalysisCircuit from "./components/AnalysisCircuit"
 import NormalCircuit from "./components/NormalCircuit"
@@ -19,17 +22,18 @@ import RealeCircuit from "../RealeCircuit"
 import RadarChart from "./components/RadarChart"
 import styles from "./index.module.scss"
 import QCEngine from "../../../simulator/MyQCEngine"
-import {  circuitBug,
+import {
+  circuitBug,
   circuitAnalysis,
   circuitConfig,
-  circuitpredict, } from "../../../api/test_circuit"
+  circuitpredict,
+} from "../../../api/test_circuit"
 import { getComList } from "../../../api/computer"
 import { useTranslation } from "react-i18next"
 import { useParams } from "react-router-dom"
 // import { useSelector } from "react-redux"
 // import { submitTask } from "@/api/test_circuit"
 export default function AnalysisCircuitPage(props) {
-  // const { userData } = useSelector((store) => store.userData)
   const { projectName, projectId } = useParams()
   const { t } = useTranslation()
   const [form] = Form.useForm()
@@ -38,6 +42,10 @@ export default function AnalysisCircuitPage(props) {
   const Gates = props.analysisQc.circuit?.gates
   const [normalGates, setNormalGates] = useState([[]])
   const [qasm, setQasm] = useState(null)
+  // 切换显示的电路
+  const [changCircuitType, setchangCircuitType] = useState(false)
+  const [activeTabKey1, setActiveTabKey1] = useState("编译前电路")
+
   // 在提交后将页面切换为真机
   const [showReal, setShowReal] = useState(false)
   useEffect(() => {
@@ -47,42 +55,38 @@ export default function AnalysisCircuitPage(props) {
       qasm_ = props.analysisQc.export()
       setQasm(qasm_)
       setanalysisData(null)
-      setPredictData(null)
+      setPredictData(0.95)
       setBugGates([])
       setEateError(null)
+      setchangCircuitType(false)
+      setActiveTabKey1("编译前电路")
     }
   }, [Gates, props])
-  
+
   // bug检测
   const [bugGates, setBugGates] = useState([])
   const bugClick = async () => {
     try {
-      if(qasm!==null){
-        const {
-          data
-        } = await circuitBug({ qasm: qasm })
+      if (qasm !== null) {
+        const { data } = await circuitBug({ qasm: qasm })
         setBugGates(data.bug_positions)
         message.success("检测成功", 1)
-      }else{
+      } else {
         message.error("请先运行项目代码", 1)
-
       }
-    
     } catch (error) {
       message.error("检测失败", 1)
     }
   }
-  // 确认分析
+  // 编译
   const [analysisData, setanalysisData] = useState(null)
   // const [compiledQasm, setcompiledQasm] = useState(null)
   const analysisClick = async () => {
     setEateError(null)
 
     try {
-      if(qasm!==null){
-        const {
-          data
-        } = await circuitAnalysis({
+      if (qasm !== null) {
+        const { data } = await circuitAnalysis({
           parameter: {
             layout: layoutValue,
             routing: routing,
@@ -92,44 +96,42 @@ export default function AnalysisCircuitPage(props) {
           coms: computer,
           qasm: qasm,
         })
-        console.log(data,8888);
+        // console.log(data, 6688)
         setanalysisData(data.compiled_qc.qasm)
-        message.success("分析成功", 1)
-      }else{
+        setchangCircuitType(true)
+        setActiveTabKey1("编译后电路")
+        message.success("编译成功", 1)
+      } else {
         message.error("请先运行项目代码", 1)
-
       }
-    
     } catch (error) {
-      message.error("分析失败", 1)
+      message.error("编译失败", 1)
     }
   }
-  // 噪音预测
+  // 噪音
   const [gateError, setEateError] = useState(null)
   const [predictData, setPredictData] = useState(0.95)
   const [raderData, setRaderData] = useState([])
   const predictClick = async () => {
     try {
       if (analysisData !== null) {
-        const {
-          data
-        } =await circuitpredict({ qasm: analysisData })
+        const { data } = await circuitpredict({ qasm: analysisData })
         setEateError(data.gate_errors)
         setPredictData(data.circuit_predict)
-        if(raderData.length===5){
-          let rader=raderData
-          rader[4]=data.circuit_predict
+        if (raderData.length === 5) {
+          let rader = raderData
+          rader[4] = data.circuit_predict
           setRaderData(raderData)
-          console.log(rader,55);
+          // console.log(rader, 55)
         }
-     
+
         // setRaderData(rader)
         // console.log(rader,55555555555555555555);
         message.success("预测成功", 1)
 
-        console.log(data, 888)
+        // console.log(data, 888)
       } else {
-        message.error("请先分析")
+        message.error("请先编译")
       }
     } catch (error) {}
   }
@@ -159,20 +161,22 @@ export default function AnalysisCircuitPage(props) {
     // form.resetFields()
   }
   // 获取计算机列表
-  const [computerList, setComputerList] = useState([])
-  const getComListFn = async () => {
-    const formData = new FormData()
-    formData.append("filter", JSON.stringify({ update_code: -1 }))
-    const { data } = await getComList(formData)
-    setComputerList(data.com_list)
-  }
+  // const [computerList, setComputerList] = useState([])
+  // const getComListFn = async () => {
+  //   const formData = new FormData()
+  //   formData.append("filter", JSON.stringify({ update_code: -1 }))
+  //   const { data } = await getComList(formData)
+  //   console.log(data, 88888)
+  //   setComputerList(data.data.com_list)
+  // }
 
-  useEffect(() => {
-    // 获取计算机列表
+  // useEffect(() => {
+  //   // 获取计算机列表
 
-    getComListFn()
-  }, [])
+  //   getComListFn()
+  // }, [])
   // 分析配置
+  const computerList = ["N36U19_0", "N36U19_1", "N36U19"]
   const LayoutData = ["trivial", "dense", "noise_adaptive", "sabre"]
   const RoutingData = ["basic", "lookahead", "stochastic", "sabre", "toqm"]
   const TranslationData = ["unroller", "translator", "synthesis"]
@@ -239,55 +243,265 @@ export default function AnalysisCircuitPage(props) {
       coms: computer,
     }
     try {
-      const {
-        data
-      } = await circuitConfig(configData)
-      let rader =[...data.rader_data.score,predictData]
+      const { data } = await circuitConfig(configData)
+      let rader = [...data.rader_data.score, predictData]
       setRaderData(rader)
-      message.success('提交成功',1)
+      message.success("提交成功", 1)
       setOpen(false)
     } catch (error) {
-      message.error('提交失败',1)
+      message.error("提交失败", 1)
     }
-   
-
   }
- 
+  const onTab1Change = (key) => {
+    setActiveTabKey1(key)
+    // console.log(key, "key")
+    if (key == "编译前电路") {
+      setchangCircuitType(false)
+    } else if ((key = "编译后电路")) {
+      setchangCircuitType(true)
+    }
+  }
+  const tabList = [
+    {
+      key: "编译前电路",
+      tab: "编译前电路",
+    },
+    {
+      key: "编译后电路",
+      tab: "编译后电路",
+    },
+  ]
+  const contentList = {
+    编译前电路: <NormalCircuit bugGates={bugGates} normalGates={normalGates} />,
+    编译后电路: (
+      <AnalysisCircuit
+        predictData={predictData}
+        gateError={gateError}
+        analysisData={analysisData}
+      />
+    ),
+  }
   return (
     <>
       <div className={styles.root}>
-        <div className="opearation">
-          <div>
-            <Button onClick={setClick}>编译设置</Button>
-            <Button onClick={bugClick}>bug检测</Button>
-            <Button onClick={analysisClick} analysis>
-              确认分析
-            </Button>
-            <Button onClick={predictClick}>噪音预测</Button>
-            <Button onClick={submitClick}>提交</Button>
-            {showReal ? (
-              <Button onClick={() => setShowReal(false)}>返回analysis</Button>
-            ) : (
-              ""
-            )}
-          </div>
-        </div>
         {showReal ? (
           <RealeCircuit />
         ) : (
           <div className="circuit">
             <div className="Circuit_top">
               <div className="normalCircuit">
-                {/* <p>分析前</p> */}
-                <NormalCircuit bugGates={bugGates} normalGates={normalGates} />
+                {/* <p>分析前</p>
+                {changCircuitType ? (
+                  <AnalysisCircuit
+                    predictData={predictData}
+                    gateError={gateError}
+                    analysisData={analysisData}
+                  />
+                ) : (
+                  <NormalCircuit
+                    bugGates={bugGates}
+                    normalGates={normalGates}
+                  />
+                )} */}
+                <Card
+                  bordered={false}
+                  style={{
+                    width: "100%",
+                  }}
+                  extra={
+                    !changCircuitType ? (
+                      <Button onClick={bugClick}>bug检测</Button>
+                    ) : (
+                      <Button onClick={predictClick}>噪音</Button>
+                    )
+                  }
+                  tabList={tabList}
+                  activeTabKey={activeTabKey1}
+                  onTabChange={(key) => {
+                    onTab1Change(key)
+                  }}
+                >
+                  {contentList[activeTabKey1]}
+                </Card>
               </div>
               <div className="radom">
-                <RadarChart raderData={raderData}/>
+                <RadarChart raderData={raderData} />
               </div>
             </div>
             <div className="Circuit_down">
               <div className="analysisCircuit">
-                <AnalysisCircuit predictData={predictData} gateError={gateError} analysisData={analysisData} />
+                <Button onClick={submitConfig}>提交配置</Button>
+                {!changCircuitType ? (
+                  <Button onClick={analysisClick}>编译</Button>
+                ) : (
+                  ""
+                )}
+                <div className="config">
+                  <div className="optimized">
+                    <div className="header">
+                      <span>chips</span>
+                      <div className="icon">
+                        <Tooltip
+                          placement="topLeft"
+                          title="Here you can choose which quantum chip your circuit would use.
+"
+                        >
+                          <InfoCircleOutlined />
+                        </Tooltip>
+                      </div>
+                    </div>
+                    <div className="selectOptimizeda">
+                      {/* <Radio.Group onChange={onChangeComputerList} value={computer[0]}>
+              {computerList.map((item, index) => (
+                <div key={index}>
+                  <Radio
+                    onClick={() => cancle("computer")}
+                    value={item.chip_name}
+                  >
+                    {item.chip_name}
+                  </Radio>
+                </div>
+              ))}
+            </Radio.Group> */}
+                      {computerList.map((item, index) => (
+                        <div key={index} className="selectList">
+                          <div
+                            className={computer[0] === item ? "select" : ""}
+                            onClick={() => onClickComputer(item)}
+                          >
+                            {item}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="optimized">
+                    <div className="header">
+                      <span>layout</span>
+                      <div className="icon">
+                        <Tooltip
+                          placement="topLeft"
+                          title="This method defines the initial layout for your quantum circuit.
+"
+                        >
+                          <InfoCircleOutlined />
+                        </Tooltip>
+                      </div>
+                    </div>
+                    <div className="selectOptimizeda">
+                      {LayoutData.map((item, index) => (
+                        <div key={index} className="selectList">
+                          <div
+                            className={layoutValue[0] === item ? "select" : ""}
+                            onClick={() => onClickLayout(item, index)}
+                          >
+                            {item}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="optimized">
+                    <div className="header">
+                      <span>routing</span>
+                      <div className="icon">
+                        <Tooltip
+                          placement="topLeft"
+                          title="This method defines which swap method to use for those two-qubits gates on qubits that are not directly linked.
+"
+                        >
+                          <InfoCircleOutlined />
+                        </Tooltip>
+                      </div>
+                    </div>
+                    <div className="selectOptimizeda">
+                      {/* <Radio.Group onChange={onChangeRouting} value={routing[0]}>
+              {RoutingData.map((item, index) => (
+                <div key={index}>
+                  <Radio onClick={() => cancle("routing")} value={item}>
+                    {item}
+                  </Radio>
+                </div>
+              ))}
+            </Radio.Group> */}
+                      {RoutingData.map((item, index) => (
+                        <div key={index} className="selectList">
+                          <div
+                            className={routing[0] === item ? "select" : ""}
+                            onClick={() => onClickRouting(item)}
+                          >
+                            {item}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="optimized">
+                    <div className="header">
+                      <span>translation</span>
+                      <div className="icon">
+                        <Tooltip
+                          placement="topLeft"
+                          title="This method defines how the advanced gates decomposed to basic gates.
+"
+                        >
+                          <InfoCircleOutlined />
+                        </Tooltip>
+                      </div>
+                    </div>
+                    <div className="selectOptimizeda">
+                      {/* <Radio.Group onChange={onChangeTranslation} value={translation[0]}>
+              {TranslationData.map((item, index) => (
+                <div key={index}>
+                  <Radio onClick={() => cancle("translation")} value={item}>
+                    {item}
+                  </Radio>
+                </div>
+              ))}
+            </Radio.Group> */}
+                      {TranslationData.map((item, index) => (
+                        <div key={index} className="selectList">
+                          <div
+                            className={translation[0] === item ? "select" : ""}
+                            onClick={() => onClickTranslation(item)}
+                          >
+                            {item}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="optimized">
+                    <div className="header">
+                      <span>optimization</span>
+                      <div className="icon">
+                        <Tooltip
+                          placement="topLeft"
+                          title="These methods are post-processing optimization for your quantum circuit. You can have multiple choices."
+                        >
+                          <InfoCircleOutlined />
+                        </Tooltip>
+                      </div>
+                    </div>
+                    <div className="selectOptimized">
+                      <Checkbox.Group
+                        value={optimization}
+                        options={optimizationData}
+                        onChange={onChangeOptimization}
+                      ></Checkbox.Group>
+                      {/* {optimizationData.map((item, index) => (
+              <div key={index} className="selectList">
+                <div
+                  className={optimization[index] === item ? "select" : ""}
+                  onClick={() => onClickOptimization(item, index)}
+                >
+                  {item}
+                </div>
+              </div>
+            ))} */}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -357,7 +571,9 @@ export default function AnalysisCircuitPage(props) {
             <div className="header">
               <span>coms</span>
               <div className="icon">
-                <SettingOutlined />
+                <Tooltip placement="topLeft" title={8888}>
+                  <InfoCircleOutlined />
+                </Tooltip>
               </div>
             </div>
             <div className="selectOptimizeda">
@@ -389,7 +605,9 @@ export default function AnalysisCircuitPage(props) {
             <div className="header">
               <span>layout</span>
               <div className="icon">
-                <SettingOutlined />
+                <Tooltip placement="topLeft" title={8888}>
+                  <InfoCircleOutlined />
+                </Tooltip>
               </div>
             </div>
             <div className="selectOptimizeda">
@@ -409,7 +627,9 @@ export default function AnalysisCircuitPage(props) {
             <div className="header">
               <span>routing</span>
               <div className="icon">
-                <SettingOutlined />
+                <Tooltip placement="topLeft" title={8888}>
+                  <InfoCircleOutlined />
+                </Tooltip>
               </div>
             </div>
             <div className="selectOptimizeda">
@@ -438,7 +658,9 @@ export default function AnalysisCircuitPage(props) {
             <div className="header">
               <span>translation</span>
               <div className="icon">
-                <SettingOutlined />
+                <Tooltip placement="topLeft" title={8888}>
+                  <InfoCircleOutlined />
+                </Tooltip>
               </div>
             </div>
             <div className="selectOptimizeda">
@@ -467,7 +689,9 @@ export default function AnalysisCircuitPage(props) {
             <div className="header">
               <span>optimization</span>
               <div className="icon">
-                <SettingOutlined />
+                <Tooltip placement="topLeft" title={8888}>
+                  <InfoCircleOutlined />
+                </Tooltip>
               </div>
             </div>
             <div className="selectOptimized">

@@ -1,7 +1,6 @@
 .root {
   height: 100%;
   width: 100%;
-  background-color: #fff;
   overflow: hidden;
   overflow-y: scroll;
   :global {
@@ -14,7 +13,7 @@
       padding-right: 40px;
       margin-top: 5px;
       div {
-        width: 500px;
+        // width: 500px;
         .ant-btn {
           margin-right: 10px;
         }
@@ -22,7 +21,7 @@
     }
     .circuit {
       .Circuit_top {
-        height: 50%;
+        height: 40%;
         display: flex;
         .normalCircuit {
           flex: 2;
@@ -30,10 +29,19 @@
           height: 340px;
           display: inline-block;
           border: 1px solid rgba(235, 235, 235);
+          // overflow: hidden;
+          // overflow-y: scroll;
+          .ant-card {
+            height: 340px;
+
+            .ant-card-body {
+              padding: 0px;
+            }
+          }
           .circuitDiv {
             // width: 800px;
             width: 100%;
-            height: 340px;
+            height: 280px;
             overflow: hidden;
             overflow-y: scroll;
             overflow-x: scroll;
@@ -43,27 +51,109 @@
         .radom {
           flex: 1;
           width: 30%;
-          height: 340px;
+          height: 380px;
           margin-left: 10px;
           display: inline-block;
           border: 1px solid rgba(235, 235, 235);
+          .opearation {
+            // width: 100%;
+            height: 40px;
+            vertical-align: top;
+            padding-right: 40px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            // border: 1px solid rgba(235, 235, 235);
+            div {
+              // width: 500px;
+              .ant-btn {
+                margin-right: 10px;
+              }
+            }
+          }
           .radarChart {
-            width: 100%;
+            height: 340px;
             height: 100%;
             transform: scale(0.9);
+            // border: 1px solid rgba(235, 235, 235);
           }
         }
       }
       .Circuit_down {
-        height: 320px;
+        height: 340px;
+        margin-top: 50px;
         .analysisCircuit {
           width: 100%;
-          height: 320px;
-          overflow: hidden;
-          overflow-y: scroll;
-          overflow-x: scroll;
-          display: inline-block;
+          // height: 50%;
           border: 1px solid rgba(235, 235, 235);
+          .ant-btn {
+            margin-top: 10px;
+            margin-left: 10px;
+          }
+          .config {
+            display: flex;
+            margin-top: 10px;
+            .optimized {
+              flex: 1;
+              width: 150px;
+              height: 200px;
+              display: inline-block;
+              border: 1px solid;
+              background-color: #f5f5f5;
+              vertical-align: top;
+              margin-left: 10px;
+              // margin-right: 50px;
+              // margin-bottom: 50px;
+              .selectOptimized {
+                margin-top: 10px;
+                margin-left: 10px;
+                .ant-radio-group-outline {
+                  margin-left: 10px;
+                  div {
+                    border: 1px;
+                  }
+                  div:hover {
+                    border: 1px solid #1890ff;
+                    background-color: #1890ff;
+                    border-radius: 10px;
+                  }
+                }
+              }
+              .selectOptimizeda {
+                .selectList {
+                  margin-top: 10px;
+                  div {
+                    cursor: pointer;
+                    margin-left: 10px;
+                    margin-right: 10px;
+                    margin-bottom: 10px;
+                    padding-left: 10px;
+                  }
+                  div:hover {
+                    // background-color: #1890ff;
+                    border: 1px solid #1890ff;
+                    border-radius: 10px;
+                  }
+                  .select {
+                    background-color: #1890ff;
+                    border-radius: 10px;
+                  }
+                }
+              }
+              .header {
+                width: 100%;
+                display: inline-block;
+                padding-right: 5px;
+                span {
+                  margin-left: 10px;
+                  font-weight: 700;
+                  font-size: 15px;
+                }
+                .icon {
+                  float: right;
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -74,7 +164,7 @@
             .ant-drawer-body {
               .optimized {
                 width: 220px;
-                height: 220px;
+                height: 150px;
                 display: inline-block;
                 border: 1px solid;
                 background-color: #f5f5f5;

@@ -6,16 +6,15 @@ export default function Circuit(props) {
   let svgHeight = 350
   let gateLine = []
   let gates1 = []
-  let gateError=false
+  let gateError = false
   let precent = false
-  let maxColor =false
-  if(props.gateError){
-    gateError=props.gateError
-    maxColor = Math.max(...gateError.flat());
-    precent=[]
-    for (let i = 0; i <5; i++) {
-      precent.push(Math.round(maxColor*i/5*10000)/100)
-      
+  let maxColor = false
+  if (props.gateError) {
+    gateError = props.gateError
+    maxColor = Math.max(...gateError.flat())
+    precent = []
+    for (let i = 0; i < 5; i++) {
+      precent.push(Math.round(((maxColor * i) / 5) * 10000) / 100)
     }
   }
   if (props.gates?.length > 1) {
@@ -43,13 +42,12 @@ export default function Circuit(props) {
       }
     }
     // 当父组件传过来一个gateError属性时 把这个数据加到gates里面
-    if(gateError){
+    if (gateError) {
       for (let i = 0; i < gates1.length; i++) {
         for (let j = 0; j < gates1[1].length; j++) {
           if (gates1[i][j] && gateError[i]) {
-            const operation = gates1[i][j];
-            operation.gate_error = gateError[i][j];
-  
+            const operation = gates1[i][j]
+            operation.gate_error = gateError[i][j]
           }
         }
       }
@@ -57,9 +55,8 @@ export default function Circuit(props) {
     for (let i = 0; i < gates1.length; i++) {
       for (let j = 0; j < gates1[1].length; j++) {
         if (gates1[i][j] && gateError[i]) {
-          const operation = gates1[i][j];
-          operation.gate_error = gateError[i][j];
-
+          const operation = gates1[i][j]
+          operation.gate_error = gateError[i][j]
         }
       }
     }
@@ -117,10 +114,10 @@ export default function Circuit(props) {
     for (var i = 0; i < ccc.length; i++) {
       var ai = ccc[i]
       if (!map[ai.id]) {
-        let lineColor = 'rgb(0, 45, 156)'
-        if(ai.gate_error!==undefined){
-            // 计算渐变色
-          lineColor=getColorByBaiFenBi(ai.gate_error/maxColor)
+        let lineColor = "rgb(0, 45, 156)"
+        if (ai.gate_error !== undefined) {
+          // 计算渐变色
+          lineColor = getColorByBaiFenBi(ai.gate_error / maxColor)
         }
         gateLine.push({
           id: ai.id,
@@ -129,7 +126,7 @@ export default function Circuit(props) {
           options: ai.options,
           x: ai.x,
           lineArr: [{ line: ai.line }],
-          lineColor
+          lineColor,
         })
         map[ai.id] = ai.id
       } else {
@@ -158,52 +155,77 @@ export default function Circuit(props) {
           fill="transparent"
         ></rect>
         {/* 渐变块 */}
-        <text fill="rgb(0, 45, 156)" x='100' y='15'>{props.isAnalysis}</text>
-        {precent? precent.map((item,index)=>(
-             < text x='34' key={index} y={200-index*37}>{item}%</text>
-      )):''}
-        {precent?<foreignObject x="2" y="40" width="32" height="160">
-      <div  style={{width:30,height:160,backgroundImage: 'linear-gradient(to top, rgba(126, 191, 236),rgba(254, 236, 218), rgba(237, 97, 69))'}}></div>
-     </foreignObject>:''}
-     {props.predictData ? <text  x='10' y='25'>predict:{ Math.round( props.predictData*100)/100||''}</text>:''}
+        {/* <text fill="rgb(0, 45, 156)" x='100' y='15'>{props.isAnalysis}</text> */}
+        {precent
+          ? precent.map((item, index) => (
+              <text x="34" key={index} y={200 - index * 37}>
+                {item}%
+              </text>
+            ))
+          : ""}
+        {precent ? (
+          <foreignObject x="2" y="40" width="32" height="160">
+            <div
+              style={{
+                width: 30,
+                height: 160,
+                backgroundImage:
+                  "linear-gradient(to top, rgba(126, 191, 236),rgba(254, 236, 218), rgba(237, 97, 69))",
+              }}
+            ></div>
+          </foreignObject>
+        ) : (
+          ""
+        )}
+        {gateError ? (
+          <text x="10" y="25">
+            predict:{Math.round(props.predictData * 100) / 100 || ""}
+          </text>
+        ) : (
+          ""
+        )}
 
-     <g transform='translate(20)'>
-        {gates1.map((qubit, index) => (
-          <g
-            key={index}
-            transform={`translate(60,${20 + index * 40 ? index * 40 : 0})`}
-          >
-            <line
-              className="qubit"
-              strokeWidth="2"
-              x1="30"
-              y1="40"
-              x2={
-                qubit.length * 40 + 100 > 1060 ? qubit.length * 40 + 50 : 1060
-              }
-              y2="40"
-              data-dis="0"
-              stroke="#C4C4C4"
-            ></line>
-          </g>
-        ))}
-        {gateLine.map((item, index) => (
-          <g key={index}>
-            <line
-              x1={16 + 40 * item.col + 95}
-              y1={item.lineArr[0].line * 40 + 40}
-              x2={16 + 40 * item.col + 95}
-              y2={item.lineArr[item.lineArr.length - 1].line * 40 + 40}
-              strokeWidth="1.25"
-              stroke={item.lineColor}
+        <g transform="translate(20)">
+          {gates1.map((qubit, index) => (
+            <g
+              key={index}
+              transform={`translate(60,${20 + index * 40 ? index * 40 : 0})`}
+            >
+              <line
+                className="qubit"
+                strokeWidth="2"
+                x1="30"
+                y1="40"
+                x2={
+                  qubit.length * 40 + 100 > 1060 ? qubit.length * 40 + 50 : 1060
+                }
+                y2="40"
+                data-dis="0"
+                stroke="#C4C4C4"
               ></line>
-          </g>
-        ))}
-        {gates1.map((qubit, index) => (
-          <Qubit maxColor={maxColor} key={index} index={index} gates={qubit}></Qubit>
-        ))}
-              </g>
-
+            </g>
+          ))}
+          {gateLine.map((item, index) => (
+            <g key={index}>
+              <line
+                x1={16 + 40 * item.col + 95}
+                y1={item.lineArr[0].line * 40 + 40}
+                x2={16 + 40 * item.col + 95}
+                y2={item.lineArr[item.lineArr.length - 1].line * 40 + 40}
+                strokeWidth="1.25"
+                stroke={item.lineColor}
+              ></line>
+            </g>
+          ))}
+          {gates1.map((qubit, index) => (
+            <Qubit
+              maxColor={maxColor}
+              key={index}
+              index={index}
+              gates={qubit}
+            ></Qubit>
+          ))}
+        </g>
       </svg>
     </div>
   )

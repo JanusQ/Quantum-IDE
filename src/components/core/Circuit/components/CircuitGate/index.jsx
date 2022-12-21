@@ -127,11 +127,11 @@ export default function Gate(props) {
             gate1.bug?<g  transform="translate(13,-16)"> <text fontSize={16} fill="blue">*</text> </g>:''
           } */}
           {gate1.bug ? (
-            <g transform="translate(5,45)">
+            <g transform="translate(7,45)">
               {/* <circle
                 r="10"
                 strokeWidth={1}
-                stroke="red"
+                stroke="red"5
                 fill="transparent"
               ></circle> */}
               <text fontSize={30} fill="red">
