@@ -7,13 +7,11 @@
     height: 100%;
     width: 100%;
     .opearation {
-      // width: 100%;
       height: 40px;
       vertical-align: top;
       padding-right: 40px;
       margin-top: 5px;
       div {
-        // width: 500px;
         .ant-btn {
           margin-right: 10px;
         }
@@ -21,7 +19,7 @@
     }
     .circuit {
       .Circuit_top {
-        height: 40%;
+        height: 50%;
         display: flex;
         .normalCircuit {
           flex: 2;
@@ -29,10 +27,26 @@
           height: 340px;
           display: inline-block;
           border: 1px solid rgba(235, 235, 235);
-          // overflow: hidden;
-          // overflow-y: scroll;
           .ant-card {
             height: 340px;
+            .ant-card-head {
+              position: relative;
+              .ant-card-head-wrapper {
+                .ant-card-extra {
+                  position: absolute;
+                  left: 231px;
+                  top: -1px;
+                  z-index: 999;
+                }
+              }
+              .ant-tabs {
+                .ant-tabs-nav {
+                  .ant-tabs-nav-wrap {
+                    position: relative;
+                  }
+                }
+              }
+            }
 
             .ant-card-body {
               padding: 0px;
@@ -78,9 +92,14 @@
           }
         }
       }
+      .predict {
+        position: absolute;
+        left: 700px;
+        top: 60px;
+      }
       .Circuit_down {
-        height: 340px;
-        margin-top: 50px;
+        height: 50%;
+        // margin-top: 50px;
         .analysisCircuit {
           width: 100%;
           // height: 50%;
@@ -97,8 +116,9 @@
               width: 150px;
               height: 200px;
               display: inline-block;
-              border: 1px solid;
-              background-color: #f5f5f5;
+              border: 1px solid rgba(235, 235, 235);
+              border-radius: 5px;
+              background-color: rgb(234, 239, 245);
               vertical-align: top;
               margin-left: 10px;
               // margin-right: 50px;

@@ -122,14 +122,9 @@ export default function AnalysisCircuitPage(props) {
           let rader = raderData
           rader[4] = data.circuit_predict
           setRaderData(raderData)
-          // console.log(rader, 55)
         }
 
-        // setRaderData(rader)
-        // console.log(rader,55555555555555555555);
         message.success("预测成功", 1)
-
-        // console.log(data, 888)
       } else {
         message.error("请先编译")
       }
@@ -177,9 +172,9 @@ export default function AnalysisCircuitPage(props) {
   // }, [])
   // 分析配置
   const computerList = ["N36U19_0", "N36U19_1", "N36U19"]
-  const LayoutData = ["trivial", "dense", "noise_adaptive", "sabre"]
-  const RoutingData = ["basic", "lookahead", "stochastic", "sabre", "toqm"]
-  const TranslationData = ["unroller", "translator", "synthesis"]
+  const LayoutData = ["Trivial", "Dense", "Noise_adaptive", "Sabre"]
+  const RoutingData = ["Basic", "Lookahead", "Stochastic", "Sabre", "Toqm"]
+  const TranslationData = ["Unroller", "Translator", "Synthesis"]
   const optimizationData = [
     "GatesOptimize",
     "CXCancellation",
@@ -200,6 +195,7 @@ export default function AnalysisCircuitPage(props) {
     } else {
       setComputer([value])
     }
+    submitConfig()
   }
   const onClickLayout = (value) => {
     if (value == layoutValue) {
@@ -207,6 +203,7 @@ export default function AnalysisCircuitPage(props) {
     } else {
       setLayoutValue([value])
     }
+    submitConfig()
   }
   const onClickRouting = (value) => {
     if (value == routing) {
@@ -214,6 +211,7 @@ export default function AnalysisCircuitPage(props) {
     } else {
       setRouting([value])
     }
+    submitConfig()
   }
   const onClickTranslation = (value) => {
     if (value == translation) {
@@ -221,10 +219,12 @@ export default function AnalysisCircuitPage(props) {
     } else {
       setTranslation([value])
     }
+    submitConfig()
   }
   const onChangeOptimization = (list) => {
     // console.log("radio checked", e.target.value);
     setOptimization(list)
+    submitConfig()
   }
   // 提交配置
   // 抽屉开关
@@ -312,7 +312,7 @@ export default function AnalysisCircuitPage(props) {
                     !changCircuitType ? (
                       <Button onClick={bugClick}>bug检测</Button>
                     ) : (
-                      <Button onClick={predictClick}>噪音</Button>
+                      <Button onClick={predictClick}>噪音分析</Button>
                     )
                   }
                   tabList={tabList}
@@ -328,6 +328,13 @@ export default function AnalysisCircuitPage(props) {
                 <RadarChart raderData={raderData} />
               </div>
             </div>
+            {/* <div className="predict">
+              {!changCircuitType ? (
+                <Button onClick={bugClick}>bug检测</Button>
+              ) : (
+                <Button onClick={predictClick}>噪音分析</Button>
+              )}
+            </div> */}
             <div className="Circuit_down">
               <div className="analysisCircuit">
                 <Button onClick={submitConfig}>提交配置</Button>
@@ -339,7 +346,7 @@ export default function AnalysisCircuitPage(props) {
                 <div className="config">
                   <div className="optimized">
                     <div className="header">
-                      <span>chips</span>
+                      <span>芯片</span>
                       <div className="icon">
                         <Tooltip
                           placement="topLeft"
@@ -377,7 +384,7 @@ export default function AnalysisCircuitPage(props) {
                   </div>
                   <div className="optimized">
                     <div className="header">
-                      <span>layout</span>
+                      <span>布局算法</span>
                       <div className="icon">
                         <Tooltip
                           placement="topLeft"
@@ -403,7 +410,7 @@ export default function AnalysisCircuitPage(props) {
                   </div>
                   <div className="optimized">
                     <div className="header">
-                      <span>routing</span>
+                      <span>布线算法</span>
                       <div className="icon">
                         <Tooltip
                           placement="topLeft"
@@ -438,7 +445,7 @@ export default function AnalysisCircuitPage(props) {
                   </div>
                   <div className="optimized">
                     <div className="header">
-                      <span>translation</span>
+                      <span>门转换</span>
                       <div className="icon">
                         <Tooltip
                           placement="topLeft"
@@ -473,7 +480,7 @@ export default function AnalysisCircuitPage(props) {
                   </div>
                   <div className="optimized">
                     <div className="header">
-                      <span>optimization</span>
+                      <span>优化</span>
                       <div className="icon">
                         <Tooltip
                           placement="topLeft"

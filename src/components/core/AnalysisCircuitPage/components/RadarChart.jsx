@@ -1,7 +1,12 @@
 import React, { useState, useRef, useEffect } from "react"
-import * as echarts from "echarts"
+import * as echarts from "echarts/core"
+import { TitleComponent, LegendComponent } from "echarts/components"
+import { RadarChart } from "echarts/charts"
+import { CanvasRenderer } from "echarts/renderers"
 
-export default function RadarChart(props) {
+echarts.use([TitleComponent, LegendComponent, RadarChart, CanvasRenderer])
+
+export default function MyRadarChart(props) {
   const radarChart = useRef()
   const option = {
     title: {

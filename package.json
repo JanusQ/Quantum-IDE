@@ -77,7 +77,8 @@
     "sass": "^1.56.1",
     "sass-loader": "^12.3.0",
     "semver": "^7.3.5",
-    "source-map-loader": "^3.0.0",
+    "source-map-explorer": "^2.5.3",
+    "source-map-loader": "^4.0.1",
     "style-loader": "^3.3.1",
     "swiper": "^8.1.4",
     "tailwindcss": "^3.0.2",
@@ -91,7 +92,8 @@
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
-    "test": "node scripts/test.js"
+    "test": "node scripts/test.js",
+    "analyze": "source-map-explorer 'build/static/js/*.js'"
   },
   "eslintConfig": {
     "extends": [
