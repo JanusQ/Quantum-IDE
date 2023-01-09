@@ -1,17 +1,18 @@
-import React, { useState, useRef, useEffect, memo } from "react"
+import React, { useState, useRef, useEffect } from "react"
 import {
   Checkbox,
   Button,
+  Drawer,
+  Space,
   Modal,
   Form,
   Input,
   Select,
   message,
   Tooltip,
+  Dropdown,
+  Menu,
   Card,
-  Radio,
-  Table,
-  Tabs,
 } from "antd"
 import { InfoCircleOutlined } from "@ant-design/icons"
 import AnalysisCircuit from "./components/AnalysisCircuit"
@@ -30,9 +31,6 @@ import {
 import { getComList } from "../../../api/computer"
 import { useTranslation } from "react-i18next"
 import { useParams } from "react-router-dom"
-import ChipTable from "./components/Table/ChipTable"
-import LayoutTable from "./components/Table/LayoutTable"
-import { Provider, KeepAlive } from "react-keep-alive"
 // import { useSelector } from "react-redux"
 // import { submitTask } from "@/api/test_circuit"
 export default function AnalysisCircuitPage(props) {
@@ -292,10 +290,6 @@ export default function AnalysisCircuitPage(props) {
     ),
   }
   // config tab card
-  const [activeConfig, setactiveConfig] = useState("芯片")
-  const onConfigTabChange = (key) => {
-    setactiveConfig(key)
-  }
   const configTabList = [
     {
       key: "芯片",
@@ -318,362 +312,13 @@ export default function AnalysisCircuitPage(props) {
       tab: "优化",
     },
   ]
-  const columnsChips = [
-    {
-      title: "chip name",
-      dataIndex: "chipName",
-      render: (text) => <a>{text}</a>,
-    },
-    {
-      title: "description",
-      dataIndex: "description",
-    },
-    {
-      title: "qubit number",
-      dataIndex: "qubitNumber",
-    },
-    {
-      title: "chip topology",
-      dataIndex: "chipTopology",
-    },
-  ]
-  const dataChips = [
-    {
-      key: "1",
-      chipName: "N36U19_0",
-      description: "N36U19_0 is a part of N36U19 with chained 5 qubits ",
-      qubitNumber: 5,
-      chipTopology: "N36U19_0 is a part of N36U19 with chained 5 qubits",
-    },
-    {
-      key: "2",
-      chipName: "N36U19_1",
-      description: "N36U19_1 is a part of N36U19 with chained 5 qubits",
-      qubitNumber: 5,
-      chipTopology: "one dimension chain",
-    },
-    {
-      key: "3",
-      chipName: "N36U19",
-      description: "N36U19 is a 10 qubit chip with chained topologys ",
-      qubitNumber: 10,
-      chipTopology: "one dimension chain",
-    },
-  ]
-  const columnsLayout = [
-    {
-      title: "method name",
-      dataIndex: "methodName",
-      render: (text) => <a>{text}</a>,
-    },
-    {
-      title: "description",
-      dataIndex: "description",
-    },
-    {
-      title: "estimated cost time",
-      dataIndex: "time",
-    },
-  ]
-  const dataLayout = [
-    {
-      key: "1",
-      methodName: "Trivial",
-      description:
-        "Choose a Layout by assigning n circuit qubits to device qubits 0, .., n-1 using a simple round-robin order.",
-      time: "5s",
-    },
-    {
-      key: "2",
-      methodName: "Dense ",
-      description:
-        "Choose a Layout by finding the most connected subset of qubits.",
-      time: "5s",
-    },
-    {
-      key: "3",
-      methodName: "noise adapative",
-      description:
-        "Choose a noise-adaptive Layout based on current calibration data for the backend",
-      time: "5s",
-    },
-    {
-      key: "4",
-      methodName: "sabre",
-      description:
-        "Choose a Layout via iterative bidirectional routing of the input circuit. The algorithm iterates a number of times until it finds an initial_layout that reduces full routing cost.",
-      time: "5s",
-    },
-  ]
-  const columnsRouting = [
-    {
-      title: "method name",
-      dataIndex: "methodName",
-      render: (text) => <a>{text}</a>,
-    },
-    {
-      title: "description",
-      dataIndex: "description",
-    },
-    {
-      title: "estimated cost time",
-      dataIndex: "time",
-    },
-  ]
-  const dataRouting = [
-    {
-      key: "1",
-      methodName: "Basic",
-      description:
-        "The basic mapper is a minimum effort to insert swap gates to map the DAG onto a coupling map. it inserts one or more swaps in front to make all multi-qubits gates compatible.",
-      time: "5s",
-    },
-    {
-      key: "2",
-      methodName: "Lookahead ",
-      description:
-        "This algorithm searches through the available combinations of SWAP gates by means of a narrowed best first/beam search. Refer to https://medium.com/qiskit/improving-a-quantum-compiler-48410d7a7084.",
-      time: "5s",
-    },
-    {
-      key: "3",
-      methodName: "Stochastic",
-      description:
-        "This algorithm uses a randomized algorithm to map a DAGCircuit onto a coupling_map by adding swap gates.",
-      time: "5s",
-    },
-    {
-      key: "4",
-      methodName: "Sabre",
-      description:
-        "This algorithm starts from an initial layout of virtual qubits onto physical qubits, and iterates over the circuit DAG until all gates are exhausted, inserting SWAPs along the way. Refer to https://arxiv.org/pdf/1809.02573.pdf.",
-      time: "5s",
-    },
-  ]
-  const columnsTranslation = [
-    {
-      title: "method name",
-      dataIndex: "methodName",
-      render: (text) => <a>{text}</a>,
-    },
-    {
-      title: "description",
-      dataIndex: "description",
-    },
-    {
-      title: "estimated cost time",
-      dataIndex: "time",
-    },
-  ]
-  const dataTranslation = [
-    {
-      key: "1",
-      methodName: "Unroller",
-      description:
-        "Unroll non-basis, non-opaque instructions recursively to a desired basis, using decomposition rules defined for each instruction.",
-      time: "5s",
-    },
-    {
-      key: "2",
-      methodName: "Translator",
-      description:
-        "Translates gates to a target basis by searching for a set of translations from a given EquivalenceLibrary.",
-      time: "5s",
-    },
-    {
-      key: "3",
-      methodName: "Synthesis",
-      description:
-        "Synthesize gates according to their basis gates and synthesize unitaries over some basis gates. It can approximate 2-qubit unitaries given some approximation closeness measure. ",
-      time: "5s",
-    },
-    {
-      key: "4",
-      methodName: "Sabre",
-      description:
-        "This algorithm starts from an initial layout of virtual qubits onto physical qubits, and iterates over the circuit DAG until all gates are exhausted, inserting SWAPs along the way. Refer to https://arxiv.org/pdf/1809.02573.pdf.",
-      time: "5s",
-    },
-  ]
-  const dataOptimizations = [
-    {
-      key: "1",
-      methodName: "GatesOptimize",
-      description:
-        "Optimize chains of single-qubit u1, u2, u3 gates by combining them into a single gate.",
-      time: "5s",
-    },
-    {
-      key: "2",
-      methodName: "CXCancellation",
-      description: "Cancel back-to-back cx gates in dag. ",
-      time: "5s",
-    },
-    {
-      key: "3",
-      methodName: "OptimizeCliffords",
-      description:
-        "Combine consecutive Cliffords over the same qubits. This serves as an example of extra capabilities enabled by storing Cliffords natively on the circuit.",
-      time: "5s",
-    },
-    {
-      key: "4",
-      methodName: "GatesDecomposition",
-      description:
-        "Optimize chains of single-qubit gates by combining them into a single gate.",
-      time: "5s",
-    },
-    {
-      key: "5",
-      methodName: "CommutativeCancellation",
-      description:
-        "Cancel the redundant self-adjoint gates through commutation relations. The cancellation utilizes the commutation relations in the circuit. ",
-      time: "5s",
-    },
-    {
-      key: "6",
-      methodName: "DynamicDecoupling",
-      description:
-        "This method scans the circuit for idle periods of time and inserts a DD sequence of gates in those spots. These gates amount to the identity, so do not alter the logical action of the circuit, but have the effect of mitigating decoherence in those idle periods. ",
-      time: "5s",
-    },
-  ]
-  const chipSelection = {
-    onChange: (selectedRowKeys, selectedRows) => {
-      console.log(selectedRows[0].chipName)
-      setComputer([selectedRows[0].chipName])
-    },
-  }
-  const layoutSelection = {
-    onChange: (selectedRowKeys, selectedRows) => {
-      console.log(selectedRows[0].methodName)
-      setLayoutValue(selectedRows[0].methodName)
-    },
-  }
-  const routingSelection = {
-    onChange: (selectedRowKeys, selectedRows) => {
-      console.log(selectedRows[0].methodName)
-      setRouting(selectedRows[0].methodName)
-    },
-  }
-  const TranslationSelection = {
-    onChange: (selectedRowKeys, selectedRows) => {
-      console.log(selectedRows[0].methodName)
-      setTranslation(selectedRows[0].methodName)
-    },
-  }
-  const OptimizationsSelection = {
-    onChange: (selectedRowKeys, selectedRows) => {
-      console.log(selectedRows.methodName)
-      setRouting(selectedRows.methodName)
-      setLayoutValue(selectedRows.methodName)
-    },
-  }
-
   const configContentList = {
-    芯片: (
-      <div>
-        <ChipTable />
-      </div>
-    ),
-    布局算法: (
-      <div>
-        {/* <Table
-          pagination={{
-            position: ["none"],
-          }}
-          rowSelection={{
-            type: "radio",
-            ...layoutSelection,
-          }}
-          columns={columnsLayout}
-          dataSource={dataLayout}
-        /> */}
-        <LayoutTable />
-      </div>
-    ),
-    布线算法: (
-      <div key="buxian">
-        <Table
-          pagination={{
-            position: ["none"],
-          }}
-          rowSelection={{
-            type: "radio",
-            ...routingSelection,
-          }}
-          columns={columnsRouting}
-          dataSource={dataRouting}
-        />
-      </div>
-    ),
-    门转换: (
-      <div key="zhuanh">
-        <Table
-          pagination={{
-            position: ["none"],
-          }}
-          rowSelection={{
-            type: "radio",
-            ...TranslationSelection,
-          }}
-          columns={columnsLayout}
-          dataSource={dataTranslation}
-        />
-      </div>
-    ),
-    优化: (
-      <div>
-        <Table
-          pagination={{
-            position: ["none"],
-          }}
-          rowSelection={{
-            type: "checkbox",
-            ...OptimizationsSelection,
-          }}
-          columns={columnsLayout}
-          dataSource={dataOptimizations}
-        />
-      </div>
-    ),
+    芯片: <div>1</div>,
+    布局算法: <div>2</div>,
+    布线算法: <div>3</div>,
+    门转换: <div>4</div>,
+    优化: <div>5</div>,
   }
-  const configItems = [
-    {
-      label: `芯片`,
-      key: "1",
-      children: (
-        <Table
-          pagination={{
-            position: ["none"],
-          }}
-          rowSelection={{
-            type: "radio",
-            ...chipSelection,
-          }}
-          columns={columnsChips}
-          dataSource={dataChips}
-        />
-      ),
-    },
-    {
-      label: `布局算法`,
-      key: "2",
-      children: (
-        <Table
-          pagination={{
-            position: ["none"],
-          }}
-          rowSelection={{
-            type: "radio",
-            ...layoutSelection,
-          }}
-          columns={columnsLayout}
-          dataSource={dataLayout}
-        />
-      ),
-    },
-  ]
   return (
     <>
       <div className={styles.root}>
@@ -717,22 +362,170 @@ export default function AnalysisCircuitPage(props) {
                   ""
                 )}
                 <div className="config">
-                  {/* <Card
-                    style={{
-                      width: "100%",
-                    }}
-                    title="配置选项"
-                    tabList={configTabList}
-                    activeTabKey={activeConfig}
-                    onTabChange={onConfigTabChange}
+                  <div className="optimized">
+                    <div className="header">
+                      <span>芯片</span>
+                      <div className="icon">
+                        <Tooltip
+                          placement="topLeft"
+                          title="Here you can choose which quantum chip your circuit would use.
+"
+                        >
+                          <InfoCircleOutlined />
+                        </Tooltip>
+                      </div>
+                    </div>
+                    <div className="selectOptimizeda">
+                      {/* <Radio.Group onChange={onChangeComputerList} value={computer[0]}>
+              {computerList.map((item, index) => (
+                <div key={index}>
+                  <Radio
+                    onClick={() => cancle("computer")}
+                    value={item.chip_name}
                   >
-                    {configContentList[activeConfig]}
-                  </Card> */}
-                  <Tabs
-                    items={configItems}
-                    defaultActiveKey="1"
-                    centered
-                  ></Tabs>
+                    {item.chip_name}
+                  </Radio>
+                </div>
+              ))}
+            </Radio.Group> */}
+                      {computerList.map((item, index) => (
+                        <div key={index} className="selectList">
+                          <div
+                            className={computer[0] === item ? "select" : ""}
+                            onClick={() => onClickComputer(item)}
+                          >
+                            {item}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="optimized">
+                    <div className="header">
+                      <span>布局算法</span>
+                      <div className="icon">
+                        <Tooltip
+                          placement="topLeft"
+                          title="This method defines the initial layout for your quantum circuit.
+"
+                        >
+                          <InfoCircleOutlined />
+                        </Tooltip>
+                      </div>
+                    </div>
+                    <div className="selectOptimizeda">
+                      {LayoutData.map((item, index) => (
+                        <div key={index} className="selectList">
+                          <div
+                            className={layoutValue[0] === item ? "select" : ""}
+                            onClick={() => onClickLayout(item, index)}
+                          >
+                            {item}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="optimized">
+                    <div className="header">
+                      <span>布线算法</span>
+                      <div className="icon">
+                        <Tooltip
+                          placement="topLeft"
+                          title="This method defines which swap method to use for those two-qubits gates on qubits that are not directly linked.
+"
+                        >
+                          <InfoCircleOutlined />
+                        </Tooltip>
+                      </div>
+                    </div>
+                    <div className="selectOptimizeda">
+                      {/* <Radio.Group onChange={onChangeRouting} value={routing[0]}>
+              {RoutingData.map((item, index) => (
+                <div key={index}>
+                  <Radio onClick={() => cancle("routing")} value={item}>
+                    {item}
+                  </Radio>
+                </div>
+              ))}
+            </Radio.Group> */}
+                      {RoutingData.map((item, index) => (
+                        <div key={index} className="selectList">
+                          <div
+                            className={routing[0] === item ? "select" : ""}
+                            onClick={() => onClickRouting(item)}
+                          >
+                            {item}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="optimized">
+                    <div className="header">
+                      <span>门转换</span>
+                      <div className="icon">
+                        <Tooltip
+                          placement="topLeft"
+                          title="This method defines how the advanced gates decomposed to basic gates.
+"
+                        >
+                          <InfoCircleOutlined />
+                        </Tooltip>
+                      </div>
+                    </div>
+                    <div className="selectOptimizeda">
+                      {/* <Radio.Group onChange={onChangeTranslation} value={translation[0]}>
+              {TranslationData.map((item, index) => (
+                <div key={index}>
+                  <Radio onClick={() => cancle("translation")} value={item}>
+                    {item}
+                  </Radio>
+                </div>
+              ))}
+            </Radio.Group> */}
+                      {TranslationData.map((item, index) => (
+                        <div key={index} className="selectList">
+                          <div
+                            className={translation[0] === item ? "select" : ""}
+                            onClick={() => onClickTranslation(item)}
+                          >
+                            {item}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="optimized">
+                    <div className="header">
+                      <span>优化</span>
+                      <div className="icon">
+                        <Tooltip
+                          placement="topLeft"
+                          title="These methods are post-processing optimization for your quantum circuit. You can have multiple choices."
+                        >
+                          <InfoCircleOutlined />
+                        </Tooltip>
+                      </div>
+                    </div>
+                    <div className="selectOptimized">
+                      <Checkbox.Group
+                        value={optimization}
+                        options={optimizationData}
+                        onChange={onChangeOptimization}
+                      ></Checkbox.Group>
+                      {/* {optimizationData.map((item, index) => (
+              <div key={index} className="selectList">
+                <div
+                  className={optimization[index] === item ? "select" : ""}
+                  onClick={() => onClickOptimization(item, index)}
+                >
+                  {item}
+                </div>
+              </div>
+            ))} */}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

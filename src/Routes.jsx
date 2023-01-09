@@ -1,43 +1,45 @@
-import React from 'react'
-import { HashRouter, Route, Switch } from 'react-router-dom'
-import Home from './components/core/Home'
-import App from './App'
-import SignIn from './components/core/SignIn'
-import SignUp from './components/core/SignUp'
-import FindPassword from './components/core/FindPassword'
-import Computer from './components/core/Computer'
-import NoticeList from './components/core/NoticeList'
-import zhCN from 'antd/lib/locale/zh_CN'
-import { ConfigProvider } from 'antd'
-import NoticeDetail from './components/core/NoticeDetail'
-import Project from './components/core/Project'
-import UserCenter from './components/core/UserCenter'
-import Test from './components/test/Test'
-import MessageList from './components/core/MessageList'
-import messageDetail from './components/core/MessageDetail'
-import ReferenceDoc from './components/core/ReferenceDoc'
-import AdminHome from './components/admin/AdminHome'
-import AdminProject from './components/admin/AdminProject'
-import Task from './components/core/Task'
-import AdminUser from './components/admin/AdminUser'
-import AdminNotice from './components/admin/AdminNotice'
-import AdminReferenceDoc from './components/admin/AdminReferenceDoc'
-import AdminNoticeDetail from './components/admin/AdminNoticeDetail'
-import AdminOperationLog from './components/admin/AdminOperationLog'
-import PrivateRoute from './components/admin/PrivateRoute'
-import AdminTask from './components/admin/AdminTask'
-import AbuoutUs from './components/core/AbuoutUs'
-import NotFound from './components/core/NotFound'
+import React from "react"
+import { HashRouter, Route, Switch } from "react-router-dom"
+import Home from "./components/core/Home"
+import App from "./App"
+import SignIn from "./components/core/SignIn"
+import SignUp from "./components/core/SignUp"
+import FindPassword from "./components/core/FindPassword"
+import Computer from "./components/core/Computer"
+import NoticeList from "./components/core/NoticeList"
+import zhCN from "antd/lib/locale/zh_CN"
+import { ConfigProvider } from "antd"
+import NoticeDetail from "./components/core/NoticeDetail"
+import Project from "./components/core/Project"
+import UserCenter from "./components/core/UserCenter"
+import Test from "./components/test/Test"
+import MessageList from "./components/core/MessageList"
+import messageDetail from "./components/core/MessageDetail"
+import ReferenceDoc from "./components/core/ReferenceDoc"
+import AdminHome from "./components/admin/AdminHome"
+import AdminProject from "./components/admin/AdminProject"
+import Task from "./components/core/Task"
+import AdminUser from "./components/admin/AdminUser"
+import AdminNotice from "./components/admin/AdminNotice"
+import AdminReferenceDoc from "./components/admin/AdminReferenceDoc"
+import AdminNoticeDetail from "./components/admin/AdminNoticeDetail"
+import AdminOperationLog from "./components/admin/AdminOperationLog"
+import PrivateRoute from "./components/admin/PrivateRoute"
+import AdminTask from "./components/admin/AdminTask"
+import AbuoutUs from "./components/core/AbuoutUs"
+import NotFound from "./components/core/NotFound"
 
 const Routes = () => {
-	return (
+  return (
     <ConfigProvider locale={zhCN}>
       <HashRouter>
         <Switch>
-          <PrivateRoute
+          {/* <PrivateRoute
             path="/aceComputer/:projectName/:projectId"
             component={App}
-          />
+          /> */}
+          <Route path="/aceComputer/:projectName/:projectId" component={App} />
+
           <Route path="/" component={Home} exact />
           <Route path="/test" component={Test} exact />
           {/* <Route path='/computer' component={App} exact /> */}
@@ -95,6 +97,6 @@ const Routes = () => {
         </Switch>
       </HashRouter>
     </ConfigProvider>
-  );
+  )
 }
 export default Routes

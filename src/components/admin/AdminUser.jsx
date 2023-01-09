@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
-import AdminLayout from './AdminLayout'
-import '../adminStyles/AdminUser.css'
+import React, { useEffect, useState } from "react"
+import AdminLayout from "./AdminLayout"
+import "../adminStyles/AdminUser.css"
 import {
   Input,
   Table,
@@ -11,8 +11,8 @@ import {
   Button,
   Modal,
   message,
-} from 'antd'
-import { Link } from 'react-router-dom'
+} from "antd"
+import { Link } from "react-router-dom"
 import {
   userTypeArr,
   userStatusArr,
@@ -20,17 +20,17 @@ import {
   userTypeName,
   companyName,
   userStatusName,
-} from '../../helpers/auth'
-import '../styles/CommonAntDesign.css'
-import ComponentTitle from '../core/ComponentTitle'
-import { RightOutlined, DownOutlined } from '@ant-design/icons'
-import '../styles/CommonAntDesign.css'
+} from "../../helpers/auth"
+// import '../styles/CommonAntDesign.css'
+import ComponentTitle from "../core/ComponentTitle"
+import { RightOutlined, DownOutlined } from "@ant-design/icons"
+// import '../styles/CommonAntDesign.css'
 import {
   getUserList,
   adminUserDetailedInfo,
   updateUserAdmin,
   userDelete,
-} from '../../api/adminAuth'
+} from "../../api/adminAuth"
 const AdminUser = () => {
   const { Option } = Select
   const getUserListFn = async () => {
@@ -46,68 +46,68 @@ const AdminUser = () => {
   }
   const columns = [
     {
-      title: '序号',
-      dataIndex: 'index',
+      title: "序号",
+      dataIndex: "index",
       render: (text, record, index) => {
         return (pagination.current - 1) * pagination.pageSize + index + 1
       },
     },
     {
-      title: '用户名称',
-      dataIndex: 'username',
-      key: 'username',
+      title: "用户名称",
+      dataIndex: "username",
+      key: "username",
       render: (text, record) => {
         return <a onClick={() => showDetail(record.user_id)}>{text}</a>
       },
     },
     {
-      title: '用户类型',
-      dataIndex: 'user_type',
-      key: 'user_type',
+      title: "用户类型",
+      dataIndex: "user_type",
+      key: "user_type",
       render: (text) => {
         return userTypeName(text)
       },
     },
     {
-      title: '单位名称',
-      dataIndex: 'company_name',
-      key: 'company_name',
+      title: "单位名称",
+      dataIndex: "company_name",
+      key: "company_name",
     },
     {
-      title: '单位类型',
-      dataIndex: 'company_type',
-      key: 'company_type',
+      title: "单位类型",
+      dataIndex: "company_type",
+      key: "company_type",
       render: (text) => {
         return companyName(text)
       },
     },
     {
-      title: '状态',
-      dataIndex: 'user_status',
-      key: 'user_status',
+      title: "状态",
+      dataIndex: "user_status",
+      key: "user_status",
       render: (text) => {
         return userStatusName(text)
       },
     },
     {
-      title: '联系方式',
-      dataIndex: 'telephone',
-      key: 'telephone',
+      title: "联系方式",
+      dataIndex: "telephone",
+      key: "telephone",
     },
 
     {
-      title: '最近登录时间',
-      dataIndex: 'last-login',
-      key: 'last-login',
+      title: "最近登录时间",
+      dataIndex: "last-login",
+      key: "last-login",
     },
     {
-      title: '操作',
-      dataIndex: 'step',
-      key: 'step',
+      title: "操作",
+      dataIndex: "step",
+      key: "step",
       render: (text, record) => {
         return (
           <span>
-            <a style={{ marginRight: '10px' }} onClick={() => edit(record.id)}>
+            <a style={{ marginRight: "10px" }} onClick={() => edit(record.id)}>
               编辑
             </a>
             <a onClick={() => deleteUser(record.id)}>删除</a>
@@ -132,7 +132,7 @@ const AdminUser = () => {
     total: total,
     pageSize: pageSizeNum,
     onChange: onChange,
-    size: 'small',
+    size: "small",
     pageSizeOptions: [10, 20, 30],
   }
   const onFinish = () => {
@@ -178,14 +178,14 @@ const AdminUser = () => {
               填写信息
               <RightOutlined
                 style={{
-                  marginLeft: '7px',
-                  display: visible ? 'none' : 'inline-block',
+                  marginLeft: "7px",
+                  display: visible ? "none" : "inline-block",
                 }}
               />
               <DownOutlined
                 style={{
-                  marginLeft: '7px',
-                  display: visible ? 'inline-block' : 'none',
+                  marginLeft: "7px",
+                  display: visible ? "inline-block" : "none",
                 }}
               />
             </span>
@@ -194,7 +194,7 @@ const AdminUser = () => {
 
         <div
           className="admin_user_search_content"
-          style={{ display: visible ? 'block' : 'none' }}
+          style={{ display: visible ? "block" : "none" }}
         >
           <div className="admin_user_search_form">
             <Form {...layout} onFinish={onFinish} form={form}>
@@ -240,12 +240,12 @@ const AdminUser = () => {
                 <Col span={6}>
                   <Button
                     htmlType="submit"
-                    style={{ marginRight: '10px', width: '88px' }}
+                    style={{ marginRight: "10px", width: "88px" }}
                     type="primary"
                   >
                     查询
                   </Button>
-                  <Button style={{ width: '88px' }} onClick={reset}>
+                  <Button style={{ width: "88px" }} onClick={reset}>
                     重置
                   </Button>
                 </Col>
@@ -304,7 +304,7 @@ const AdminUser = () => {
       // value.user_id = editid
 
       let data = await updateUserAdmin(editid, value)
-      message.success('修改成功')
+      message.success("修改成功")
       getUserListFn()
       setIsEditModalVisible(false)
     })
@@ -328,7 +328,7 @@ const AdminUser = () => {
                 rules={[
                   {
                     required: true,
-                    message: '请输入用户名称',
+                    message: "请输入用户名称",
                   },
                 ]}
               >
@@ -342,7 +342,7 @@ const AdminUser = () => {
                 rules={[
                   {
                     required: true,
-                    message: '选择用户类型',
+                    message: "选择用户类型",
                   },
                 ]}
               >
@@ -358,7 +358,7 @@ const AdminUser = () => {
                 rules={[
                   {
                     required: true,
-                    message: '请输入单位地址',
+                    message: "请输入单位地址",
                   },
                 ]}
               >
@@ -386,7 +386,7 @@ const AdminUser = () => {
                 rules={[
                   {
                     required: true,
-                    message: '选择用户状态',
+                    message: "选择用户状态",
                   },
                 ]}
               >
@@ -402,7 +402,7 @@ const AdminUser = () => {
                 rules={[
                   {
                     required: true,
-                    message: '请输入联系方式',
+                    message: "请输入联系方式",
                   },
                 ]}
               >
@@ -416,7 +416,7 @@ const AdminUser = () => {
                 rules={[
                   {
                     required: true,
-                    message: '请输入单位名称',
+                    message: "请输入单位名称",
                   },
                 ]}
               >
@@ -432,7 +432,7 @@ const AdminUser = () => {
                 rules={[
                   {
                     required: true,
-                    message: '请输入邮箱地址',
+                    message: "请输入邮箱地址",
                   },
                 ]}
               >
@@ -446,7 +446,7 @@ const AdminUser = () => {
                 rules={[
                   {
                     required: true,
-                    message: '选择单位类型',
+                    message: "选择单位类型",
                   },
                 ]}
               >
@@ -461,15 +461,15 @@ const AdminUser = () => {
   // 删除
   const deleteUser = (id) => {
     Modal.confirm({
-      title: '确认删除？',
-      okText: '确认',
-      cancelText: '取消',
+      title: "确认删除？",
+      okText: "确认",
+      cancelText: "取消",
       onOk: async () => {
         const params = {
           user_id: id,
         }
         await userDelete(id)
-        message.success('已删除')
+        message.success("已删除")
         getUserListFn()
       },
     })
@@ -477,7 +477,7 @@ const AdminUser = () => {
   return (
     <AdminLayout isAdminUser={true}>
       {searchDiv()}
-      <ComponentTitle name={'用户管理'}></ComponentTitle>
+      <ComponentTitle name={"用户管理"}></ComponentTitle>
 
       <div className="admin_user_div">
         <Table

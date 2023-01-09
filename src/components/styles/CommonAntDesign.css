@@ -1,30 +1,33 @@
 .ant-input-search-with-button .ant-input {
-	border: 1px solid #fff;
-	border-radius: 20px;
-	height: 53px;
-	line-height: 53px;
-	font-size: 19px;
+  border: 1px solid #fff;
+  border-radius: 20px;
+  height: 53px;
+  line-height: 53px;
+  font-size: 19px;
 }
-.ant-table {
-	background: #eaeff5;
-}
-.ant-input-search > .ant-input-group > .ant-input-group-addon:last-child .ant-input-search-button {
-	border-radius: 20px;
-	width: 88px;
-	height: 53px;
-	line-height: 53px;
-	font-size: 43px;
+/* .ant-table {
+  background: #eaeff5;
+} */
+.ant-input-search
+  > .ant-input-group
+  > .ant-input-group-addon:last-child
+  .ant-input-search-button {
+  border-radius: 20px;
+  width: 88px;
+  height: 53px;
+  line-height: 53px;
+  font-size: 43px;
 }
 .ant-input-search > .ant-input-group > .ant-input-group-addon:last-child {
-	border-top-right-radius: 20px;
-	border-bottom-right-radius: 20px;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
 }
 .ant-input-search .ant-input:hover,
 .ant-input-search .ant-input:focus {
-	border-color: #fff;
-	box-shadow: none;
+  border-color: #fff;
+  box-shadow: none;
 }
-.ant-table-content {
+/* .ant-table-content {
 	background: #eaeff5;
 }
 .ant-table-thead > tr > th {
@@ -100,40 +103,42 @@
 }
 .ant-table-tbody > tr > td{
 	transition: background 0s;
+} */
+.ant-btn {
+  border-radius: 10px;
 }
-.ant-btn{
-	border-radius: 10px;
+.ant-picker {
+  border-radius: 10px;
 }
-.ant-picker{
-	border-radius: 10px;
+.ant-modal-root .ant-input {
+  border-radius: 10px;
 }
-.ant-modal-root .ant-input{
-	border-radius: 10px;
+.ant-modal-root
+  .ant-select:not(.ant-select-customize-input)
+  .ant-select-selector {
+  border-radius: 10px;
 }
-.ant-modal-root .ant-select:not(.ant-select-customize-input) .ant-select-selector{
-	border-radius: 10px;
+.ant-btn-primary {
+  background: #003f88;
+  border-color: #003f88;
 }
-.ant-btn-primary{
-	background:  #003f88;
-	border-color: #003f88
+.ant-btn-primary:hover {
+  background: #003f88;
+  border-color: #003f88;
 }
-.ant-btn-primary:hover{
-	background:  #003f88;
-	border-color: #003f88
+.ant-btn-primary:focus {
+  background: #003f88;
+  border-color: #003f88;
 }
-.ant-btn-primary:focus{
-	background:  #003f88;
-	border-color: #003f88
-}
-.addProject{
-    width: 100%;
-    margin: auto;
-    background: #fff;
-    border-radius: 20px;
-    height: 50px;
-    line-height: 50px;
-    margin-top: 30px;
-		margin-bottom: 30px;
-    text-align: right;
-    padding: 0 10px;
+.addProject {
+  width: 100%;
+  margin: auto;
+  background: #fff;
+  border-radius: 20px;
+  height: 50px;
+  line-height: 50px;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  text-align: right;
+  padding: 0 10px;
 }

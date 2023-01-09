@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from 'react'
-import Layout from './Layout'
-import '../styles/Computer.css'
-import { Input, Drawer, Table, Modal } from 'antd'
-import { getComList, getComDetil } from '../../api/computer'
-import { drawGraphChart } from '../../helpers/graphEcharts'
-import ComponentTitle from './ComponentTitle'
-import '../styles/CommonAntDesign.css'
-import { useTranslation } from 'react-i18next'
+import React, { useEffect, useState } from "react"
+import Layout from "./Layout"
+import "../styles/Computer.css"
+import { Input, Drawer, Table, Modal } from "antd"
+import { getComList, getComDetil } from "../../api/computer"
+import { drawGraphChart } from "../../helpers/graphEcharts"
+import ComponentTitle from "./ComponentTitle"
+// import '../styles/CommonAntDesign.css'
+import { useTranslation } from "react-i18next"
 
 const Computer = () => {
   // 中英切换
   const { t, i18n } = useTranslation()
-  const [searchValue, setSearchValue] = useState('')
+  const [searchValue, setSearchValue] = useState("")
   const searchValueChange = (e) => {
     setSearchValue(e.target.value)
   }
@@ -21,30 +21,30 @@ const Computer = () => {
   }
   const columns = [
     {
-      title: '量子位',
-      dataIndex: 'name',
-      align: 'center',
-      key: 'name',
+      title: "量子位",
+      dataIndex: "name",
+      align: "center",
+      key: "name",
     },
     {
-      title: 'single qubit error',
-      dataIndex: 'value',
-      key: 'value',
-      align: 'center',
+      title: "single qubit error",
+      dataIndex: "value",
+      key: "value",
+      align: "center",
     },
   ]
   const columns1 = [
     {
-      title: '量子位',
-      dataIndex: 'name',
-      align: 'center',
-      key: 'name',
+      title: "量子位",
+      dataIndex: "name",
+      align: "center",
+      key: "name",
     },
     {
-      title: 'two qubit error',
-      dataIndex: 'value',
-      key: 'value',
-      align: 'center',
+      title: "two qubit error",
+      dataIndex: "value",
+      key: "value",
+      align: "center",
     },
   ]
   const [computerList, setComputerList] = useState([])
@@ -56,7 +56,7 @@ const Computer = () => {
     if (searchValue) {
       obj.com_name = searchValue
     }
-    formData.append('filter', JSON.stringify(obj))
+    formData.append("filter", JSON.stringify(obj))
     const { data } = await getComList(formData)
     setComputerList(data.com_list)
     data.com_list.forEach((item) => {
@@ -74,7 +74,7 @@ const Computer = () => {
   const [computerTable1, setComputerTable1] = useState([])
   const showDrawer = async (id, element, isShowLineLabel) => {
     const formData = new FormData()
-    formData.append('chip_id', id)
+    formData.append("chip_id", id)
     const { data } = await getComDetil(formData)
     const qubits = data.computer.qubits
     const couplers = data.computer.couplers
@@ -92,8 +92,8 @@ const Computer = () => {
       }
       arrGraphNode.push({
         color: validQubits.includes(qubits[key].bit_name)
-          ? '#003f88'
-          : '#f5f5f5',
+          ? "#003f88"
+          : "#f5f5f5",
         name: qubits[key].bit_name,
         x: qubits[key].position_x,
         y: qubits[key].position_y,
@@ -107,7 +107,7 @@ const Computer = () => {
         })
       }
       arrGraphLinks.push({
-        color: 'red',
+        color: "red",
         source: couplers[key].qubit1_name,
         target: couplers[key].qubit2_name,
         selfDefine: couplers[key].coupler_name,
@@ -121,12 +121,12 @@ const Computer = () => {
         },
       })
     }
-    if (element === 'computer_graph_echarts') {
+    if (element === "computer_graph_echarts") {
       setVisible(true)
       setComputerDetail(data.computer)
       setComputerTable(arr)
       setComputerTable1(arr1)
-      drawGraphChart('computer_graph_echarts', arrGraphNode, arrGraphLinks)
+      drawGraphChart("computer_graph_echarts", arrGraphNode, arrGraphLinks)
     } else {
       drawGraphChart(element, arrGraphNode, arrGraphLinks)
     }
@@ -137,18 +137,18 @@ const Computer = () => {
   const computerListDom = computerList.map((item) => (
     <div
       className="computer_item"
-      onClick={() => showDrawer(item.chip_id, 'computer_graph_echarts', true)}
+      onClick={() => showDrawer(item.chip_id, "computer_graph_echarts", true)}
       key={item.chip_id}
     >
       <div className="computer_item_flex">
         <div
           id={`computer_graph_echarts_${item.chip_id}`}
-          style={{ width: '100%', height: '100%' }}
+          style={{ width: "100%", height: "100%" }}
         ></div>
       </div>
       <div className="computer_item_flex">
         <div className="computer_name_title">
-          {t('computer.Name of computer')}
+          {t("computer.Name of computer")}
         </div>
         <div className="computer_name">{item.chip_name}</div>
         <div className="computer_border"></div>
@@ -156,13 +156,13 @@ const Computer = () => {
           <div className="computer_message_item">
             <div
               className="computer_message_item_title"
-              style={{ marginTop: '12px', marginBottom: '5px' }}
+              style={{ marginTop: "12px", marginBottom: "5px" }}
             >
-              {item.com_status === 1 ? 'OFFLINE' : 'ONLINE'}
+              {item.com_status === 1 ? "OFFLINE" : "ONLINE"}
             </div>
             <div
               className="computer_message_item_content"
-              style={{ textIndent: item.com_status === 1 ? '17px' : '16px' }}
+              style={{ textIndent: item.com_status === 1 ? "17px" : "16px" }}
             >
               STATUS
             </div>
@@ -170,7 +170,7 @@ const Computer = () => {
           <div className="computer_message_item">
             <div
               className="computer_message_item_title"
-              style={{ color: '#003f88', fontSize: '28px', textIndent: '3px' }}
+              style={{ color: "#003f88", fontSize: "28px", textIndent: "3px" }}
             >
               {item.qubits_number}
             </div>
@@ -202,8 +202,8 @@ const Computer = () => {
   const computerDetailModal = () => {
     return (
       <Modal
-        okText={t('isok.confirm')}
-        cancelText={t('isok.cancel')}
+        okText={t("isok.confirm")}
+        cancelText={t("isok.cancel")}
         title={false}
         visible={visible}
         onCancel={handleCancel}
@@ -241,7 +241,7 @@ const Computer = () => {
   }
   return (
     <Layout>
-      <ComponentTitle name={t('computer.List of computers')}></ComponentTitle>
+      <ComponentTitle name={t("computer.List of computers")}></ComponentTitle>
       <div className="computer_list">{computerListDom}</div>
       {computerDetailModal()}
     </Layout>

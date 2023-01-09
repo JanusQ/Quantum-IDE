@@ -72,6 +72,7 @@ import { getTaskResult } from "./api/project"
 import { uploadOperation } from "./api/operationLog"
 import { submitLog } from "./util/submitLog"
 import { useTranslation } from "react-i18next"
+import "antd/lib/table/style/css.js"
 
 // import QCEngine from './simulator/MyQCEngine'
 // import './test/meausre'
@@ -380,6 +381,7 @@ function App() {
     // 模拟器
     if (noBug && runValue === "JavaScript_simulator") {
       qc.runCircuit()
+      console.log(qc,999);
       exportSVG(qc)
     }
     // 真机

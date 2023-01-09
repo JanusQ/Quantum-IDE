@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import Routes from './Routes'
-import 'antd/dist/antd.min.css'
+// import 'antd/dist/antd.min.css'
 import './index.css'
 import store from './store/index'
 import { Provider } from 'react-redux'

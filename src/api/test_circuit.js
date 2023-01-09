@@ -17,6 +17,9 @@ export const circuitpredict = (data) => {
 }
 // bug分析
 export const circuitBug = (data) => instance.post("/circuit/bug", data)
+// 获取配置信息
+export const circuitTime = (data) => instance.post("circuit/time", data)
+
 // 提交分析配置
 export const circuitConfig = (data) => instance.post("/circuit/rader", data)
 // 创建项目
