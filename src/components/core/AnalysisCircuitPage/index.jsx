@@ -167,9 +167,10 @@ export default function AnalysisCircuitPage(props) {
   // }, [])
   // 分析配置
   // 获取配置信息
+  const [runTime, setRunTime] = useState(null)
   const getcircuitTime = async () => {
     const { data } = await circuitTime()
-    console.log(data, "time")
+    setRunTime(data.time)
   }
   useEffect(() => {
     getcircuitTime()
@@ -182,6 +183,7 @@ export default function AnalysisCircuitPage(props) {
   // 选择的计算机
   const [computer, setComputer] = useState([])
   // 提交配置
+  const [config, setConfig] = useState(null)
   const submitConfig = async () => {
     let configData = {
       parameter: {
@@ -192,6 +194,7 @@ export default function AnalysisCircuitPage(props) {
       },
       coms: computer,
     }
+    setConfig(configData)
     try {
       const { data } = await circuitConfig(configData)
       let rader = [...data.rader_data.score, predictData]
@@ -256,7 +259,7 @@ export default function AnalysisCircuitPage(props) {
       chipName: "N36U19_0",
       description: "N36U19_0 is a part of N36U19 with chained 5 qubits ",
       qubitNumber: 5,
-      chipTopology: "N36U19_0 is a part of N36U19 with chained 5 qubits",
+      chipTopology: "one dimension chain",
     },
     {
       key: "2",
@@ -295,28 +298,28 @@ export default function AnalysisCircuitPage(props) {
       methodName: "Trivial",
       description:
         "Choose a Layout by assigning n circuit qubits to device qubits 0, .., n-1 using a simple round-robin order.",
-      time: "5s",
+      time: runTime?.layout[0],
     },
     {
       key: "2",
       methodName: "Dense ",
       description:
         "Choose a Layout by finding the most connected subset of qubits.",
-      time: "5s",
+      time: runTime?.layout[1],
     },
     {
       key: "3",
       methodName: "noise adapative",
       description:
         "Choose a noise-adaptive Layout based on current calibration data for the backend",
-      time: "5s",
+      time: runTime?.layout[2],
     },
     {
       key: "4",
       methodName: "sabre",
       description:
         "Choose a Layout via iterative bidirectional routing of the input circuit. The algorithm iterates a number of times until it finds an initial_layout that reduces full routing cost.",
-      time: "5s",
+      time: runTime?.layout[3],
     },
   ]
   const columnsRouting = [
@@ -341,28 +344,28 @@ export default function AnalysisCircuitPage(props) {
       methodName: "Basic",
       description:
         "The basic mapper is a minimum effort to insert swap gates to map the DAG onto a coupling map. it inserts one or more swaps in front to make all multi-qubits gates compatible.",
-      time: "5s",
+      time: runTime?.routing[0],
     },
     {
       key: "2",
       methodName: "Lookahead ",
       description:
         "This algorithm searches through the available combinations of SWAP gates by means of a narrowed best first/beam search. Refer to https://medium.com/qiskit/improving-a-quantum-compiler-48410d7a7084.",
-      time: "5s",
+      time: runTime?.routing[1],
     },
     {
       key: "3",
       methodName: "Stochastic",
       description:
         "This algorithm uses a randomized algorithm to map a DAGCircuit onto a coupling_map by adding swap gates.",
-      time: "5s",
+      time: runTime?.routing[2],
     },
     {
       key: "4",
       methodName: "Sabre",
       description:
         "This algorithm starts from an initial layout of virtual qubits onto physical qubits, and iterates over the circuit DAG until all gates are exhausted, inserting SWAPs along the way. Refer to https://arxiv.org/pdf/1809.02573.pdf.",
-      time: "5s",
+      time: runTime?.routing[3],
     },
   ]
   const columnsTranslation = [
@@ -387,28 +390,28 @@ export default function AnalysisCircuitPage(props) {
       methodName: "Unroller",
       description:
         "Unroll non-basis, non-opaque instructions recursively to a desired basis, using decomposition rules defined for each instruction.",
-      time: "5s",
+      time: runTime?.translation[0],
     },
     {
       key: "2",
       methodName: "Translator",
       description:
         "Translates gates to a target basis by searching for a set of translations from a given EquivalenceLibrary.",
-      time: "5s",
+      time: runTime?.translation[1],
     },
     {
       key: "3",
       methodName: "Synthesis",
       description:
         "Synthesize gates according to their basis gates and synthesize unitaries over some basis gates. It can approximate 2-qubit unitaries given some approximation closeness measure. ",
-      time: "5s",
+      time: runTime?.translation[2],
     },
     {
       key: "4",
       methodName: "Sabre",
       description:
         "This algorithm starts from an initial layout of virtual qubits onto physical qubits, and iterates over the circuit DAG until all gates are exhausted, inserting SWAPs along the way. Refer to https://arxiv.org/pdf/1809.02573.pdf.",
-      time: "5s",
+      time: runTime?.translation[3],
     },
   ]
   const dataOptimizations = [
@@ -417,47 +420,47 @@ export default function AnalysisCircuitPage(props) {
       methodName: "GatesOptimize",
       description:
         "Optimize chains of single-qubit u1, u2, u3 gates by combining them into a single gate.",
-      time: "5s",
+      time: runTime?.optimization[0],
     },
     {
       key: "2",
       methodName: "CXCancellation",
       description: "Cancel back-to-back cx gates in dag. ",
-      time: "5s",
+      time: runTime?.optimization[1],
     },
     {
       key: "3",
       methodName: "OptimizeCliffords",
       description:
         "Combine consecutive Cliffords over the same qubits. This serves as an example of extra capabilities enabled by storing Cliffords natively on the circuit.",
-      time: "5s",
+      time: runTime?.optimization[2],
     },
     {
       key: "4",
       methodName: "GatesDecomposition",
       description:
         "Optimize chains of single-qubit gates by combining them into a single gate.",
-      time: "5s",
+      time: runTime?.optimization[3],
     },
     {
       key: "5",
       methodName: "CommutativeCancellation",
       description:
         "Cancel the redundant self-adjoint gates through commutation relations. The cancellation utilizes the commutation relations in the circuit. ",
-      time: "5s",
+      time: runTime?.optimization[4],
     },
     {
       key: "6",
       methodName: "DynamicDecoupling",
       description:
         "This method scans the circuit for idle periods of time and inserts a DD sequence of gates in those spots. These gates amount to the identity, so do not alter the logical action of the circuit, but have the effect of mitigating decoherence in those idle periods. ",
-      time: "5s",
+      time: runTime?.optimization[5],
     },
   ]
   const chipSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
       setComputer([selectedRows[0].chipName])
-    },
+    }
   }
   const layoutSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
@@ -576,7 +579,11 @@ export default function AnalysisCircuitPage(props) {
     },
   ]
   useEffect(() => {
+   if(computer[0]){
     submitConfig()
+
+   }
+    
   }, [layoutValue, routing, translation, optimization, computer])
   return (
     <>
