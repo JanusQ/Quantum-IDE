@@ -17,6 +17,7 @@ const errorHandle = (status, other) => {
   }
 }
 var instance = axios.create({
+  // baseURL:'http://192.168.21.191:10212',
   timeout: 1000 * 50,
 })
 // const history = useHistory()

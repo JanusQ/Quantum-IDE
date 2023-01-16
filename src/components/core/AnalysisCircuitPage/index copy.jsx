@@ -52,7 +52,7 @@ export default function AnalysisCircuitPage(props) {
     if (props.analysisQc.circuit) {
       setNormalGates(Gates)
       let qasm_ = ""
-      qasm_ = props.analysisQc.export()
+      qasm_ = props.analysisQc.newexport()
       setQasm(qasm_)
       setanalysisData(null)
       setPredictData(0.95)

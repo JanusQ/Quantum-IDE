@@ -10,7 +10,9 @@ import axios from "axios"
 import React, { useState, useRef, useEffect } from "react"
 import { exportSVG } from "./simulator/CommonFunction"
 import QCEngine from "./simulator/MyQCEngine"
-import QuantumCircuit from "./simulator/QuantumCircuit"
+// import QuantumCircuit from "./simulator/QuantumCircuit"
+
+// import QuantumCircuit from "quantum-circuit"
 import {
   cos,
   sin,
@@ -403,7 +405,7 @@ function App() {
   async function testfunc(qc) {
     //qc.import(0);
     let data = {}
-    data["qasm"] = qc.export()
+    data["qasm"] = qc.newexport()
     // console.log(data['qasm'])
     data["sample"] = 1000
     data["type"] = "sqcg"
@@ -434,10 +436,10 @@ function App() {
   const runCircuitAlalysis = async (qc) => {
     const hide = message.loading("正在编译", 0, () => {})
     let analysisData = {}
-    analysisData["qasm"] = qc.export()
+    analysisData["qasm"] = qc.newexport()
     analysisData["coms"] = parameter.computer
     analysisData["parameter"] = parameter.parameter
-    let predictData = { qasm: qc.export() }
+    let predictData = { qasm: qc.newexport() }
     try {
       const analysisRes = await circuitAnalysis(analysisData)
       const predictRes = await circuitpredict(analysisData)
@@ -551,7 +553,7 @@ function App() {
       const formData = new FormData()
       formData.append("project_id", projectId)
       formData.append("sample", sample)
-      formData.append("export_qasm", qc.export())
+      formData.append("export_qasm", qc.newexport())
       formData.append("computer_name", form.getFieldsValue(["comName"]).comName)
       formData.append("run_type", runValue)
       formData.append("user_id", auth.user_id)

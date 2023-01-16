@@ -4,69 +4,69 @@ module.exports = function (app) {
   app.use(
     '/circuit',
     createProxyMiddleware({
-      target: 'http://192.168.21.191:10211', // 请求的地址域名
+      target: 'http://192.168.21.191:10212', // 请求的地址域名
       changeOrigin: true,
     })
   )
   app.use(
     '/user',
     createProxyMiddleware({
-      target: 'http://192.168.21.191:10211', // 请求的地址域名
+      target: 'http://192.168.21.191:10212', // 请求的地址域名
       changeOrigin: true,
     })
   )
   app.use(
     '/notice',
     createProxyMiddleware({
-      target: 'http://192.168.21.191:10211', // 请求的地址域名
+      target: 'http://192.168.21.191:10212', // 请求的地址域名
       changeOrigin: true,
     })
   )
   app.use(
     '/computer',
     createProxyMiddleware({
-      target: 'http://192.168.21.191:10211', // 请求的地址域名
+      target: 'http://192.168.21.191:10212', // 请求的地址域名
       changeOrigin: true,
     })
   )
   app.use(
     '/ide',
     createProxyMiddleware({
-      target: 'http://192.168.21.191:10211', // 请求的地址域名
+      target: 'http://192.168.21.191:10212', // 请求的地址域名
       changeOrigin: true,
     })
   )
   app.use(
     '/project',
     createProxyMiddleware({
-      target: 'http://192.168.21.191:10211', // 请求的地址域名
+      target: 'http://192.168.21.191:10212', // 请求的地址域名
       changeOrigin: true,
     })
   )
   app.use(
     '/doc',
     createProxyMiddleware({
-      target: 'http://192.168.21.191:10211', // 请求的地址域名
+      target: 'http://192.168.21.191:10212', // 请求的地址域名
       changeOrigin: true,
     })
   )
   app.use(
     '/remainder',
     createProxyMiddleware({
-      target: 'http://192.168.21.191:10211', // 请求的地址域名
+      target: 'http://192.168.21.191:10212', // 请求的地址域名
       changeOrigin: true,
     })
   )
   app.use(
     '/log',
     createProxyMiddleware({
-      target: 'http://192.168.21.191:10211', // 请求的地址域名
+      target: 'http://192.168.21.191:10212', // 请求的地址域名
       changeOrigin: true,
     })
   )
   app.use(
     createProxyMiddleware('/api1', {
-      target: 'http://192.168.21.191:10211', // 请求的地址域名
+      target: 'http://192.168.21.191:10212', // 请求的地址域名
       changeOrigin: true,
       pathRewrite: { '^/api1': '' },
     })

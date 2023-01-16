@@ -1,21 +1,21 @@
 // import SignLayout from './SignLayout'
-import Layout from './Layout'
-import React, { useState, useEffect } from 'react'
-import { Button, Form, Input, Checkbox, message, Select } from 'antd'
-import { getCookie, isAuth, delCookie, setCookie } from '../../helpers/auth'
+import Layout from "./Layout"
+import React, { useState, useEffect } from "react"
+import { Button, Form, Input, Checkbox, message, Select } from "antd"
+import { getCookie, isAuth, delCookie, setCookie } from "../../helpers/auth"
 // import { Redirect } from 'react-router-dom'
-import '../styles/SignIn.css'
-import { Link, Redirect, useParams } from 'react-router-dom'
+import "../styles/SignIn.css"
+import { Link, Redirect, useParams } from "react-router-dom"
 import {
   login,
   register,
   registerDiscuz,
   getVertifyImg,
   VertifyImgCode,
-} from '../../api/auth'
-import { useHistory } from 'react-router-dom'
-import { setToken, removeToken } from '../../api/storage'
-import encypt from '../../util/crypto'
+} from "../../api/auth"
+import { useHistory } from "react-router-dom"
+import { setToken, removeToken } from "../../api/storage"
+import encypt from "../../util/crypto"
 const SignIn = () => {
   const { type } = useParams()
   const history = useHistory()
@@ -27,14 +27,14 @@ const SignIn = () => {
       password: encypt(password),
     }
     const { data } = await login(loginData)
-    message.success('登录成功')
+    message.success("登录成功")
     if (isRember) {
-      setCookie('email', value.email, 7)
-      setCookie('password', value.password, 7)
+      setCookie("email", value.email, 7)
+      setCookie("password", value.password, 7)
     }
     setToken(data.token)
-    localStorage.setItem('jwt', JSON.stringify(data))
-    history.push('/')
+    localStorage.setItem("jwt", JSON.stringify(data))
+    history.push("/")
   }
   const redirectToHome = () => {
     const auth = isAuth()
@@ -43,8 +43,8 @@ const SignIn = () => {
     }
   }
   // 记住密码
-  const cookiePassword = getCookie('password')
-  const cookieEmail = getCookie('email')
+  const cookiePassword = getCookie("password")
+  const cookieEmail = getCookie("email")
   const [form] = Form.useForm()
   const [isRember, setIsRember] = useState(false)
   const onCheckChange = (e) => {
@@ -52,15 +52,19 @@ const SignIn = () => {
       setIsRember(true)
     } else {
       setIsRember(false)
-      delCookie('email')
-      delCookie('password')
+      delCookie("email")
+      delCookie("password")
     }
   }
   // 获取登录前验证图片
-  const [imagedata, setImageData] = useState('')
+  const [imagedata, setImageData] = useState("")
   const getImage = async () => {
-    const res = await getVertifyImg()
-    setImageData(res.data)
+    try {
+      const res = await getVertifyImg()
+      setImageData(res.data)
+    } catch (error) {
+      console.log(error, 999)
+    }
     // console.log(res, 'img')
   }
   useEffect(() => {
@@ -78,11 +82,11 @@ const SignIn = () => {
         break
       case 404:
         getImage()
-        return Promise.reject('验证码错误,请重新输入')
+        return Promise.reject("验证码错误,请重新输入")
         break
       case 409:
         getImage()
-        return Promise.reject('验证码错误,请重新输入')
+        return Promise.reject("验证码错误,请重新输入")
 
       default:
     }
@@ -98,19 +102,19 @@ const SignIn = () => {
           form={form}
         >
           <Form.Item
-            validateTrigger={'onBlur'}
+            validateTrigger={"onBlur"}
             name="email"
             rules={[
-              { required: true, message: '请输入邮箱' },
-              { type: 'email', message: '邮箱格式错误' },
+              { required: true, message: "请输入邮箱" },
+              { type: "email", message: "邮箱格式错误" },
             ]}
           >
             <Input placeholder="请输入您的邮箱" />
           </Form.Item>
           <Form.Item
-            validateTrigger={'onBlur'}
+            validateTrigger={"onBlur"}
             name="password"
-            rules={[{ required: true, message: '请输入密码' }]}
+            rules={[{ required: true, message: "请输入密码" }]}
           >
             <Input.Password placeholder="请输入您的密码" />
           </Form.Item>
@@ -132,13 +136,17 @@ const SignIn = () => {
             />
             <span
               onClick={getImage}
-              style={{ fontSize: 16, display: 'displayIlilneBlokc',cursor: 'default' }}
+              style={{
+                fontSize: 16,
+                display: "displayIlilneBlokc",
+                cursor: "default",
+              }}
             >
               换一张
             </span>
           </div>
 
-          <Form.Item style={{ marginBottom: '20px' }}>
+          <Form.Item style={{ marginBottom: "20px" }}>
             <div className="sign_in_form_operation">
               <Checkbox onChange={onCheckChange} checked={isRember}>
                 记住密码
@@ -149,13 +157,13 @@ const SignIn = () => {
 							</span> */}
             </div>
           </Form.Item>
-          <Form.Item style={{ marginBottom: '10px' }}>
-            <Button htmlType="submit" style={{ width: '100%' }} type="primary">
+          <Form.Item style={{ marginBottom: "10px" }}>
+            <Button htmlType="submit" style={{ width: "100%" }} type="primary">
               登录
             </Button>
           </Form.Item>
-          <Form.Item style={{ marginBottom: '0px' }}>
-            <p className="sign_in_to_signup" style={{ marginBottom: '0px' }}>
+          <Form.Item style={{ marginBottom: "0px" }}>
+            <p className="sign_in_to_signup" style={{ marginBottom: "0px" }}>
               <Link to="/signin/2">没有账号？立即注册</Link>
             </p>
           </Form.Item>
@@ -194,9 +202,9 @@ const SignIn = () => {
     const { data } = await registerDiscuz(params)
     if (data.Code === 0) {
       const regdata = await register(value)
-      message.success('注册成功')
+      message.success("注册成功")
       singUpform.resetFields()
-      history.push('/signin/1')
+      history.push("/signin/1")
     } else {
       message.error(data.Message)
     }
@@ -209,18 +217,18 @@ const SignIn = () => {
           onFinish={onSignUpFinish}
           form={singUpform}
           autoComplete="off"
-          validateTrigger={'onBlur'}
+          validateTrigger={"onBlur"}
         >
           <Form.Item
             name="username"
             rules={[
               {
                 required: true,
-                message: '请输入用户名',
+                message: "请输入用户名",
               },
               {
                 max: 15,
-                message: '用户名至多15个字符',
+                message: "用户名至多15个字符",
               },
             ]}
           >
@@ -231,13 +239,13 @@ const SignIn = () => {
             rules={[
               {
                 required: true,
-                message: '请输入手机号',
+                message: "请输入手机号",
               },
               {
                 pattern:
                   // /^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0,5-9]))\d{8}$/,
                   /^1[3-9]\d{9}$/,
-                message: '手机号格式错误',
+                message: "手机号格式错误",
               },
             ]}
           >
@@ -248,11 +256,11 @@ const SignIn = () => {
             rules={[
               {
                 required: true,
-                message: '请输入密码',
+                message: "请输入密码",
               },
               {
                 pattern: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,
-                message: '密码至少八个字符，至少一个字母和一个数字',
+                message: "密码至少八个字符，至少一个字母和一个数字",
               },
             ]}
           >
@@ -263,14 +271,14 @@ const SignIn = () => {
             rules={[
               {
                 required: true,
-                message: '请确认密码',
+                message: "请确认密码",
               },
               ({ getFieldValue }) => ({
                 validator(_, value) {
-                  if (!value || getFieldValue('password') === value) {
+                  if (!value || getFieldValue("password") === value) {
                     return Promise.resolve()
                   }
-                  return Promise.reject(new Error('两次输入的密码不一致'))
+                  return Promise.reject(new Error("两次输入的密码不一致"))
                 },
               }),
             ]}
@@ -282,11 +290,11 @@ const SignIn = () => {
             rules={[
               {
                 required: true,
-                message: '请输入电子邮箱',
+                message: "请输入电子邮箱",
               },
               {
-                type: 'email',
-                message: '邮箱格式错误',
+                type: "email",
+                message: "邮箱格式错误",
               },
             ]}
           >
@@ -297,7 +305,7 @@ const SignIn = () => {
             rules={[
               {
                 required: true,
-                message: '请输入单位名称',
+                message: "请输入单位名称",
               },
             ]}
           >
@@ -305,7 +313,7 @@ const SignIn = () => {
           </Form.Item>
           <Form.Item
             name="company_type"
-            rules={[{ required: true, message: '请选择单位类型' }]}
+            rules={[{ required: true, message: "请选择单位类型" }]}
           >
             <Select placeholder="请选择单位类型">
               <Option value="0">科研院所</Option>
@@ -317,12 +325,12 @@ const SignIn = () => {
           </Form.Item>
           <Form.Item
             name="company_address"
-            rules={[{ required: true, message: '请输入单位地址' }]}
+            rules={[{ required: true, message: "请输入单位地址" }]}
           >
             <Input placeholder="请输入单位地址" />
           </Form.Item>
           <Form.Item>
-            <Button htmlType="submit" type="primary" style={{ width: '100%' }}>
+            <Button htmlType="submit" type="primary" style={{ width: "100%" }}>
               注册
             </Button>
           </Form.Item>
@@ -331,9 +339,9 @@ const SignIn = () => {
               <span
                 className="signup_to_in"
                 style={{
-                  textAlign: 'center',
-                  width: '100%',
-                  display: 'inline-block',
+                  textAlign: "center",
+                  width: "100%",
+                  display: "inline-block",
                 }}
               >
                 <Link to="/signin/1">已经有账户了？点击登录</Link>
@@ -351,13 +359,13 @@ const SignIn = () => {
         <div className="sign_box_div">
           <div className="sign_tabs_div">
             <div
-              className={activeIndex === 1 ? 'active' : ''}
+              className={activeIndex === 1 ? "active" : ""}
               onClick={() => tabsClick(1)}
             >
               账户登入
             </div>
             <div
-              className={activeIndex === 2 ? 'active' : ''}
+              className={activeIndex === 2 ? "active" : ""}
               onClick={() => tabsClick(2)}
             >
               新用户注册

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, memo } from "react"
+import React, { useState, useEffect } from "react"
 import {
   Checkbox,
   Button,
@@ -13,13 +13,11 @@ import {
   Table,
   Tabs,
 } from "antd"
-import { InfoCircleOutlined } from "@ant-design/icons"
 import AnalysisCircuit from "./components/AnalysisCircuit"
 import NormalCircuit from "./components/NormalCircuit"
 import RealeCircuit from "../RealeCircuit"
 import RadarChart from "./components/RadarChart"
 import styles from "./index.module.scss"
-import QCEngine from "../../../simulator/MyQCEngine"
 import {
   circuitBug,
   circuitAnalysis,
@@ -30,17 +28,11 @@ import {
 import { getComList } from "../../../api/computer"
 import { useTranslation } from "react-i18next"
 import { useParams } from "react-router-dom"
-import ChipTable from "./components/Table/ChipTable"
-import LayoutTable from "./components/Table/LayoutTable"
-import { Provider, KeepAlive } from "react-keep-alive"
-// import { useSelector } from "react-redux"
-// import { submitTask } from "@/api/test_circuit"
 export default function AnalysisCircuitPage(props) {
   const { projectName, projectId } = useParams()
   const { t } = useTranslation()
   const [form] = Form.useForm()
   const { Option } = Select
-  let newQcEngine = new QCEngine()
   const Gates = props.analysisQc.circuit?.gates
   const [normalGates, setNormalGates] = useState([[]])
   const [qasm, setQasm] = useState(null)
@@ -54,7 +46,7 @@ export default function AnalysisCircuitPage(props) {
     if (props.analysisQc.circuit) {
       setNormalGates(Gates)
       let qasm_ = ""
-      qasm_ = props.analysisQc.export()
+      qasm_ = props.analysisQc.newexport()
       setQasm(qasm_)
       setanalysisData(null)
       setPredictData(0.95)
@@ -157,14 +149,7 @@ export default function AnalysisCircuitPage(props) {
     // const { data: resultDataObj } = await getTaskResult(taskIdFormData)
     // form.resetFields()
   }
-  // 获取配置信息
-  const getcircuitTime = async () => {
-    const { data } = await circuitTime()
-    console.log(data, "time")
-  }
-  useEffect(() => {
-    getcircuitTime()
-  }, [])
+
   // 获取计算机列表
   // const [computerList, setComputerList] = useState([])
   // const getComListFn = async () => {
@@ -181,67 +166,22 @@ export default function AnalysisCircuitPage(props) {
   //   getComListFn()
   // }, [])
   // 分析配置
+  // 获取配置信息
+  const getcircuitTime = async () => {
+    const { data } = await circuitTime()
+    console.log(data, "time")
+  }
+  useEffect(() => {
+    getcircuitTime()
+  }, [])
   const computerList = ["N36U19_0", "N36U19_1", "N36U19"]
-  const LayoutData = ["Trivial", "Dense", "Noise_adaptive", "Sabre"]
-  const RoutingData = ["Basic", "Lookahead", "Stochastic", "Sabre", "Toqm"]
-  const TranslationData = ["Unroller", "Translator", "Synthesis"]
-  const optimizationData = [
-    "GatesOptimize",
-    "CXCancellation",
-    "OptimizeCliffords",
-    "GatesDecomposition",
-    "CommutativeCancellation",
-    "DynamicDecoupling",
-  ]
   const [layoutValue, setLayoutValue] = useState([])
   const [routing, setRouting] = useState([])
   const [translation, setTranslation] = useState([])
   const [optimization, setOptimization] = useState([])
   // 选择的计算机
   const [computer, setComputer] = useState([])
-  const onClickComputer = (value) => {
-    if (value == computer) {
-      setComputer([])
-    } else {
-      setComputer([value])
-    }
-    submitConfig()
-  }
-  const onClickLayout = (value) => {
-    if (value == layoutValue) {
-      setLayoutValue([])
-    } else {
-      setLayoutValue([value])
-    }
-    submitConfig()
-  }
-  const onClickRouting = (value) => {
-    if (value == routing) {
-      setRouting([])
-    } else {
-      setRouting([value])
-    }
-    submitConfig()
-  }
-  const onClickTranslation = (value) => {
-    if (value == translation) {
-      setTranslation([])
-    } else {
-      setTranslation([value])
-    }
-    submitConfig()
-  }
-  const onChangeOptimization = (list) => {
-    // console.log("radio checked", e.target.value);
-    setOptimization(list)
-    submitConfig()
-  }
   // 提交配置
-  // 抽屉开关
-  const [open, setOpen] = useState(false)
-  const setClick = () => {
-    setOpen(true)
-  }
   const submitConfig = async () => {
     let configData = {
       parameter: {
@@ -257,7 +197,6 @@ export default function AnalysisCircuitPage(props) {
       let rader = [...data.rader_data.score, predictData]
       setRaderData(rader)
       message.success("提交成功", 1)
-      setOpen(false)
     } catch (error) {
       message.error("提交失败", 1)
     }
@@ -292,48 +231,22 @@ export default function AnalysisCircuitPage(props) {
     ),
   }
   // config tab card
-  const [activeConfig, setactiveConfig] = useState("芯片")
-  const onConfigTabChange = (key) => {
-    setactiveConfig(key)
-  }
-  const configTabList = [
-    {
-      key: "芯片",
-      tab: "芯片",
-    },
-    {
-      key: "布局算法",
-      tab: "布局算法",
-    },
-    {
-      key: "布线算法",
-      tab: "布线算法",
-    },
-    {
-      key: "门转换",
-      tab: "门转换",
-    },
-    {
-      key: "优化",
-      tab: "优化",
-    },
-  ]
   const columnsChips = [
     {
-      title: "chip name",
+      title: "Chips",
       dataIndex: "chipName",
       render: (text) => <a>{text}</a>,
     },
     {
-      title: "description",
+      title: "Description",
       dataIndex: "description",
     },
     {
-      title: "qubit number",
+      title: "Qubit number",
       dataIndex: "qubitNumber",
     },
     {
-      title: "chip topology",
+      title: "Chip topology",
       dataIndex: "chipTopology",
     },
   ]
@@ -362,17 +275,18 @@ export default function AnalysisCircuitPage(props) {
   ]
   const columnsLayout = [
     {
-      title: "method name",
+      title: "Method",
       dataIndex: "methodName",
       render: (text) => <a>{text}</a>,
     },
     {
-      title: "description",
+      title: "Description",
       dataIndex: "description",
     },
     {
-      title: "estimated cost time",
+      title: "Estimated cost time",
       dataIndex: "time",
+      width: 180,
     },
   ]
   const dataLayout = [
@@ -407,17 +321,18 @@ export default function AnalysisCircuitPage(props) {
   ]
   const columnsRouting = [
     {
-      title: "method name",
+      title: "Method",
       dataIndex: "methodName",
       render: (text) => <a>{text}</a>,
     },
     {
-      title: "description",
+      title: "Description",
       dataIndex: "description",
     },
     {
-      title: "estimated cost time",
+      title: "Estimated cost time",
       dataIndex: "time",
+      width: 180,
     },
   ]
   const dataRouting = [
@@ -452,17 +367,18 @@ export default function AnalysisCircuitPage(props) {
   ]
   const columnsTranslation = [
     {
-      title: "method name",
+      title: "Method",
       dataIndex: "methodName",
       render: (text) => <a>{text}</a>,
     },
     {
-      title: "description",
+      title: "Description",
       dataIndex: "description",
     },
     {
-      title: "estimated cost time",
+      title: "Estimated cost time",
       dataIndex: "time",
+      width: 180,
     },
   ]
   const dataTranslation = [
@@ -540,103 +456,32 @@ export default function AnalysisCircuitPage(props) {
   ]
   const chipSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
-      console.log(selectedRows[0].chipName)
       setComputer([selectedRows[0].chipName])
     },
   }
   const layoutSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
-      console.log(selectedRows[0].methodName)
-      setLayoutValue(selectedRows[0].methodName)
+      setLayoutValue([selectedRows[0].methodName])
     },
   }
   const routingSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
-      console.log(selectedRows[0].methodName)
-      setRouting(selectedRows[0].methodName)
+      setRouting([selectedRows[0].methodName])
     },
   }
   const TranslationSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
-      console.log(selectedRows[0].methodName)
-      setTranslation(selectedRows[0].methodName)
+      setTranslation([selectedRows[0].methodName])
     },
   }
   const OptimizationsSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
-      console.log(selectedRows.methodName)
-      setRouting(selectedRows.methodName)
-      setLayoutValue(selectedRows.methodName)
+      let optimizationArr = []
+      selectedRows.forEach((item) => {
+        optimizationArr.push(item.methodName)
+        setOptimization(optimizationArr)
+      })
     },
-  }
-
-  const configContentList = {
-    芯片: (
-      <div>
-        <ChipTable />
-      </div>
-    ),
-    布局算法: (
-      <div>
-        {/* <Table
-          pagination={{
-            position: ["none"],
-          }}
-          rowSelection={{
-            type: "radio",
-            ...layoutSelection,
-          }}
-          columns={columnsLayout}
-          dataSource={dataLayout}
-        /> */}
-        <LayoutTable />
-      </div>
-    ),
-    布线算法: (
-      <div key="buxian">
-        <Table
-          pagination={{
-            position: ["none"],
-          }}
-          rowSelection={{
-            type: "radio",
-            ...routingSelection,
-          }}
-          columns={columnsRouting}
-          dataSource={dataRouting}
-        />
-      </div>
-    ),
-    门转换: (
-      <div key="zhuanh">
-        <Table
-          pagination={{
-            position: ["none"],
-          }}
-          rowSelection={{
-            type: "radio",
-            ...TranslationSelection,
-          }}
-          columns={columnsLayout}
-          dataSource={dataTranslation}
-        />
-      </div>
-    ),
-    优化: (
-      <div>
-        <Table
-          pagination={{
-            position: ["none"],
-          }}
-          rowSelection={{
-            type: "checkbox",
-            ...OptimizationsSelection,
-          }}
-          columns={columnsLayout}
-          dataSource={dataOptimizations}
-        />
-      </div>
-    ),
   }
   const configItems = [
     {
@@ -644,6 +489,7 @@ export default function AnalysisCircuitPage(props) {
       key: "1",
       children: (
         <Table
+          align="center"
           pagination={{
             position: ["none"],
           }}
@@ -661,6 +507,7 @@ export default function AnalysisCircuitPage(props) {
       key: "2",
       children: (
         <Table
+          align="center"
           pagination={{
             position: ["none"],
           }}
@@ -673,7 +520,64 @@ export default function AnalysisCircuitPage(props) {
         />
       ),
     },
+    {
+      label: `布线算法`,
+      key: "3",
+      children: (
+        <Table
+          align="center"
+          pagination={{
+            position: ["none"],
+          }}
+          rowSelection={{
+            type: "radio",
+            ...routingSelection,
+          }}
+          columns={columnsRouting}
+          dataSource={dataRouting}
+        />
+      ),
+    },
+    {
+      label: `门转换`,
+      key: "4",
+      children: (
+        <Table
+          align="center"
+          pagination={{
+            position: ["none"],
+          }}
+          rowSelection={{
+            type: "radio",
+            ...TranslationSelection,
+          }}
+          columns={columnsTranslation}
+          dataSource={dataTranslation}
+        />
+      ),
+    },
+    {
+      label: `优化`,
+      key: "5",
+      children: (
+        <Table
+          align="center"
+          pagination={{
+            position: ["none"],
+          }}
+          rowSelection={{
+            type: "checkbox",
+            ...OptimizationsSelection,
+          }}
+          columns={columnsTranslation}
+          dataSource={dataOptimizations}
+        />
+      ),
+    },
   ]
+  useEffect(() => {
+    submitConfig()
+  }, [layoutValue, routing, translation, optimization, computer])
   return (
     <>
       <div className={styles.root}>
@@ -717,22 +621,7 @@ export default function AnalysisCircuitPage(props) {
                   ""
                 )}
                 <div className="config">
-                  {/* <Card
-                    style={{
-                      width: "100%",
-                    }}
-                    title="配置选项"
-                    tabList={configTabList}
-                    activeTabKey={activeConfig}
-                    onTabChange={onConfigTabChange}
-                  >
-                    {configContentList[activeConfig]}
-                  </Card> */}
-                  <Tabs
-                    items={configItems}
-                    defaultActiveKey="1"
-                    centered
-                  ></Tabs>
+                  <Tabs items={configItems} defaultActiveKey="1"></Tabs>
                 </div>
               </div>
             </div>
