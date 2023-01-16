@@ -124,7 +124,9 @@ export default class QCEngine {
 
         }
         console.log(layer2inst)
-        return layer2inst;
+        let json_l2i = JSON.stringify(layer2inst)
+        console.log(json_l2i)
+        return json_l2i;
 
 
     }
