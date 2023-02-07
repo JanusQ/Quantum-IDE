@@ -12,7 +12,6 @@
     "Project status": "项目状态",
     "Service resources": "服务资源",
     "document": "教程与文档"
-
   },
   "nav": {
     "home": "首页",
@@ -32,8 +31,8 @@
     "backgroundSystem": "后台管理",
     "logOut": "退出登录"
   },
-   "computer": {
-   "Name of computer": "计算机名字",
+  "computer": {
+    "Name of computer": "计算机名字",
     "List of computers": "计算机列表"
   },
   "project": {
@@ -90,8 +89,8 @@
     "Task details": "任务详情",
     "before compile": "编译前电路",
     "after compile": "编译后电路",
-     "close read correction":"关闭读取矫正",
-    "open read correction":"打开读取矫正"
+    "close read correction": "关闭读取矫正",
+    "open read correction": "打开读取矫正"
   },
   "taskList": {
     "serial number": "序号",
@@ -102,16 +101,25 @@
     "creation time": "创建时间",
     "operation": "操作",
     "View the results": "查看结果",
-     "succeed":"已完成",
-    "failed":" 已失败",
-    "all":" 全部",
-    "waiting":" 等待中"
-
-
+    "succeed": "已完成",
+    "failed": " 已失败",
+    "all": " 全部",
+    "waiting": " 等待中"
   },
-  "isok":{
-    "confirm":"确认",
-    "cancel":"取消"
+  "isok": {
+    "confirm": "确认",
+    "cancel": "取消"
+  },
+  "footer": {
+    "COMMON LINKS": "常用链接",
+    "School of Physics, Zhejiang University": "浙江大学物理学院",
+    "School of Computer Science, Zhejiang University": "浙江大学计算机学院",
+    "USER GUIDE": "用户指南",
+    "QUANTUM APPLICATIONS": "量子应用",
+    "Solutions": "解决方案",
+    "CONTACT US": "联系我们",
+    "Address": "地址：浙江大学西溪校区",
+    "Telephone": "电话",
+    "Zip code": "Zip code"
   }
-
 }

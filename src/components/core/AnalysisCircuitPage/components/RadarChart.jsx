@@ -23,7 +23,15 @@ export default function MyRadarChart(props) {
         { name: "深度提升", max: 1 },
         { name: "保真度", max: 1 },
       ],
+      axisName: {
+        color: "black",
+        fontWeight: 700,
+        fontSize: 15,
+      },
+      center: ["55%", "55%"],
+      radius: 105,
     },
+
     series: [
       {
         name: "Budget vs spending",

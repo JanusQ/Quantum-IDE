@@ -89,8 +89,8 @@
     "Task details": "Task details",
     "before compile": "before compile",
     "after compile": "after compile",
-    "close read correction":"Close read correction",
-    "open read correction":"open read correction"
+    "close read correction": "Close read correction",
+    "open read correction": "open read correction"
   },
   "taskList": {
     "serial number": "serial number",
@@ -101,14 +101,25 @@
     "creation time": "creation time",
     "operation": "operation",
     "View the results": "view the results",
-    "succeed":"succeed",
-    "failed":" failed",
-     "all":" all",
-    "waiting":" waiting"
+    "succeed": "succeed",
+    "failed": " failed",
+    "all": " all",
+    "waiting": " waiting"
   },
-  "isok":{
-    "confirm":"confirm",
-    "cancel":"cancel"
+  "isok": {
+    "confirm": "confirm",
+    "cancel": "cancel"
+  },
+  "footer": {
+    "COMMON LINKS": "COMMON LINKS",
+    "School of Physics, Zhejiang University": "School of Physics, Zhejiang University",
+    "School of Computer Science, Zhejiang University": "School of Computer Science, Zhejiang University",
+    "USER GUIDE": "USER GUIDE",
+    "QUANTUM APPLICATIONS": "QUANTUM APPLICATIONS",
+    "Solutions": "Solutions",
+    "CONTACT US": "CONTACT US",
+    "Address": "Address: Xixi Campus of Zhejiang University",
+    "Telephone": "Telephone",
+    "Zip code": "Zip code"
   }
-  
 }

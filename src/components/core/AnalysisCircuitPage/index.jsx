@@ -46,7 +46,7 @@ export default function AnalysisCircuitPage(props) {
     if (props.analysisQc.circuit) {
       setNormalGates(Gates)
       let qasm_ = ""
-      qasm_ = props.analysisQc.newexport()
+      qasm_ = props.analysisQc.export()
       setQasm(qasm_)
       setanalysisData(null)
       setPredictData(0.95)
@@ -239,18 +239,22 @@ export default function AnalysisCircuitPage(props) {
       title: "Chips",
       dataIndex: "chipName",
       render: (text) => <a>{text}</a>,
+      align: "center",
     },
     {
       title: "Description",
       dataIndex: "description",
+      align: "center",
     },
     {
       title: "Qubit number",
       dataIndex: "qubitNumber",
+      align: "center",
     },
     {
       title: "Chip topology",
       dataIndex: "chipTopology",
+      align: "center",
     },
   ]
   const dataChips = [
@@ -281,15 +285,18 @@ export default function AnalysisCircuitPage(props) {
       title: "Method",
       dataIndex: "methodName",
       render: (text) => <a>{text}</a>,
+      align: "center",
     },
     {
       title: "Description",
       dataIndex: "description",
+      align: "center",
     },
     {
       title: "Estimated cost time",
       dataIndex: "time",
       width: 180,
+      align: "center",
     },
   ]
   const dataLayout = [
@@ -327,15 +334,18 @@ export default function AnalysisCircuitPage(props) {
       title: "Method",
       dataIndex: "methodName",
       render: (text) => <a>{text}</a>,
+      align: "center",
     },
     {
       title: "Description",
       dataIndex: "description",
+      align: "center",
     },
     {
       title: "Estimated cost time",
       dataIndex: "time",
       width: 180,
+      align: "center",
     },
   ]
   const dataRouting = [
@@ -373,15 +383,18 @@ export default function AnalysisCircuitPage(props) {
       title: "Method",
       dataIndex: "methodName",
       render: (text) => <a>{text}</a>,
+      align: "center",
     },
     {
       title: "Description",
       dataIndex: "description",
+      align: "center",
     },
     {
       title: "Estimated cost time",
       dataIndex: "time",
       width: 180,
+      align: "center",
     },
   ]
   const dataTranslation = [
@@ -460,7 +473,7 @@ export default function AnalysisCircuitPage(props) {
   const chipSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
       setComputer([selectedRows[0].chipName])
-    }
+    },
   }
   const layoutSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
@@ -579,11 +592,9 @@ export default function AnalysisCircuitPage(props) {
     },
   ]
   useEffect(() => {
-   if(computer[0]){
-    submitConfig()
-
-   }
-    
+    if (computer[0]) {
+      submitConfig()
+    }
   }, [layoutValue, routing, translation, optimization, computer])
   return (
     <>
