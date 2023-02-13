@@ -53,8 +53,11 @@ export default function Foot() {
           {/* <div className='footer_commen_btn'>加入我们</div> */}
         </div>
         <div className="footer_ban_quan">
-          版权所有&copy;浙江大学量子计算
-          <span style={{ marginLeft: "20px" }}>保留一切权利</span>
+          {t("footer.copyright")}
+          <span style={{ marginLeft: "20px" }}>
+            {" "}
+            {t("footer.All rights reserved")}
+          </span>
         </div>
       </div>
     </div>

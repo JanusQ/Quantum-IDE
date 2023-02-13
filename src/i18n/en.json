@@ -22,8 +22,37 @@
     "aboutUs": "AboutUs"
   },
   "login": {
-    "login": "Login",
-    "register": "Register"
+    "login": "login",
+    "Log in": "Log in",
+    "register": "Register",
+    "Sign up": "Sign up",
+    "Email": " Email",
+    "Password": "Password",
+    "Change": "Change",
+    "Remember me": "Remember me",
+    "No account": "No account yet? Sign up here.",
+    "Username": "Username",
+    "Telephone": "Telephone",
+    "Confirm your password": "Confirm your password",
+    "Institution": "Institution",
+    "The type of your institution": "The type of your institution",
+    "scientific research institutions": "scientific research institutions",
+    "university": "university",
+    "enterprise": "enterprise",
+    "preson": "preson",
+    "else": "else",
+    "The address of your institution": "The address of your institution",
+    "Already have an account? Login here": "Already have an account? Login here",
+    "code": "code",
+    "code error": "code error",
+    "username error": "The user name can contain up to 15 charactersr",
+    "Email error": "Email format error",
+    "Telephone error": "Telephone format error",
+    "Password error": "Password format error",
+    "Password format": "The password must have at least eight characters, at least one letter and one number",
+    "Password different": "The two passwords are different",
+    "registered successfully": "registered successfully",
+    "login successfully": "login successfully"
   },
   "menu": {
     "personalCenter": "Personal center",
@@ -110,6 +139,26 @@
     "confirm": "confirm",
     "cancel": "cancel"
   },
+  "quantumchips": {
+    "name": "Tianmu-1",
+    "content": "On December 17, 2021, the 'Mogan-1' and 'Tianmu-1' superconducting quantum chips were released, announcing that Zhejiang quantum technology is moving to a new stage of development. The 'Mogan-1' is a special quantum chip with a fully connected architecture, which is suitable for quantum simulation and precise regulation of quantum states for specific problems. The 'Tianmu-1' chip is aimed at general quantum computing and adopts a more scalable nearest-neighbor connectivity architecture.",
+    "details": "details",
+    "quantumchips": "QUANTUM CHIPS",
+    "quantumcloud": "QUANTUM CLOUD"
+  },
+  "middle": {
+    "support": "Support constructing algorithm online, use multiple quantum computers at actual time",
+    "Start": "Start",
+    "Start quantum IDE": "Start quantum IDE, program and submit the task",
+    "Project Status": "Project",
+    "Edit and view the project status": "Edit and view the project status",
+    "Recourses": "Recourses",
+    "View the status and details": "View the status and details of the current quantum computers",
+    "Tutorials and Documentation": "Document",
+    "View the introduction": "View the introduction, tutorials and API documentation for details",
+    "Achievement exhibition": "Achievement exhibition",
+    "Partial paper presentation": "Partial paper presentation"
+  },
   "footer": {
     "COMMON LINKS": "COMMON LINKS",
     "School of Physics, Zhejiang University": "School of Physics, Zhejiang University",
@@ -120,6 +169,16 @@
     "CONTACT US": "CONTACT US",
     "Address": "Address: Xixi Campus of Zhejiang University",
     "Telephone": "Telephone",
-    "Zip code": "Zip code"
-  }
+    "Zip code": "Zip code",
+    "copyright": "Copyright © Zhejiang University Quantum Computing. All rights reserved",
+    "All rights reserved": "All rights reserved"
+  },
+  "auboutUs": {
+    "auboutUs": "about Us",
+    "Relying on": "Relying on the School of Physics of Zhejiang University and the School of Computer Science of Zhejiang University, the Taiyuan Quantum Cloud Platform was created to provide free cloud services of advanced quantum computers to the public.",
+    "The hardware": "The hardware of this platform quantum computer is based on the superconducting quantum computing team of Zhejiang University. After more than ten years of construction, the team has accumulated rich technology in the design, preparation, measurement, and control of superconducting quantum chips, and has developed 10-qubit, 20-qubit, and 30-qubit superconducting quantum chips in recent years, and has achieved fruitful research results.  In 2017, the team generated the Greenberger-Horne-Zeilinge state on the 10-bit superconducting quantum chip [1]. In 2019, the team achieved 20 qubits of the Schrödinger cat state [2], and the results were published in Science. In 2021, the team released two superconducting quantum chips with excellent performance, 'Tianmu 1' and 'Mogan 1', in collaboration with Hangzhou International Science and Technology Center. In the same year, the team achieved multi-body localization on the 'Mogan 1' quantum chip [3], which surpassed the limit of what can be simulated by classical computing resources. The results were published in the journal [1]. In addition, the team has conducted in-depth research in quantum machine learning, quantum error mitigation, quantum optics, and quantum line error calibration",
+    "This platform": "This platform of quantum computer software and algorithm relies on the Institute of Computer System Architecture (CCNT Lab) in the School of Computer Science of Zhejiang University, which is dedicated to the research and development of new generation computing technologies and systems. The team has a strong research foundation in the fields of service computing and distributed computing, computer architecture, and programming languages. In the field of quantum computing, after more than one year of accumulation, we have designed and improved the quantum measurement and control software together with the School of Physics, which can improve the measurement and control efficiency by more than 10 times; assisted the new laboratory of Innovation Research Institute in the equipment construction and software debugging of quantum computers; designed the Quantum Computing Simulator V1.0, which can provide users with a web-based quantum circuit compiler to realize quantum algorithms to quantum circuit compilation. In the future, we will work on quantum computing simulator, quantum operating system, quantum algorithms and applications, actively promote quantum algorithm-related applications, and strengthen cross-disciplinary research on quantum computing and artificial intelligence, medicine, chemistry, finance, sociology, etc.",
+    "References": "References"
+  },
+  "document": "referenced document"
 }

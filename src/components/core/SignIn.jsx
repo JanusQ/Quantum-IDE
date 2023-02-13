@@ -16,7 +16,9 @@ import {
 import { useHistory } from "react-router-dom"
 import { setToken, removeToken } from "../../api/storage"
 import encypt from "../../util/crypto"
+import { useTranslation } from "react-i18next"
 const SignIn = () => {
+  const { t, i18n } = useTranslation()
   const { type } = useParams()
   const history = useHistory()
   const onFinish = async (value) => {
@@ -27,7 +29,7 @@ const SignIn = () => {
       password: encypt(password),
     }
     const { data } = await login(loginData)
-    message.success("登录成功")
+    message.success(t("login.login successfully"))
     if (isRember) {
       setCookie("email", value.email, 7)
       setCookie("password", value.password, 7)
@@ -82,11 +84,11 @@ const SignIn = () => {
         break
       case 404:
         getImage()
-        return Promise.reject("验证码错误,请重新输入")
+        return Promise.reject(t("login.code error"))
         break
       case 409:
         getImage()
-        return Promise.reject("验证码错误,请重新输入")
+        return Promise.reject(t("login.code error"))
 
       default:
     }
@@ -105,18 +107,18 @@ const SignIn = () => {
             validateTrigger={"onBlur"}
             name="email"
             rules={[
-              { required: true, message: "请输入邮箱" },
-              { type: "email", message: "邮箱格式错误" },
+              { required: true, message: t("login.Email") },
+              { type: "email", message: t("login.Email error") },
             ]}
           >
-            <Input placeholder="请输入您的邮箱" />
+            <Input placeholder={t("login.Email")} />
           </Form.Item>
           <Form.Item
             validateTrigger={"onBlur"}
             name="password"
-            rules={[{ required: true, message: "请输入密码" }]}
+            rules={[{ required: true, message: t("login.Password") }]}
           >
-            <Input.Password placeholder="请输入您的密码" />
+            <Input.Password placeholder={t("login.Password")} />
           </Form.Item>
 
           <Form.Item
@@ -124,7 +126,7 @@ const SignIn = () => {
             autoComplete="off"
             name="code"
             rules={[{ validator: checkauth }]}
-            label="验证码"
+            label={t("login.code")}
           >
             <Input />
           </Form.Item>
@@ -142,14 +144,14 @@ const SignIn = () => {
                 cursor: "default",
               }}
             >
-              换一张
+              {t("login.Change")}
             </span>
           </div>
 
           <Form.Item style={{ marginBottom: "20px" }}>
             <div className="sign_in_form_operation">
               <Checkbox onChange={onCheckChange} checked={isRember}>
-                记住密码
+                {t("login.Remember me")}
               </Checkbox>
               {/* <span style={{ float: 'right' }}>
 								{' '}
@@ -159,12 +161,12 @@ const SignIn = () => {
           </Form.Item>
           <Form.Item style={{ marginBottom: "10px" }}>
             <Button htmlType="submit" style={{ width: "100%" }} type="primary">
-              登录
+              {t("login.login")}
             </Button>
           </Form.Item>
           <Form.Item style={{ marginBottom: "0px" }}>
             <p className="sign_in_to_signup" style={{ marginBottom: "0px" }}>
-              <Link to="/signin/2">没有账号？立即注册</Link>
+              <Link to="/signin/2"> {t("login.No account")}</Link>
             </p>
           </Form.Item>
         </Form>
@@ -202,7 +204,7 @@ const SignIn = () => {
     const { data } = await registerDiscuz(params)
     if (data.Code === 0) {
       const regdata = await register(value)
-      message.success("注册成功")
+      message.success(t("login.registered successfully"))
       singUpform.resetFields()
       history.push("/signin/1")
     } else {
@@ -224,114 +226,128 @@ const SignIn = () => {
             rules={[
               {
                 required: true,
-                message: "请输入用户名",
+                message: t("login.Username"),
               },
               {
                 max: 15,
-                message: "用户名至多15个字符",
+                message: t("login.username error"),
               },
             ]}
           >
-            <Input placeholder="请输入用户名" />
+            <Input placeholder={t("login.Username")} />
           </Form.Item>
           <Form.Item
             name="telephone"
             rules={[
               {
                 required: true,
-                message: "请输入手机号",
+                message: t("login.Telephone"),
               },
               {
                 pattern:
                   // /^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0,5-9]))\d{8}$/,
                   /^1[3-9]\d{9}$/,
-                message: "手机号格式错误",
+                message: t("login.Telephone error"),
               },
             ]}
           >
-            <Input placeholder="请输入手机号" />
+            <Input placeholder={t("login.Telephone")} />
           </Form.Item>
           <Form.Item
             name="password"
             rules={[
               {
                 required: true,
-                message: "请输入密码",
+                message: t("login.Password"),
               },
               {
                 pattern: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,
-                message: "密码至少八个字符，至少一个字母和一个数字",
+                message: t("login.Password format"),
               },
             ]}
           >
-            <Input.Password placeholder="请输入密码" />
+            <Input.Password placeholder={t("login.Password")} />
           </Form.Item>
           <Form.Item
             name="confirm"
             rules={[
               {
                 required: true,
-                message: "请确认密码",
+                message: t("login.Confirm your password"),
               },
               ({ getFieldValue }) => ({
                 validator(_, value) {
                   if (!value || getFieldValue("password") === value) {
                     return Promise.resolve()
                   }
-                  return Promise.reject(new Error("两次输入的密码不一致"))
+                  return Promise.reject(
+                    new Error(t("login.Password different"))
+                  )
                 },
               }),
             ]}
           >
-            <Input.Password placeholder="请确认密码" />
+            <Input.Password placeholder={t("login.Confirm your password")} />
           </Form.Item>
           <Form.Item
             name="email"
             rules={[
               {
                 required: true,
-                message: "请输入电子邮箱",
+                message: t("login.Email"),
               },
               {
                 type: "email",
-                message: "邮箱格式错误",
+                message: t("login.Email error"),
               },
             ]}
           >
-            <Input placeholder="请输入邮箱" />
+            <Input placeholder={t("login.Email")} />
           </Form.Item>
           <Form.Item
             name="company_name"
             rules={[
               {
                 required: true,
-                message: "请输入单位名称",
+                message: t("login.Institution"),
               },
             ]}
           >
-            <Input placeholder="请输入单位名称" />
+            <Input placeholder={t("login.Institution")} />
           </Form.Item>
           <Form.Item
             name="company_type"
-            rules={[{ required: true, message: "请选择单位类型" }]}
+            rules={[
+              {
+                required: true,
+                message: t("login.The type of your institution"),
+              },
+            ]}
           >
-            <Select placeholder="请选择单位类型">
-              <Option value="0">科研院所</Option>
-              <Option value="1">学校</Option>
-              <Option value="2">企业</Option>
-              <Option value="3">个人</Option>
-              <Option value="4">其它</Option>
+            <Select placeholder={t("login.The type of your institution")}>
+              <Option value="0">
+                {t("login.scientific research institutions")}
+              </Option>
+              <Option value="1">{t("login.university")}</Option>
+              <Option value="2">{t("login.enterprise")}</Option>
+              <Option value="3">{t("login.preson")}</Option>
+              <Option value="4">{t("login.else")}</Option>
             </Select>
           </Form.Item>
           <Form.Item
             name="company_address"
-            rules={[{ required: true, message: "请输入单位地址" }]}
+            rules={[
+              {
+                required: true,
+                message: t("login.The address of your institution"),
+              },
+            ]}
           >
-            <Input placeholder="请输入单位地址" />
+            <Input placeholder={t("login.The address of your institution")} />
           </Form.Item>
           <Form.Item>
             <Button htmlType="submit" type="primary" style={{ width: "100%" }}>
-              注册
+              {t("login.Sign up")}
             </Button>
           </Form.Item>
           <Form.Item>
@@ -344,7 +360,9 @@ const SignIn = () => {
                   display: "inline-block",
                 }}
               >
-                <Link to="/signin/1">已经有账户了？点击登录</Link>
+                <Link to="/signin/1">
+                  {t("login.Already have an account? Login here")}
+                </Link>
               </span>
             </div>
           </Form.Item>
@@ -362,13 +380,13 @@ const SignIn = () => {
               className={activeIndex === 1 ? "active" : ""}
               onClick={() => tabsClick(1)}
             >
-              账户登入
+              {t("login.Log in")}
             </div>
             <div
               className={activeIndex === 2 ? "active" : ""}
               onClick={() => tabsClick(2)}
             >
-              新用户注册
+              {t("login.Sign up")}
             </div>
           </div>
           <div>

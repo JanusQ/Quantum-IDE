@@ -1,47 +1,45 @@
-import React, { useEffect, useState } from 'react'
-import { Menu, Dropdown, message, Switch } from 'antd'
-import { DownOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons'
-import { Link, useHistory } from 'react-router-dom'
-import { useSelector } from 'react-redux'
-import { isAuth } from '../../helpers/auth'
-import '../styles/Layout.css'
-import { getRemainderList } from '../../api/remainder'
-import { getUserInfo } from '../../api/auth'
-import AbuoutUs from './AbuoutUs'
-import { removeToken } from '../../api/storage'
-import { useTranslation } from 'react-i18next'
-import { stubString } from 'lodash'
+import React, { useEffect, useState } from "react"
+import { Menu, Dropdown, message, Switch } from "antd"
+import { DownOutlined, CheckOutlined, CloseOutlined } from "@ant-design/icons"
+import { Link, useHistory } from "react-router-dom"
+import { useSelector } from "react-redux"
+import { isAuth } from "../../helpers/auth"
+import "../styles/Layout.css"
+import { getRemainderList } from "../../api/remainder"
+import { getUserInfo } from "../../api/auth"
+import { removeToken } from "../../api/storage"
+import { useTranslation } from "react-i18next"
 function useActive(currentPath, path) {
-  return currentPath === path ? 'active' : ''
+  return currentPath === path ? "active" : ""
 }
 function useActiveAct(currentPath, path) {
-  return currentPath.indexOf(path) === -1 ? '' : 'active'
+  return currentPath.indexOf(path) === -1 ? "" : "active"
 }
 const Navigation = ({ isIde }) => {
   const history = useHistory()
   const router = useSelector((state) => state.router)
   const pathname = router.location.pathname
-  const isHome = useActive(pathname, '/')
-  const isComputer = useActive(pathname, '/computer')
+  const isHome = useActive(pathname, "/")
+  const isComputer = useActive(pathname, "/computer")
   // const isApp = useActive(pathname, '/app')
   // const isNotice = useActive(pathname, '/notice')
   // const isNoticeDetail = useActive(pathname, '/noticedetail')
-  const isProject = useActive(pathname, '/project')
-  const isReferenceDoc = useActiveAct(pathname, '/referenceDoc')
-  const isaboutUs = useActiveAct(pathname, '/aboutUs')
+  const isProject = useActive(pathname, "/project")
+  const isReferenceDoc = useActiveAct(pathname, "/referenceDoc")
+  const isaboutUs = useActiveAct(pathname, "/aboutUs")
   const auth = isAuth()
   const [remainNum, setRemainNum] = useState(1)
   let interval = null
   const getRemainderListFn = async () => {
     const formData = new FormData()
-    formData.append('user_id', auth.user_id)
+    formData.append("user_id", auth.user_id)
     const { data } = await getRemainderList(formData)
     setRemainNum(data.remainder_list.length)
   }
   const logOut = () => {
-    localStorage.removeItem('jwt')
+    localStorage.removeItem("jwt")
     removeToken()
-    history.push('/signin/1')
+    history.push("/signin/1")
   }
   useEffect(() => {
     if (!interval && isAuth()) {
@@ -54,26 +52,20 @@ const Navigation = ({ isIde }) => {
   }, [])
   const lookRemainder = () => {
     if (remainNum) {
-      history.push('/message')
+      history.push("/message")
     }
   }
-  
-  const [lang, setLang] = useState('en')
-
-  useEffect(() => {
-    // 首次加载根据浏览器语言
-    i18n.changeLanguage(navigator.language.slice(0,2))
-  }, [])
 
   const { t, i18n } = useTranslation()
+
   // 切换语言
   const changeLanguage = (check) => {
     switch (check) {
       case true:
-        i18n.changeLanguage('zh')
+        i18n.changeLanguage("zh")
         break
       case false:
-        i18n.changeLanguage('en')
+        i18n.changeLanguage("en")
         break
       default:
     }
@@ -97,20 +89,20 @@ const Navigation = ({ isIde }) => {
   const menu = (
     <Menu>
       <Menu.Item key="1">
-        <Link to="/usercenter/1">{t('menu.personalCenter')}</Link>
+        <Link to="/usercenter/1">{t("menu.personalCenter")}</Link>
       </Menu.Item>
       <Menu.Item key="2">
-        <Link to="/usercenter/2">{t('menu.changePassword')}</Link>
+        <Link to="/usercenter/2">{t("menu.changePassword")}</Link>
       </Menu.Item>
       {auth.user_type === 0 ? (
         <Menu.Item key="3">
-          <Link to="/admin">{t('menu.backgroundSystem')}</Link>
+          <Link to="/admin">{t("menu.backgroundSystem")}</Link>
         </Menu.Item>
       ) : (
         false
       )}
       <Menu.Item key="4" onClick={logOut}>
-        {t('menu.logOut')}
+        {t("menu.logOut")}
       </Menu.Item>
     </Menu>
   )
@@ -118,50 +110,50 @@ const Navigation = ({ isIde }) => {
     <>
       <ul
         className="front_menu_list"
-        style={{ paddingTop: isIde ? '1px' : '15px' }}
+        style={{ paddingTop: isIde ? "1px" : "15px" }}
       >
         <li className={isHome}>
-          <Link to="/">{t('nav.home')}</Link>
+          <Link to="/">{t("nav.home")}</Link>
         </li>
         <li className={isComputer}>
-          <Link to="/computer">{t('nav.computingResource')}</Link>
+          <Link to="/computer">{t("nav.computingResource")}</Link>
         </li>
         <li className={isProject}>
-          <Link to="/project">{t('nav.pm')}</Link>
+          <Link to="/project">{t("nav.pm")}</Link>
         </li>
         <li className={isReferenceDoc}>
-          <Link to="/referenceDoc/all">{t('nav.document')}</Link>
+          <Link to="/referenceDoc/all">{t("nav.document")}</Link>
         </li>
         <li>
           <a target="_blank" href="http://janusq.zju.edu.cn:10213/">
-            {t('nav.forum')}
+            {t("nav.forum")}
           </a>
         </li>
         <li className={isaboutUs}>
-          {' '}
-          <Link to="/aboutUs">{t('nav.aboutUs')}</Link>
+          {" "}
+          <Link to="/aboutUs">{t("nav.aboutUs")}</Link>
         </li>
         <li>
           <Switch
             onChange={changeLanguage}
-            checkedChildren="中文"
+            checkedChildren="ZH"
             unCheckedChildren="EN"
-            defaultChecked={navigator.language.slice(0,2)==='zh'?true:false}
+            defaultChecked={i18n.resolvedLanguage === "zh" ? true : false}
           />
         </li>
       </ul>
 
       <ul
         className="front_menu_list front_menu_list_second"
-        style={{ paddingTop: isIde ? '1px' : '15px' }}
+        style={{ paddingTop: isIde ? "1px" : "15px" }}
       >
         {!isAuth() && (
           <>
             <li>
-              <Link to="/signin/1">登录</Link>
+              <Link to="/signin/1">{t("login.Log in")}</Link>
             </li>
-            <li style={{ marginLeft: '25px' }}>
-              <Link to="/signin/2">注册</Link>
+            <li style={{ marginLeft: "25px" }}>
+              <Link to="/signin/2">{t("login.Sign up")}</Link>
             </li>
           </>
         )}
@@ -182,7 +174,7 @@ const Navigation = ({ isIde }) => {
               <span className="front_ling_dang" onClick={lookRemainder}></span>
               <span
                 className="front_tip_num"
-                style={{ display: remainNum > 0 ? 'inline-block' : 'none' }}
+                style={{ display: remainNum > 0 ? "inline-block" : "none" }}
               >
                 {remainNum}
               </span>

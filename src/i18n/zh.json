@@ -23,7 +23,36 @@
   },
   "login": {
     "login": "登录",
-    "register": "注册"
+    "Log in": "登录",
+    "register": "Register",
+    "Sign up": "注册",
+    "Email": "请输入您的邮箱",
+    "Password": "请输入您的密码",
+    "Change": "换一张",
+    "Remember me": "记住密码",
+    "No account": "没有账号？立即注册",
+    "Username": "请输入用户名",
+    "Telephone": "请输入手机号",
+    "Confirm your password": "请确认密码 ",
+    "Institution": "请输入单位名称",
+    "The type of your institution": "请选择单位类型",
+    "scientific research institutions": "科研院所",
+    "university": "学校",
+    "enterprise": "企业",
+    "preson": "个人",
+    "else": "其它",
+    "The address of your institution": "请输入单位地址",
+    "Already have an account? Login here": "已经有账户了？请登录",
+    "code": "验证码",
+    "code error": "验证码错误",
+    "username error": "用户名至多15个字符",
+    "Email error": "邮箱格式错误",
+    "Telephone error": "邮箱格式错误",
+    "Password error": "Password error",
+    "Password format": "密码至少八个字符，至少一个字母和一个数字",
+    "Password different": "两次输入的密码不一致",
+    "registered successfully": "注册成功",
+    "login successfully": "登录成功"
   },
   "menu": {
     "personalCenter": "个人中心",
@@ -110,6 +139,26 @@
     "confirm": "确认",
     "cancel": "取消"
   },
+  "quantumchips": {
+    "name": "天目一号",
+    "content": "2021年12月17日，发布“莫干1号”“天目1号”超导量子芯片，宣告浙江量子科技迈向新发展阶段。 “莫干1号”是一款专用量子芯片，采用了全连通架构，适用于实现针对特定问题的量子模拟和量子态的精确调控。“天目1号”芯片则面向通用量子计算，采用较易扩展的近邻连通架构。",
+    "details": "点击详情",
+    "quantumchips": "量子芯片",
+    "quantumcloud": "量子云"
+  },
+  "middle": {
+    "support": "支持在线构建算法、实时调用多台量子计算机",
+    "Start": "启动",
+    "Start quantum IDE": "启动量子IDE，编写程序并提交任务",
+    "Project Status": "项目状态",
+    "Edit and view the project status": "编辑和查看项目状态，并获取已提交任务的运行结果",
+    "Recourses": "服务资源",
+    "View the status and details": "查看当前量子计算机的服务状态与详细信息",
+    "Tutorials and Documentation": "教程与文档",
+    "View the introduction": "查看介绍，教程与API文档等详细信息",
+    "Achievement exhibition": "成果展示",
+    "Partial paper presentation": "年的部分论文展示"
+  },
   "footer": {
     "COMMON LINKS": "常用链接",
     "School of Physics, Zhejiang University": "浙江大学物理学院",
@@ -120,6 +169,16 @@
     "CONTACT US": "联系我们",
     "Address": "地址：浙江大学西溪校区",
     "Telephone": "电话",
-    "Zip code": "Zip code"
-  }
+    "Zip code": "Zip code",
+    "copyright": " 版权所有&copy;浙江大学量子计算",
+    "All rights reserved": "保留一切权利"
+  },
+  "auboutUs": {
+    "auboutUs": "团队介绍",
+    "Relying on": "太元量子云平台依托于浙江大学物理学院和浙江大学计算机学院共同创建，致力于向大众免费提供先进的量子计算机的云服务。",
+    "The hardware": "本平台量子计算机硬件依托于浙江大学超导量子计算团队。经过十余年建设，团队在超导量子芯片的设计、制备、测控等方面具备丰富的技术积累，近年来相继研发了10比特、20比特、30比特的超导量子芯片，取得了丰硕的研究成果。2017年，团队在10比特超导量子芯片上生成了最大纠缠态[1]。2019年，团队实现了20个量子比特的薛定谔猫态[2]，成果发布在Science杂志上。2021年，团队与浙江杭州国际科创中心合作发布了两款性能优异的超导量子芯片“天目1号”和“莫干1号”。 同年，团队在“莫干1号”量子芯片上实现了多体局域化[3]，超越了经典计算资源能够模拟的极限。2022年，团队在“天目1号”量子芯片上采取数字化量子门电路的方式，对拓扑时间晶体进行模拟，成果发表在[1]杂志上。除此以外，团队在量子机器学习、量子错误缓解、量子光学、量子线路误差标定等方面进行了深入研究。",
+    "This platform": "本平台量子计算机软件与算法依托于浙江大学计算机学院的计算机系统结构研究所（CCNT实验室），致力于新一代计算技术与系统的研究与开发。本团队在服务计算与分布式计算、计算机体系结构、程序语言等领域有很强的研究基础。在量子计算领域，经过一年多的积淀，与物理学院共同设计并改进了量子测控软件，使测控效率提高10倍以上；协助创新研究院新实验室进行量子计算机的设备搭建和软件调试；设计了量子计算模拟器V1.0，可以为用户提供一个基于Web的量子电路编译器，实现量子算法到量子电路的编译。未来将致力于研究量子计算模拟器、量子操作系统、量子算法及应用等，积极推动量子算法相关应用，加强量子计算与人工智能、医药、化学、金融、社会学等交叉学科研究。",
+    "References": "参考链接"
+  },
+  "document": "参考文档"
 }
