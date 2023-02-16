@@ -61,7 +61,10 @@ export default function MyRadarChart(props) {
     ],
   }
   useEffect(() => {
-    const myChart = echarts.init(radarChart.current)
+    let myChart = echarts.getInstanceByDom(radarChart.current)
+    if (myChart == null) {
+      myChart = echarts.init(radarChart.current)
+    }
     myChart.setOption(option)
   })
   return <div className="radarChart" ref={radarChart}></div>

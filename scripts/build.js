@@ -48,6 +48,14 @@ const writeStatsJson = argv.indexOf('--stats') !== -1;
 
 // Generate configuration
 const config = configFactory('production');
+config.optimization.minimizer[0].options.minimizer.options.compress = Object.assign(
+  config.optimization.minimizer[0].options.minimizer.options.compress,
+  {
+    drop_console: false, // 删除所有console.*函数的调用
+    drop_debugger: true, // 删除所有debugger
+    pure_funcs: ['console.log', 'console.dir'], // 删除特定的console.*函数的调用
+  }
+);
 
 // We require that you explicitly set browsers and do not fall back to
 // browserslist defaults.

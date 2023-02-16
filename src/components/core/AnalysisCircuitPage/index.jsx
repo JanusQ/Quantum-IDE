@@ -46,7 +46,7 @@ export default function AnalysisCircuitPage(props) {
     if (props.analysisQc.circuit) {
       setNormalGates(Gates)
       let qasm_ = ""
-      qasm_ = props.analysisQc.export()
+      qasm_ = props.analysisQc.newexport()
       setQasm(qasm_)
       setanalysisData(null)
       setPredictData(0.95)
@@ -90,7 +90,6 @@ export default function AnalysisCircuitPage(props) {
           coms: computer,
           qasm: qasm,
         })
-        // console.log(data, 6688)
         setanalysisData(data.compiled_qc.qasm)
         setchangCircuitType(true)
         setActiveTabKey1("编译后电路")
@@ -206,7 +205,6 @@ export default function AnalysisCircuitPage(props) {
   }
   const onTab1Change = (key) => {
     setActiveTabKey1(key)
-    // console.log(key, "key")
     if (key == "编译前电路") {
       setchangCircuitType(false)
     } else if ((key = "编译后电路")) {
