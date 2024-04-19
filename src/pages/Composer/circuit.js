@@ -1,0 +1,36 @@
+export const initCircuit = [
+    [
+      { name: "cz", qubit: [3, 4,5,6,7] },
+      { name: "cz", qubit: [5, 6] },
+      { name: "i", qubit: [7] },
+      { name: "pvz", qubit: [0] },
+    ],
+    [
+      { name: "cz", qubit: [0, 1] },
+      { name: "cz", qubit: [2, 3,4,5] },
+      { name: "i", qubit: [4] },
+      { name: "i", qubit: [5] },
+      { name: "cz", qubit: [6, 7,8,9] },
+      { name: "cz", qubit: [8,9,10,11,12,13,14,15] },
+      { name: "cz", qubit: [16, 17] },
+      { name: "cz", qubit: [9, 14] },
+      { name: "cz", qubit: [10, 11] },
+      { name: "cz", qubit: [12, 13] },
+    ],
+    [
+      { name: "cz", qubit: [3, 4,5] },
+      { name: "y", qubit: [7] },
+    ],
+    [
+      { name: "cz", qubit: [3, 4] },
+      { name: "pvz", qubit: [7] },
+    ],
+    [{ name: "pvz", qubit: [1] }],
+    [{ name: "pvz", qubit: [2] }],
+    [{ name: "pvz", qubit: [3] }],
+    [{ name: "pvz", qubit: [4] }],
+    [{ name: "pvz", qubit: [5] }],
+    [{ name: "pvz", qubit: [6] }],
+    [{ name: "pvz", qubit: [7] }],
+    [{ name: "pvz", qubit: [8] }],
+  ]

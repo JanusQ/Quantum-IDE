@@ -5,7 +5,7 @@ import { event as currentEvent } from 'd3-selection'
 import { im, number, re } from 'mathjs'
 import { ConsoleErrorListener, toDocs } from '../resource/js/quantum-circuit.min'
 import Chart from './Chart'
-import { getDirac } from '../components/Mathjax'
+import { getDirac } from '@/pages/OldAceComputer/Mathjax'
 import QCEngine from './MyQCEngine'
 const _ = require('lodash')
 export default class d3Draw {
@@ -70,7 +70,7 @@ export default class d3Draw {
 		this.copyOperations = []
 		// labels副本
 		this.copyLabels = []
-	}
+	};
 	exportD3SVG(data) {
 		const svg = d3.select('#circuit_svg')
 		const drawG = svg.select('#circuit_graph')
@@ -6882,4 +6882,4 @@ export default class d3Draw {
 		}
 		return dic
 	}
-}
+};

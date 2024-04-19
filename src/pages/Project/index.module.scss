@@ -1,0 +1,18 @@
+.root {
+  :global {
+    .ant-card {
+      .ant-card-head {
+        .ant-card-head-wrapper {
+          .ant-card-head-title {
+            text-align: center;
+            color: rgb(0, 63, 136);
+            font-weight: 700;
+            font-size: 50px;
+          }
+        }
+        .ant-card-body {
+        }
+      }
+    }
+  }
+}

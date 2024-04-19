@@ -1,0 +1,26 @@
+.root {
+  height: 100%;
+  :global {
+    background-color: rgb(8, 18, 27);
+    padding-right: 20px;
+    .header_right {
+      width: 50px;
+    }
+    .changeLanguage {
+      display: inline-block;
+      margin-left: 25px;
+      border-bottom: 1 solid;
+    }
+    .header_right {
+      height: 20px;
+      display: inline-block;
+      width: 100px;
+      color: #fff;
+      cursor: pointer;
+      margin-top: 10px;
+      &:hover {
+        color: #007fff;
+      }
+    }
+  }
+}

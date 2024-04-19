@@ -1,0 +1,9 @@
+@import "../../styles/default";
+$header-height: 80px;
+
+.root {
+  :global {
+    height: 10000px;
+    background-color: skyblue;
+  }
+}

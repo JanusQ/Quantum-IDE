@@ -1,0 +1,35 @@
+.root {
+  height: 100%;
+  :global {
+    .ant-layout {
+      height: 100%;
+    }
+    .ant-layout-content {
+      padding: 20px;
+    }
+    .ant-layout-header {
+      padding-left: 0;
+      padding-right: 30px;
+      font-size: 0;
+    }
+    .header-right {
+      font-size: 14px;
+      float: right;
+      color: #fff;
+    }
+    .logo {
+      width: 50px;
+      height: 50px;
+    }
+    .logoName {
+      font-size: 20px;
+      color: #fff;
+      vertical-align: middle;
+    }
+    .header-right {
+      font-size: 14px;
+      float: right;
+      color: #fff;
+    }
+  }
+}

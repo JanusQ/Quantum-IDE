@@ -1,4 +1,4 @@
-import { pow2, binary, binary2qubit1, range, binary2int,} from '../simulator/CommonFunction'
+import { pow2, binary, binary2qubit1, range, binary2int,} from '@/simulator/CommonFunction'
 import * as deepcopy from 'deepcopy';
 
 import {

@@ -1,64 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Janus 2.0: A Software Framework for Analyzing Optimizing and
+      Implementing Quantum Circuit"
+    />
+    <meta
+      name="google-site-verification"
+      content="gLglfV-4EzT38qnA0YfgEpWDLHWX8szCzcxQgaEol0g"
+    />
+    <meta name="baidu-site-verification" content="codeva-IC6x978Ahg" />
+    <link rel="stylesheet" href="./font.css" rel="external nofollow" />
 
-<head>
-  <meta charset="utf-8" />
-  <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#000000" />
-  <meta name="description" content="Web site created using create-react-app" />
-  <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
-  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-
-
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
-  <script>
-    window.MathJax = {
-      loader: { load: ['[tex]/physics','input/tex', 'output/svg'] },
-      tex: { packages: { '[+]': ['physics'] } }
-    };
-  </script>
-<!-- 
-  <script>
-    function test(){
-      console.log(MathJax, window.MathJax, MathJax.tex2svg('\\frac{1}{x^2-1}', {display: false}))
-    }
-    setTimeout(test, 1000); 
-  </script> -->
-
-  <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
-
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-  <!-- <script type="text/javascript" src="https://unpkg.com/quantum-circuit"></script> -->
-  <!-- <title>React App</title> -->
-  <title>太元量子云平台</title>
-</head>
-
-<body>
-  <noscript>You need to enable JavaScript to run this app.</noscript>
-  <!-- <div id='debug_drawing'></div> -->
-  <div id="root"></div>
-  <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
-    <!-- $$ \ket{1}$$ -->
-</body>
-
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+    ></script>
+    <!-- <script
+      id="MathJax-script"
+      async
+      src="http://localhost:8888/js/tex-svg.js"
+    ></script> -->
+    <!-- <script
+      id="MathJax-script"
+      async
+      src="http://localhost:8888/js/tex-mml-chtml.js"
+    ></script> -->
+    <!-- <script
+      async
+      src="http://janusq.zju.edu.cn/doc/getJs?doc_id=15"
+      crossorigin
+    ></script> -->
+    <!-- <script
+      id="MathJax-script"
+      async
+      src="http://192.168.21.191:10211/doc/getJs?doc_id=15"
+      crossorigin
+    ></script> -->
+    <script>
+      window.MathJax = {
+        loader: { load: ['[tex]/physics', 'input/tex', 'output/svg'] },
+        tex: { packages: { '[+]': ['physics'] } },
+      }
+    </script>
+    <title>太元量子计算</title>
+  </head>
+  <body>
+    <noscript></noscript>
+    <div id="root"></div>
+  </body>
 </html>

@@ -1,0 +1,68 @@
+@import "../../styles/default";
+$header-height: 80px;
+
+.root {
+  height: $header-height;
+  :global {
+    .header {
+      position: fixed;
+      top: 0;
+      z-index: 999;
+      background: rgba(0, 0, 0, 0.29);
+      border-bottom: 1px solid transparent;
+      transition: border 0.5s cubic-bezier(0.455, 0.03, 0.515, 0.955),
+        background 0.5s cubic-bezier(0.455, 0.03, 0.515, 0.955);
+      height: $header-height;
+      padding: 0 48px;
+      width: 100%;
+      .headerContent {
+        height: 100%;
+        .logoContent {
+          .logo {
+            height: 100%;
+            img {
+              width: 50px;
+              height: 50px;
+              line-height: 80px;
+              margin-right: 8px;
+            }
+            span {
+              font-size: 16px;
+              font-family: "Raleway", "Hiragino Sans GB", sans-serif;
+              line-height: 80px;
+              text-transform: uppercase;
+              color: #1890ff;
+            }
+          }
+        }
+        .menuContent {
+          .menu {
+            float: right;
+            display: flex;
+            height: 80px;
+            margin: 0;
+            padding: 0;
+            .menu_item {
+              color: #fff;
+              padding: 0px 20px;
+              line-height: 80px;
+              font-family: Lato, -apple-system, BlinkMacSystemFont, "Segoe UI",
+                "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+                "Helvetica Neue", Helvetica, Arial, sans-serif,
+                "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+              &:hover {
+                cursor: pointer;
+                border-bottom: 3px solid #1890ff;
+                height: 80px;
+              }
+            }
+            .path_active {
+              height: 80px;
+              border-bottom: 3px solid #1890ff;
+            }
+          }
+        }
+      }
+    }
+  }
+}

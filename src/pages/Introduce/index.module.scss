@@ -1,0 +1,498 @@
+// main.scss
+
+.root {
+  height: 100%;
+  width: 100%;
+  background-color: #fff;
+
+  :global {
+    height: 100%;
+    width: 100%;
+    .introduce {
+      height: 100%;
+      width: 100%;
+      .start {
+        position: relative;
+        width: 100%;
+        height: calc(100vh - 80px);
+        color: #fff;
+        .swiper {
+          .swiper-button-prev {
+            display: none;
+          }
+          .swiper-button-next {
+            display: none;
+          }
+          .swiper-wrapper {
+            .swiper-slide {
+              .SwiperSlide {
+                height: 100%;
+                width: 100%;
+                position: absolute;
+                background-image: url("../../assets/image/quantum.png");
+                background-size: cover;
+                .banner {
+                  // width: 648px;
+                  // height: 300px;
+                  color: #fff;
+                  position: absolute;
+                  left: 13%;
+                  top: 53%;
+                  color: #fff;
+                  text-align: right;
+                  font-family: Lato;
+                  .title {
+                    font-size: 40px;
+                    font-weight: normal;
+                    font-family: "Raleway", "Hiragino Sans GB";
+                    white-space: nowrap;
+                    color: #fff;
+                    margin-bottom: 8px;
+                  }
+                  .content {
+                    font-size: 16px;
+                    color: #fff;
+                    margin-top: 44px;
+                    font-family: "Raleway", "Hiragino Sans GB";
+                    white-space: nowrap;
+                  }
+                  .btn {
+                    float: right;
+                    background: #003f88;
+                    border-radius: 16px;
+                    width: 141px;
+                    height: 49px;
+                    color: #fff;
+                    text-align: center;
+                    font-size: 24px;
+                    cursor: pointer;
+                    user-select: none;
+                    margin-top: 47px;
+                    padding-top: 10px;
+                  }
+                  .line {
+                    width: 0.8px;
+                    height: 198px;
+                    position: absolute;
+                    background: rgba(255, 255, 255, 0.44);
+                    background-image: -webkit-linear-gradient(
+                      top,
+                      rgba(255, 255, 255, 0.03),
+                      rgba(255, 255, 255, 0.6),
+                      rgba(255, 255, 255, 0.03)
+                    );
+                    background-image: -moz-linear-gradient(
+                      top,
+                      rgba(255, 255, 255, 0.03),
+                      rgba(255, 255, 255, 0.6),
+                      rgba(255, 255, 255, 0.03)
+                    );
+                    background-image: -ms-linear-gradient(
+                      top,
+                      rgba(255, 255, 255, 0.03),
+                      rgba(255, 255, 255, 0.6),
+                      rgba(255, 255, 255, 0.03)
+                    );
+                    background-image: -o-linear-gradient(
+                      top,
+                      rgba(255, 255, 255, 0.03),
+                      rgba(255, 255, 255, 0.6),
+                      rgba(255, 255, 255, 0.03)
+                    );
+                    top: 16px;
+                    right: -25px;
+                  }
+                }
+              }
+            }
+          }
+        }
+        // @keyframes upDownMove {
+        //   to {
+        //     transform: translateY(10px);
+        //   }
+        // }
+
+        .down {
+          z-index: 10000000000;
+          text-align: center;
+          position: absolute;
+          bottom: 30px;
+          color: rgba(255, 255, 255, 0.75);
+
+
+
+
+          
+          left: 50%;
+          margin-left: -7px;
+          & :local {
+            animation: upDownMove 1.2s ease-in-out infinite alternate;
+          }
+        }
+      }
+      .chips {
+        width: 100%;
+        height: 641px;
+        background: #f8f8f8;
+        .swiperAre {
+          width: 1200px;
+          margin: 0 auto;
+          height: 100%;
+          margin-top: 44px;
+          .swiper {
+            .swiper-button-prev {
+              display: none;
+            }
+            .swiper-button-next::after {
+              display: none;
+            }
+            .swiper-button-next {
+              top: 40%;
+              height: 30px;
+              background: url("../../assets/image/blue_arrow.png") no-repeat;
+            }
+          }
+          .swiper-wrapper {
+            .swiper-slide {
+              .SwiperSlide {
+                // margin-top: 88px;
+                .img {
+                  width: 636px;
+                  height: 406px;
+                  img {
+                    width: 636px;
+                    height: 406px;
+                  }
+                }
+                .line {
+                  width: 80px;
+                  height: 4px;
+                  position: absolute;
+                  z-index: 9;
+                  background: #003f88;
+                  left: 620px;
+                  top: 10px;
+                  display: inline-block;
+                }
+                .introduce {
+                  display: inline-block;
+                  width: 365px;
+                  position: absolute;
+                  left: 713px;
+                  height: 420px;
+                  top: 0px;
+                  .title {
+                    font-size: 30px;
+                    color: #003f88;
+                    font-weight: bold;
+                  }
+                  .titleEn {
+                    font-size: 13px;
+                    color: #003f88;
+                  }
+                  .chipsName {
+                    color: #3a3e42;
+                    font-size: 30px;
+                    margin-top: 40px;
+                    font-weight: bold;
+                  }
+                  .detail {
+                    font-size: 15px;
+                    line-height: 25px;
+                    color: #3a3e42;
+                    margin-top: 20px;
+                  }
+                  .detailBtn {
+                    margin-top: 29px;
+                    height: 24px;
+                    font-size: 15px;
+                    width: 83px;
+                    line-height: 24px;
+                    background: #003f88;
+                    border-radius: 16px;
+                    float: right;
+                    color: #fff;
+                    text-align: center;
+                    a {
+                      text-decoration: none;
+                      color: #fff;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      .cloud {
+        height: 470px;
+        background: #fff;
+        width: 100%;
+        padding-top: 71px;
+        .cloudContent {
+          height: 307px;
+          width: 1200px;
+          margin: 0 auto;
+          position: relative;
+          .main {
+            width: 100%;
+            height: 100%;
+            .line {
+              width: 60px;
+              height: 4px;
+              top: 22px;
+              background: #003f88;
+              position: absolute;
+              display: inline-block;
+            }
+            .clondIntroduce {
+              width: 307px;
+              height: 100%;
+              display: inline-block;
+              vertical-align: top;
+              position: absolute;
+              left: 69px;
+              .cloudTitle {
+                font-size: 30px;
+                color: #003f88;
+                font-weight: bold;
+              }
+              .cloudTitleEn {
+                font-size: 13px;
+                color: #003f88;
+              }
+              .cloundDetail {
+                font-size: 15px;
+                line-height: 25px;
+                color: #3a3e42;
+                margin-top: 20px;
+              }
+            }
+            .useCloud {
+              width: 802px;
+              height: 100%;
+              position: absolute;
+              left: 397px;
+              .router {
+                height: 100%;
+                width: 178px;
+                background-color: #f5f6f8;
+                box-shadow: 0 0 16px 0 rgba(65, 70, 76, 0.17);
+                border-radius: 19px;
+                margin-left: 30px;
+                cursor: pointer;
+                padding-top: 22px;
+                vertical-align: top;
+                display: inline-block;
+                .icon {
+                  width: 83px;
+                  height: 83px;
+                  margin: 0 auto;
+                  border-radius: 50%;
+                }
+                .icon1 {
+                  background: url("../../assets/image/icon_computer_blue.png");
+                }
+                .icon2 {
+                  background: url("../../assets/image/icon_pro_blue.png");
+                }
+                .icon3 {
+                  background: url("../../assets/image/icon_fuwu_blue.png");
+                }
+                .icon4 {
+                  background: url("../../assets/image/icon_wendang_blue.png");
+                }
+
+                .useCloundContent {
+                  width: 100%;
+                  padding-left: 34px;
+                  margin-top: 37px;
+                  .routerline {
+                    width: 60px;
+                    height: 4px;
+                    background: #003f88;
+                  }
+                  .startIde {
+                    font-size: 23px;
+                    color: #3a3e42;
+                    font-weight: bold;
+                  }
+                  .CloudDetail {
+                    margin-top: 10px;
+                    font-size: 14px;
+                    color: #3a3e42;
+                    height: 74px;
+                  }
+                  .throIcon {
+                    width: 28px;
+                    height: 28px;
+                    border-radius: 50%;
+                    background: url("../../assets/image/third_blue_arrow.png")
+                      no-repeat;
+                    background-size: 100% 100%;
+                    margin-left: 34px;
+                  }
+                }
+              }
+              .router:nth-of-type(1) {
+                margin-left: 0;
+              }
+              .router:hover {
+                background-image: linear-gradient(
+                    31deg,
+                    #003f88 0%,
+                    #4340ff 26%,
+                    #4eb9f0 100%,
+                    #2e3083 100%
+                  ),
+                  linear-gradient(#e6e8ec, #e6e8ec);
+              }
+              .router:hover .useCloundContent {
+                .routerline {
+                  background-color: #fff;
+                }
+                .startIde {
+                  color: #fff;
+                }
+                .CloudDetail {
+                  color: #fff;
+                }
+                .throIcon {
+                  background: url("../../assets/image/third_wihte_arrow.png")
+                    no-repeat;
+                }
+              }
+              .router1:hover .icon1 {
+                background: url("../../assets/image/icon_computer_white.png");
+              }
+              .router2:hover .icon2 {
+                background: url("../../assets/image/icon_pro_white.png");
+              }
+              .router3:hover .icon3 {
+                background: url("../../assets/image/icon_fuwu_white.png");
+              }
+              .router4:hover .icon4 {
+                background: url("../../assets/image/icon_wendang_white.png");
+              }
+            }
+          }
+        }
+      }
+      .achievement {
+        width: 100%;
+        background: #f8f8f8;
+        height: 551px;
+        .achievementContent {
+          width: 1200px;
+          margin: 0 auto;
+          height: 100%;
+          padding-top: 58px;
+          .achievementTitle {
+            text-align: center;
+            color: #003f88;
+            font-size: 30px;
+            font-weight: bold;
+          }
+          .achievementTime {
+            color: #003f88;
+            text-align: center;
+            margin-top: 2px;
+            font-weight: 600;
+          }
+          .achievementSwiper {
+            margin-top: 27px;
+            width: 100%;
+            height: calc(100% - 128px);
+            .swiper {
+              height: 365px;
+              .swiper-button-prev {
+                display: none;
+              }
+              .swiper-button-next::after {
+                display: none;
+              }
+              .swiper-button-next {
+                top: 40%;
+                height: 30px;
+                background: url("../../assets/image/blue_arrow.png") no-repeat;
+              }
+              .swiper-wrapper {
+                .swiper-slide {
+                  text-align: center;
+                  font-size: 18px;
+                  transition: 300ms;
+                  transform: scale(0.8) !important;
+                  .shade {
+                    width: 316px;
+                    height: 240px;
+                    background: rgba(255, 255, 255, 0.7);
+                    position: absolute;
+                    left: 32px;
+                  }
+                  .swiperTitle {
+                    font-size: 18px;
+                    font-weight: bold;
+                    margin-top: 20px;
+                    a {
+                      color: #3a3e42;
+                    }
+                    a:hover {
+                      color: #007aff;
+                    }
+                  }
+                }
+                .swiper-slide-prev {
+                  .shade {
+                    display: block;
+                  }
+                }
+                .swiper-slide-active {
+                  transform: scale(1) !important;
+                  .shade {
+                    display: none;
+                  }
+                }
+                .swiper-slide-next {
+                  .shade {
+                    display: block;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      // @media screen and (max-width: 1680px) {
+      //   .start {
+      //     width: 100%;
+      //     height: 756px;
+      //   }
+      // }
+      // @media screen and (max-width: 1600px) {
+      //   .start {
+      //     width: 100%;
+      //     height: 720px;
+      //   }
+      // }
+      // @media screen and (max-width: 1440px) {
+      //   .start {
+      //     width: 100%;
+      //     height: 648px;
+      //   }
+      // }
+      // @media screen and (max-width: 1366px) {
+      //   .start {
+      //     width: 100%;
+      //     height: 615px;
+      //   }
+      // }
+    }
+  }
+}
+
+@keyframes upDownMove {
+  to {
+    transform: translateY(10px);
+  }
+}

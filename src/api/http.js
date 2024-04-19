@@ -1,7 +1,9 @@
 import axios from 'axios'
 import { message } from 'antd'
 import qs from 'qs'
-import { getToken, removeToken } from './storage'
+// import { getToken, removeToken } from './storage'
+import { removeToken, removeUserData } from '@/utils/storage'
+import { useNavigate } from 'react-router-dom'
 message.config({
   maxCount: 1,
 })
@@ -17,7 +19,7 @@ const errorHandle = (status, other) => {
   }
 }
 var instance = axios.create({
-  // baseURL:'http://192.168.21.191:10212',
+  baseURL: '/api1',
   timeout: 1000 * 50,
 })
 // const history = useHistory()
@@ -25,8 +27,7 @@ var instance = axios.create({
 instance.interceptors.request.use(
   (config) => {
     const isUserModule = config.url.substring(1, 5)
-    const token = getToken()
-
+    const token = localStorage.getItem('QUANTUM')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
       return config
@@ -54,7 +55,6 @@ instance.interceptors.response.use(
       return Promise.resolve(res.data)
     } else if (res.data.status === 409) {
       return Promise.resolve(res.data)
-      return Promise.resolve(res.data)
     } else if (res.data.status === 404) {
       message.error(res.data.msg, 1)
       return Promise.resolve(res.data)
@@ -65,9 +65,12 @@ instance.interceptors.response.use(
       // history.replace({
       //   pathname: 'signin/1#/signin/1',
       // })
-      window.location.href = 'signin/1'
-      localStorage.removeItem('jwt')
+      const navigate = useNavigate()
+      // navigate('/')
+      window.location.href = '/'
       removeToken()
+      removeUserData()
+      message.warning('请重新登录')
       return Promise.resolve(res.data)
     } else {
       errorHandle(res.data.status, res.data.msg, 78977)
@@ -82,4 +85,13 @@ instance.interceptors.response.use(
     return Promise.reject(error)
   }
 )
+// 发送请求
+instance
+  .get('/api1')
+  .then((response) => {
+    console.log('Response:', response.data)
+  })
+  .catch((error) => {
+    console.log('Catch Error:', error)
+  })
 export default instance

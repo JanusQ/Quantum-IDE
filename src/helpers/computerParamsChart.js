@@ -1,7 +1,7 @@
-import Chart from '../simulator/Chart'
+import Chart from '@/simulator/Chart'
 import * as d3 from 'd3'
-import { getDirac } from '../components/Mathjax'
-import d3Draw from '../simulator/D3Draw'
+import { getDirac } from '@/pages/OldAceComputer/Mathjax'
+import d3Draw from '@/simulator/D3Draw'
 export const computerParamsChat = (data, element, svgEle, isProbs) => {
 	const chart = new Chart()
 	const config = {

@@ -1,6 +1,5 @@
 import { cos, sin, round, pi, complex } from 'mathjs'
 import { create, all } from 'mathjs'
-import d3Draw from './D3Draw'
 import { Matrix, inverse } from 'ml-matrix';
 const config = {}
 const math = create(all, config)
@@ -13,7 +12,21 @@ const options = {
     write1FontColor: 'blue',
     write0FontColor: 'blue'
 }
-const d3 = new d3Draw(options)
+let d3
+import("./D3Draw").then(module=>{
+   const  d3Draw =module.default
+  d3=new d3Draw(options);
+}).catch(error => console.log(error));
+
+
+
+// let d3
+// setTimeout(() => {
+//    d3 = new d3Draw(options);
+
+//   }, "0");
+
+
 function showInDebuggerArea(circuit) {
     // SVG is returned as string
     let svg = circuit.exportSVG(true)
@@ -463,7 +476,7 @@ function weight_rand(arr) {
     var rand = Math.floor(Math.random() * total);
     //console.log(index);
     return arr[index[rand]];
-}
+};
 
 
 

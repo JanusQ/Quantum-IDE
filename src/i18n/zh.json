@@ -47,7 +47,7 @@
     "code error": "验证码错误",
     "username error": "用户名至多15个字符",
     "Email error": "邮箱格式错误",
-    "Telephone error": "邮箱格式错误",
+    "Telephone error": "手机格式错误",
     "Password error": "Password error",
     "Password format": "密码至少八个字符，至少一个字母和一个数字",
     "Password different": "两次输入的密码不一致",
@@ -58,7 +58,8 @@
     "personalCenter": "个人中心",
     "changePassword": "修改密码",
     "backgroundSystem": "后台管理",
-    "logOut": "退出登录"
+    "logOut": "退出登录",
+    "wallet": "钱包"
   },
   "computer": {
     "Name of computer": "计算机名字",

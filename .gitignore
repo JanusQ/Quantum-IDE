@@ -10,6 +10,8 @@
 
 # production
 /build
+/ide_test
+/src/simulator
 
 # misc
 .DS_Store

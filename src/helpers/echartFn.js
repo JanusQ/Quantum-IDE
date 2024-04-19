@@ -2,7 +2,7 @@ import * as echarts from 'echarts/core'
 import { TooltipComponent, GridComponent } from 'echarts/components'
 import { BarChart } from 'echarts/charts'
 import { CanvasRenderer } from 'echarts/renderers'
-import { getDirac } from '../components/Mathjax'
+import { getDirac } from '.@/pages/OldAceComputer/Mathjax
 echarts.use([TooltipComponent, GridComponent, BarChart, CanvasRenderer])
 export const barChart = (element, data, isNeedInit) => {
 	const chartDom = document.getElementById(element)

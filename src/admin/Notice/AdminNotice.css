@@ -1,0 +1,19 @@
+.admin_notice_div {
+	width: 100%;
+    overflow: auto;
+    border-top: 0;
+    margin-bottom: 40px;
+    min-height: 500px;
+    margin-top: 26px;
+}
+.admin_notice_operation{
+    width: 100%;
+    margin: auto;
+    background: #fff;
+    border-radius: 20px;
+    height: 50px;
+    line-height: 50px;
+    margin-top: 30px;
+    text-align: right;
+    padding: 0 10px;
+}

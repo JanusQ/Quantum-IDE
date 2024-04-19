@@ -1,0 +1,49 @@
+* {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-decoration: none;
+}
+// normalize.css 各个浏览器样式统一
+// 按需初始化 ul, body, h1, h2 {}
+html,
+body,
+#root,
+#app {
+  min-width: 500px;
+  height: 100%;
+  // font-family: Ubuntu-R;
+}
+
+// 滚动条样式
+// 滚动条整体宽度
+::-webkit-scrollbar {
+  // width: 8px;
+}
+/* 设置滚动条整体部分的样式 */
+::-webkit-scrollbar {
+  // width: 6px;
+  // height: 6px;
+}
+
+/* 滚动槽--外层轨道 */
+::-webkit-scrollbar-track {
+  background: none;
+}
+
+/* 内层轨道（不包含滚动块部分） */
+::-webkit-scrollbar-track-piece {
+  opacity: 0; /* 透明度设置为全透明，使得滚动条背景色为网页颜色 */
+}
+
+/* 滚动条滑块 */
+::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  background: #ececec;
+}
+body {
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+/Edge */
+  user-select: none; /* Standard syntax */
+}

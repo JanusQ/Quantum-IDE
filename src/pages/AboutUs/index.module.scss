@@ -1,0 +1,81 @@
+.root {
+  :global {
+    background-color: rgb(234, 239, 245);
+    .aboutUs {
+      width: 60%;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 60px;
+      h2 {
+        font-size: 40px;
+        margin-bottom: 50px;
+      }
+      h4 {
+        font-size: 18px;
+        margin-bottom: 20px;
+        font-weight: 700;
+      }
+      p span {
+        margin-left: 2em;
+      }
+      .usFount {
+        a {
+          color: #3a3e42;
+        }
+        a:hover {
+          color: blue;
+        }
+        .usComtent {
+          margin-bottom: 100px;
+          p {
+            font-size: 15px;
+            line-height: 25px;
+            color: #3a3e42;
+            margin-top: 20px;
+            text-align: justify;
+          }
+          .refence_link {
+            p {
+              display: block;
+              font-size: 15px;
+              line-height: 15px;
+              color: #3a3e42;
+              margin-top: 20px;
+            }
+          }
+        }
+        .team {
+          .speakers {
+            .speaker_title {
+              h1 {
+                font-family: sans-serif;
+                font-weight: 700;
+              }
+            }
+            .speaker {
+              display: flex;
+              margin-bottom: 40px;
+
+              .speaker_content {
+                width: 75%;
+                text-align: justify;
+                font-size: 1rem;
+                line-height: 1.5rem;
+              }
+
+              .photo {
+                // width: 150px;
+                // height: 160px;
+                margin-right: 20px;
+                img {
+                  width: 100%;
+                  height: 100%;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

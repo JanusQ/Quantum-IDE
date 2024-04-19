@@ -1,0 +1,193 @@
+.root {
+  height: 100%;
+  width: 100%;
+  :global {
+    .wallet_center_wapper {
+      background: #fff;
+      min-height: calc(100vh - 488px);
+      .wallet_center_top {
+        width: 100%;
+        height: 60px;
+        margin-bottom: 24px;
+        .wallet_center_top_content {
+          width: 200px;
+          margin: 0 auto;
+          h2 {
+            line-height: 60px;
+            color: #1677ff;
+          }
+        }
+      }
+      .wallet_center_con {
+        width: 1140px;
+        margin: 0 auto;
+        padding-bottom: 30px;
+        position: relative;
+        display: flex;
+        justify-content: space-between;
+        .wallet_left_nav {
+          width: 260px;
+          margin-right: 20px;
+          flex-shrink: 0;
+          .nav_user_info_wp {
+            box-sizing: border-box;
+            width: 100%;
+            height: 113px;
+            border: 1px solid rgba(235, 235, 235);
+            border-radius: 4px;
+            margin-bottom: 10px;
+            background: #fff;
+            padding: 12px;
+            .wallet_name {
+              margin-left: 20px;
+            }
+            .quantum_icon {
+              margin-top: 20px;
+              color: #9f9f9f;
+              .coin {
+                color: black;
+              }
+            }
+          }
+          .left_nav_wp {
+            width: 100%;
+            border: 1px solid rgba(235, 235, 235);
+            border-radius: 4px;
+            background: #fff;
+            .left_nav_wp_coin {
+              width: 100%;
+              height: 40px;
+              padding-left: 30px;
+              padding-top: 10px;
+              border: 1px solid rgba(235, 235, 235);
+            }
+          }
+        }
+        .wallet_right {
+          width: 100%;
+          .pay_bcoin_index_wp {
+            width: 100%;
+            border: 1px solid rgba(235, 235, 235);
+            border-radius: 4px;
+
+            .pay_bcoin_index_title {
+              padding: 12px 28px;
+              display: -ms-flexbox;
+              display: flex;
+              -ms-flex-align: center;
+              align-items: center;
+              position: relative;
+              border-bottom: 1px solid #ccd0d7;
+            }
+            .pay_bcoin_index_content {
+              padding: 15px 12px;
+              display: flex;
+              flex-direction: column;
+              background: #fff;
+              justify-content: center;
+              .couten_balance {
+                font-size: 20px;
+                color: #9f9f9f;
+              }
+              .pay_bcoin_index_box {
+                box-sizing: border-box;
+                margin-top: 13px;
+                display: flex;
+                align-items: flex-end;
+                position: relative;
+                padding-bottom: 16px;
+                border-bottom: 1px solid #e7ecf1;
+                .pay_bcoin_num {
+                  font-size: 50px;
+                  color: #1677ff;
+                  font-weight: 700;
+                  font-family: Microsoft YaHei, Arial, Helvetica, sans-serif;
+                }
+                .pay_bcoin_two {
+                  line-height: 45px;
+                  text-align: center;
+                  color: #fff;
+                  letter-spacing: 0;
+                  width: 140px;
+                  height: 45px;
+                  float: right;
+                  background: #1677ff;
+                  border-radius: 4px;
+                  font-size: 18px;
+                  position: absolute;
+                  top: 0;
+                  right: 0;
+                }
+              }
+            }
+          }
+          .pay_bcoin_recharge_content {
+            padding: 15px 12px;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+            justify-content: center;
+            .pay_bcoin_recharge_content_title {
+              font-size: 14px;
+              color: #99a2aa;
+              margin-bottom: 13px;
+            }
+            .pay_rechange_panel_box {
+              display: flex;
+              align-items: center;
+              flex-flow: wrap;
+              .pay_rechange_item {
+                color: #222;
+                box-sizing: border-box;
+                border: 1px solid #e7ecf1;
+                border-radius: 4px;
+                height: 80px;
+                display: flex;
+                align-items: center;
+                margin-right: 16px;
+                margin-bottom: 16px;
+                cursor: pointer;
+                padding: 12px 0;
+                width: 200px;
+                flex-direction: column;
+                justify-content: center;
+                font-size: 30px;
+              }
+              .pay_rechange_item_selected {
+                border: 1px solid #1677ff;
+                color: #1677ff;
+                cursor: default;
+              }
+              .pay_recharge_diy_wp {
+                border-radius: 4px;
+                height: 80px;
+                display: flex;
+                align-items: center;
+                margin-right: 16px;
+                margin-bottom: 16px;
+                position: relative;
+                padding: 12px;
+                flex: 1;
+                // border: 1px solid #e7ecf1;
+              }
+            }
+            .pay_rechange_qr_wp {
+              position: relative;
+              margin-top: 40px;
+              display: flex;
+              justify-content: center;
+              position: relative;
+              padding: 12px;
+
+              flex: 1;
+              .qrcode {
+                width: 500px;
+                height: 500px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
