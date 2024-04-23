@@ -26,23 +26,28 @@ export default function Introduce() {
   const [isSaveCaseModalVisible, setIsSaveCaseModalVisible] = useState(false)
   const [projectName, setProjectName] = useState('')
   const gotoComputer = () => {
-    const startDate = new Date('2024-04-16')
-    const endDate = new Date('2024-04-29')
+    // const startDate = new Date('2024-04-16')
+    // const endDate = new Date('2024-04-29')
 
-    // 创建要检查的日期对象
-    const checkDate = new Date() // 默认为当前日期，你也可以指定一个特定日期
+    // // 创建要检查的日期对象
+    // const checkDate = new Date() // 默认为当前日期，你也可以指定一个特定日期
 
-    // 判断日期是否在范围内
-    if (checkDate >= startDate && checkDate <= endDate) {
-      // setIsSaveCaseModalVisible(true)
-      // navigate('/aceComputer')
+    // // 判断日期是否在范围内
+    // if (checkDate >= startDate && checkDate <= endDate) {
+    //   // setIsSaveCaseModalVisible(true)
+    //   // navigate('/aceComputer')
+    //   isSaveOk()
+    // } else {
+    //   if (!userData.token) {
+    //     message.error('请先登录')
+    //     navigate('/signin')
+    //     return
+    //   }
+    // }
+    if (userData.token) {
       isSaveOk()
     } else {
-      if (!userData.token) {
-        message.error('请先登录')
-        navigate('/signin')
-        return
-      }
+      navigate('/examples')
     }
     // setIsSaveCaseModalVisible(true)
   }
@@ -61,10 +66,6 @@ export default function Introduce() {
     const { data } = await createPro(formdata)
     if (data.msg === '成功') {
       message.success('创建成功')
-
-      // navigate({
-      //   pathname: `/aceComputer/${projectName}/${data.project_id}`,
-      // })
       navigate('/aceComputer', {
         state: { projectName: projectName, projectId: data.project_id },
       })

@@ -27,7 +27,9 @@ var instance = axios.create({
 instance.interceptors.request.use(
   (config) => {
     const isUserModule = config.url.substring(1, 5)
-    const token = localStorage.getItem('QUANTUM')
+    // const token = localStorage.getItem('QUANTUM')
+    const token =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzEzODYwMzk5LCJpYXQiOjE3MTM4NDk1OTksImp0aSI6IjM5MzBjZTI4NWZhMTQ2MWFiOGExYWYwZWM3MjVkYmJjIiwidXNlcl9pZCI6MTE0LCJuYW1lIjoiMjU4MTUwNDZAcXEuY29tIn0.PxEfEBOEATGHQWFOW2y_snBXGiE_JNfbwNwDGlFrkhc'
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
       return config
@@ -85,13 +87,5 @@ instance.interceptors.response.use(
     return Promise.reject(error)
   }
 )
-// 发送请求
-instance
-  .get('/api1')
-  .then((response) => {
-    console.log('Response:', response.data)
-  })
-  .catch((error) => {
-    console.log('Catch Error:', error)
-  })
+
 export default instance

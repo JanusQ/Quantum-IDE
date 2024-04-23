@@ -1,0 +1,38 @@
+.notice_detail {
+	width: 99%;
+	margin: auto;
+	margin-top: 30px;
+	height: calc(100% - 180px);
+	overflow: hidden;
+	background: #fff;
+	box-shadow: rgb(0 0 0 / 35%) 0px 0px 5px;
+	padding: 10px;
+}
+.notice_detail_title {
+	border-bottom: 1px dashed rgba(215, 215, 215, 1);
+    margin-bottom: 20px;
+}
+.notice_detail_name {
+	width: 100%;
+	text-align: center;
+	font-size: 20px;
+	margin: 15px 0;
+}
+.notice_detail_time {
+	width: 100%;
+	text-align: center;
+	color: #1890ff;
+	font-size: 16px;
+	margin-bottom: 15px;
+}
+.notice_detail_content {
+	width: 100%;
+	height: calc(100% - 150px);
+    overflow: auto;
+}
+.notice_detail_detail {
+	width: 60%;
+	margin: auto;
+
+	
+}

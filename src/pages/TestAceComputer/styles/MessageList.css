@@ -1,0 +1,19 @@
+.message_div {
+	width: 1200px;
+    overflow: auto;
+    padding: 10px;
+    margin-bottom: 40px;
+}
+.message_title{
+    font-size: 18px;
+    text-align: center;
+    font-weight: 700;
+    margin: 15px 0;
+}
+.message_operation{
+    height: 40px;
+    line-height: 40px;
+    width: 100%;
+    border: 1px solid rgba(233, 233, 233, 1);
+    padding: 0 10px;
+}
