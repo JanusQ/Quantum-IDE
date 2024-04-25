@@ -56,7 +56,7 @@ img {
 }
 .App-logo {
   height: 40vmin;
-  pointer-events: none;
+  /* pointer-events: none; */
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -132,7 +132,7 @@ ul li {
   color: #003f88;
   font-weight: bold;
   margin-bottom: 51px;
-  user-select: none;
+    user-select: none;
 }
 .ide_top_menu {
   height: 33px;
@@ -154,7 +154,7 @@ ul li {
   height: 100%;
   line-height: 33px;
   text-align: center;
-  user-select: none;
+    user-select: none;
   color: #fff;
   cursor: pointer;
 }

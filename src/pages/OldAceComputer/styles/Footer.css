@@ -22,7 +22,7 @@
 
 .footer_menu li:not(.footer_menu_title) {
   text-align: center;
-  user-select: none;
+    user-select: none;
   margin-top: 10px;
   font-size: 16px;
   color: #b5b5b5;
@@ -82,7 +82,7 @@
   text-align: center;
   border: 1px solid #dad5d5;
   line-height: 23px;
-  user-select: none;
+    user-select: none;
   cursor: pointer;
   margin-top: 100px;
   margin-left: 100px;

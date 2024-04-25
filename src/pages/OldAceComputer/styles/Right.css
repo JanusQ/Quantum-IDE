@@ -19,7 +19,7 @@
   bottom: 0px;
 }
 .svgtext {
-  user-select: none;
+    user-select: none;
 }
 
 #d3_drawing {
@@ -96,7 +96,7 @@
   font-size: 18px;
 }
 .svgtext {
-  user-select: none;
+    user-select: none;
   font-family: "Ubuntu-R";
 }
 .restore_btn {

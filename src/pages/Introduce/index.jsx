@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import styles from './index.module.scss'
 import 'swiper/scss'
@@ -12,16 +12,23 @@ import banner4 from '@/assets/image/banner_4.png'
 import banner5 from '@/assets/image/banner_5.png'
 import achievement from '@/assets/image/achievement.png'
 import { useNavigate } from 'react-router-dom'
-import { Modal, Input, message } from 'antd'
-import Icon, { DownOutlined } from '@ant-design/icons'
+import { Modal, Input, message, Button, Tooltip } from 'antd'
+import Icon, { DownOutlined, CopyOutlined } from '@ant-design/icons'
 import { useSelector } from 'react-redux'
 import { createPro } from '@/api/test_circuit'
 import { v4 as uuidv4 } from 'uuid'
+import { CopyToClipboard } from 'react-copy-to-clipboard'
+
 export default function Introduce() {
+  const { TextArea } = Input
   // 中英切换
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const { userData } = useSelector((store) => store.userData)
+  const apikeyref = useRef()
+  const copyText = () => {
+    message.success('Copy success')
+  }
   // 创建项目
   const [isSaveCaseModalVisible, setIsSaveCaseModalVisible] = useState(false)
   const [projectName, setProjectName] = useState('')
@@ -44,11 +51,13 @@ export default function Introduce() {
     //     return
     //   }
     // }
-    if (userData.token) {
-      isSaveOk()
-    } else {
-      navigate('/examples')
-    }
+    navigate('/examples')
+
+    // if (userData.token) {
+    //   isSaveOk()
+    // } else {
+    //   navigate('/examples')
+    // }
     // setIsSaveCaseModalVisible(true)
   }
   const onSaveChange = (e) => {
@@ -113,6 +122,72 @@ export default function Introduce() {
             <SwiperSlide>
               <div className="SwiperSlide">
                 <div className="banner">
+                  {userData.token && (
+                    <div
+                      style={{
+                        width: 360,
+                        wordWrap: 'break-word',
+                        textAlign: 'justify',
+                      }}
+                    >
+                      <span style={{ fontSize: 20 }}>API_KEY:</span>
+                      <div
+                        style={{
+                          border: '1px solid rgba(255, 255, 255, 0.44)',
+                          height: 145,
+                          display: 'inline-block',
+                          width: 360,
+                          borderRadius: 5,
+                          padding: 10,
+                          marginTop: 10,
+                          userSelect: 'all',
+                          zIndex: 1000,
+                          color: '#000',
+                          opacity: 1,
+                          backgroundColor: '#fff',
+                        }}
+                      >
+                        {userData.token}
+                        <CopyToClipboard text={userData.token}>
+                          <Tooltip title="copy">
+                            <CopyOutlined
+                              onClick={copyText}
+                              style={{
+                                color: '#000',
+                                cursor: 'pointer',
+                                marginLeft: 5,
+                              }}
+                            />
+                          </Tooltip>
+                        </CopyToClipboard>
+                      </div>
+                      {/* <CopyToClipboard text={userData.token}>
+                        <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'flex-end',
+                          }}
+                          className="copy"
+                        >
+                          <span
+                            style={{
+                              width: 60,
+                              height: 30,
+                              backgroundColor: 'rgb(0, 63, 136)',
+                              color: '#fff',
+                              textAlign: 'center',
+                              lineHeight: '30px',
+                              borderRadius: 8,
+                              cursor: 'pointer',
+                            }}
+                            onClick={copyText}
+                          >
+                            copy
+                          </span>
+                        </div>
+                      </CopyToClipboard> */}
+                    </div>
+                  )}
                   <h2 className="title">{t('Home.title')}</h2>
                   <div className="content">{t('Home.content')}</div>
                   <div onClick={gotoComputer} className="btn">

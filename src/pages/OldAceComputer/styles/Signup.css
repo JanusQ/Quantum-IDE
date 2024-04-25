@@ -40,7 +40,7 @@
     border: 0;
 }
 .signup_to_in{
-    user-select: none;
+      user-select: none;
     cursor: pointer;
 }
 .sign_up_form a{

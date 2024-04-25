@@ -160,8 +160,20 @@
 	margin-right: 20px;
 }
 .computer_graph_div{
-	height: 800px;
+	/* height: 500px; */
 	width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.GraphEcharts_content{
+  height: 600px;
+	width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 }
 #computer_graph_echarts{
 	height: 100%;

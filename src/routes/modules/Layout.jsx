@@ -55,15 +55,7 @@ export const UserLayoutRouter = [
           key: 'aceComputer',
         },
       },
-      {
-        path: '/examples/*',
-        element: LazyLoad(React.lazy(() => import('@/pages/TestAceComputer'))),
-        meta: {
-          requiresAuth: true,
-          title: 'TestAceComputer',
-          key: 'TestAceComputer',
-        },
-      },
+
       {
         path: '/projects',
         element: LazyLoad(React.lazy(() => import('@/pages/Project'))),
@@ -161,5 +153,14 @@ export const UserLayoutRouter = [
         ],
       },
     ],
+  },
+  {
+    path: '/examples/*',
+    element: LazyLoad(React.lazy(() => import('@/pages/TestAceComputer'))),
+    meta: {
+      requiresAuth: true,
+      title: 'TestAceComputer',
+      key: 'TestAceComputer',
+    },
   },
 ]

@@ -96,8 +96,8 @@
     "Choose View show": "Choose View show"
   },
   "compile": {
-    "before compile": "before compile",
-    "after compile": "after compile"
+    "before compile": "Before compilation",
+    "after compile": "After compilation"
   },
   "switchingmode": {
     "switching mode": "switching mode",
@@ -117,8 +117,8 @@
   },
   "task": {
     "Task details": "Task details",
-    "before compile": "before compile",
-    "after compile": "after compile",
+    "before compile": "Before compilation",
+    "after compile": "After compilation",
     "close read correction": "Close read correction",
     "open read correction": "open read correction"
   },

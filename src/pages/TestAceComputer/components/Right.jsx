@@ -31,14 +31,21 @@ const Right = (props) => {
           </Tooltip>
         </div>
         <div className="circuit_div">
-          <svg id="circuit_svg">
-            <g id="circuit_brush" />
-            <g id="brush_label" />
-            <g id="circuit_label" />
-            <g id="circuit_graph" />
+          <div className="circit_content" style={{ padding: 30 }}>
+            <svg id="circuit_svg">
+              <g transform="translate(20,0)">
+                <g id="circuit_brush" />
+                <g transform="scale(1.5)">
+                  <g id="brush_label" />
+                  <g id="circuit_label" />
+                  <g id="circuit_graph" />
+                </g>
+              </g>
 
-            {/* 下面的在前面 */}
-          </svg>
+              {/* 下面的在前面 */}
+            </svg>
+          </div>
+
           <div className="line_chart_div">
             <svg id="line_chart_svg">
               <g id="lineChart_graph"></g>
@@ -115,7 +122,7 @@ const Right = (props) => {
               </Tooltip>
             </span>
             <Button className="export_btn restore_btn" onClick={restore}>
-              restore filter
+              Restore filter
             </Button>
           </div>
           <div className="c_up_draw">
@@ -144,6 +151,7 @@ const Right = (props) => {
         style={{
           display: props.isShowRealB ? 'block' : 'none',
           height: props.isShowRealC || props.isShowRealD ? '40%' : '100%',
+          minHeight: 300,
         }}
       >
         {/* <div className="real_params_btn">

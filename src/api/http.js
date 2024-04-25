@@ -27,9 +27,10 @@ var instance = axios.create({
 instance.interceptors.request.use(
   (config) => {
     const isUserModule = config.url.substring(1, 5)
-    // const token = localStorage.getItem('QUANTUM')
-    const token =
+    const locaToken = localStorage.getItem('QUANTUM')
+    const mytoken =
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzEzODYwMzk5LCJpYXQiOjE3MTM4NDk1OTksImp0aSI6IjM5MzBjZTI4NWZhMTQ2MWFiOGExYWYwZWM3MjVkYmJjIiwidXNlcl9pZCI6MTE0LCJuYW1lIjoiMjU4MTUwNDZAcXEuY29tIn0.PxEfEBOEATGHQWFOW2y_snBXGiE_JNfbwNwDGlFrkhc'
+    let token = locaToken ? locaToken : mytoken
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
       return config

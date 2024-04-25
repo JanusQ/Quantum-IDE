@@ -15,7 +15,7 @@
   font-size: 16px;
   font-weight: 700;
   color: #ffffff;
-  user-select: none;
+    user-select: none;
   cursor: pointer;
   float: left;
 }
@@ -34,7 +34,7 @@
   font-size: 16px;
   color: #ffffff;
   text-align: center;
-  user-select: none;
+    user-select: none;
   margin-left: 60PX;
 }
 .front_menu_list li:hover {

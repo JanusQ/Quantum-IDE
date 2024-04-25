@@ -46,19 +46,19 @@ const Ace = forwardRef((props, ref) => {
   const options = [
     {
       value: 'ghz_state',
-      label: 'ghz_state',
+      label: 'GHZ state',
     },
     {
       value: 'w_state',
-      label: 'w_state',
+      label: 'W state',
     },
     {
       value: 'time_crystal',
-      label: 'time_crystal',
+      label: 'Time crystal',
     },
     {
       value: 'VQA',
-      label: 'VQA',
+      label: 'Quantum Neural Network',
     },
   ]
   //导出
@@ -153,13 +153,29 @@ const Ace = forwardRef((props, ref) => {
           </Button>
 
           <Select
-            style={{ width: '30%', marginLeft: '10px' }}
+            style={{ width: '35%', marginLeft: '10px' }}
             onChange={props.selectChange}
             optionLabelProp="label"
             options={options}
             defaultValue="ghz_state"
           ></Select>
-          <ZoomInOutlined
+          <Select
+            style={{ width: '35%', marginLeft: '10px' }}
+            onChange={props.onSelectRunChange}
+            // optionLabelProp="label"
+            defaultValue="JavaScript_simulator"
+          >
+            <Option key={1} value="JavaScript_simulator">
+              JavaScript_simulator
+            </Option>
+            <Option key={2} value="qiskit">
+              Python simulator
+            </Option>
+            <Option key={3} value="sqcg">
+              Quantum computer
+            </Option>
+          </Select>
+          {/* <ZoomInOutlined
             style={{ marginLeft: '5%', cursor: 'pointer', fontSize: '18px' }}
             onClick={() => {
               controlFontSize('add')
@@ -170,7 +186,7 @@ const Ace = forwardRef((props, ref) => {
             onClick={() => {
               controlFontSize('sub')
             }}
-          />
+          /> */}
         </div>
         {/* ace编辑器 */}
         <AceEditor
@@ -184,7 +200,11 @@ const Ace = forwardRef((props, ref) => {
           height="84%"
           value={props.editorValue}
           showGutter={false}
-          style={{ fontSize: fontSize + 'px' }}
+          style={{
+            fontSize: fontSize + 'px',
+            pointerEvents: 'none',
+            backgroundColor: 'rgba(0, 0, 0, 0.1)',
+          }}
           highlightActiveLine={false}
           setOptions={{
             useWorker: false,

@@ -1,12 +1,13 @@
+import React, { useRef, useEffect } from 'react'
 import * as echarts from 'echarts/core'
 import { TitleComponent, TooltipComponent } from 'echarts/components'
 import { GraphChart } from 'echarts/charts'
 import { CanvasRenderer } from 'echarts/renderers'
 
 echarts.use([TitleComponent, TooltipComponent, GraphChart, CanvasRenderer])
-export const drawGraphChart = (element, data, linksData) => {
-  const chartDom = document.getElementById(element)
-  const myChart = echarts.init(chartDom)
+export default function GraphEcharts({ data, linksData }) {
+  console.log(data, linksData)
+  const GraphEchartsRef = useRef()
   const option = {
     tooltip: {
       formatter: function (params) {
@@ -50,6 +51,14 @@ export const drawGraphChart = (element, data, linksData) => {
       },
     ],
   }
-
-  option && myChart.setOption(option)
+  useEffect(() => {
+    let myChart = echarts.getInstanceByDom(GraphEchartsRef.current)
+    if (myChart == null) {
+      myChart = echarts.init(GraphEchartsRef.current)
+    }
+    myChart.setOption(option)
+  })
+  return (
+    <div style={{ width: '100%', height: '100%' }} ref={GraphEchartsRef}></div>
+  )
 }

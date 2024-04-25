@@ -138,30 +138,6 @@ function App() {
     {
       value: 'Deutsch-Jozsa Algorithm',
     },
-    // {
-    // 	value: "Shor's Algorithm",
-    // },
-    // {
-    // 	value: 'user_study',
-    // },
-    // {
-    // 	value: 'into_evolution',
-    // },
-    // {
-    // 	value: 'case 1',
-    // },
-    // {
-    // 	value: 'bell_state',
-    // },
-    // {
-    // 	value: 'all gates',
-    // },
-    // {
-    // 	value: 'ex7-7',
-    // },
-    // {
-    // 	value: 'ex7-1',
-    // },
     {
       value: 'Markov Process',
     },
@@ -615,7 +591,7 @@ function App() {
 
       setIsSubmitModalLoading(false)
     }
-    // form.resetFields()
+    form.resetFields()
   }
   useEffect(() => {
     if (resultData) {
@@ -655,7 +631,7 @@ function App() {
   // 选择改变编辑器的内容
   const selectChange = (value) => {
     setInitOption(value)
-    console.log(initOption, 'initOption')
+    setchartData([])
     axios
       .get('/js/' + value + '.js')
       .then((res) => {
@@ -917,9 +893,15 @@ function App() {
   const [isSelectRunModalVisible, setIsSelectRunModalVisible] = useState(false)
   const [runValue, setRunValue] = useState('JavaScript_simulator')
   const onSelectRunChange = (e) => {
-    setRunValue(e.target.value)
+    // console.log(e, 88)
+    setRunValue(e)
+
+    // console.log(e.target.value, 'e.target.value')
   }
   // 模拟器用户禁用其他选项
+  useEffect(() => {
+    isSelectRunOk()
+  }, [runValue])
 
   const selectRunModal = () => {
     return (
@@ -933,12 +915,12 @@ function App() {
       >
         <p> {t('switchingmode.Choose mode')}</p>
         <Radio.Group onChange={onSelectRunChange} value={runValue}>
-          <Radio
+          {/* <Radio
             disabled={auth.user_type == 1 ? true : false}
             value={'sqcg_cluster'}
           >
             {t('switchingmode.Quantum cluster')}{' '}
-          </Radio>
+          </Radio> */}
           <Radio disabled={auth.user_type == 1 ? true : false} value={'sqcg'}>
             {t('switchingmode.Quantum computer')}
           </Radio>
@@ -948,7 +930,7 @@ function App() {
           <Radio value={'JavaScript_simulator'}>
             JavaScript{t('switchingmode.simulator')}
           </Radio>
-          <Radio value={'analysis'}>Analysis </Radio>
+          {/* <Radio value={'analysis'}>Analysis </Radio> */}
         </Radio.Group>
       </Modal>
     )
@@ -1038,17 +1020,14 @@ function App() {
     const formData = new FormData()
     formData.append('filter', JSON.stringify({ update_code: -1 }))
     const { data } = await getComList(formData)
-    // 老板要求前端加一个数据 看见别慌
     setComputerList([
       ...data.com_list,
-      ...[
-        {
-          chip_id: 20,
-          chip_name: 'python' + t('switchingmode.simulator'),
-          com_status: 0,
-          qubits_number: 20,
-        },
-      ],
+      {
+        chip_id: 20,
+        chip_name: 'python' + t('switchingmode.simulator'),
+        com_status: 0,
+        qubits_number: 20,
+      },
     ])
   }
   const getComListOpts = computerList.map((item) => (
@@ -1094,13 +1073,20 @@ function App() {
       <Modal
         okText={t('isok.confirm')}
         cancelText={t('isok.cancel')}
-        visible={submitModalVisible}
+        open={submitModalVisible}
         onOk={isSubmitOk}
         onCancel={isSubmitCancel}
         title={t('Submittask.Submit task')}
         confirmLoading={isSubmitModalLoading}
       >
-        <Form form={form} layout="vertical" autoComplete="off">
+        <Form
+          initialValues={{
+            sample: 3000,
+          }}
+          form={form}
+          layout="vertical"
+          autoComplete="off"
+        >
           <Form.Item
             name="sample"
             label={t('Submittask.Sampling frequency')}
@@ -1122,7 +1108,17 @@ function App() {
               placeholder={t('Submittask.Computer of choice')}
               allowClear
             >
-              {getComListOpts}
+              {/* {getComListOpts} */}
+              {runValue == 'sqcg' && (
+                <Option key={11} value="Tianmu-1">
+                  Tianmu-1
+                </Option>
+              )}
+              {runValue == 'qiskit' && (
+                <Option key={12} value="python simulator">
+                  python simulator
+                </Option>
+              )}
               {/* <Option key={9} value="python模拟器">python模拟器</Option>
 							 <Option key={10} value="模拟器1">模拟器1</Option>
 							 <Option key={11} value="模拟器2">模拟器2</Option> */}
@@ -1139,6 +1135,7 @@ function App() {
   }
   const isSubmitCancel = () => {
     form.resetFields()
+    console.log('管不了')
     setSubmitModalVisible(false)
   }
   // 分析模式
@@ -1151,7 +1148,7 @@ function App() {
   return (
     <>
       {/* <ComponentTitle name={'IDE'}></ComponentTitle> */}
-      {leftOperations()}
+      {/* {leftOperations()} */}
       <div className="App" style={{ backgroundColor: backcolor }}>
         <div
           className="left-div"
@@ -1173,6 +1170,7 @@ function App() {
             optionList={optionList}
             initOption={initOption}
             deleteItem={deleteItem}
+            onSelectRunChange={onSelectRunChange}
             ref={aceRef}
           ></Ace>
           <ConsoleComponent consoleValue={consoleValue}></ConsoleComponent>

@@ -1,9 +1,19 @@
 import React, { useState, useRef, useEffect } from 'react'
 import * as echarts from 'echarts/core'
-import { TitleComponent, LegendComponent } from 'echarts/components'
+import {
+  TitleComponent,
+  LegendComponent,
+  TooltipComponent,
+} from 'echarts/components'
 import { RadarChart } from 'echarts/charts'
 import { CanvasRenderer } from 'echarts/renderers'
-echarts.use([TitleComponent, LegendComponent, RadarChart, CanvasRenderer])
+echarts.use([
+  TooltipComponent,
+  TitleComponent,
+  LegendComponent,
+  RadarChart,
+  CanvasRenderer,
+])
 
 export default function MyRadarChart(props) {
   const radarChart = useRef()
@@ -11,9 +21,9 @@ export default function MyRadarChart(props) {
     title: {
       text: '预期结果',
     },
-    // tooltip: {
-    //   trigger: 'axis',
-    // },
+    tooltip: {
+      trigger: 'axis',
+    },
     radar: {
       indicator: [
         { name: '门数量提升', max: 1 },
