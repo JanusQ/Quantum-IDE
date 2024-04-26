@@ -15,10 +15,11 @@ import {
   ZoomInOutlined,
   ZoomOutOutlined,
   CloseOutlined,
+  HomeOutlined,
 } from '@ant-design/icons'
 import { createFile } from '@/simulator/CommonFunction'
 import QCEngine from '@/simulator/MyQCEngine'
-
+import { Link } from 'react-router-dom'
 const Ace = forwardRef((props, ref) => {
   useImperativeHandle(ref, () => ({
     exportFile,
@@ -131,7 +132,10 @@ const Ace = forwardRef((props, ref) => {
   return (
     <div className="left_top_div">
       <div className="ace_div">
-        <div className="title">
+        <div className="title" style={{ padding: 10 }}>
+          <Link to={'/home'}>
+            <HomeOutlined style={{ marginRight: 20, color: 'rgb(0, 0, 0)' }} />
+          </Link>
           QuCode
           <Tooltip
             placement="right"
