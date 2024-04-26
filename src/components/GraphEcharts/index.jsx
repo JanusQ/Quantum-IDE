@@ -6,7 +6,6 @@ import { CanvasRenderer } from 'echarts/renderers'
 
 echarts.use([TitleComponent, TooltipComponent, GraphChart, CanvasRenderer])
 export default function GraphEcharts({ data, linksData }) {
-  console.log(data, linksData)
   const GraphEchartsRef = useRef()
   const option = {
     tooltip: {

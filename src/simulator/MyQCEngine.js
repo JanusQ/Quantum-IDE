@@ -138,7 +138,7 @@ export default class QCEngine {
           let gate = {}
           gate['id'] = wire[la]['id']
           gate['name'] = wire[la]['name']
-          console.log(i)
+          // console.log(i)
           gate['qubits'] = [i]
 
           if ('params' in wire[la]['options'])
@@ -160,7 +160,7 @@ export default class QCEngine {
     const circuit = new QuantumCircuit()
     this.circuit = circuit
     this.circuit.importQASM(QASM, function (errors) {
-      console.log(errors)
+      // console.log(errors)
     })
   }
 

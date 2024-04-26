@@ -134,7 +134,6 @@ export default function Introduce() {
                       <div
                         style={{
                           border: '1px solid rgba(255, 255, 255, 0.44)',
-                          height: 145,
                           display: 'inline-block',
                           width: 360,
                           borderRadius: 5,

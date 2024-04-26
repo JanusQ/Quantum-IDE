@@ -25,7 +25,10 @@ export default function TopChart({ chartData, initOption, runValue }) {
   return (
     <>
       {chartData.length ? (
-        <BarChartEchart chartData={initOption !== 'VQA' ? chartData : VQA} />
+        <BarChartEchart
+          runValue={runValue}
+          chartData={initOption !== 'VQA' ? chartData : VQA}
+        />
       ) : (
         ''
       )}

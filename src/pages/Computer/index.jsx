@@ -20,7 +20,7 @@ const Computer = () => {
   }
   const columns = [
     {
-      title: '量子位',
+      title: 'qubit',
       dataIndex: 'name',
       align: 'center',
       key: 'name',
@@ -34,7 +34,7 @@ const Computer = () => {
   ]
   const columns1 = [
     {
-      title: '量子位',
+      title: 'coupling',
       dataIndex: 'name',
       align: 'center',
       key: 'name',
@@ -44,6 +44,28 @@ const Computer = () => {
       dataIndex: 'value',
       key: 'value',
       align: 'center',
+    },
+  ]
+  const columns3 = [
+    {
+      title: 'qubit',
+      dataIndex: 'bit_name',
+      align: 'center',
+      key: 'name',
+    },
+    {
+      title: 'T1',
+      dataIndex: 'T1',
+      key: 'T1',
+      align: 'center',
+      render: (text) => <>{text} μs</>,
+    },
+    {
+      title: 'T2',
+      dataIndex: 'T2',
+      key: 'T2',
+      align: 'center',
+      render: (text) => <>{text} μs</>,
     },
   ]
   const [computerList, setComputerList] = useState([])
@@ -71,6 +93,7 @@ const Computer = () => {
   const [computerDetail, setComputerDetail] = useState({})
   const [computerTable, setComputerTable] = useState([])
   const [computerTable1, setComputerTable1] = useState([])
+  const [TData, setTData] = useState([])
   const [node, setnode] = useState([])
   const [links, setlinks] = useState([])
   const showDrawer = async (id, element, isShowLineLabel) => {
@@ -78,13 +101,17 @@ const Computer = () => {
     formData.append('chip_id', id)
     const { data } = await getComDetil(formData)
     const qubits = data.computer.qubits
+    // setTData(Object.keys(qubits))
+    // console.log(qubits, 'qubits')
     const couplers = data.computer.couplers
     const validQubits = data.computer.valid_qubits
     const arr = []
     const arr1 = []
+    const arr3 = []
     const arrGraphNode = []
     const arrGraphLinks = []
     for (const key in qubits) {
+      arr3.push(qubits[key])
       if (qubits[key].err !== null) {
         arr.push({
           name: key,
@@ -122,6 +149,8 @@ const Computer = () => {
         },
       })
     }
+    // console.log(arr3)
+
     setnode(arrGraphNode)
     setlinks(arrGraphLinks)
     if (element === 'computer_graph_echarts') {
@@ -129,6 +158,8 @@ const Computer = () => {
       setComputerDetail(data.computer)
       setComputerTable(arr)
       setComputerTable1(arr1)
+      setTData(qubits)
+      setTData(arr3)
       drawGraphChart('computer_graph_echarts', arrGraphNode, arrGraphLinks)
     } else {
       drawGraphChart(element, arrGraphNode, arrGraphLinks)
@@ -250,6 +281,19 @@ const Computer = () => {
           /> */}
           <div className="GraphEcharts_content">
             <GraphEcharts data={node} linksData={links} />
+          </div>
+        </div>
+        <div className="computer_number_div">
+          <div className="computer_table_father">
+            <div className="computer_table_div">
+              <Table
+                columns={columns3}
+                dataSource={TData}
+                bordered
+                pagination={false}
+                rowKey="bit_name"
+              />
+            </div>
           </div>
         </div>
       </Modal>
