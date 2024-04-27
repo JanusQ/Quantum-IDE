@@ -6,7 +6,6 @@ import { CanvasRenderer } from 'echarts/renderers'
 import styles from './index.module.scss'
 echarts.use([GridComponent, BarChart, CanvasRenderer, TooltipComponent])
 export default function BarChartEchart({ chartData, runValue }) {
-  console.log(runValue)
   const BarChartEchart = useRef()
   const option = {
     title: {
