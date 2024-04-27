@@ -554,7 +554,11 @@ function App() {
       formData.append('computer_name', form.getFieldsValue(['comName']).comName)
       formData.append('run_type', runValue)
       formData.append('user_id', auth.user_id)
-      formData.append('label', initOption)
+      if (runValue == 'sqcg' && initOption == 'time_crystal') {
+        formData.append('label', 'time_crystal_platform')
+      } else {
+        formData.append('label', initOption)
+      }
       const { data } = await submitTask(formData)
       drawFn(data.task_info)
       setchartData(data.probs)
