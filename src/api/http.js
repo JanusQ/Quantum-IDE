@@ -20,7 +20,7 @@ const errorHandle = (status, other) => {
 }
 var instance = axios.create({
   baseURL: '/api1',
-  timeout: 1000 * 50,
+  // timeout: 1000 * 50,
 })
 // const history = useHistory()
 // // 请求拦截器
@@ -28,8 +28,7 @@ instance.interceptors.request.use(
   (config) => {
     const isUserModule = config.url.substring(1, 5)
     const locaToken = localStorage.getItem('QUANTUM')
-    const mytoken =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzEzODYwMzk5LCJpYXQiOjE3MTM4NDk1OTksImp0aSI6IjM5MzBjZTI4NWZhMTQ2MWFiOGExYWYwZWM3MjVkYmJjIiwidXNlcl9pZCI6MTE0LCJuYW1lIjoiMjU4MTUwNDZAcXEuY29tIn0.PxEfEBOEATGHQWFOW2y_snBXGiE_JNfbwNwDGlFrkhc'
+    const mytoken ='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE0MjUyMTYwLCJpYXQiOjE3MTQyMzA1NjAsImp0aSI6Ijk0MGFhZWM0MDhmYTQ1NWJiY2JlMDU0MGQyM2ViY2M5IiwidXNlcl9pZCI6MTE0LCJuYW1lIjoiMjU4MTUwNDZAcXEuY29tIn0.37vEHsEeu1TuVd1bW0nbnuoEQCl2P1HYuL3wmkJ8fyU'
     let token = locaToken ? locaToken : mytoken
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
@@ -83,7 +82,7 @@ instance.interceptors.response.use(
   },
   (error) => {
     if (error.message.includes('timeout')) {
-      tip('请求超时，请重试')
+      tip('timeout')
     }
     return Promise.reject(error)
   }
