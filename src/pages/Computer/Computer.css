@@ -38,6 +38,7 @@
 	flex: 1;
 }
 .computer_item_flex:nth-of-type(2){
+  padding-top: 37px;
 	width: 250px;
 	margin-left: 20px;
 }

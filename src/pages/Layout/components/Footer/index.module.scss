@@ -41,6 +41,10 @@
             a {
               text-decoration: none;
               color: #b4b4b4;
+              white-space: nowrap;
+              // 超出部分省略号显示
+              overflow: hidden;
+              text-overflow: ellipsis;
             }
             a:hover {
               color: #fff;

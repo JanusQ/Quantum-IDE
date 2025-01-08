@@ -29,7 +29,7 @@
                 height: 100%;
                 width: 100%;
                 position: absolute;
-                background-image: url('../../assets/image/quantum.png');
+                background-image: url("../../assets/image/quantum.png");
                 background-size: cover;
                 .banner {
                   // width: 648px;
@@ -44,7 +44,7 @@
                   .title {
                     font-size: 40px;
                     font-weight: normal;
-                    font-family: 'Raleway', 'Hiragino Sans GB';
+                    font-family: "Raleway", "Hiragino Sans GB";
                     white-space: nowrap;
                     color: #fff;
                     margin-bottom: 8px;
@@ -54,13 +54,13 @@
                   .content {
                     font-size: 16px;
                     color: #fff;
-                    margin-top: 44px;
-                    font-family: 'Raleway', 'Hiragino Sans GB';
+                    // margin-top: 44px;
+                    font-family: "Raleway", "Hiragino Sans GB";
                     white-space: nowrap;
                     text-align: justify;
                   }
                   .btn {
-                    float: right;
+                    // float: right;
                     background: #003f88;
                     border-radius: 16px;
                     width: 141px;
@@ -149,7 +149,7 @@
             .swiper-button-next {
               top: 40%;
               height: 30px;
-              background: url('../../assets/image/blue_arrow.png') no-repeat;
+              background: url("../../assets/image/blue_arrow.png") no-repeat;
             }
           }
           .swiper-wrapper {
@@ -206,7 +206,7 @@
                     margin-top: 29px;
                     height: 24px;
                     font-size: 15px;
-                    width: 83px;
+                    // width: 83px;
                     line-height: 24px;
                     background: #003f88;
                     border-radius: 16px;
@@ -216,6 +216,7 @@
                     a {
                       text-decoration: none;
                       color: #fff;
+                      padding: 10px;
                     }
                   }
                 }
@@ -291,26 +292,29 @@
                   border-radius: 50%;
                 }
                 .icon1 {
-                  background: url('../../assets/image/icon_computer_blue.png');
+                  background: url("../../assets/image/icon_computer_blue.png");
                 }
                 .icon2 {
-                  background: url('../../assets/image/icon_pro_blue.png');
+                  background: url("../../assets/image/icon_pro_blue.png");
                 }
                 .icon3 {
-                  background: url('../../assets/image/icon_fuwu_blue.png');
+                  background: url("../../assets/image/icon_fuwu_blue.png");
                 }
                 .icon4 {
-                  background: url('../../assets/image/icon_wendang_blue.png');
+                  background: url("../../assets/image/icon_wendang_blue.png");
                 }
 
                 .useCloundContent {
                   width: 100%;
-                  padding-left: 34px;
-                  margin-top: 37px;
+                  // padding-left: 34px;
+                  // margin-top: 37px;
+                  margin: 0 auto;
+                  padding: 20px;
                   .routerline {
                     width: 60px;
                     height: 4px;
                     background: #003f88;
+                    margin-top: 5px;
                   }
                   .startIde {
                     font-size: 23px;
@@ -327,10 +331,10 @@
                     width: 28px;
                     height: 28px;
                     border-radius: 50%;
-                    background: url('../../assets/image/third_blue_arrow.png')
+                    background: url("../../assets/image/third_blue_arrow.png")
                       no-repeat;
                     background-size: 100% 100%;
-                    margin-left: 34px;
+                    margin: 0 auto;
                   }
                 }
               }
@@ -358,21 +362,21 @@
                   color: #fff;
                 }
                 .throIcon {
-                  background: url('../../assets/image/third_wihte_arrow.png')
+                  background: url("../../assets/image/third_wihte_arrow.png")
                     no-repeat;
                 }
               }
               .router1:hover .icon1 {
-                background: url('../../assets/image/icon_computer_white.png');
+                background: url("../../assets/image/icon_computer_white.png");
               }
               .router2:hover .icon2 {
-                background: url('../../assets/image/icon_pro_white.png');
+                background: url("../../assets/image/icon_pro_white.png");
               }
               .router3:hover .icon3 {
-                background: url('../../assets/image/icon_fuwu_white.png');
+                background: url("../../assets/image/icon_fuwu_white.png");
               }
               .router4:hover .icon4 {
-                background: url('../../assets/image/icon_wendang_white.png');
+                background: url("../../assets/image/icon_wendang_white.png");
               }
             }
           }
@@ -414,7 +418,7 @@
               .swiper-button-next {
                 top: 40%;
                 height: 30px;
-                background: url('../../assets/image/blue_arrow.png') no-repeat;
+                background: url("../../assets/image/blue_arrow.png") no-repeat;
               }
               .swiper-wrapper {
                 .swiper-slide {

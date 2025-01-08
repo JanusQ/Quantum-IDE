@@ -1,23 +1,23 @@
-import React, { useState, useRef } from 'react'
-import { Swiper, SwiperSlide } from 'swiper/react'
-import styles from './index.module.scss'
-import 'swiper/scss'
-import 'swiper/scss/pagination'
-import 'swiper/scss/navigation'
-import { Autoplay, Pagination, Navigation } from 'swiper'
-import { useTranslation } from 'react-i18next'
-import tianMuImage from '@/assets/image/banner_6.jpg'
-import banner3 from '@/assets/image/banner_3.png'
-import banner4 from '@/assets/image/banner_4.png'
-import banner5 from '@/assets/image/banner_5.png'
-import achievement from '@/assets/image/achievement.png'
-import { useNavigate } from 'react-router-dom'
-import { Modal, Input, message, Button, Tooltip } from 'antd'
-import Icon, { DownOutlined, CopyOutlined } from '@ant-design/icons'
-import { useSelector } from 'react-redux'
-import { createPro } from '@/api/test_circuit'
-import { v4 as uuidv4 } from 'uuid'
-import { CopyToClipboard } from 'react-copy-to-clipboard'
+import React, { useState, useRef } from "react"
+import { Swiper, SwiperSlide } from "swiper/react"
+import styles from "./index.module.scss"
+import "swiper/scss"
+import "swiper/scss/pagination"
+import "swiper/scss/navigation"
+import { Autoplay, Pagination, Navigation } from "swiper"
+import { useTranslation } from "react-i18next"
+import tianMuImage from "@/assets/image/banner_6.jpg"
+import banner3 from "@/assets/image/banner_3.png"
+import banner4 from "@/assets/image/banner_4.png"
+import banner5 from "@/assets/image/banner_5.png"
+import achievement from "@/assets/image/achievement.png"
+import { useNavigate } from "react-router-dom"
+import { Modal, Input, message, Button, Tooltip } from "antd"
+import Icon, { DownOutlined, CopyOutlined } from "@ant-design/icons"
+import { useSelector } from "react-redux"
+import { createPro } from "@/api/test_circuit"
+import { v4 as uuidv4 } from "uuid"
+import { CopyToClipboard } from "react-copy-to-clipboard"
 
 export default function Introduce() {
   const { TextArea } = Input
@@ -27,11 +27,11 @@ export default function Introduce() {
   const { userData } = useSelector((store) => store.userData)
   const apikeyref = useRef()
   const copyText = () => {
-    message.success('Copy success')
+    message.success("Copy success")
   }
   // 创建项目
   const [isSaveCaseModalVisible, setIsSaveCaseModalVisible] = useState(false)
-  const [projectName, setProjectName] = useState('')
+  const [projectName, setProjectName] = useState("")
   const gotoComputer = () => {
     // const startDate = new Date('2024-04-16')
     // const endDate = new Date('2024-04-29')
@@ -51,7 +51,7 @@ export default function Introduce() {
     //     return
     //   }
     // }
-    navigate('/examples')
+    navigate("/examples")
 
     // if (userData.token) {
     //   isSaveOk()
@@ -69,13 +69,13 @@ export default function Introduce() {
     //   return
     // }
     const formdata = new FormData()
-    formdata.append('user_id', userData.user_id)
+    formdata.append("user_id", userData.user_id)
 
-    formdata.append('project_name', `test${uuidv4()}`)
+    formdata.append("project_name", `test${uuidv4()}`)
     const { data } = await createPro(formdata)
-    if (data.msg === '成功') {
-      message.success('创建成功')
-      navigate('/aceComputer', {
+    if (data.msg === "成功") {
+      message.success("创建成功")
+      navigate("/aceComputer", {
         state: { projectName: projectName, projectId: data.project_id },
       })
     }
@@ -85,20 +85,20 @@ export default function Introduce() {
   }
   const isSaveCancel = () => {
     setIsSaveCaseModalVisible(false)
-    setProjectName('')
+    setProjectName("")
   }
 
   return (
     <div className={styles.root}>
       <Modal
-        okText={t('isok.confirm')}
-        cancelText={t('isok.cancel')}
+        okText={t("isok.confirm")}
+        cancelText={t("isok.cancel")}
         open={isSaveCaseModalVisible}
         onOk={isSaveOk}
         onCancel={isSaveCancel}
-        title={t('Home.stored item')}
+        title={t("Home.stored item")}
       >
-        <p>{t('Home.project name')}</p>
+        <p>{t("Home.project name")}</p>
         <Input value={projectName} onChange={onSaveChange}></Input>
       </Modal>
       <div className="introduce">
@@ -117,33 +117,36 @@ export default function Introduce() {
             navigation={true}
             modules={[Pagination, Navigation]}
             className="mySwiper swiper-v"
-            style={{ width: '100%', height: '100%' }}
+            style={{ width: "100%", height: "100%" }}
           >
             <SwiperSlide>
               <div className="SwiperSlide">
                 <div className="banner">
+                  <h2 className="title">{t("Home.title")}</h2>
+                  <div className="content">{t("Home.content")}</div>
+
                   {userData.token && (
                     <div
                       style={{
                         width: 360,
-                        wordWrap: 'break-word',
-                        textAlign: 'justify',
+                        wordWrap: "break-word",
+                        textAlign: "justify",
                       }}
                     >
                       <span style={{ fontSize: 20 }}>API_KEY:</span>
                       <div
                         style={{
-                          border: '1px solid rgba(255, 255, 255, 0.44)',
-                          display: 'inline-block',
+                          border: "1px solid rgba(255, 255, 255, 0.44)",
+                          display: "inline-block",
                           width: 360,
                           borderRadius: 5,
                           padding: 10,
                           marginTop: 10,
-                          userSelect: 'all',
+                          userSelect: "all",
                           zIndex: 1000,
-                          color: '#000',
+                          color: "#000",
                           opacity: 1,
-                          backgroundColor: '#fff',
+                          backgroundColor: "#fff",
                         }}
                       >
                         {userData.token}
@@ -152,45 +155,18 @@ export default function Introduce() {
                             <CopyOutlined
                               onClick={copyText}
                               style={{
-                                color: '#000',
-                                cursor: 'pointer',
+                                color: "#000",
+                                cursor: "pointer",
                                 marginLeft: 5,
                               }}
                             />
                           </Tooltip>
                         </CopyToClipboard>
                       </div>
-                      {/* <CopyToClipboard text={userData.token}>
-                        <div
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'flex-end',
-                          }}
-                          className="copy"
-                        >
-                          <span
-                            style={{
-                              width: 60,
-                              height: 30,
-                              backgroundColor: 'rgb(0, 63, 136)',
-                              color: '#fff',
-                              textAlign: 'center',
-                              lineHeight: '30px',
-                              borderRadius: 8,
-                              cursor: 'pointer',
-                            }}
-                            onClick={copyText}
-                          >
-                            copy
-                          </span>
-                        </div>
-                      </CopyToClipboard> */}
                     </div>
                   )}
-                  <h2 className="title">{t('Home.title')}</h2>
-                  <div className="content">{t('Home.content')}</div>
                   <div onClick={gotoComputer} className="btn">
-                    {t('Home.start')}
+                    {t("Home.start")}
                   </div>
                   <span className="line" key="line" />
                 </div>
@@ -226,7 +202,7 @@ export default function Introduce() {
               navigation={true}
               modules={[Pagination, Navigation]}
               className="mySwiper swiper-v"
-              style={{ width: '100%', height: '100%' }}
+              style={{ width: "100%", height: "100%" }}
             >
               <SwiperSlide>
                 <div className="SwiperSlide">
@@ -236,19 +212,19 @@ export default function Introduce() {
                   <div className="line"></div>
                   <div className="introduce">
                     <div className="title">
-                      {' '}
-                      {t('quantumchips.quantumchips')}
+                      {" "}
+                      {t("quantumchips.quantumchips")}
                     </div>
-                    <div className="titleEn">QUANTUM CHIPS</div>
-                    <div className="chipsName"> {t('quantumchips.name')}</div>
-                    <div className="detail">{t('quantumchips.content')}</div>
+                    {/* <div className="titleEn">QUANTUM CHIPS</div> */}
+                    <div className="chipsName"> {t("quantumchips.name")}</div>
+                    <div className="detail">{t("quantumchips.content")}</div>
                     <div className="detailBtn">
                       <a
                         target="_blank"
                         href="https://hic.zju.edu.cn/2021/1220/c56173a2452801/page.htm"
                         rel="noreferrer"
                       >
-                        {t('quantumchips.details')}
+                        {t("quantumchips.details")}
                       </a>
                     </div>
                   </div>
@@ -262,19 +238,19 @@ export default function Introduce() {
                   <div className="line"></div>
                   <div className="introduce">
                     <div className="title">
-                      {' '}
-                      {t('quantumchips.quantumchips')}
+                      {" "}
+                      {t("quantumchips.quantumchips")}
                     </div>
                     <div className="titleEn">QUANTUM CHIPS</div>
-                    <div className="chipsName"> {t('quantumchips.name')}</div>
-                    <div className="detail">{t('quantumchips.content')}</div>
+                    <div className="chipsName"> {t("quantumchips.name")}</div>
+                    <div className="detail">{t("quantumchips.content")}</div>
                     <div className="detailBtn">
                       <a
                         target="_blank"
                         href="https://hic.zju.edu.cn/2021/1220/c56173a2452801/page.htm"
                         rel="noreferrer"
                       >
-                        {t('quantumchips.details')}
+                        {t("quantumchips.details")}
                       </a>
                     </div>
                   </div>
@@ -292,20 +268,20 @@ export default function Introduce() {
               <div className="line"></div>
               <div className="clondIntroduce">
                 <div className="cloudTitle">
-                  {' '}
-                  {t('quantumchips.quantumcloud')}
+                  {" "}
+                  {t("quantumchips.quantumcloud")}
                 </div>
-                <div className="cloudTitleEn">QUANTUM CLOUD</div>
-                <div className="cloundDetail">{t('middle.support')}</div>
+                {/* <div className="cloudTitleEn">QUANTUM CLOUD</div> */}
+                <div className="cloundDetail">{t("middle.support")}</div>
               </div>
               <div className="useCloud">
                 <div onClick={gotoComputer} className="router router1">
                   <div className="icon1 icon"></div>
                   <div className="useCloundContent">
-                    <div className="startIde"> {t('middle.Start')}</div>
+                    <div className="startIde"> {t("middle.Start")}</div>
                     <div className="routerline"></div>
                     <div className="CloudDetail">
-                      {t('middle.Start quantum IDE')}
+                      {t("middle.Start quantum IDE")}
                       <br />
                       {/* 编写程序并提交任务 */}
                     </div>
@@ -313,18 +289,18 @@ export default function Introduce() {
                   </div>
                 </div>
                 <div
-                  onClick={() => navigate('/projects')}
+                  onClick={() => navigate("/projects")}
                   className="router router2"
                 >
                   <div className="icon2 icon"></div>
                   <div className="useCloundContent">
                     <div className="startIde">
-                      {' '}
-                      {t('middle.Project Status')}
+                      {" "}
+                      {t("middle.Project Status")}
                     </div>
                     <div className="routerline"></div>
                     <div className="CloudDetail">
-                      {t('middle.Edit and view the project status')}
+                      {t("middle.Edit and view the project status")}
                       <br />
                       {/* 并获取已提交任务的 */}
                       <br />
@@ -334,32 +310,32 @@ export default function Introduce() {
                   </div>
                 </div>
                 <div
-                  onClick={() => navigate('/computers')}
+                  onClick={() => navigate("/computers")}
                   className="router router3"
                 >
                   <div className="icon3 icon"></div>
                   <div className="useCloundContent">
-                    <div className="startIde">{t('middle.Recourses')}</div>
+                    <div className="startIde">{t("middle.Recourses")}</div>
                     <div className="routerline"></div>
                     <div className="CloudDetail">
-                      {t('middle.View the status and details')} <br />
+                      {t("middle.View the status and details")} <br />
                       {/* 的服务状态与详细信息 */}
                     </div>
                     <div className="throIcon"></div>
                   </div>
                 </div>
                 <div
-                  onClick={() => navigate('/documents')}
+                  onClick={() => navigate("/documents")}
                   className="router router4"
                 >
                   <div className="icon4 icon"></div>
                   <div className="useCloundContent">
                     <div className="startIde">
-                      {t('middle.Tutorials and Documentation')}
+                      {t("middle.Tutorials and Documentation")}
                     </div>
                     <div className="routerline"></div>
                     <div className="CloudDetail">
-                      {t('middle.View the introduction')}
+                      {t("middle.View the introduction")}
                       <br />
                       {/* 与API文档等信息 */}
                     </div>
@@ -373,10 +349,10 @@ export default function Introduce() {
         <div className="achievement">
           <div className="achievementContent">
             <div className="achievementTitle">
-              {t('middle.Achievement exhibition')}
+              {t("middle.Achievement exhibition")}
             </div>
             <div className="achievementTime">
-              2021～2022 {t('middle.Partial paper presentation')}
+              2021～2022 {t("middle.Partial paper presentation")}
             </div>
             <div className="achievementSwiper">
               <Swiper
@@ -397,7 +373,7 @@ export default function Introduce() {
                   <div className="shade"></div>
                   <a href="https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.119.180511">
                     <img
-                      style={{ width: '316px', height: '240px' }}
+                      style={{ width: "316px", height: "240px" }}
                       src={banner3}
                       alt=""
                     />
@@ -413,7 +389,7 @@ export default function Introduce() {
                   <div className="shade"></div>
                   <a href="https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.119.180511">
                     <img
-                      style={{ width: '316px', height: '240px' }}
+                      style={{ width: "316px", height: "240px" }}
                       src={banner4}
                       alt=""
                     />
@@ -421,7 +397,7 @@ export default function Introduce() {
                   <div className="swiperTitle">
                     <a href="https://www.science.org/doi/10.1126/science.aay0600">
                       Observation of multi-component atomic Schr ̈odinger cat
-                      states of up to 20 qubits{' '}
+                      states of up to 20 qubits{" "}
                     </a>
                   </div>
                 </SwiperSlide>
@@ -430,7 +406,7 @@ export default function Introduce() {
 
                   <a href="https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.119.180511">
                     <img
-                      style={{ width: '316px', height: '240px' }}
+                      style={{ width: "316px", height: "240px" }}
                       src={banner5}
                       alt=""
                     />
@@ -447,7 +423,7 @@ export default function Introduce() {
 
                   <a href="https://micro2023.hotcrp.com/paper/411">
                     <img
-                      style={{ width: '316px', height: '240px' }}
+                      style={{ width: "316px", height: "240px" }}
                       src={achievement}
                       alt=""
                     />

@@ -67,7 +67,7 @@ instance.interceptors.response.use(
       // history.replace({
       //   pathname: 'signin/1#/signin/1',
       // })
-      const navigate = useNavigate()
+      // const navigate = useNavigate()
       // navigate('/')
       window.location.href = '/'
       removeToken()

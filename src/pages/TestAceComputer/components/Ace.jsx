@@ -3,23 +3,23 @@ import React, {
   useEffect,
   useImperativeHandle,
   forwardRef,
-} from 'react'
-import AceEditor from 'react-ace'
-import '../styles/Ace.css'
-import 'ace-builds/src-noconflict/mode-javascript'
-import 'ace-builds/src-noconflict/theme-github'
-import 'ace-builds/src-min-noconflict/ext-language_tools'
+} from "react"
+import AceEditor from "react-ace"
+import "../styles/Ace.css"
+import "ace-builds/src-noconflict/mode-javascript"
+import "ace-builds/src-noconflict/theme-github"
+import "ace-builds/src-min-noconflict/ext-language_tools"
 // import '../styles/CommonAntDesign.css'
-import { Button, Select, Modal, Tooltip } from 'antd'
+import { Button, Select, Modal, Tooltip } from "antd"
 import {
   ZoomInOutlined,
   ZoomOutOutlined,
   CloseOutlined,
   HomeOutlined,
-} from '@ant-design/icons'
-import { createFile } from '@/simulator/CommonFunction'
-import QCEngine from '@/simulator/MyQCEngine'
-import { Link } from 'react-router-dom'
+} from "@ant-design/icons"
+import { createFile } from "@/simulator/CommonFunction"
+import QCEngine from "@/simulator/MyQCEngine"
+import { Link } from "react-router-dom"
 const Ace = forwardRef((props, ref) => {
   useImperativeHandle(ref, () => ({
     exportFile,
@@ -28,7 +28,7 @@ const Ace = forwardRef((props, ref) => {
   const [fontSize, setFontSize] = useState(12)
   // 控制字体
   const controlFontSize = (type) => {
-    if (type === 'add') {
+    if (type === "add") {
       if (fontSize >= 12 && fontSize <= 40) {
         setFontSize(fontSize + 1)
       }
@@ -46,24 +46,24 @@ const Ace = forwardRef((props, ref) => {
   // const optionList = ['Quantum Fourier Transform', 'Grover\'s Algorithm', 'Shor\'s Algorithm', 'Deutsch-Jozsa Algorithm', 'Simon\'s Algorithm', 'Bernstein-Vazirani Algorithm','Quantum Supersampling','Entangled Qubits','Adding two quantum intergers','Repeated iterations','Phase estimation','about:black']
   const options = [
     {
-      value: 'ghz_state',
-      label: 'GHZ state',
+      value: "ghz_state",
+      label: "GHZ state",
     },
     {
-      value: 'w_state',
-      label: 'W state',
+      value: "w_state",
+      label: "W state",
     },
     {
-      value: 'time_crystal',
-      label: 'Time crystal',
+      value: "time_crystal",
+      label: "Time crystal",
     },
     {
-      value: 'VQA',
-      label: 'Quantum Neural Network',
+      value: "VQA",
+      label: "Quantum Neural Network",
     },
   ]
   //导出
-  const FileSaver = require('file-saver')
+  const FileSaver = require("file-saver")
   const [isModalVisible, setIsModalVisible] = useState(false)
   const exportFile = () => {
     setIsModalVisible(true)
@@ -71,8 +71,8 @@ const Ace = forwardRef((props, ref) => {
 
   // 多个类型
   const typeArr = [
-    { name: 'SVG', type: 'svg' },
-    { name: 'JavaScript', type: 'js' },
+    { name: "SVG", type: "svg" },
+    { name: "JavaScript", type: "js" },
   ]
   const typeListChildren = []
   for (let i = 0; i < typeArr.length; i++) {
@@ -105,16 +105,16 @@ const Ace = forwardRef((props, ref) => {
   // 代码补全内容数组
   const completers = [
     {
-      name: 'name',
-      value: 'qc',
+      name: "name",
+      value: "qc",
       score: 1,
-      meta: '实例',
+      meta: "实例",
     },
     {
-      name: 'name',
-      value: 'print',
+      name: "name",
+      value: "print",
       score: 1,
-      meta: '打印',
+      meta: "打印",
     },
   ]
   const complete = (editor) => {
@@ -133,14 +133,14 @@ const Ace = forwardRef((props, ref) => {
     <div className="left_top_div">
       <div className="ace_div">
         <div className="title" style={{ padding: 10 }}>
-          <Link to={'/home'}>
-            <HomeOutlined style={{ marginRight: 20, color: 'rgb(0, 0, 0)' }} />
+          <Link to={"/home"}>
+            <HomeOutlined style={{ marginRight: 20, color: "rgb(0, 0, 0)" }} />
           </Link>
           QuCode
           <Tooltip
             placement="right"
             title={
-              'Here is the code editor to write a program and execute a quantum circuit.'
+              "Here is the code editor to write a program and execute a quantum circuit."
             }
           >
             <span className="tip_svg"></span>
@@ -151,20 +151,20 @@ const Ace = forwardRef((props, ref) => {
           <Button
             type="primary"
             onClick={runProgram}
-            style={{ background: '#649FAE' }}
+            style={{ background: "#649FAE" }}
           >
             {props.runProgramName}
           </Button>
 
           <Select
-            style={{ width: '35%', marginLeft: '10px' }}
+            style={{ width: "35%", marginLeft: "10px" }}
             onChange={props.selectChange}
             optionLabelProp="label"
             options={options}
             defaultValue="ghz_state"
           ></Select>
           <Select
-            style={{ width: '35%', marginLeft: '10px' }}
+            style={{ width: "35%", marginLeft: "10px" }}
             onChange={props.onSelectRunChange}
             // optionLabelProp="label"
             defaultValue="JavaScript_simulator"
@@ -205,9 +205,9 @@ const Ace = forwardRef((props, ref) => {
           value={props.editorValue}
           showGutter={false}
           style={{
-            fontSize: fontSize + 'px',
-            pointerEvents: 'none',
-            backgroundColor: 'rgba(0, 0, 0, 0.1)',
+            fontSize: fontSize + "px",
+            pointerEvents: "none",
+            backgroundColor: "rgba(0, 0, 0, 0.1)",
           }}
           highlightActiveLine={false}
           setOptions={{
@@ -230,10 +230,10 @@ const Ace = forwardRef((props, ref) => {
       </div>
       <div id="self_definded">
         <div className="title">
-          Circuit Resue
+          Circuit Reuse
           <Tooltip
             placement="right"
-            title={'Here are the listed circuits saved for reuse.'}
+            title={"Here are the listed circuits saved for reuse."}
           >
             <span className="tip_svg"></span>
           </Tooltip>

@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react"
 import {
   Card,
   Space,
@@ -15,14 +15,15 @@ import {
   Modal,
   Row,
   Col,
-} from 'antd'
-import { useTranslation } from 'react-i18next'
-import moment from 'moment'
-import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
-import styles from './index.module.scss'
-import { getProList, delPro } from '@/api/project'
-import { createPro } from '@/api/test_circuit'
+} from "antd"
+import { useTranslation } from "react-i18next"
+import moment from "moment"
+import { useSelector } from "react-redux"
+import { useNavigate } from "react-router-dom"
+import styles from "./index.module.scss"
+import { getProList, delPro } from "@/api/project"
+import { createPro } from "@/api/test_circuit"
+import ComponentTitle from "@/components/componentTitle"
 
 export default function Project() {
   const navigate = useNavigate()
@@ -47,14 +48,14 @@ export default function Project() {
     showQuickJumper: true,
   }
   const loadPro = (record) => {
-    navigate('/aceComputer', {
+    navigate("/aceComputer", {
       state: { projectName: record.project_name, projectId: record.project_id },
     })
   }
 
   // 搜索项目
   const { Search } = Input
-  const [searchValue, setSearchValue] = useState('')
+  const [searchValue, setSearchValue] = useState("")
   const searchValueChange = (e) => {
     setSearchValue(e.target.value)
   }
@@ -62,10 +63,10 @@ export default function Project() {
   const [projectList, setProjectList] = useState([])
   const getProListFn = async () => {
     const formData = new FormData()
-    formData.append('user_id', userData.user_id)
+    formData.append("user_id", userData.user_id)
     if (searchValue) {
       formData.append(
-        'filter',
+        "filter",
         JSON.stringify({
           project_name: searchValue,
         })
@@ -83,38 +84,38 @@ export default function Project() {
   }
   //  创建项目
   const [isSaveCaseModalVisible, setIsSaveCaseModalVisible] = useState(false)
-  const [caseName, setCaseName] = useState('')
+  const [caseName, setCaseName] = useState("")
   const onSaveChange = (e) => {
     setCaseName(e.target.value)
   }
   const isSaveCancel = () => {
     setIsSaveCaseModalVisible(false)
-    setCaseName('')
+    setCaseName("")
   }
   const lookTask = (record) => {
     if (record.task_num) {
-      navigate('/projects/task', {
+      navigate("/projects/task", {
         state: {
           projectName: record.project_name,
           taskId: record.project_id,
         },
       })
     } else {
-      message.error('所选项目暂无任务提交')
+      message.error("所选项目暂无任务提交")
     }
   }
   const isSaveOk = async () => {
     if (!caseName) {
-      message.error('请输入项目名称')
+      message.error("请输入项目名称")
       return
     }
     const formdata = new FormData()
-    formdata.append('user_id', userData.user_id)
-    formdata.append('project_name', caseName)
+    formdata.append("user_id", userData.user_id)
+    formdata.append("project_name", caseName)
     const { data } = await createPro(formdata)
-    if (data.msg == '成功') {
-      message.success('Add successfully')
-      navigate('/aceComputer', {
+    if (data.msg == "成功") {
+      message.success("Add successfully")
+      navigate("/aceComputer", {
         state: {
           projectName: caseName,
           projectId: data.project_id,
@@ -133,8 +134,8 @@ export default function Project() {
   }
   const gotoComputer = () => {
     if (!userData.user_id) {
-      message.error('请先登录')
-      navigate('/signin')
+      message.error("请先登录")
+      navigate("/signin")
       // return
     }
     setIsSaveCaseModalVisible(true)
@@ -142,54 +143,54 @@ export default function Project() {
   // 删除
   const deleteTask = (id) => {
     Modal.confirm({
-      title: '确认删除？',
-      okText: '确认',
-      cancelText: '取消',
+      title: "确认删除？",
+      okText: "确认",
+      cancelText: "取消",
       onOk: async () => {
         const formData = new FormData()
-        formData.append('project_id', id)
-        formData.append('user_id', userData.user_id)
+        formData.append("project_id", id)
+        formData.append("user_id", userData.user_id)
         await delPro(formData)
-        message.success('已删除', 0.5)
+        message.success("已删除", 0.5)
         getProListFn()
       },
     })
   }
   const columns = [
     {
-      title: t('list.serial number'),
-      dataIndex: 'index',
+      title: t("list.serial number"),
+      dataIndex: "index",
       width: 150,
       render: (text, record, index) =>
         (pagination.current - 1) * pagination.pageSize + index + 1,
       ellipsis: true,
     },
     {
-      title: t('list.project name'),
-      dataIndex: 'project_name',
-      key: 'project_name',
+      title: t("list.project name"),
+      dataIndex: "project_name",
+      key: "project_name",
       ellipsis: true,
       // render: (text, record) => {
       // 	return <a onClick={() => loadPro(record)}>{text}</a>
       // },
     },
     {
-      title: t('list.task numbet'),
-      dataIndex: 'task_num',
-      key: 'task_num',
+      title: t("list.task numbet"),
+      dataIndex: "task_num",
+      key: "task_num",
       ellipsis: true,
     },
     {
-      title: t('list.creation time'),
-      dataIndex: 'created_time',
-      key: 'created_time',
-      render: (text) => moment(text).format('YYYY-MM-DD HH:MM:SS'),
+      title: t("list.creation time"),
+      dataIndex: "created_time",
+      key: "created_time",
+      render: (text) => moment(text).format("YYYY-MM-DD HH:MM:SS"),
       ellipsis: true,
     },
     {
-      title: t('list.operation'),
-      dataIndex: 'step',
-      key: 'step',
+      title: t("list.operation"),
+      dataIndex: "step",
+      key: "step",
       width: 300,
       render: (text, record) => (
         <span>
@@ -197,17 +198,17 @@ export default function Project() {
             onClick={() => {
               loadPro(record)
             }}
-            style={{ marginRight: '39px', padding: '0' }}
+            style={{ marginRight: "39px", padding: "0" }}
             type="link"
           >
-            {t('list.edit item')}
+            {t("list.edit item")}
           </Button>
           <Button
             disabled={record.task_num === 0}
             onClick={() => {
               // lookTask(record)
             }}
-            style={{ marginRight: '39px', padding: '0' }}
+            style={{ marginRight: "39px", padding: "0" }}
             type="link"
           >
             <a
@@ -215,11 +216,11 @@ export default function Project() {
                 lookTask(record)
               }}
             >
-              {t('list.view details')}
+              {t("list.view details")}
             </a>
           </Button>
           <a onClick={() => deleteTask(record.project_id)}>
-            {t('list.delete')}
+            {t("list.delete")}
           </a>
         </span>
       ),
@@ -233,7 +234,9 @@ export default function Project() {
         //   width: '100%',
         //   height: '100%',
         // }}
-        title={t('project.projectList')}
+        title={
+          <ComponentTitle name={t("project.projectList")}></ComponentTitle>
+        }
       >
         <Row justify="center">
           <Col span={8}>
@@ -241,8 +244,8 @@ export default function Project() {
               enterButton
               onChange={searchValueChange}
               onSearch={onSearch}
-              placeholder={t('project.Please enter a project name')}
-              style={{ marginBottom: '40px' }}
+              placeholder={t("project.Please enter a project name")}
+              style={{ marginBottom: "40px" }}
               value={searchValue}
             />
           </Col>
@@ -251,23 +254,23 @@ export default function Project() {
         <div className="addProject">
           <Button
             onClick={gotoComputer}
-            style={{ float: 'right' }}
+            style={{ float: "right" }}
             type="primary"
           >
-            {t('project.add')}
+            {t("project.add")}
           </Button>
         </div>
         <Table columns={columns} dataSource={projectList} rowKey="project_id" />
       </Card>
       <Modal
-        cancelText={t('isok.cancel')}
-        okText={t('isok.confirm')}
+        cancelText={t("isok.cancel")}
+        okText={t("isok.confirm")}
         onCancel={isSaveCancel}
         onOk={isSaveOk}
         open={isSaveCaseModalVisible}
-        title={t('project.stored item')}
+        title={t("project.stored item")}
       >
-        <p>{t('project. project name')}</p>
+        <p>{t("project. project name")}</p>
         <Input onChange={onSaveChange} value={caseName} />
       </Modal>
     </div>

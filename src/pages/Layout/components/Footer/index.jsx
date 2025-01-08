@@ -45,7 +45,7 @@ export default function Footer() {
                     <span>{t("footer.USER GUIDE")}</span>
                   </li>
                   <li>
-                    <Link to="/home/document">{t("footer.USER GUIDE")}</Link>
+                    <Link to="/home/document">{t("footer.User guide")}</Link>
                   </li>
                   <li></li>
                 </ul>
@@ -64,8 +64,8 @@ export default function Footer() {
                 <div className="footer_phone">
                   <p className="footer_phone_title">{t("footer.CONTACT US")}</p>
                   <p>{t("footer.Address")}</p>
-                  <p>{t("footer.Telephone")}:0571-81951139</p>
-                  <p>{t("footer.Zip code")}:310028</p>
+                  <p>{t("footer.Telephone")}:&nbsp;0571-81951139</p>
+                  <p>{t("footer.Zip code")}:&nbsp;310028</p>
                 </div>
               </Col>
             </Row>

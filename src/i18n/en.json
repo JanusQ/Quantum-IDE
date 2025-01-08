@@ -7,7 +7,7 @@
     "start": "Get Start",
     "stored item": "stored item",
     "project name": " project name",
-    "title": "Taiyuan Quantum",
+    "title": "JanusQ Quantum",
     "content": "Provide real-time quantum computing services",
     "Project status": "Project status",
     "Service resources": "Service resources",
@@ -63,7 +63,7 @@
   },
   "computer": {
     "Name of computer": "Name of computer",
-    "List of computers": "List of computers"
+    "List of computers": "Quantum chip"
   },
   "project": {
     "projectList": "Project List",
@@ -76,7 +76,7 @@
   "list": {
     "serial number": "serial number",
     "project name": "project name",
-    "task numbet": "task numbet",
+    "task numbet": "number of tasks",
     "creation time": "creation time",
     "operation": "operation",
     "edit item": "edit item",
@@ -165,6 +165,7 @@
     "School of Physics, Zhejiang University": "School of Physics, Zhejiang University",
     "School of Computer Science, Zhejiang University": "School of Computer Science, Zhejiang University",
     "USER GUIDE": "USER GUIDE",
+    "User guide": "User guide",
     "QUANTUM APPLICATIONS": "QUANTUM APPLICATIONS",
     "Solutions": "Solutions",
     "CONTACT US": "CONTACT US",
@@ -181,5 +182,5 @@
     "This platform": "This platform of quantum computer software and algorithm relies on the Institute of Computer System Architecture (CCNT Lab) in the School of Computer Science of Zhejiang University, which is dedicated to the research and development of new generation computing technologies and systems. The team has a strong research foundation in the fields of service computing and distributed computing, computer architecture, and programming languages. In the field of quantum computing, after more than one year of accumulation, we have designed and improved the quantum measurement and control software together with the School of Physics, which can improve the measurement and control efficiency by more than 10 times; assisted the new laboratory of Innovation Research Institute in the equipment construction and software debugging of quantum computers; designed the Quantum Computing Simulator V1.0, which can provide users with a web-based quantum circuit compiler to realize quantum algorithms to quantum circuit compilation. In the future, we will work on quantum computing simulator, quantum operating system, quantum algorithms and applications, actively promote quantum algorithm-related applications, and strengthen cross-disciplinary research on quantum computing and artificial intelligence, medicine, chemistry, finance, sociology, etc.",
     "References": "References"
   },
-  "document": "Referenced document"
+  "document": "Document"
 }
