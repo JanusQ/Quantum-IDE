@@ -1,0 +1,52 @@
+.root {
+  :global {
+    min-height: calc(100vh - 80px);
+    // padding: 10px 10px 0 10px;
+    width: calc(100vw - 22px);
+    .achievement_content {
+      height: 100%;
+      display: flex;
+      margin-top: 10px;
+      .left {
+        width: 500px;
+        // border-right: 1px solid #e8e8e8;
+        height: 100%;
+      }
+
+      .right {
+        width: calc(100vw - 500px);
+        flex: 1;
+        padding-left: 20px;
+        .title {
+          line-height: 40px;
+          padding: 0 10px;
+          font-weight: bold;
+          color: rgb(0, 45, 156);
+          font-size: 16px;
+        }
+        .operate_content {
+          display: flex;
+          justify-content: right;
+          padding: 20px;
+          border: 1px solid #e8e8e8;
+        }
+        .resoult_content {
+          .resoult_item {
+            height: 300px;
+            border: 1px solid #e8e8e8;
+          }
+        }
+        .circuit_content {
+          .circuit_item {
+            width: 100%;
+            // margin-top: 20px;
+            height: 300px;
+            border: 1px solid #e8e8e8;
+            overflow-y: auto;
+            overflow-x: auto;
+          }
+        }
+      }
+    }
+  }
+}

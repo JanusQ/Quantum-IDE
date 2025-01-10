@@ -83,6 +83,10 @@ export const UserLayoutRouter = [
         element: LazyLoad(React.lazy(() => import('@/pages/Composer'))),
       },
       {
+        path: '/achievement',
+        element: LazyLoad(React.lazy(() => import('@/pages/Achievement'))),
+      },
+      {
         path: '/userdata',
         element: LazyLoad(React.lazy(() => import('@/pages/UserInfo'))),
         meta: {

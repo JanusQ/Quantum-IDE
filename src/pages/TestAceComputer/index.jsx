@@ -1139,7 +1139,6 @@ function App() {
   }
   const isSubmitCancel = () => {
     form.resetFields()
-    console.log('管不了')
     setSubmitModalVisible(false)
   }
   // 分析模式

@@ -1,0 +1,36 @@
+#console_div {
+	height: 300px;
+	width: 100%;
+	padding: 10px;
+	background: #fff;
+  border: 1px solid #e8e8e8;
+  margin: 0 10px;
+
+}
+#console_div .title {
+	font-size: 18px;
+	margin-bottom: 10px;
+}
+#console_div .content_div {
+	height: calc(100% - 30px);
+	padding: 0 10px;
+	overflow: auto;
+}
+#console_div .error_content {
+	color: red;
+}
+#console_div .right_content p {
+    margin-bottom: 0px;
+	line-height: 20px;
+	color: rgb(102, 100, 100);
+}
+#console_div .tip_svg{
+	display: inline-block;
+	/* background: url('../../../../../../') no-repeat; */
+	background-size:100% 100% ;
+	width: 12px;
+	height: 12px;
+	cursor: pointer;
+	vertical-align: middle;
+	margin-left: 5px;
+}
