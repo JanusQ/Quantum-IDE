@@ -1,0 +1,36 @@
+.root {
+  :global {
+    width: calc(100vw - 500px);
+    flex: 1;
+    padding-left: 20px;
+    .title {
+      line-height: 40px;
+      padding: 0 10px;
+      font-weight: bold;
+      color: rgb(0, 45, 156);
+      font-size: 16px;
+    }
+    .operate_content {
+      display: flex;
+      justify-content: space-between;
+      padding: 20px;
+      border: 1px solid #e8e8e8;
+    }
+    .resoult_content {
+      .resoult_item {
+        height: 300px;
+        border: 1px solid #e8e8e8;
+      }
+    }
+    .circuit_content {
+      .circuit_item {
+        width: 100%;
+        // margin-top: 20px;
+        height: 300px;
+        border: 1px solid #e8e8e8;
+        overflow-y: auto;
+        overflow-x: auto;
+      }
+    }
+  }
+}

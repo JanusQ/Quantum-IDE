@@ -1,11 +1,16 @@
-import React, { useRef, useEffect } from 'react'
+import React, { useRef, useEffect, useState } from 'react'
 import * as echarts from 'echarts/core'
 import { TitleComponent, TooltipComponent } from 'echarts/components'
 import { GraphChart } from 'echarts/charts'
 import { CanvasRenderer } from 'echarts/renderers'
 
 echarts.use([TitleComponent, TooltipComponent, GraphChart, CanvasRenderer])
-export default function GraphEcharts({ data, linksData }) {
+export default function GraphEcharts({
+  data,
+  linksData,
+  chipEditMddalOpen,
+  setChipEditMddalOpen,
+}) {
   const GraphEchartsRef = useRef()
   const option = {
     tooltip: {
@@ -35,7 +40,6 @@ export default function GraphEcharts({ data, linksData }) {
           color: '#fff',
         },
         data: data,
-        // links: [],
         links: linksData,
         lineStyle: {
           opacity: 0.9,
@@ -56,7 +60,29 @@ export default function GraphEcharts({ data, linksData }) {
       myChart = echarts.init(GraphEchartsRef.current)
     }
     myChart.setOption(option)
-  })
+    myChart.on('click', function (params) {
+      if (params.dataType === 'series') {
+        console.log(params, 'series')
+      }
+      if (params.dataType === 'node') {
+        setChipEditMddalOpen(true)
+        console.log(params, 'node')
+      }
+      if (params.dataType === 'edge') {
+        console.log(params, 'edge')
+      }
+    })
+    window.addEventListener('resize', function () {
+      myChart.resize()
+    })
+    return () => {
+      window.removeEventListener('resize', function () {
+        myChart.resize()
+      })
+      myChart.dispose()
+    }
+  }, [])
+
   return (
     <div style={{ width: '100%', height: '100%' }} ref={GraphEchartsRef}></div>
   )

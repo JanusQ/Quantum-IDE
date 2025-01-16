@@ -397,7 +397,7 @@ export default class QCEngine {
     let qlen = this.circuit.numQubits
     let cir_len = gates[0].length
     let op_col = 0
-    console.log(this.circuit)
+    // console.log(this.circuit)
 
     let control_set = [
       'cx',
@@ -1272,7 +1272,6 @@ export default class QCEngine {
       operation_index2whole_state,
       name2index,
     } = this
-
     if (operation_index2whole_state[operation_index]) {
       return operation_index2whole_state[operation_index]
     }
@@ -2710,7 +2709,7 @@ class QInt {
           let controls = range(qc_qubit_start, qubit)
           let target = [qubit]
           let total = controls.concat(target)
-          console.log(total)
+          // console.log(total)
           if (total.length == 1) qc.not(total)
           else qc.ncnot(total)
         })

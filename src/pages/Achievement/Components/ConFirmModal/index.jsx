@@ -25,10 +25,10 @@ export default function ConFirmModal({
       // footer={null}
     >
       <div className="content" style={{ padding: 20 }}>
-        <Space>
+        {/* <Space>
           <ChipModal title={'模型校准'} />
           <ChipModal title={'模型保真'} />
-        </Space>
+        </Space> */}
       </div>
       确认{confimTitle}？
     </Modal>

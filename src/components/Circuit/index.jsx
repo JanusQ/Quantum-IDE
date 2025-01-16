@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react'
 import Qubit from './components/Qubit'
 import { getColorByBaiFenBi } from '@/utils/getColorByBaiFenBi'
 import DrawBracket from './components/DrawBracket'
-// import { lineIndexStore, labelsStroe } from '@/store/line'
+import { lineIndexStore, labelsStroe } from '@/store/line'
 export default function Circuit(props) {
   const [showLine, setShowLine] = useState(null)
-  // const { updateLineIndex, lineIndex } = lineIndexStore()
-  // const { labels, updateLabels } = labelsStroe()
+  const { updateLineIndex, lineIndex } = lineIndexStore()
+  const { labels, updateLabels } = labelsStroe()
 
   // 框选坐标
   const [isMouseDown, setIsMouseDown] = useState(false)
@@ -45,34 +45,34 @@ export default function Circuit(props) {
     // 添加框选的lables
     if (xend > xstart) {
       props.addLables(xstart, xend)
-      // if (labels) {
-      //   updateLabels([
-      //     ...labels,
-      //     {
-      //       end_operation: xend,
-      //       start_operation: xstart,
-      //       text: (labels.length - props.labels.length + 1).toString(),
-      //       id: labels.length + 1,
-      //     },
-      //   ])
-      // } else if (!labels) {
-      //   updateLabels([
-      //     ...props.labels,
-      //     {
-      //       end_operation: xend,
-      //       start_operation: xstart,
-      //       text: '1',
-      //       id: props.labels.length + 1,
-      //     },
-      //   ])
-      // }
+      if (labels) {
+        updateLabels([
+          ...labels,
+          {
+            end_operation: xend,
+            start_operation: xstart,
+            text: (labels.length - props.labels.length + 1).toString(),
+            id: labels.length + 1,
+          },
+        ])
+      } else if (!labels) {
+        updateLabels([
+          ...props.labels,
+          {
+            end_operation: xend,
+            start_operation: xstart,
+            text: '1',
+            id: props.labels.length + 1,
+          },
+        ])
+      }
     }
-    // setEndX(null)
-    // setStartX(null)
+    setEndX(null)
+    setStartX(null)
   }
 
-  let svgWidth = 1110
-  let svgHeight = 350
+  let svgWidth = '100%'
+  let svgHeight = '100%'
   let gateLine = []
   let gates1 = []
   let gateError = false
@@ -215,18 +215,20 @@ export default function Circuit(props) {
     <div style={{ width: '100%', height: '100%', userSelect: 'none' }}>
       <svg
         style={{}}
-        width={svgWidth > 1100 ? svgWidth : 1100}
-        height={svgHeight > 100 ? svgHeight : 100}
+        width={svgWidth}
+        height={svgHeight}
+        // width={svgWidth > 1100 ? svgWidth : 1100}
+        // height={svgHeight > 100 ? svgHeight : 100}
         // onMouseDown={handleMouseDown}
         // onMouseMove={handleMouseMove}
         // onMouseUp={handleMouseUp}
       >
-        <rect
+        {/* <rect
           stroke="#C4C4C4"
           width={'100%'}
           height={'100%'}
           fill="transparent"
-        ></rect>
+        ></rect> */}
         {/* 渐变块 */}
         {/* <text fill="rgb(0, 45, 156)" x='100' y='15'>{props.isAnalysis}</text> */}
         {precent
@@ -316,7 +318,7 @@ export default function Circuit(props) {
             <g key={index}>
               <line
                 onMouseEnter={() => setShowLine(index)}
-                // onClick={() => updateLineIndex(index)}
+                onClick={() => updateLineIndex(index)}
                 x1={index * 40 + 50 + 80}
                 y1={40}
                 strokeWidth="20"
@@ -338,7 +340,7 @@ export default function Circuit(props) {
               ) : (
                 ''
               )}
-              {/* {index == lineIndex ? (
+              {index == lineIndex ? (
                 <g>
                   <line
                     x1={index * 40 + 50 + 80}
@@ -374,7 +376,7 @@ export default function Circuit(props) {
                 </g>
               ) : (
                 ''
-              )} */}
+              )}
             </g>
           ))}
         </g>

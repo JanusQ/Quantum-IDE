@@ -1,0 +1,262 @@
+/* @import url('../Ace/AntDesign.css'); */
+#circuit_view {
+	height: 100%;
+	width: 100%;
+	background: #fff;
+	cursor: auto;
+}
+#circuit_view .title {
+	font-size: 18px;
+	padding: 10px;
+	padding-bottom: 0;
+}
+#circuit_view .circuit_div {
+	height: calc(100% - 40px);
+	width: 100%;
+	overflow: auto;
+	position: relative;
+}
+#circuit_view .line_chart_div {
+	position: sticky;
+	bottom: 0px;
+}
+.svgtext {
+	user-select: none;
+}
+
+#d3_drawing {
+	height: 361px;
+	width: 100%;
+	background: #fff;
+	overflow: auto;
+}
+#right_down_div {
+	width: 100%;
+	height: calc(60% - 5px);
+	display: flex;
+	margin-top: 5px;
+}
+ .d_component {
+	height: 100%;
+	overflow-x: visible;
+	width: 60%;
+	height: 100%;
+	margin-right: 5px;
+	background: #fff;
+	padding: 10px;
+}
+ .c_component {
+	width: calc(40% - 5px);
+	height: 100%;
+	background: #fff;
+	padding: 10px;
+}
+ .c_component .title,
+ .d_component .title {
+	height: 32px;
+	line-height: 32px;
+}
+ .d_component .title .title_name {
+	float: left;
+}
+ .d_component .title .pic_tip {
+	margin-left: 10px;
+	height: 32px;
+	line-height: 32px;
+	float: left;
+	vertical-align: middle;
+}
+ .d_component .title .pic_tip img {
+	vertical-align: middle;
+}
+ .d_component .title .pic_tip .tip_text {
+	margin-left: 5px;
+}
+ .c_component .c_up_draw {
+	width: 100%;
+	height: calc(50% - 32px);
+	overflow-y: auto;
+	overflow-x: auto;
+}
+ .c_component #chart_svg {
+	/* height: 100%; */
+}
+ .c_component .c_down_draw {
+	width: 100%;
+	height: calc(50% - 32px);
+	overflow: auto;
+}
+ .c_component .c_down_draw #chart_down_svg {
+	width: 100%;
+}
+ .c_component .title .title_name,
+ .d_component .title .title_name {
+	font-size: 18px;
+}
+.svgtext {
+	user-select: none;
+	font-family: 'Ubuntu-R';
+}
+.restore_btn {
+	float: right;
+	transition: 0;
+	box-shadow: none;
+}
+.restore_btn::after{
+	display: none;
+}
+.restore_btn:hover,.restore_btn:focus{
+	border-color: #d9d9d9;
+    color: #000;
+	
+}
+
+#d_draw_div {
+	width: 100%;
+	height: calc(100% - 32px);
+	overflow: auto;
+	/* white-space: nowrap; */
+}
+.d_chart_div {
+	/* width: 48%; */
+	/* height: 49%; */
+	/* display: inline-block; */
+	float: left;
+	margin-right: 2%;
+	border: 1px solid #c4c4c4;
+	border-radius: 4px;
+	position: relative;
+	vertical-align: top;
+	margin-top: 10px;
+	transition: all 0.3s;
+	/* overflow: auto; */
+}
+.d_chart_div_full {
+	width: 1900px;
+	height: 1080px;
+	position: absolute;
+	top: 0;
+	left: 0;
+	background: #fff;
+	z-index: 999;
+}
+.d_chart_title {
+	height: 32px;
+	width: 100%;
+	line-height: 32px;
+	padding: 0 5px;
+}
+.chart_svg_div {
+	width: 100%;
+	height: calc(100% - 32px);
+	overflow: auto;
+}
+.d_chart_svg {
+	padding: 0 10px;
+	position: relative;
+}
+.btn_group {
+	float: right;
+	position: relative;
+}
+.btn_group .operation_div {
+	width: 31px;
+	height: 108px;
+	position: absolute;
+	border: 1px solid #cccc;
+	padding: 0 8px;
+	right: -8px;
+	top: 32px;
+	z-index: 999;
+	background: #fff;
+	line-height: 26px;
+	white-space: normal;
+}
+.btn_group .operation_div img {
+	margin: 0 0;
+	cursor: pointer;
+}
+.btn_group .operation_img {
+	cursor: pointer;
+}
+.btn_group img {
+	margin-left: 8px;
+}
+.label_name {
+	color: rgb(100, 159, 174);
+}
+.show_circle_div,
+.relaed_div,
+.show_data_div {
+	position: absolute;
+	border-radius: 4px;
+	background: #fff;
+	z-index: 99;
+}
+.show_data_div .show_data_div_span{
+	display: inline-block;
+	width: 49%;
+	margin-right: 1%;
+}
+.show_circle_div,
+.show_data_div {
+	width: 220px;
+	/* height: 198px; */
+	padding: 10px;
+}
+.show_circle_div {
+	width: auto;
+	white-space:nowrap;
+}
+.show_circle_div p {
+	margin: 0;
+}
+#right_div_box{
+	height: 100%;
+}
+#right_div_box .tip_svg {
+	display: inline-block;
+	background: url('../../../../../public/img/info.png') no-repeat;
+	/* background: url('../../../public/img/info.png') no-repeat; */
+	background-size: 100% 100%;
+	width: 12px;
+	height: 12px;
+	cursor: pointer;
+	vertical-align: middle;
+	margin-left: 5px;
+	position: relative;
+}
+#right_div_box .tip_content {
+	display: block;
+	padding: 8px;
+	border: 1px solid #ccc;
+	position: absolute;
+	left: 15px;
+	font-size: 14px;
+	line-height: 14px;
+	
+}
+#circuit_svg{
+	min-height: 280px;
+}
+.real_number_div{
+	height: 40%;
+	background: #fff;
+	margin-top: 5px;
+	padding: 8px;
+}
+.real_top_div{
+	height: 30%;
+	background: #fff;
+
+}
+.real_number_title{
+	font-size: 18px;
+	height: 29px;
+	line-height: 29px;
+}
+.real_before_chart,.real_after_chart{
+	height: calc(100% - 29px);
+	overflow: auto;
+	width: 100%;
+}

@@ -1,42 +1,60 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import styles from './index.module.scss'
 import Editor from './Components/Editor'
-import { Space, Button, Row, Col, ConfigProvider } from 'antd'
-import Circuit from '@/components/Circuit'
-import BarChartEchart from './Components/BarChartEchart'
-import ConFirmModal from './Components/ConFirmModal'
+import { Space, Button, Row, Col, ConfigProvider, Select } from 'antd'
+import NewMode from './Components/NewMode'
+import JsSimulator from './Components/JsSimulator'
+import QuantumComputer from './Components/QuantumComputer'
+import PySimulator from './Components/PySimulator'
+import Analysis from './Components/Analysis'
 export default function Achievement() {
   const [qcData, setQcData] = useState('')
-  const [name2index, setName2index] = useState([])
-  const addLables = () => {}
-  useEffect(() => {
-    if (qcData?.name2index) {
-      setName2index(
-        Object.entries(qcData?.name2index)?.map(
-          ([name, [firstValue, secondValue]]) => ({
-            name,
-            value: [firstValue, secondValue],
-          })
-        )
-      )
+  const modeList = [
+    { label: 'newMode', value: 'newMode' },
+    {
+      label: 'Analysis',
+      value: 'Analysis',
+    },
+    {
+      label: 'Python simulator',
+      value: 'Python_simulator',
+    },
+    {
+      label: 'Quantum cumputer',
+      value: 'Quantum_cumputer',
+    },
+
+    {
+      label: 'JavaScript simulator',
+      value: 'JavaScript_simulator',
+    },
+  ]
+  const projectList = [
+    {
+      value: 'ghz_state',
+      label: 'GHZ state',
+    },
+    {
+      value: 'w_state',
+      label: 'W state',
+    },
+    {
+      value: 'time_crystal',
+      label: 'Time crystal',
+    },
+    {
+      value: 'VQA',
+      label: 'Quantum Neural Network',
+    },
+  ]
+  const [currentProject, setCurrentProject] = useState(projectList[0].value)
+  const [mode, setMode] = useState('Analysis')
+  const childRef = useRef()
+  const runSubmit = () => {
+    if (childRef.current) {
+      childRef.current.submit()
     }
-  }, [qcData])
-
-  // 编译
-  const compile = () => {}
-  // 保真度预测
-  const fidelity = () => {}
-
-  // 读取校准
-  const readCalibration = () => {}
-  // 运行
-  const runProgram = () => {}
-
-  // confirmModalOpen
-  const [confirmModalOpen, setConfirmModalOpen] = useState(false)
-  const [confimTitle, setConfimTitle] = useState('')
-  const [confirmFunction, setConfirmFunction] = useState(() => {})
-
+  }
   return (
     <div className={styles.root}>
       <ConfigProvider
@@ -49,94 +67,38 @@ export default function Achievement() {
       >
         <div className="achievement_content">
           <div className="left">
-            <Editor setQcData={setQcData} />
+            <Editor
+              projectList={projectList}
+              currentProject={currentProject}
+              setCurrentProject={setCurrentProject}
+              ref={childRef}
+              modeList={modeList}
+              mode={mode}
+              setMode={setMode}
+              setQcData={setQcData}
+            />
           </div>
-          <div className="right">
-            <div className="operate_content">
-              <Space size={20}>
-                <Button
-                  onClick={() => {
-                    setConfirmModalOpen(true)
-                    setConfimTitle('编译')
-                    setConfirmFunction(() => compile)
-                  }}
-                >
-                  编译
-                </Button>
-                <Button
-                  onClick={() => {
-                    setConfirmModalOpen(true)
-                    setConfimTitle('保真度预测')
-                    setConfirmFunction(() => compile)
-                  }}
-                >
-                  保真度预测
-                </Button>
-                <Button
-                  onClick={() => {
-                    setConfirmModalOpen(true)
-                    setConfimTitle('读取校准')
-                    setConfirmFunction(() => compile)
-                  }}
-                >
-                  读取校准
-                </Button>
-                <Button
-                  onClick={() => {
-                    setConfirmModalOpen(true)
-                    setConfimTitle('运行')
-                    setConfirmFunction(() => compile)
-                  }}
-                >
-                  运行
-                </Button>
-              </Space>
-            </div>
-            <div className="circuit_content">
-              <div className="title">编译前电路</div>
-
-              <div className="circuit_item">
-                <Circuit
-                  gates={qcData?.circuit?.gates}
-                  name2index={name2index}
-                  labels={qcData.labels}
-                  addLables={addLables}
-                />
-              </div>
-              <div className="title">编译后电路</div>
-
-              <div className="circuit_item"></div>
-            </div>
-            <div className="resoult_content">
-              <Row gutter={[10, 10]}>
-                <Col span={8}>
-                  <div className="title">保真度结果</div>
-                  <div className="resoult_item"></div>
-                </Col>
-                <Col span={8}>
-                  <div className="title">电路运行结果</div>
-                  <div className="resoult_item">
-                    <BarChartEchart chartData={[1, 2, 3]} />
-                  </div>
-                </Col>
-                <Col span={8}>
-                  <div className="title">读取校准结果</div>
-                  <div className="resoult_item">
-                    <BarChartEchart chartData={[1, 2, 3]} />
-                  </div>
-                </Col>
-              </Row>
-            </div>
-          </div>
+          {mode === 'newMode' ? <NewMode qcData={qcData} /> : null}
+          {mode === 'JavaScript_simulator' ? (
+            <JsSimulator qcData={qcData} />
+          ) : null}
+          {mode === 'Analysis' ? <Analysis qcData={qcData} /> : null}
+          {mode === 'Python_simulator' ? (
+            <PySimulator
+              currentProject={currentProject}
+              runSubmit={runSubmit}
+              qcData={qcData}
+            />
+          ) : null}
+          {mode === 'Quantum_cumputer' ? (
+            <QuantumComputer
+              currentProject={currentProject}
+              runSubmit={runSubmit}
+              qcData={qcData}
+            />
+          ) : null}
         </div>
       </ConfigProvider>
-
-      <ConFirmModal
-        confirmModalOpen={confirmModalOpen}
-        setConfirmModalOpen={setConfirmModalOpen}
-        confimTitle={confimTitle}
-        confirmFunction={confirmFunction}
-      />
     </div>
   )
 }
