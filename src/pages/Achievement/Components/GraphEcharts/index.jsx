@@ -10,6 +10,8 @@ export default function GraphEcharts({
   linksData,
   chipEditMddalOpen,
   setChipEditMddalOpen,
+  setTitle,
+  setSelectNodeData,
 }) {
   const GraphEchartsRef = useRef()
   const option = {
@@ -54,6 +56,7 @@ export default function GraphEcharts({
       },
     ],
   }
+
   useEffect(() => {
     let myChart = echarts.getInstanceByDom(GraphEchartsRef.current)
     if (myChart == null) {
@@ -62,19 +65,21 @@ export default function GraphEcharts({
     myChart.setOption(option)
     myChart.on('click', function (params) {
       if (params.dataType === 'series') {
+        setTitle('编辑')
         console.log(params, 'series')
       }
       if (params.dataType === 'node') {
+        setTitle('编辑')
+        setSelectNodeData(params.data)
         setChipEditMddalOpen(true)
-        console.log(params, 'node')
+        console.log(params.data, 'node')
       }
       if (params.dataType === 'edge') {
         console.log(params, 'edge')
+        setTitle('编辑')
       }
     })
-    window.addEventListener('resize', function () {
-      myChart.resize()
-    })
+
     return () => {
       window.removeEventListener('resize', function () {
         myChart.resize()

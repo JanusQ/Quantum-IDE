@@ -48,7 +48,7 @@ export default function Achievement() {
     },
   ]
   const [currentProject, setCurrentProject] = useState(projectList[0].value)
-  const [mode, setMode] = useState('Analysis')
+  const [mode, setMode] = useState('newMode')
   const childRef = useRef()
   const runSubmit = () => {
     if (childRef.current) {

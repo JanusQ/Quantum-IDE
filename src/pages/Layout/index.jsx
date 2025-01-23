@@ -29,10 +29,10 @@ export default function Layout() {
       label: t('nav.aboutUs'),
       path: '/aboutUs',
     },
-    {
-      label: 'Quantum Finance',
-      path: '/QuantumFinance',
-    },
+    // {
+    //   label: 'Quantum Finance',
+    //   path: '/QuantumFinance',
+    // },
     // {
     //   label: "Tool",
     //   path: "/tool",

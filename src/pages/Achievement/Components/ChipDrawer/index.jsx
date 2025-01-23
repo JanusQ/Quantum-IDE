@@ -9,7 +9,9 @@ import ChipEditMddal from '../ChipEditMddal'
 export default function ChipDrawer({ drawerOpen, setdrawerOpen }) {
   const { computerList, computersGraph } = GetComputerList()
   const [chipEditMddalOpen, setChipEditMddalOpen] = useState(false)
-
+  const [title, setTitle] = useState('')
+  // 点击的节点数据
+  const [selectNodeData, setSelectNodeData] = useState({})
   return (
     <div>
       <Button
@@ -34,12 +36,21 @@ export default function ChipDrawer({ drawerOpen, setdrawerOpen }) {
           }}
           className="ChipModal_Content"
         >
-          <Button onClick={() => setChipEditMddalOpen(true)}>编辑</Button>
+          <Button
+            onClick={() => {
+              setChipEditMddalOpen(true)
+              setTitle('新增')
+            }}
+          >
+            新增
+          </Button>
           <GraphEcharts
+            setTitle={setTitle}
             linksData={computersGraph.GraphLinksList}
             data={computersGraph.GraphNodeList}
             chipEditMddalOpen={chipEditMddalOpen}
             setChipEditMddalOpen={setChipEditMddalOpen}
+            setSelectNodeData={setSelectNodeData}
           />
           <Space size={20}>
             <Button>校准模型</Button>
@@ -48,7 +59,9 @@ export default function ChipDrawer({ drawerOpen, setdrawerOpen }) {
         </div>
       </Drawer>
       <ChipEditMddal
-        title="编辑"
+        setSelectNodeData={setSelectNodeData}
+        selectNodeData={selectNodeData}
+        title={title}
         chipEditMddalOpen={chipEditMddalOpen}
         setChipEditMddalOpen={setChipEditMddalOpen}
       />

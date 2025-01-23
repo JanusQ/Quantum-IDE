@@ -1,0 +1,51 @@
+.root {
+  :global {
+    // 禁止文字选中
+
+    .operation_content {
+      user-select: none;
+
+      display: flex;
+      justify-content: space-between;
+      margin: 20px;
+      border: 1px solid #e9e9e9;
+      padding: 10px;
+      .drag_content {
+        display: flex;
+
+        .drag_item {
+          cursor: pointer;
+          padding: 10px;
+        }
+      }
+    }
+
+    .view_content {
+      min-height: 500px;
+      user-select: none;
+
+      .drag_area {
+        min-height: 500px;
+        border: 1px solid #e9e9e9;
+
+        .drag_X {
+          height: 50px;
+          margin: 10px;
+          border: 1px solid #e9e9e9;
+          display: flex;
+          align-items: center;
+          .drag_item {
+            margin: 10px;
+          }
+          .active {
+            border: 1px solid red;
+          }
+        }
+      }
+      .result_area {
+        min-height: 500px;
+        border: 1px solid #e9e9e9;
+      }
+    }
+  }
+}

@@ -48,6 +48,8 @@ export default function GetComputerList() {
         name: qubits[key].bit_name,
         x: qubits[key].position_x,
         y: qubits[key].position_y,
+        T1: qubits[key].T1,
+        T2: qubits[key].T2,
       })
     }
     for (const key in couplers) {
