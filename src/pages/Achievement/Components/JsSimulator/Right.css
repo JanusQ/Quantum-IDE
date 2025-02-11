@@ -44,6 +44,8 @@
 	margin-right: 5px;
 	background: #fff;
 	padding: 10px;
+  border-right: #e8e8e8 solid 1px;
+
 }
  .c_component {
 	width: calc(40% - 5px);
