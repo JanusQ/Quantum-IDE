@@ -8,20 +8,27 @@ import SubmitTaskModal from '../SubmitTaskModal'
 import { submitTask } from '@/api/test_circuit'
 import QCEngine from '@/simulator/MyQCEngine'
 
-export default function PySimulator({ qcData, runSubmit, currentProject }) {
+export default function PySimulator({
+  qcData,
+  runSubmit,
+  currentProject,
+  submitModal,
+  setSubmitModal,
+}) {
   // const { userData } = useSelector((store) => store.userData)
   const [probs, setProbs] = useState([])
   const [name2index, setName2index] = useState([])
   const addLables = () => {}
-  const [submitModal, setSubmitModal] = useState(false)
   const [afterCircuit, setAfterCircuit] = useState([])
   const runProgram = async ({ sample, computer_name }) => {
+    const qc = runSubmit()
+
     const formData = new FormData()
     formData.append('project_id', 220)
     formData.append('project_name', 'test22')
     formData.append('computer_name', computer_name)
     formData.append('sample', sample)
-    formData.append('export_qasm', qcData.newexport())
+    formData.append('export_qasm', qc.newexport())
     formData.append('run_type', 'qiskit')
     formData.append('user_id', 114)
     formData.append('label', currentProject)
@@ -54,25 +61,24 @@ export default function PySimulator({ qcData, runSubmit, currentProject }) {
   }, [qcData])
   return (
     <div className={styles.root}>
-      <div className="operate_content">
-        <Space size={20}>
+      {/* <div className="operate_content">
+        <Space style={{ display: 'none' }} size={20}>
           <div className="div"></div>
         </Space>
-        <Space size={20}>
+        <Space  size={20}>
           <Button
             type="primary"
             icon={<PlayCircleOutlined />}
             onClick={() => {
               setSubmitModal(true)
-              runSubmit()
             }}
           >
-            运行
+            Submit
           </Button>
         </Space>
-      </div>
+      </div> */}
       <div className="circuit_content">
-        <div className="title">编译前电路</div>
+        <div className="title">Original Circuit</div>
 
         <div className="circuit_item">
           <Circuit
@@ -82,16 +88,16 @@ export default function PySimulator({ qcData, runSubmit, currentProject }) {
             addLables={addLables}
           />
         </div>
-        <div className="title">编译后电路</div>
+        <div className="title">Compiled Circit</div>
 
         <div className="circuit_item">
           <Circuit gates={afterCircuit} />
         </div>
       </div>
       <div className="resoult_content">
-        <div className="title">运行结果</div>
+        <div className="title">Result</div>
         <div className="resoult_item">
-          <BarChartEchart chartData={probs} />
+          {probs.length > 0 ? <BarChartEchart chartData={probs} /> : null}
         </div>
       </div>
       <SubmitTaskModal

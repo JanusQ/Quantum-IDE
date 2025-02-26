@@ -7,10 +7,13 @@ export default function ConFirmModal({
   setConfirmModalOpen,
   confimTitle,
   confirmFunction,
+  children,
 }) {
+  console.log(children, 'children')
+
   const confirm = () => {
     confirmFunction()
-    setConfirmModalOpen(false)
+    // setConfirmModalOpen(false)
   }
 
   return (
@@ -22,15 +25,9 @@ export default function ConFirmModal({
         setConfirmModalOpen(false)
       }}
       onOk={confirm}
-      // footer={null}
+      footer={null}
     >
-      <div className="content" style={{ padding: 20 }}>
-        {/* <Space>
-          <ChipModal title={'模型校准'} />
-          <ChipModal title={'模型保真'} />
-        </Space> */}
-      </div>
-      确认{confimTitle}？
+      {children}
     </Modal>
   )
 }

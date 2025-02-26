@@ -1,10 +1,10 @@
 #console_div {
-	height: 300px;
 	width: 100%;
-	padding: 10px;
+	padding: 20px;
 	background: #fff;
   border: 1px solid #e8e8e8;
   margin: 0 10px;
+  height: 200px;
 
 }
 #console_div .title {
@@ -12,7 +12,7 @@
 	margin-bottom: 10px;
 }
 #console_div .content_div {
-	height: calc(100% - 30px);
+	/* height: calc(100% - 30px); */
 	padding: 0 10px;
 	overflow: auto;
 }

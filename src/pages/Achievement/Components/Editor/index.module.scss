@@ -21,5 +21,39 @@
         color: #237893;
       }
     }
+
+    #self_definded_draw {
+      width: 100%;
+      margin: 0 10px;
+
+      height: 200px;
+      border: 1px solid #e8e8e8;
+      .save_draw_div {
+        width: 132px;
+        height: calc(100% - 5px);
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        display: inline-block;
+        margin-right: 10px;
+      }
+      .save_div_title {
+        padding: 0 10px;
+      }
+      .save_btn_group {
+        float: left;
+        position: relative;
+      }
+      .save_btn_group img {
+        margin-right: 8px;
+        width: 10px;
+        /* height: ; */
+        cursor: pointer;
+      }
+      .save_svg {
+        width: 100%;
+        height: calc(100% - 22px);
+        overflow: auto;
+      }
+    }
   }
 }

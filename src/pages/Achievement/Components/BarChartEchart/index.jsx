@@ -5,6 +5,8 @@ import { BarChart } from 'echarts/charts'
 import { CanvasRenderer } from 'echarts/renderers'
 echarts.use([GridComponent, BarChart, CanvasRenderer, TooltipComponent])
 export default function BarChartEchart({ chartData, runValue }) {
+  console.log(chartData, 'chartData')
+
   const BarChartEchart = useRef()
   const option = {
     title: {
@@ -31,7 +33,7 @@ export default function BarChartEchart({ chartData, runValue }) {
     series: [
       {
         label: {
-          show: chartData.length == 2 ? true : false,
+          show: chartData?.length == 2 ? true : false,
           position: 'inside',
         },
         data: chartData,

@@ -23,8 +23,11 @@ import {
 import QCEngine from '@/simulator/MyQCEngine'
 import Title from '../Title'
 import RadarChart from '../RadarChart'
+import { useTranslation } from 'react-i18next'
 
 export default function Analysis({ qcData, runSubmit }) {
+  // 中英切换
+  const { t } = useTranslation()
   const [name2index, setName2index] = useState([])
   const [qasm, setQasm] = useState(null)
 
@@ -319,13 +322,16 @@ export default function Analysis({ qcData, runSubmit }) {
   }
   const configItems = [
     {
-      label: `芯片`,
+      label: <div>{t('analysis.Chip')}</div>,
       key: '1',
       children: (
         <Table
           align="center"
           pagination={{
             position: ['none'],
+          }}
+          scroll={{
+            y: 240,
           }}
           rowSelection={{
             type: 'radio',
@@ -337,13 +343,16 @@ export default function Analysis({ qcData, runSubmit }) {
       ),
     },
     {
-      label: `布局算法`,
+      label: <div>{t('analysis.Qubit mapping')}</div>,
       key: '2',
       children: (
         <Table
           align="center"
           pagination={{
             position: ['none'],
+          }}
+          scroll={{
+            y: 240,
           }}
           rowSelection={{
             type: 'radio',
@@ -355,13 +364,16 @@ export default function Analysis({ qcData, runSubmit }) {
       ),
     },
     {
-      label: `布线算法`,
+      label: <div>{t('analysis.Qubit routing')}</div>,
       key: '3',
       children: (
         <Table
           align="center"
           pagination={{
             position: ['none'],
+          }}
+          scroll={{
+            y: 240,
           }}
           rowSelection={{
             type: 'radio',
@@ -373,10 +385,13 @@ export default function Analysis({ qcData, runSubmit }) {
       ),
     },
     {
-      label: `门转换`,
+      label: <div>{t('analysis.Gate decomposition')}</div>,
       key: '4',
       children: (
         <Table
+          scroll={{
+            y: 240,
+          }}
           align="center"
           pagination={{
             position: ['none'],
@@ -391,10 +406,13 @@ export default function Analysis({ qcData, runSubmit }) {
       ),
     },
     {
-      label: `优化`,
+      label: <div>{t('analysis.Opimization')}</div>,
       key: '5',
       children: (
         <Table
+          scroll={{
+            y: 240,
+          }}
           align="center"
           pagination={{
             position: ['none'],
@@ -436,41 +454,44 @@ export default function Analysis({ qcData, runSubmit }) {
   const [bugGates, setBugGates] = useState([])
   const bugClick = async () => {
     try {
-      if (qasm !== null) {
-        const { data } = await circuitBug({ qasm: qasm })
-        setBugGates(data.bug_positions)
-        message.success('检测成功', 1)
-      } else {
-        message.error('请先运行项目代码', 1)
-      }
+      const qc = runSubmit()
+      const { data } = await circuitBug({ qasm: qc.newexport() })
+      setBugGates(data.bug_positions)
+      message.success('检测成功', 1)
     } catch (error) {
       message.error('检测失败', 1)
     }
   }
   // 编译
   const [analysisData, setanalysisData] = useState(null)
-  // const [compiledQasm, setcompiledQasm] = useState(null)
+
+  const [compiledQasm, setcompiledQasm] = useState(null)
   const analysisClick = async () => {
     setEateError(null)
 
     try {
-      if (qasm !== null) {
-        const { data } = await circuitAnalysis({
-          parameter: {
-            layout: layoutValue,
-            routing: routing,
-            translation: translation,
-            optimization: optimization,
-          },
-          coms: computer,
-          qasm: qasm,
-        })
-        setanalysisData(data.compiled_qc.qasm)
-        message.success('编译成功', 1)
-      } else {
-        message.error('请先运行项目代码', 1)
-      }
+      const qc = runSubmit()
+
+      const { data } = await circuitAnalysis({
+        parameter: {
+          layout: layoutValue,
+          routing: routing,
+          translation: translation,
+          optimization: optimization,
+        },
+        coms: computer,
+        qasm: qc.newexport(),
+      })
+      setcompiledQasm(data.compiled_qc.qasm)
+      let newQcEngine = new QCEngine()
+      newQcEngine.import(data.compiled_qc.qasm)
+      setanalysisData(newQcEngine.circuit.gates)
+
+      // setanalysisData(newQcEngine.import(data.compiled_qc.qasm).circuit.gates)
+      message.success('编译成功', 1)
     } catch (error) {
+      console.log(error, 8888)
+
       message.error('编译失败', 1)
     }
   }
@@ -478,8 +499,8 @@ export default function Analysis({ qcData, runSubmit }) {
   const [predictData, setPredictData] = useState(0.95)
   const predictClick = async () => {
     try {
-      if (analysisData !== null) {
-        const { data } = await circuitpredict({ qasm: analysisData })
+      if (compiledQasm !== null) {
+        const { data } = await circuitpredict({ qasm: compiledQasm })
         setEateError(data.gate_errors)
         setPredictData(data.circuit_predict)
         if (raderData.length === 5) {
@@ -506,32 +527,25 @@ export default function Analysis({ qcData, runSubmit }) {
   }, [layoutValue, routing, translation, optimization, computer])
   return (
     <div className={styles.root}>
-      <div className="operate_content">
+      {/* <div className="operate_content">
         <Space size={20}>
           <div className="div"></div>
         </Space>
         <Space size={20}>
-          <Button onClick={bugClick}>bug检测</Button>
-          <Button onClick={predictClick}>噪音分析</Button>
-
-          {/* <Button
-            type="primary"
-            icon={<PlayCircleOutlined />}
-            onClick={() => {
-              runSubmit()
-            }}
-          >
-            运行
-          </Button> */}
+         
         </Space>
-      </div>
+      </div> */}
       <div className="config_content">
-        <Title title={'配置'} />
+        <Title title={t('analysis.Configuration')} />
 
         <div className="config_item">
           <Space style={{ marginBottom: '10px' }}>
-            <Button onClick={submitConfig}>提交配置</Button>
-            <Button onClick={analysisClick}>编译</Button>
+            <Button onClick={submitConfig}>{t('analysis.Submit')}</Button>
+            <Button onClick={analysisClick}>{t('analysis.Compile')}</Button>
+            <Button onClick={bugClick}>{t('analysis.Detect bug')}</Button>
+            <Button onClick={predictClick}>
+              {t('analysis.Predict fidelity')}
+            </Button>
           </Space>
           <div className="configs_detail">
             <div className="configs_detail_content">
@@ -544,7 +558,7 @@ export default function Analysis({ qcData, runSubmit }) {
         </div>
       </div>
       <div className="circuit_content">
-        <Title title={'编译前电路'} />
+        <Title title={t('Original Circuit')} />
 
         <div className="circuit_item">
           <Circuit
@@ -552,11 +566,16 @@ export default function Analysis({ qcData, runSubmit }) {
             name2index={name2index}
             labels={qcData?.labels}
             addLables={addLables}
+            bugGates={bugGates}
           />
         </div>
-        <Title title={'编译后电路'} />
+        <Title title={t('Compiled Circuit')} />
         <div className="circuit_item">
-          {/* <Circuit gates={afterCircuit} /> */}
+          <Circuit
+            gates={analysisData}
+            gateError={gateError}
+            predictData={predictData}
+          />
         </div>
       </div>
     </div>

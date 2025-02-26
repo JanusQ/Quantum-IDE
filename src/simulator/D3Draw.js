@@ -5487,6 +5487,7 @@ export default class d3Draw {
   }
   // 绘制折线图
   drawLineChart(row, svgWidth) {
+    console.log('drawLineChart')
     const svg = d3.select('#line_chart_svg')
     // const transformY = (qc.qubit_number + 1) * this.svgItemHeight
     const lineChartG = svg.select('#lineChart_graph')

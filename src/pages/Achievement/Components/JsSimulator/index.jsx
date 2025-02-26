@@ -25,7 +25,9 @@ export default function JsSimulator({ qcData }) {
     <div className={styles.root}>
       <div className="JsSimulator_top">
         <Circuit
+          type={'JsSimulator'}
           gates={qcData?.circuit?.gates}
+          qcData={qcData}
           name2index={name2index}
           labels={qcData?.labels}
           addLables={addLables}

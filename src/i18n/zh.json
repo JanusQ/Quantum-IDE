@@ -181,5 +181,25 @@
     "This platform": "本平台量子计算机软件与算法依托于浙江大学计算机学院的计算机系统结构研究所（CCNT实验室），致力于新一代计算技术与系统的研究与开发。本团队在服务计算与分布式计算、计算机体系结构、程序语言等领域有很强的研究基础。在量子计算领域，经过一年多的积淀，与物理学院共同设计并改进了量子测控软件，使测控效率提高10倍以上；协助创新研究院新实验室进行量子计算机的设备搭建和软件调试；设计了量子计算模拟器V1.0，可以为用户提供一个基于Web的量子电路编译器，实现量子算法到量子电路的编译。未来将致力于研究量子计算模拟器、量子操作系统、量子算法及应用等，积极推动量子算法相关应用，加强量子计算与人工智能、医药、化学、金融、社会学等交叉学科研究。",
     "References": "参考链接"
   },
-  "document": "参考文档"
+  "document": "参考文档",
+  "analysis": {
+    "Configuration": "配置",
+    "Submit": "提交配置",
+    "Compile": "编译",
+    "Detect bug": "bug检测",
+    "Predict fidelity": "噪音分析",
+    "Chip": "芯片",
+    "Qubit mapping": "布局算法",
+    "Qubit routing": "布线算法",
+    "Gate decomposition": "门转换",
+    "Opimization": "优化",
+    "Overall improvement": "预期结果",
+    "Number of gates": "门数量提升",
+    "Parallelism": "并行度提升",
+    "Fidelity": "保真度提升",
+    "Compilation speed": "编译速度提升",
+    "Circuit depth": "深度提升"
+  },
+  "Original Circuit": "编译前电路",
+  "Compiled Circuit": "编译后电路"
 }

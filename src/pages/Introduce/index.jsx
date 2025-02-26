@@ -33,32 +33,7 @@ export default function Introduce() {
   const [isSaveCaseModalVisible, setIsSaveCaseModalVisible] = useState(false)
   const [projectName, setProjectName] = useState('')
   const gotoComputer = () => {
-    // const startDate = new Date('2024-04-16')
-    // const endDate = new Date('2024-04-29')
-
-    // // 创建要检查的日期对象
-    // const checkDate = new Date() // 默认为当前日期，你也可以指定一个特定日期
-
-    // // 判断日期是否在范围内
-    // if (checkDate >= startDate && checkDate <= endDate) {
-    //   // setIsSaveCaseModalVisible(true)
-    //   // navigate('/aceComputer')
-    //   isSaveOk()
-    // } else {
-    //   if (!userData.token) {
-    //     message.error('请先登录')
-    //     navigate('/signin')
-    //     return
-    //   }
-    // }
     navigate('/achievement')
-
-    // if (userData.token) {
-    //   isSaveOk()
-    // } else {
-    //   navigate('/examples')
-    // }
-    // setIsSaveCaseModalVisible(true)
   }
   const onSaveChange = (e) => {
     setProjectName(e.target.value)
@@ -125,7 +100,7 @@ export default function Introduce() {
                   <h2 className="title">{t('Home.title')}</h2>
                   <div className="content">{t('Home.content')}</div>
 
-                  {userData.token && (
+                  {/* {userData.token && (
                     <div
                       style={{
                         width: 360,
@@ -164,7 +139,7 @@ export default function Introduce() {
                         </CopyToClipboard>
                       </div>
                     </div>
-                  )}
+                  )} */}
                   <div onClick={gotoComputer} className="btn">
                     {t('Home.start')}
                   </div>
@@ -238,7 +213,6 @@ export default function Introduce() {
                   <div className="line"></div>
                   <div className="introduce">
                     <div className="title">
-                      {' '}
                       {t('quantumchips.quantumchips')}
                     </div>
                     <div className="titleEn">QUANTUM CHIPS</div>

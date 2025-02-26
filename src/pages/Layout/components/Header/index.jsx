@@ -60,10 +60,10 @@ export default function Header({ menus }) {
                           <Link to="/QuantumFinance">Quantum Finance</Link>
                         ),
                       },
-                      {
-                        key: '2',
-                        label: <Link to="/sat">SAT</Link>,
-                      },
+                      // {
+                      //   key: '2',
+                      //   label: <Link to="/sat">SAT</Link>,
+                      // },
                     ],
                   }}
                 >

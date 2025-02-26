@@ -3,26 +3,29 @@ import * as echarts from 'echarts/core'
 import { TitleComponent, LegendComponent } from 'echarts/components'
 import { RadarChart } from 'echarts/charts'
 import { CanvasRenderer } from 'echarts/renderers'
+import { useTranslation } from 'react-i18next'
 
 echarts.use([TitleComponent, LegendComponent, RadarChart, CanvasRenderer])
 
 export default function MyRadarChart(props) {
+  // 中英切换
+  const { t } = useTranslation()
   console.log('radarData', props.raderData)
   const radarChart = useRef()
   const option = {
     title: {
-      text: '预期结果',
+      text: t('analysis.Overall improvement'),
     },
     tooltip: {
       trigger: 'axis',
     },
     radar: {
       indicator: [
-        { name: '门数量提升', max: 1 },
-        { name: '并行度提升', max: 1 },
-        { name: '编译速度', max: 1 },
-        { name: '深度提升', max: 1 },
-        { name: '保真度', max: 1 },
+        { name: t('analysis.Number of gates'), max: 1 },
+        { name: t('analysis.Parallelism'), max: 1 },
+        { name: t('analysis.Compilation speed'), max: 1 },
+        { name: t('analysis.Circuit depth'), max: 1 },
+        { name: t('analysis.Fidelity'), max: 1 },
       ],
       axisName: {
         color: 'black',
@@ -43,7 +46,7 @@ export default function MyRadarChart(props) {
         data: [
           {
             value: props.raderData,
-            name: '预期数据',
+            name: t('analysis.Overall improvement'),
             areaStyle: {
               color: new echarts.graphic.RadialGradient(0.1, 0.6, 1, [
                 {

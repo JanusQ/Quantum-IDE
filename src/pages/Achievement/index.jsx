@@ -10,22 +10,22 @@ import Analysis from './Components/Analysis'
 export default function Achievement() {
   const [qcData, setQcData] = useState('')
   const modeList = [
-    { label: 'newMode', value: 'newMode' },
+    { label: 'Calibration', value: 'Calibration' },
     {
       label: 'Analysis',
       value: 'Analysis',
     },
     {
-      label: 'Python simulator',
+      label: 'Backend simulator',
       value: 'Python_simulator',
     },
-    {
-      label: 'Quantum cumputer',
-      value: 'Quantum_cumputer',
-    },
+    // {
+    //   label: 'Quantum cumputer',
+    //   value: 'Quantum_cumputer',
+    // },
 
     {
-      label: 'JavaScript simulator',
+      label: 'Frontend simulator',
       value: 'JavaScript_simulator',
     },
   ]
@@ -34,27 +34,31 @@ export default function Achievement() {
       value: 'ghz_state',
       label: 'GHZ state',
     },
-    {
-      value: 'w_state',
-      label: 'W state',
-    },
-    {
-      value: 'time_crystal',
-      label: 'Time crystal',
-    },
-    {
-      value: 'VQA',
-      label: 'Quantum Neural Network',
-    },
+    // {
+    //   value: 'w_state',
+    //   label: 'W state',
+    // },
+    // {
+    //   value: 'time_crystal',
+    //   label: 'Time crystal',
+    // },
+    // {
+    //   value: 'VQA',
+    //   label: 'Quantum Neural Network',
+    // },
   ]
   const [currentProject, setCurrentProject] = useState(projectList[0].value)
-  const [mode, setMode] = useState('newMode')
+  const [mode, setMode] = useState('Calibration')
   const childRef = useRef()
   const runSubmit = () => {
     if (childRef.current) {
-      childRef.current.submit()
+      const qc = childRef.current.submit()
+      return qc
     }
   }
+  // python模拟器modle
+  const [submitModal, setSubmitModal] = useState(false)
+
   return (
     <div className={styles.root}>
       <ConfigProvider
@@ -76,18 +80,25 @@ export default function Achievement() {
               mode={mode}
               setMode={setMode}
               setQcData={setQcData}
+              setSubmitModal={setSubmitModal}
             />
           </div>
-          {mode === 'newMode' ? <NewMode qcData={qcData} /> : null}
+          {mode === 'Calibration' ? (
+            <NewMode qcData={qcData} runSubmit={runSubmit} />
+          ) : null}
           {mode === 'JavaScript_simulator' ? (
             <JsSimulator qcData={qcData} />
           ) : null}
-          {mode === 'Analysis' ? <Analysis qcData={qcData} /> : null}
+          {mode === 'Analysis' ? (
+            <Analysis runSubmit={runSubmit} qcData={qcData} />
+          ) : null}
           {mode === 'Python_simulator' ? (
             <PySimulator
               currentProject={currentProject}
               runSubmit={runSubmit}
               qcData={qcData}
+              submitModal={submitModal}
+              setSubmitModal={setSubmitModal}
             />
           ) : null}
           {mode === 'Quantum_cumputer' ? (

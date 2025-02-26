@@ -1,9 +1,12 @@
-import React, { useEffect } from "react"
-import { Button, Form, Input, message, Select } from "antd"
-import Title from "@/components/componentTitle"
-import { updateUserInfo, getUserInfo } from "@/api/auth"
-import styles from "./index.module.scss"
-import { useSelector } from "react-redux"
+import React, { useEffect } from 'react'
+import { Button, Form, Input, message, Select, Tooltip } from 'antd'
+import Title from '@/components/componentTitle'
+import { updateUserInfo, getUserInfo } from '@/api/auth'
+import styles from './index.module.scss'
+import { useSelector } from 'react-redux'
+import { CopyToClipboard } from 'react-copy-to-clipboard'
+import Icon, { DownOutlined, CopyOutlined } from '@ant-design/icons'
+
 export default function Useinfo() {
   const [form] = Form.useForm()
   const { Option } = Select
@@ -24,12 +27,15 @@ export default function Useinfo() {
   }
   const onFinish = async (value) => {
     await updateUserInfo(userData.user_id, value)
-    message.success("已保存")
+    message.success('已保存')
     getUserInfoFn()
   }
   useEffect(() => {
     getUserInfoFn()
   }, [])
+  const copyText = () => {
+    message.success('Copy success')
+  }
   const userInfoForm = () => {
     return (
       <Form
@@ -47,7 +53,7 @@ export default function Useinfo() {
           rules={[
             {
               required: true,
-              message: "请输入手机号",
+              message: '请输入手机号',
             },
           ]}
         >
@@ -60,11 +66,11 @@ export default function Useinfo() {
           rules={[
             {
               required: true,
-              message: "请输入电子邮箱",
+              message: '请输入电子邮箱',
             },
             {
-              type: "email",
-              message: "邮箱格式错误",
+              type: 'email',
+              message: '邮箱格式错误',
             },
           ]}
         >
@@ -77,7 +83,7 @@ export default function Useinfo() {
           rules={[
             {
               required: true,
-              message: "请输入单位名称",
+              message: '请输入单位名称',
             },
           ]}
         >
@@ -87,7 +93,7 @@ export default function Useinfo() {
         <Form.Item
           label="单位类型："
           name="company_type"
-          rules={[{ required: true, message: "请选择单位类型" }]}
+          rules={[{ required: true, message: '请选择单位类型' }]}
         >
           <Select placeholder="请选择单位类型">
             <Option value={0}>科研院所</Option>
@@ -101,12 +107,12 @@ export default function Useinfo() {
         <Form.Item
           label="单位地址："
           name="company_address"
-          rules={[{ required: true, message: "请输入单位地址" }]}
+          rules={[{ required: true, message: '请输入单位地址' }]}
         >
           <Input />
         </Form.Item>
         <Form.Item wrapperCol={{ offset: 0, span: 24 }}>
-          <Button htmlType="submit" type="primary" style={{ width: "100%" }}>
+          <Button htmlType="submit" type="primary" style={{ width: '100%' }}>
             保存
           </Button>
         </Form.Item>
@@ -116,9 +122,48 @@ export default function Useinfo() {
   return (
     <div className={styles.root}>
       <div className="useContent">
-        <Title name={"基本信息"} />
+        <Title name={'基本信息'} />
 
         <div className="useInfor">{userInfoForm()}</div>
+        {userData.token && (
+          <div
+            style={{
+              width: 600,
+              wordWrap: 'break-word',
+              textAlign: 'justify',
+            }}
+          >
+            <span style={{ fontSize: 20 }}>API_KEY:</span>
+            <div
+              style={{
+                border: '1px solid rgba(255, 255, 255, 0.44)',
+                display: 'inline-block',
+                width: 600,
+                borderRadius: 5,
+                padding: 10,
+                userSelect: 'all',
+                zIndex: 1000,
+                color: '#000',
+                opacity: 1,
+                backgroundColor: '#fff',
+              }}
+            >
+              {userData.token}
+              <CopyToClipboard text={userData.token}>
+                <Tooltip title="copy">
+                  <CopyOutlined
+                    onClick={copyText}
+                    style={{
+                      color: '#000',
+                      cursor: 'pointer',
+                      marginLeft: 5,
+                    }}
+                  />
+                </Tooltip>
+              </CopyToClipboard>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

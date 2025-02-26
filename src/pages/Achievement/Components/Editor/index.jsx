@@ -42,9 +42,10 @@ import {
 import { tensor, groundState, tensorState } from '@/simulator/MatrixOperation'
 import QCEngine from '@/simulator/MyQCEngine'
 import styles from './index.module.scss'
-import { Space, Button, Select } from 'antd'
+import { Space, Button, Select, Tooltip } from 'antd'
 import Console from '../Console'
 import Title from '../Title'
+import { InfoCircleOutlined } from '@ant-design/icons'
 
 const Editor = forwardRef(
   (
@@ -56,6 +57,7 @@ const Editor = forwardRef(
       projectList,
       currentProject,
       setCurrentProject,
+      setSubmitModal,
     },
     ref
   ) => {
@@ -233,6 +235,7 @@ const Editor = forwardRef(
       if (noBug) {
         qc.runCircuit()
         setQcData(qc)
+        return qc
       }
     }
     useImperativeHandle(ref, () => ({
@@ -250,6 +253,24 @@ const Editor = forwardRef(
         setConsoleValue(<div className="error_content">{message}</div>)
       }
     }
+    const projectListAll = [
+      {
+        value: 'ghz_state',
+        label: 'GHZ state',
+      },
+      {
+        value: 'w_state',
+        label: 'W state',
+      },
+      {
+        value: 'time_crystal',
+        label: 'Time crystal',
+      },
+      {
+        value: 'VQA',
+        label: 'Quantum Neural Network',
+      },
+    ]
 
     return (
       <div className={styles.root}>
@@ -258,24 +279,35 @@ const Editor = forwardRef(
             <Select
               onChange={selectChange}
               defaultValue={currentProject}
-              options={projectList}
+              options={
+                mode === 'JavaScript_simulator' ? projectListAll : projectList
+              }
               style={{ width: 150 }}
             ></Select>
-            <Button type="primary" onClick={submit}>
-              Submit
-            </Button>
+
             <Select
               onChange={(v) => {
                 setMode(v)
                 setQcData(null)
+                selectChange('ghz_state')
               }}
               defaultValue={mode}
               options={modeList}
               style={{ width: 170 }}
             ></Select>
+            {mode === 'JavaScript_simulator' ? (
+              <Button type="primary" onClick={submit}>
+                Submit
+              </Button>
+            ) : null}
+            {mode === 'Python_simulator' ? (
+              <Button type="primary" onClick={() => setSubmitModal(true)}>
+                Submit
+              </Button>
+            ) : null}
           </Space>
         </div>
-        <Title title={'Editor'} />
+        <Title title={'QuCode Editor'} />
         <div className="editor_ace_content">
           <AceEditor
             mode="javascript"
@@ -300,7 +332,33 @@ const Editor = forwardRef(
             }}
           />
         </div>
-        <Title title={'Console'} />
+        {mode == 'JavaScript_simulator' ? (
+          <div>
+            <Space>
+              <Title title={'Circuit Resue'} />
+              <Tooltip
+                placement="right"
+                title={'Here are the listed circuits saved for reuse.'}
+              >
+                <InfoCircleOutlined />
+              </Tooltip>
+            </Space>
+
+            <div id="self_definded_draw"></div>
+          </div>
+        ) : null}
+
+        <Space>
+          <Title title={'Console'} />{' '}
+          <Tooltip
+            placement="right"
+            title={
+              'Here is the console. All output information are printed here.'
+            }
+          >
+            <InfoCircleOutlined />
+          </Tooltip>
+        </Space>
 
         <Console consoleValue={consoleValue} />
       </div>

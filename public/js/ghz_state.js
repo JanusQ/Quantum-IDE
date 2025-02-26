@@ -1,7 +1,7 @@
-var num_qubits = 4
+var num_qubits = 5
 reset(num_qubits)
 var control = qint.new(1, 'control')
-var expand = qint.new(3, 'expand')
+var expand = qint.new(4, 'expand')
 
 startlabel('init')
 // initiaize the control qubit
@@ -17,4 +17,7 @@ cnot([1, 2])
 
 // entangle with qubit_3
 cnot([2, 3])
+
+// entangle with qubit_4
+cnot([3, 4])
 endlabel('entanglement')
