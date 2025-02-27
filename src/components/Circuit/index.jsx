@@ -385,11 +385,13 @@ export default function Circuit(props) {
           ))}
         </g>
       </svg>
-      <div className="line_chart_div">
-        <svg id="line_chart_svg">
-          <g id="lineChart_graph"></g>
-        </svg>
-      </div>
+      {props.gates ? (
+        <div className="line_chart_div">
+          <svg id="line_chart_svg">
+            <g id="lineChart_graph"></g>
+          </svg>
+        </div>
+      ) : null}
     </div>
   )
 }

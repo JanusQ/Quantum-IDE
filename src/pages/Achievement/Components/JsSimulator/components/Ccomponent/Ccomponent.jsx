@@ -1492,6 +1492,9 @@ const Ccomponent = (props) => {
       // console.log(props.qc.circuit?.gates.length, 88888333)
       drawCFn(props.qc?.circuit?.gates.length - 1)
     }
+    if (!props.qc) {
+      clear()
+    }
   }, [lineIndex, props])
   // useEffect(() => {
   //   if (props.qc) {

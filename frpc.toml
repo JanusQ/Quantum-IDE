@@ -1,0 +1,28 @@
+serverAddr = "frp.duomi365.work"
+serverPort = 15443
+user = "21_191"
+metadatas.token = "d9KTxAcDIRLE2A9a"
+
+{{- range $_, $v := parseNumberRangePair "10211,10213" "10211,10213" }}
+[[proxies]]
+name = "{{ $v.First }}"
+type = "tcp"
+localPort = {{ $v.First }}
+remotePort = {{ $v.Second }}
+[proxies.transport]
+useCompression = true
+
+{{- end }}
+
+[transport]
+heartbeatInterval = 10
+heartbeatTimeout = 90
+protocol = 'tcp'
+tcpMux = true
+
+[transport.tls]
+disableCustomTLSFirstByte = true
+enable = true
+
+
+

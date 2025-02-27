@@ -5,7 +5,7 @@ import { InfoCircleOutlined } from '@ant-design/icons'
 
 export default function Console(props) {
   return (
-    <div id="console_div">
+    <div className="console_div">
       <div className="content_div">{props.consoleValue}</div>
     </div>
   )

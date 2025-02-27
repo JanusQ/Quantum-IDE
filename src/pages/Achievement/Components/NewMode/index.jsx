@@ -183,9 +183,10 @@ export default function NewMode({ qcData, runSubmit }) {
 
           <Button
             onClick={() => {
-              if (!compileData) return message.error('请先编译电路')
+              if (!compileData)
+                return message.error('Please compile the circuit first')
               if (chip.chip_qubit !== compileData.length)
-                return message.error('请选择正确的芯片')
+                return message.error('Please select the correct chip')
               setConfirmModalOpen(true)
               setConfimTitle(' Simulate with noise')
               setConfirmFunction(() => runCircuit)
@@ -196,7 +197,7 @@ export default function NewMode({ qcData, runSubmit }) {
           <Button
             onClick={() => {
               if (circuitNoiseData.length === 0)
-                return message.error('请先运行电路')
+                return message.error('Please run the circuit first')
               readCalibration()
               // setConfirmModalOpen(true)
               // setConfimTitle('读取校准')

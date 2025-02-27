@@ -1513,6 +1513,9 @@ const Dcomponent = (props) => {
       clear()
       drawDChart()
     }
+    if (!props.qc) {
+      clear()
+    }
     if (props.labelObj) {
       clear()
       drawDChart({ labels: [props.labelObj] })

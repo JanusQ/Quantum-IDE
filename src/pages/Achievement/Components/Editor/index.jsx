@@ -255,6 +255,10 @@ const Editor = forwardRef(
     }
     const projectListAll = [
       {
+        value: 'Grover_s _Algorithm',
+        label: `Grover's Algorithm`,
+      },
+      {
         value: 'ghz_state',
         label: 'GHZ state',
       },
@@ -262,13 +266,27 @@ const Editor = forwardRef(
         value: 'w_state',
         label: 'W state',
       },
-      {
-        value: 'time_crystal',
-        label: 'Time crystal',
-      },
+
       {
         value: 'VQA',
         label: 'Quantum Neural Network',
+      },
+
+      {
+        value: 'Quantum Conditional Execution',
+        label: `Quantum Conditional Execution`,
+      },
+      {
+        value: 'Quantum Fourier Transform',
+        label: `Quantum Fourier Transform`,
+      },
+      {
+        value: 'time_crystal',
+        label: `time_crystal`,
+      },
+      {
+        value: 'Phase estimation',
+        label: `Phase estimation`,
       },
     ]
 
@@ -278,7 +296,7 @@ const Editor = forwardRef(
           <Space size={20}>
             <Select
               onChange={selectChange}
-              defaultValue={currentProject}
+              value={currentProject}
               options={
                 mode === 'JavaScript_simulator' ? projectListAll : projectList
               }
