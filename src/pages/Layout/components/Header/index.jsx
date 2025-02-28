@@ -57,7 +57,13 @@ export default function Header({ menus }) {
                       {
                         key: '1',
                         label: (
-                          <Link to="/QuantumFinance">Quantum Finance</Link>
+                          <a
+                            href="http://119.28.54.252:10213"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Quantum Finance
+                          </a>
                         ),
                       },
                       // {
