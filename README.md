@@ -68,3 +68,47 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+# 创建目录
+sudo mkdir -p /srv/frp
+# 拷贝
+sudo mv ~/frp_0.43.0_linux_amd64.tar.gz /srv/frp/
+# 解压
+sudo tar -zxvf frp_0.43.0_linux_amd64.tar.gz
+# 修改frps.ini，frps.ini文件见下
+sudo vim /srv/frp/frp_0.43.0_linux_amd64/frps.ini
+# 配置frps frp server开机自启，frps.service文件内容在下面
+sudo vim /etc/systemd/system/frps.service
+# 创建日志保存文件夹
+sudo mkdir /srv/frp/log
+# 刷新服务列表
+sudo systemctl daemon-reload
+# 设置开机自启
+sudo systemctl enable frps.service
+# 启动服务
+sudo systemctl start frps.service
+# 停止服务
+sudo systemctl stop frps.service
+# 启动服务
+sudo systemctl start frps.service
+# 重启服务
+sudo systemctl restart frps.service
+# 查看状态
+sudo systemctl status frps.service
+# 查看是否设置开机自启
+sudo systemctl is-enabled frps.service
+# 关闭开机自启
+sudo systemctl disable frps.service
+
+
+# 检查可执行文件路径
+ls -l /usr/frp_0.61.1_linux_amd64/frps
+
+# 检查配置文件路径
+ls -l /usr/frp_0.61.1_linux_amd64/frps.toml
+
+
+
+
+
+cd /usr/frp_0.61.1_linux_amd64
+./frps -c frps.toml
