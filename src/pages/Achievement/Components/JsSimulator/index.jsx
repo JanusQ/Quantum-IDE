@@ -17,6 +17,8 @@ export default function JsSimulator({ qcData }) {
   }
   const addLables = (x, y) => {
     const label = qcData.createlabel(x, y + 1)
+    console.log(label, 'label')
+
     setlabelObj(label)
     // console.log(qcData, 'qcData')
   }

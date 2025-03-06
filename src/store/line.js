@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 
 export const lineIndexStore = create((set) => ({
-  lineIndex: null,
+  lineIndex: 0,
   updateLineIndex: (newlineIndex) => set({ lineIndex: newlineIndex }),
 }))
 

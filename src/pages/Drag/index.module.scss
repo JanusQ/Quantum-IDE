@@ -1,0 +1,34 @@
+:root {
+  :global {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    .operation_content {
+      padding: 20px;
+      border: 1px solid #e8e8e8;
+    }
+    .dragGate {
+      padding: 10px;
+      width: 100%;
+      height: 100%;
+      border: 1px solid #e8e8e8;
+    }
+    .circuit_content {
+      width: 100%;
+      height: 300px;
+      overflow: auto;
+      border-bottom: 1px solid #e8e8e8;
+    }
+    .show_data_content {
+      width: 100%;
+      height: calc(100% - 300px);
+      // border: 1px solid #e8e8e8;
+    }
+    .editr_Content {
+      height: 100%;
+      width: 100%;
+      border: 1px solid #e8e8e8;
+    }
+  }
+}

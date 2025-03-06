@@ -55,7 +55,6 @@ export const UserLayoutRouter = [
           key: 'aceComputer',
         },
       },
-
       {
         path: '/projects',
         element: LazyLoad(React.lazy(() => import('@/pages/Project'))),
@@ -77,6 +76,10 @@ export const UserLayoutRouter = [
       {
         path: '/dragcircuit',
         element: LazyLoad(React.lazy(() => import('@/pages/DragCircuit'))),
+      },
+      {
+        path: '/drag',
+        element: LazyLoad(React.lazy(() => import('@/pages/Drag'))),
       },
       {
         path: '/composer',
