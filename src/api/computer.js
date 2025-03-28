@@ -11,5 +11,5 @@ export const getComDetil = (data) => {
 
 // 获取芯片列表
 export const getChipList = (data) => {
-  return instance.get('/circuit/calibrationChipDel', data)
+  return instance.get('/chip/getChipList', data)
 }

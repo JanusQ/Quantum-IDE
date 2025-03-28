@@ -21,3 +21,7 @@ export const readCalibrationData = (data) => {
 export const runReadoutCalibration = (data) => {
   return request.post('/circuit/readoutCalibration', data)
 }
+// 获取芯片详情
+export const getChipDetail = (data) => {
+  return request.post('/circuit/getBackend', data)
+}

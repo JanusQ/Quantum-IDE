@@ -5,9 +5,12 @@ import GetComputerList from '../../Hooks/GetComputerList'
 import GraphEcharts from '../GraphEcharts'
 import { GatewayOutlined } from '@ant-design/icons'
 import ChipEditMddal from '../ChipEditMddal'
+import GetChipDetailGraph from '../../Hooks/GetChipDetailGraph'
+import AddCouplerModal from '@/components/AddCouplerModal'
 
-export default function ChipDrawer({ drawerOpen, setdrawerOpen }) {
-  const { computerList, computersGraph } = GetComputerList()
+export default function ChipDrawer({ drawerOpen, setdrawerOpen, chipId }) {
+  const { graphNodeList, graphLinks, getChipDetailGraphData } =
+    GetChipDetailGraph(chipId)
   const [chipEditMddalOpen, setChipEditMddalOpen] = useState(false)
   const [title, setTitle] = useState('')
   // 点击的节点数据
@@ -36,34 +39,32 @@ export default function ChipDrawer({ drawerOpen, setdrawerOpen }) {
           }}
           className="ChipModal_Content"
         >
-          <Button
-            onClick={() => {
-              setChipEditMddalOpen(true)
-              setTitle('新增')
-            }}
-          >
-            新增
-          </Button>
+          <AddCouplerModal
+            getChipDetailGraphData={getChipDetailGraphData}
+            chipId={chipId}
+            graphNodeList={graphNodeList}
+          />
           <GraphEcharts
+            drawerOpen={drawerOpen}
             setTitle={setTitle}
-            linksData={computersGraph.GraphLinksList}
-            data={computersGraph.GraphNodeList}
+            linksData={graphLinks}
+            data={graphNodeList}
             chipEditMddalOpen={chipEditMddalOpen}
             setChipEditMddalOpen={setChipEditMddalOpen}
             setSelectNodeData={setSelectNodeData}
+            getChipDetailGraphData={getChipDetailGraphData}
           />
-          <Space size={20}>
-            <Button>校准模型</Button>
-            <Button>保真模型</Button>
-          </Space>
         </div>
       </Drawer>
       <ChipEditMddal
+        n_qubits={graphNodeList.length}
+        chipId={chipId}
         setSelectNodeData={setSelectNodeData}
         selectNodeData={selectNodeData}
         title={title}
         chipEditMddalOpen={chipEditMddalOpen}
         setChipEditMddalOpen={setChipEditMddalOpen}
+        getChipDetailGraphData={getChipDetailGraphData}
       />
     </div>
   )

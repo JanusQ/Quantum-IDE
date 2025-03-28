@@ -8,8 +8,9 @@ export default function ConFirmModal({
   confimTitle,
   confirmFunction,
   children,
+  setloading,
 }) {
-  console.log(children, 'children')
+  // console.log(children, 'children')
 
   const confirm = () => {
     confirmFunction()
@@ -23,6 +24,7 @@ export default function ConFirmModal({
       open={confirmModalOpen}
       onCancel={() => {
         setConfirmModalOpen(false)
+        setloading(false)
       }}
       onOk={confirm}
       footer={null}

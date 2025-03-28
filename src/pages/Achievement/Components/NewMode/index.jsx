@@ -28,8 +28,10 @@ import {
   getNoiseData,
   runReadoutCalibration,
   readCalibrationData,
+  getChipDetail,
 } from '@/api/janusq'
-import { getChipList } from '@/api/computer'
+import { getChipList } from '@/api/chip'
+import AddChipModal from '@/components/AddChipModal'
 
 export default function NewMode({ qcData, runSubmit }) {
   const [form] = Form.useForm()
@@ -42,9 +44,10 @@ export default function NewMode({ qcData, runSubmit }) {
   const [chip, setChip] = useState({})
   const getChipListData = async () => {
     const { data } = await getChipList()
-    setChipList(data.chips)
-    setChip(data.chips[0])
+    setChipList(data)
+    setChip(data[0])
   }
+
   useEffect(() => {
     getChipListData()
   }, [])
@@ -152,7 +155,6 @@ export default function NewMode({ qcData, runSubmit }) {
     <div className={styles.root}>
       <div className="operate_content">
         <Space size={20}>
-          {/* <ChipDrawer drawerOpen={drawerOpen} setdrawerOpen={setdrawerOpen} /> */}
           <Space>
             <div>Chip:</div>
             <Select
@@ -166,6 +168,13 @@ export default function NewMode({ qcData, runSubmit }) {
                 label: item.chip_name,
               }))}
             />
+
+            <ChipDrawer
+              chipId={chip.id}
+              drawerOpen={drawerOpen}
+              setdrawerOpen={setdrawerOpen}
+            />
+            <AddChipModal getChipListData={getChipListData} />
           </Space>
         </Space>
         <Space size={20}>
@@ -258,6 +267,7 @@ export default function NewMode({ qcData, runSubmit }) {
         setConfirmModalOpen={setConfirmModalOpen}
         confimTitle={confimTitle}
         confirmFunction={confirmFunction}
+        setloading={setloading}
       >
         {confimTitle == ' Simulate with noise' ? (
           <div>

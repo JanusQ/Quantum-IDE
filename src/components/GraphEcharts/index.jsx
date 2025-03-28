@@ -36,7 +36,7 @@ export default function GraphEcharts({ data, linksData }) {
         },
         data: data,
         // links: [],
-        links: linksData,
+        links: linksData || [],
         lineStyle: {
           opacity: 0.9,
           width: 2,

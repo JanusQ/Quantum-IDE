@@ -4,10 +4,10 @@ module.exports = function (app) {
   app.use(
     '/api1',
     createProxyMiddleware({
-      target: 'http://janusq.zju.edu.cn',
+      target: 'http://janusq.zju.edu.cn:9097',
       changeOrigin: true,
       // 去掉我们添加的前缀，保证我们传递给后端的接口是正常的
-      // pathRewrite: { "^/api": '' }
+      pathRewrite: { '^/api1': '' },
     })
   )
   app.use(

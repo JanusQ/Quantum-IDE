@@ -3,7 +3,9 @@ import * as echarts from 'echarts/core'
 import { TitleComponent, TooltipComponent } from 'echarts/components'
 import { GraphChart } from 'echarts/charts'
 import { CanvasRenderer } from 'echarts/renderers'
-
+import { ExclamationCircleOutlined } from '@ant-design/icons'
+import { Button, message, Modal, Space } from 'antd'
+import { deleteCoupling } from '@/api/chip'
 echarts.use([TitleComponent, TooltipComponent, GraphChart, CanvasRenderer])
 export default function GraphEcharts({
   data,
@@ -12,7 +14,10 @@ export default function GraphEcharts({
   setChipEditMddalOpen,
   setTitle,
   setSelectNodeData,
+  drawerOpen,
+  getChipDetailGraphData,
 }) {
+  const [modal, contextHolder] = Modal.useModal()
   const GraphEchartsRef = useRef()
   const option = {
     tooltip: {
@@ -56,6 +61,24 @@ export default function GraphEcharts({
       },
     ],
   }
+  const [name, setName] = useState('')
+
+  const confirm = (value) => {
+    modal.confirm({
+      title: '删除该耦合器？',
+      icon: <ExclamationCircleOutlined />,
+      content: value.selfDefine,
+      okText: '确认',
+      cancelText: '取消',
+      onOk: async () => {
+        const { data } = await deleteCoupling({ id: value.coupler_id })
+        message.success('删除成功')
+        getChipDetailGraphData()
+
+        console.log('OK', data)
+      },
+    })
+  }
 
   useEffect(() => {
     let myChart = echarts.getInstanceByDom(GraphEchartsRef.current)
@@ -75,6 +98,7 @@ export default function GraphEcharts({
         console.log(params.data, 'node')
       }
       if (params.dataType === 'edge') {
+        confirm(params.data)
         console.log(params, 'edge')
         setTitle('编辑')
       }
@@ -86,9 +110,11 @@ export default function GraphEcharts({
       })
       myChart.dispose()
     }
-  }, [])
+  }, [linksData])
 
   return (
-    <div style={{ width: '100%', height: '100%' }} ref={GraphEchartsRef}></div>
+    <div style={{ width: 650, height: 650 }} ref={GraphEchartsRef}>
+      {contextHolder}
+    </div>
   )
 }
